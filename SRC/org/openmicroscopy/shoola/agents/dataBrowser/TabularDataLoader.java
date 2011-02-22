@@ -20,19 +20,23 @@
  *
  *------------------------------------------------------------------------------
  */
-package org.openmicroscopy.shoola.agents.metadata;
+package org.openmicroscopy.shoola.agents.dataBrowser;
 
 
 //Java imports
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 //Third-party libraries
 
 //Application-internal dependencies
-import org.openmicroscopy.shoola.agents.metadata.editor.Editor;
+import org.openmicroscopy.shoola.agents.dataBrowser.browser.ImageNode;
+import org.openmicroscopy.shoola.agents.dataBrowser.browser.WellSampleNode;
+import org.openmicroscopy.shoola.agents.dataBrowser.view.DataBrowser;
 import org.openmicroscopy.shoola.env.data.model.TableParameters;
+import org.openmicroscopy.shoola.env.data.model.TableResult;
 import org.openmicroscopy.shoola.env.data.views.CallHandle;
+import pojos.PlateData;
 
 /** 
  * Loads the tabular data.
@@ -48,7 +52,7 @@ import org.openmicroscopy.shoola.env.data.views.CallHandle;
  * @since 3.0-Beta4
  */
 public class TabularDataLoader 
-	extends EditorLoader
+	extends DataBrowserLoader
 {
 
 	/** Parameters to load the table. */
@@ -62,25 +66,38 @@ public class TabularDataLoader
      * 
      * @param viewer The viewer this data loader is for.
      *               Mustn't be <code>null</code>.
+     * @param ids The identifier of the files hosting the tabular data.
      */
-    public TabularDataLoader(Editor viewer, long originalFileID)
+    public TabularDataLoader(DataBrowser viewer, List<Long> ids)
     {
     	 super(viewer);
-    	 if (originalFileID < 0)
+    	 if (ids == null || ids.size() <= 0)
     		 throw new IllegalArgumentException("No file to retrieve.");
-    	 List<Long> ids = new ArrayList<Long>();
-    	 ids.add(originalFileID);
     	 parameters = new TableParameters(ids);
     }
     
+    /**	
+     * Creates a new instance.
+     * 
+     * @param viewer The viewer this data loader is for.
+     *               Mustn't be <code>null</code>.
+     * @param plate The plate to handle.
+     */
+    public TabularDataLoader(DataBrowser viewer, PlateData plate)
+    {
+    	 super(viewer);
+    	 if (plate == null)
+    		 throw new IllegalArgumentException("No file to retrieve.");
+    	 parameters = new TableParameters(PlateData.class, plate.getId());
+    }
+    
     /** 
-	 * Loads the tags. 
+	 * Loads the tabular data. 
 	 * @see EditorLoader#cancel()
 	 */
 	public void load()
 	{
-		setIds();
-		handle = mhView.loadTabularData(parameters, userID, this);
+		handle = mhView.loadTabularData(parameters, -1, this);
 	}
 	
 	/** 
@@ -95,9 +112,10 @@ public class TabularDataLoader
      */
     public void handleResult(Object result) 
     {
-    	//if (viewer.getState() == MetadataViewer.DISCARDED) return;  //Async cancel.
-    	//viewer.setExistingTags((Collection) result);
+    	if (viewer.getState() == DataBrowser.DISCARDED) return;  //Async cancel.
     	//decide what to do with result
+    	if (result == null) return;
+    	viewer.setTabularData((List<TableResult>) result);
     } 
 
 }
