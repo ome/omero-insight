@@ -1,0 +1,39 @@
+# Java class files
+*.class
+
+# generated files
+/build/
+/bin/
+/tmp/
+/out/
+
+# Gradle cache
+.gradle
+
+# Local configuration file (sdk path, etc)
+local.properties
+gradle-local.properties
+
+# Windows thumbnail db
+.DS_Store
+
+# IDEA/Android Studio project files, because
+# the project can be imported from settings.gradle
+.idea
+*.iml
+
+# Old-style IDEA project files
+*.ipr
+*.iws
+
+# Eclipse project files
+.classpath
+.project
+.settings
+.loadpath
+.recommenders
+.metadata
+*.tmp
+*.bak
+*.swp
+*~.nib
