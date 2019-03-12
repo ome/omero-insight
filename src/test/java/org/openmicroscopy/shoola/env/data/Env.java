@@ -108,52 +108,37 @@ public class Env
      * 
      * @return See above.
      */
-    public static String getOmeroUser()
-    { 
-        return getInstance().get(OMERO_USER); 
-    }
+    public static String getOmeroUser() { return getInstance().get(OMERO_USER); }
     
     /**
      * Returns the login password of the <i>OMEDS</i> test user.
      * 
      * @return See above.
      */
-    public static String getOmeroPass() 
-    { 
-        return getInstance().get(OMERO_PASS); 
-    }
+    public static String getOmeroPass() { return getInstance().get(OMERO_PASS); }
     
     /**
      * Returns the host to connect to <i>OMERO</i>.
      * 
      * @return See above.
      */
-    public static String getOmeroHost()
-    {
-        return getInstance().get(OMERO_HOST);
-    }
+    public static String getOmeroHost() { return getInstance().get(OMERO_HOST); }
     
     /**
      * Returns the port to connect to <i>OMERO</i>.
      * 
      * @return See above.
      */
-    public static String getOmeroPort()
-    {
-        return getInstance().get(OMERO_PORT);
-    }
+    public static String getOmeroPort() { return getInstance().get(OMERO_PORT); }
     
     /**
      * Returns the port to connect to <i>OMERO</i>.
      * 
      * @return See above.
      */
-    public static String getOmeroPortSSL()
-    {
-        return getInstance().get(OMERO_PORT_SSL);
-    }
+    public static String getOmeroPortSSL() { return getInstance().get(OMERO_PORT_SSL); }
     
-    /** Holds the the <i>OMEDS</i> tests configuration properties.  */
+    /** Holds the the <i>OMERO</i> tests configuration properties.  */
     private Properties  config;
     
     
@@ -165,7 +150,7 @@ public class Env
      */
     private Env() 
     {
-        String[] propName = {OMERO_USER, OMERO_PASS, OMERO_HOST, OMERO_PORT};
+        String[] propName = {OMERO_USER, OMERO_PASS, OMERO_HOST, OMERO_PORT, OMERO_PORT_SSL};
         config = new Properties();
         String value;
         for (int i = 0; i < propName.length; ++i) {
