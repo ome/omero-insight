@@ -207,20 +207,6 @@ public class OMEWikiComponent
 		b.setActionCommand(""+HYPERLINK);
 		b.setToolTipText(OMEWikiConstants.HYPERLINK_TOOLTIP);
 		toolBarActions.add(b);
-		
-		/*
-		b = new JButton(icons.getImageIcon(IconManager.IMAGE));
-		b.setToolTipText(OMEWikiConstants.IMAGE_TOOLTIP);
-		b.addActionListener(this);
-		b.setActionCommand(""+IMAGE);
-		toolBarActions.add(b);
-		b = new JButton(icons.getImageIcon(IconManager.FILE_EDITOR));
-		b.setToolTipText(OMEWikiConstants.PROTOCOL_TOOLTIP);
-		b.addActionListener(this);
-		b.setActionCommand(""+PROTOCOL);
-		UIUtilities.unifiedButtonLookAndFeel(b);
-		toolBarActions.add(b);
-		*/
 	}
 	
 	/**

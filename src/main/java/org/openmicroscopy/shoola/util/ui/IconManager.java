@@ -1,5 +1,4 @@
 /*
- * org.openmicroscopy.shoola.util.ui.IconManager
  *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
@@ -24,18 +23,12 @@
 package org.openmicroscopy.shoola.util.ui;
 
 
-//Java imports
-
 import java.awt.Image;
-import java.net.URL;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.openmicroscopy.shoola.util.ui.colourpicker.LookupTableIconUtil;
 
-//Third-party libraries
-
-//Application-internal dependencies
 
 /**
  * Provides the icons used by the util.ui package.
@@ -1071,8 +1064,8 @@ public class IconManager {
         relPaths[ROI_FOLDER_NOT_OWNER] = "roi_folder_user_icon.png";
         relPaths[LOOKUP_TABLE_24] = "lookuptable24.png";
         relPaths[LUTS] = "lookuptables.png";
-        relPaths[THUMBNAIL_ERROR_BLACK] = "thumbnail_error_black_96px.png";
-        relPaths[THUMBNAIL_LOADING_TIMER_BLACK] = "thumbnail_loading_timer_black_96px.png";
+        relPaths[THUMBNAIL_ERROR_BLACK] = "material_thumbnail_error_black_96px.png";
+        relPaths[THUMBNAIL_LOADING_TIMER_BLACK] = "material_thumbnail_loading_timer_black_96px.png";
     }
 
     /**

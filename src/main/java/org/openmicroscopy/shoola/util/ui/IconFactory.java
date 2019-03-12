@@ -1,5 +1,4 @@
 /*
- * org.openmicroscopy.shoola.util.ui.IconFactory
  *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006 University of Dundee. All rights reserved.
@@ -24,14 +23,8 @@
 package org.openmicroscopy.shoola.util.ui;
 
 
-//Java imports
-
 import java.net.URL;
 import javax.swing.ImageIcon;
-
-//Third-party libraries
-
-//Application-internal dependencies
 
 /**
  * We may not distribute the UI package with Shoola, so we have an internal
@@ -42,9 +35,6 @@ import javax.swing.ImageIcon;
  * @author Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
  * <a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
  * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $ $Date: $)
- * </small>
  * @since OME2.2
  */
 class IconFactory {
@@ -76,9 +66,12 @@ class IconFactory {
      * found or an image icon couldn't be created from that file.
      */
     static ImageIcon getIcon(String name) {
-        String path = getResourcePathname(name);
-        URL url = IconFactory.class.getResource(path);
-        return new ImageIcon(url);
+        try {
+            String path = getResourcePathname(name);
+            URL url = IconFactory.class.getResource(path);
+            return new ImageIcon(url);
+        } catch (Exception e) {}
+        return null;
     }
 
 }

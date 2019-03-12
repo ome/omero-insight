@@ -80,9 +80,6 @@ import org.openmicroscopy.shoola.util.ui.UIUtilities;
  * @author Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
  * <a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
  * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $Date: $)
- * </small>
  * @since OME3.0
  */
 public class ScreenLogin 
@@ -624,8 +621,6 @@ public class ScreenLogin
 		configButton.setContentAreaFilled(false);
 		IconManager icons = IconManager.getInstance();
 		configButton.setIcon(icons.getIcon(IconManager.CONFIG_24));
-		//configButton.setPressedIcon(icons.getImageIcon(
-		//		IconManager.CONFIG_PRESSED_24));
 		
 		encrypted = !isEncrypted();
 		encryptedButton = new JButton();

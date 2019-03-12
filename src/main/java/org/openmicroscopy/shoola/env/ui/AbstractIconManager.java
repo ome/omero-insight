@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.env.ui.AbstractIconManager
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006 University of Dundee. All rights reserved.
  *
@@ -23,16 +21,11 @@
 
 package org.openmicroscopy.shoola.env.ui;
 
-//Java imports
-
-import java.awt.*;
+import java.awt.Image;
 import java.net.URL;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-//Third-party libraries
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.config.IconFactory;
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.util.ui.IconManager;
@@ -77,9 +70,6 @@ import org.openmicroscopy.shoola.util.ui.IconManager;
  * <a href="mailto:a.falconi@dundee.ac.uk">
  * a.falconi@dundee.ac.uk</a>
  * @version 2.2
- * <small>
- * (<b>Internal version:</b> $Revision$ $Date$)
- * </small>
  * @since OME2.2
  */
 public abstract class AbstractIconManager {
@@ -89,8 +79,6 @@ public abstract class AbstractIconManager {
      * We cache it as this icon is used in basically every top-level UI.
      */
     private static final ImageIcon OME_ICON = createIcon("/images/env/omero16.png");
-
-    private final String baseResourceDir = null;
 
     /**
      * Returns the <i>OME</i> logo to be used for title-bars.

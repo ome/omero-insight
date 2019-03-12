@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.env.ui.IconManager
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2013 University of Dundee. All rights reserved.
  *
@@ -23,17 +21,12 @@
 
 package org.openmicroscopy.shoola.env.ui;
 
-//Java imports
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
-//Third-party libraries
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.Registry;
-
-import static org.openmicroscopy.shoola.util.image.geom.Factory.createIcon;
 
 /**
  * Provides the icons used by the container.
