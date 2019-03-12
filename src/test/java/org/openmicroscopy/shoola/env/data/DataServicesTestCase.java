@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.env.data.DataServicesTestCase
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006 University of Dundee. All rights reserved.
  *
@@ -24,12 +22,8 @@
 package org.openmicroscopy.shoola.env.data;
 
 
-//Java imports
-
-//Third-party libraries
 import junit.framework.TestCase;
 
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.Registry;
@@ -63,23 +57,23 @@ import org.openmicroscopy.shoola.env.init.UserNotifierInit;
  * <p>This class conveniently inherits from <code>TestCase</code> so that a 
  * Data Services test case can be run by JUnit.  The JUnit's hook method 
  * {@link #setUp() setUp} is overridden to factor out the functionality common
- * to all test cases &#151; so sublcasses should first call <code>super.setUp()
+ * to all test cases &#151; so subclasses should first call <code>super.setUp()
  * </code> if they override this method too.</p>
  * <p>Altough you write a Data Services test case as a regular JUnit test case,
  * there are several things to keep in mind, regarding the test environment:</p>
  * <ul>
- *  <li><b>OMEDS</b>.  A live instance of <i>OMEDS</i> is needed by the 
+ *  <li><b>OMERO</b>.  A live instance of <i>OMERO</i> is needed by the
  *   underlying Data Services.  So a Data Services test case depends on
  *   <i>external</i> resources.</li>
- *  <li><b>OMEDS Connnection</b>.  The connection to the server is managed
+ *  <li><b>OMERO Connection</b>.  The connection to the server is managed
  *   transparently by the Login Service, which operates in test mode &#151;
  *   see {@link org.openmicroscopy.shoola.env.data.login.BatchLoginService}.
  *   (So no UI is ever brought on screen to ask for user's credentials, which
  *   are specified through system properties &#151; along with the server's
  *   address, see {@link Env}.)  The <i>connection</i> is used for all tests  
  *   in a session.  Note that if a test fails because of an invalid link to 
- *   <i>OMEDS</i>, the Login Service will try reestablishing a valid link under
- *   the hood and so the next test may run just fine.  However, if a vaild link
+ *   <i>OMERO</i>, the Login Service will try reestablishing a valid link under
+ *   the hood and so the next test may run just fine.  However, if a valid link
  *   can't be reestablished (for example, a permanent network failure) then all
  *   subsequent tests will obviously fail.</li>
  *  <li><b>Container</b>.  It's started in test mode and the only available
@@ -93,10 +87,10 @@ import org.openmicroscopy.shoola.env.init.UserNotifierInit;
  *   single thread, which is the same as the one in which JUnit is run.
  *   (Even the Data Services Views use this thread.)  So a Data Services test
  *   case is single-threaded &#151; unless you explicitly spawn other threads,
- *   which we reccommend you <i>don't</i> do.</li>
+ *   which we recommend you <i>don't</i> do.</li>
  * </ul>
  * <p>Finally some guidelines to run Data Services test cases.  First off, you
- * should set up a test <i>OMEDS</i> instance, which in turn runs on a test DB.
+ * should set up a test <i>OMERO</i> instance, which in turn runs on a test DB.
  * This is the server that you're then going to use for the Data Services tests.
  * Second, run all the Data Services tests together in a separate JVM process.
  * This is a good idea because of the dependency on external resources and
@@ -109,16 +103,13 @@ import org.openmicroscopy.shoola.env.init.UserNotifierInit;
  * 				<a href="mailto:a.falconi@dundee.ac.uk">
  * 					a.falconi@dundee.ac.uk</a>
  * @version 2.2
- * <small>
- * (<b>Internal version:</b> $Revision$ $Date$)
- * </small>
  * @since OME2.2
  */
 public abstract class DataServicesTestCase
     extends TestCase
 {
 
-    /** The singleton Container shrared among all test cases. */
+    /** The singleton Container shared among all test cases. */
     private static Container    container;
     
     
@@ -134,7 +125,7 @@ public abstract class DataServicesTestCase
         FakeInitializer.replaceInitTask(ContainerConfigInit.class,
                                         NullContainerConfigInit.class);
         
-        //Iinitialize Data Services so that they connect to the server address
+        //Initialize Data Services so that they connect to the server address
         //Env and use a SyncBatchCallMonitor in asynchronous calls.
         FakeInitializer.replaceInitTask(DataServicesInit.class,
                                         DataServicesTestsInit.class);
@@ -174,13 +165,13 @@ public abstract class DataServicesTestCase
      */
     private static void ensureInit() 
     {
-        if (container != null) return;  //Already intialized.
+        if (container != null) return;  //Already initialized.
 
         //Create the Container.
         reconfigureInitProc();
         container = Container.startupInTestMode("");  //home is irrelevant here.
         
-        //Now we're ready to log onto OMEDS for the first time.
+        //Now we're ready to log onto OMERO for the first time.
         UserCredentials uc = new UserCredentials(Env.getOmeroUser(), 
                                                  Env.getOmeroPass(),
                                                  Env.getOmeroHost(),
