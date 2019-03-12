@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.env.cache.CacheServiceFactory 
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2008 University of Dundee. All rights reserved.
  *
@@ -23,12 +21,8 @@
 package org.openmicroscopy.shoola.env.cache;
 
 
-//Java imports
 import java.io.InputStream;
 
-//Third-party libraries
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.Registry;
@@ -69,7 +63,7 @@ public class CacheServiceFactory
 		//If caching is off, then we return the no-op adapter.
 		Registry reg = container.getRegistry();
 		Boolean isCachingOn = (Boolean) reg.lookup(LookupNames.CACHE_ON);
-		if (!isCachingOn.booleanValue()) return makeNoOpCache();
+		if (isCachingOn == null || !isCachingOn.booleanValue()) return makeNoOpCache();
 		
 		//Ok we have to cache, so try and read the config file.
 		InputStream config = loadConfig(
