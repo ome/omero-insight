@@ -27,8 +27,6 @@ dependencies {
     implementation("org.apache.httpcomponents:httpmime:4.5.7")
     implementation("org.apache.httpcomponents:httpclient:4.5.7")
     implementation("org.apache.httpcomponents:httpcomponents-client:4.5.7")
-
-    // implementation("org.jhotdraw:jhotdraw:jhotdraw-7.5.1")
 }
 
 application {
