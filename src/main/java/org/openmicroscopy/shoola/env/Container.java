@@ -1,5 +1,4 @@
 /*
- * org.openmicroscopy.shoola.env.Container
  *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
@@ -43,8 +42,6 @@ import org.openmicroscopy.shoola.env.event.AgentEvent;
 import org.openmicroscopy.shoola.env.event.AgentEventListener;
 import org.openmicroscopy.shoola.env.init.Initializer;
 import org.openmicroscopy.shoola.env.init.StartupException;
-import org.openmicroscopy.shoola.util.file.IOUtil;
-import org.openmicroscopy.shoola.util.ui.UIUtilities;
 
 /** 
  * Oversees the functioning of the whole container, holds the container's
@@ -65,10 +62,7 @@ import org.openmicroscopy.shoola.util.ui.UIUtilities;
  * @author  <br>Andrea Falconi &nbsp;&nbsp;&nbsp;&nbsp;
  * 				<a href="mailto:a.falconi@dundee.ac.uk">
  * 					a.falconi@dundee.ac.uk</a>
- * @version 2.2 
- * <small>
- * (<b>Internal version:</b> $Revision$ $Date$)
- * </small>
+ * @version 2.2
  * @since OME2.2
  */
 public final class Container
@@ -499,7 +493,7 @@ public final class Container
             if (se.getPlugin() != null)
             	throw se;
             throw new RuntimeException(
-		             "Failed to intialize the Container in plugin mode.", se);
+		             "Failed to initialize the Container in plugin mode.", se);
         }
         return singleton;
     }
@@ -559,10 +553,11 @@ public final class Container
             if (se.getPlugin() != null)
             	throw se;
             throw new RuntimeException(
-                    "Failed to intialize the Container in headless mode.", se);
+                    "Failed to initialize the Container in headless mode.", se);
         }
         return singleton;
     }
+
     /**
      * Entry point to launch the container and bring up the whole client
      * in the same thread as the caller's.
@@ -631,7 +626,7 @@ public final class Container
             if (initManager != null) initManager.rollback();
             singleton = null;
             throw new RuntimeException(
-                    "Failed to intialize the Container in test mode.", se);
+                    "Failed to initialize the Container in test mode.", se);
         }
         return singleton;
     }
