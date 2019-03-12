@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.env.init.FakeAgentsInit
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006 University of Dundee. All rights reserved.
  *
@@ -24,18 +22,14 @@
 package org.openmicroscopy.shoola.env.init;
 
 
-//Java imports
 import java.util.ArrayList;
 import java.util.List;
 
-//Third-party libraries
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.Registry;
 
 /** 
- * Fake intialization task.
+ * Fake initialization task.
  * Binds the container's registry to the agents list specified by its
  * static field.
  *
@@ -45,9 +39,6 @@ import org.openmicroscopy.shoola.env.config.Registry;
  * 				<a href="mailto:a.falconi@dundee.ac.uk">
  * 					a.falconi@dundee.ac.uk</a>
  * @version 2.2
- * <small>
- * (<b>Internal version:</b> $Revision$ $Date$)
- * </small>
  * @since OME2.2
  */
 public class FakeAgentsInit
