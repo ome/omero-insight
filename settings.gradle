@@ -5,10 +5,4 @@ pluginManagement {
     }
 }
 
-sourceControl {
-    gitRepository("https://git.code.sf.net/p/jhotdraw/git") {
-        producesModule("org.jhotdraw:jhotdraw")
-    }
-}
-
 rootProject.name = "omero-insight"
