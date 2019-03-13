@@ -37,6 +37,12 @@ run {
     args = ["container.xml", "${project.buildDir}"]
 }
 
+task(runImporter, dependsOn: 'classes', type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "org.openmicroscopy.shoola.Main"
+    args = ["containerImporter.xml", "${project.buildDir}"]
+}
+
 distributions {
     main {
         contents {
