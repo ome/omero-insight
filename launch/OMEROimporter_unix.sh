@@ -40,4 +40,4 @@ fi
 CLIENTS_HOME="$(dirname "$CLIENTS_HOME")"
 
 cd "$CLIENTS_HOME"
-java -Xms256000000 -Xmx1024000000 -jar omero.insight.jar containerImporter.xml
+java -Xms256000000 -Xmx1024000000 -jar omero-insight.jar containerImporter.xml
