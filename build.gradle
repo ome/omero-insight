@@ -64,5 +64,12 @@ test {
     systemProperties["omero.host"] = "localhost"
     systemProperties["omero.port"] = "4064"
     systemProperties["omero.portSSL"] = "4063"
+    filter {
+        // Exclude the tests related to 239dc7fe9b000e6ceb0457b30a87569ec0619cfc
+        // When we revert the above commit, the exclusion should be removed
+        excludeTestsMatching "TestExecCommandStateTrans.testCancelWhenCancelled"
+        excludeTestsMatching "TestExecCommandStateTrans.testRunWhenCancelled"
+        excludeTestsMatching "TestExecCommandStateTrans.testExecutingCancelled"
+    }
 }
 
