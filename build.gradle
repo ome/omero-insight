@@ -12,21 +12,21 @@ repositories {
 dependencies {
     testImplementation("junit:junit:4.12")
 
-    implementation("org.openmicroscopy:omero-blitz:5.5.0-SNAPSHOT")
-    implementation("insight:JHotDraw:7.0.9")
-    implementation("org.jfree:jfreechart:1.0.19")
-    implementation("org.swinglabs.swingx:swingx-core:1.6.5-1")
-    implementation("net.imagej:ij:1.48s")
-    implementation("info.clearthought:table-layout:4.3.0")
     implementation("com.mortennobel:java-image-scaling:0.8.6")
-    implementation("net.java.dev.jna:jna-platform:5.2.0")
-    implementation("com.zeroc:glacier2:3.6.4")
     implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.zeroc:glacier2:3.6.4")
+    implementation("info.clearthought:table-layout:4.3.0")
+    implementation("insight:JHotDraw:7.0.9")
+    implementation("net.imagej:ij:1.48s")
+    implementation("net.java.dev.jna:jna-platform:5.2.0")
     implementation("org.apache.poi:poi:4.0.1")
     implementation("org.apache.commons:commons-collections4:4.3")
     implementation("org.apache.httpcomponents:httpmime:4.5.7")
     implementation("org.apache.httpcomponents:httpclient:4.5.7")
     implementation("org.apache.httpcomponents:httpcomponents-client:4.5.7")
+    implementation("org.jfree:jfreechart:1.0.19")
+    implementation("org.openmicroscopy:omero-blitz:5.5.0-SNAPSHOT")
+    implementation("org.swinglabs.swingx:swingx-core:1.6.5-1")
 }
 
 application {
@@ -55,3 +55,14 @@ task processConfig(type: Copy) {
 }
 
 classes.dependsOn processConfig
+
+test {
+    testLogging.showStandardStreams = true
+    systemProperties = System.getProperties()
+    systemProperties["omero.user"] = "user"
+    systemProperties["omero.pass"] = "changeMe"
+    systemProperties["omero.host"] = "localhost"
+    systemProperties["omero.port"] = "4064"
+    systemProperties["omero.portSSL"] = "4063"
+}
+
