@@ -1,0 +1,23 @@
+plugins {
+    id "groovy"
+    id "java-gradle-plugin"
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+dependencies {
+    implementation "commons-io:commons-io:2.6"
+    implementation "org.openmicroscopy:omero-javapackager-plugin:5.5.0-SNAPSHOT"
+}
+
+gradlePlugin {
+    plugins {
+        insight {
+            id = "org.openmicroscopy.insight"
+            implementationClass = "org.openmicroscopy.InsightPlugin"
+        }
+    }
+}

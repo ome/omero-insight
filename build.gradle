@@ -1,22 +1,28 @@
 plugins {
     id "java"
-    id "application"
-    id "org.openmicroscopy.project" version "5.5.0-m5"
+    id "org.openmicroscopy.insight"
+    id "org.openmicroscopy.additional-repositories" version "5.5.0-m5"
 }
 
 group = "org.openmicroscopy"
 version = "5.5.0-SNAPSHOT"
-targetCompatibility = JavaVersion.VERSION_1_8
-sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenLocal()
     jcenter()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 dependencies {
     testImplementation("junit:junit:4.12")
 
+    if (JavaVersion.current().isJava9Compatible()) {
+        implementation('com.sun.activation:javax.activation:1.2.0')
+    }
     implementation("com.mortennobel:java-image-scaling:0.8.6")
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.zeroc:glacier2:3.6.4")
@@ -30,98 +36,10 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient:4.5.7")
     implementation("org.apache.httpcomponents:httpcomponents-client:4.5.7")
     implementation("org.jfree:jfreechart:1.0.19")
+    implementation("org.swinglabs.swingx:swingx-core:1.6.5-1")
+
     implementation("org.openmicroscopy:omero-blitz:5.5.0-m5")
-    implementation("org.swinglabs:swingx:1.6.1")
-    if (JavaVersion.current().isJava9Compatible()) {
-        implementation("javax.activation:activation:1.1.1")
-    }
 }
-
-application {
-    mainClassName = "org.openmicroscopy.shoola.Main"
-    applicationDefaultJvmArgs = ["-Xms256m", "-Xmx1024m"]
-}
-
-run {
-    args = ["container.xml", "${project.buildDir}"]
-}
-
-// Run the importer task
-task runImporter(dependsOn: 'classes', type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath
-    main = "org.openmicroscopy.shoola.Main"
-    args = ["containerImporter.xml", "${project.buildDir}"]
-    applicationDefaultJvmArgs = ["-Xms256m", "-Xmx1024m"]
-}
-
-// Create the jar for imageJ plugin
-task omeroijJar(dependsOn: 'classes', type: Jar) {
-    archiveBaseName = "omero_ij"
-    from sourceSets.main.output
-    manifest = project.manifest {
-        attributes("Main-Class": "org.openmicroscopy.shoola.MainIJPlugin")
-        from(jar.manifest) {
-            eachEntry { details ->
-                if (details.baseValue != details.mergeValue && details.baseValue != null) {
-                    details.value = baseValue
-                } else {
-                    details.value = details.mergeValue
-                }
-            }
-        }
-    }
-
-}
-
-
-// Set the mainclass in the manifest
-jar {
-    manifest {
-        attributes("Main-Class": application.mainClassName)
-    }
-}
-
-
-artifacts {
-    archives omeroijJar
-}
-
-distributions {
-
-    main {
-        contents {
-            from("src/config") {
-                into "config"
-            }
-        }
-    }
-    // prepare imagej.zip
-    imagej {
-        contents {
-            from("src/config") {
-                into "config"
-            }
-            from omeroijJar
-            into('lib') {
-                from configurations.compileClasspath
-            }
-        }
-
-    }
-}
-
-tasks.withType(Tar) {
-    enabled = false
-}
-
-// N.B. processConfig may not be fully required if you just set the second
-// run task arg as ${project.projectDir}/src/config
-task processConfig(type: Copy) {
-    from "src/config"
-    into "${project.buildDir}/config"
-}
-
-classes.dependsOn processConfig
 
 test {
     testLogging.showStandardStreams = true
