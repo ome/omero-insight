@@ -79,6 +79,7 @@ artifacts {
 }
 
 distributions {
+
     main {
         contents {
             from("src/config") {
@@ -86,6 +87,23 @@ distributions {
             }
         }
     }
+    // prepare imagej.zip
+    imagej {
+        contents {
+            from("src/config") {
+                into "config"
+            }
+            from omeroijJar
+            into('lib') {
+                from configurations.compileClasspath
+            }
+        }
+
+    }
+}
+
+tasks.withType(Tar) {
+    enabled = false
 }
 
 // N.B. processConfig may not be fully required if you just set the second
@@ -113,4 +131,3 @@ test {
         excludeTestsMatching "TestExecCommandStateTrans.testExecutingCancelled"
     }
 }
-
