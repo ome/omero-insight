@@ -46,6 +46,38 @@ task runImporter(dependsOn: 'classes', type: JavaExec) {
     applicationDefaultJvmArgs = ["-Xms256m", "-Xmx1024m"]
 }
 
+// Create the jar for imageJ plugin
+task omeroijJar(dependsOn: 'classes', type: Jar) {
+    archiveBaseName = "omero_ij"
+    from sourceSets.main.output
+    manifest = project.manifest {
+        attributes("Main-Class": "org.openmicroscopy.shoola.MainIJPlugin")
+        from (jar.manifest) {
+            eachEntry { details ->
+                if (details.baseValue != details.mergeValue && details.baseValue != null) {
+                    details.value = baseValue
+                } else {
+                    details.value = details.mergeValue
+                }
+            }
+        }
+    }
+
+}
+
+
+// Set the mainclass in the manifest
+jar {
+    manifest {
+        attributes("Main-Class": application.mainClassName)
+    }
+}
+
+
+artifacts {
+    archives omeroijJar
+}
+
 distributions {
     main {
         contents {
