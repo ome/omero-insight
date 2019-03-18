@@ -12,3 +12,12 @@ install:
 
 script:
   - ./gradlew build
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file_glob: true
+  file: build/distributions/*
+  skip_cleanup: true
+  on:
+    tags: true
