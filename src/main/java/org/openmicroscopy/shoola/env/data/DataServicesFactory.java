@@ -103,9 +103,6 @@ public class DataServicesFactory
 	/** Flag indicating that the client and server are not compatible.*/
 	private boolean compatible;
 
-    /** Flag indicating that if the upgrade check has been performed or not.*/
-    private boolean upgradeCheck = false;
-
 	/**
 	 * Creates a new instance. This can't be called outside of container 
 	 * b/c agents have no references to the singleton container.
@@ -228,80 +225,7 @@ public class DataServicesFactory
                 return RenderingControl.LOW;
         }
     }
-	
-    /**
-     * Returns <code>true</code> if the server and the client are compatible,
-     * <code>false</code> otherwise. Return <code>null</code> if an error
-     * occurred while comparing the versions and the user does not want to
-     * connect.
-     * 
-     * @param server The version of the server.
-     * @param client The version of the client.
-     * @return See above.
-     */
-    private Boolean checkClientServerCompatibility(String server, String client)
-    {
-    	if (server == null || client == null) return false;
-    	if (client.startsWith("@")) return true;
-    	if (server.contains("-"))
-    		server = server.split("-")[0];
-    	if (client.contains("-"))
-    		client = client.split("-")[0];
-    	String[] values = server.split("\\.");
-    	String[] valuesClient = client.split("\\.");
-    	if (values.length < 2 || valuesClient.length < 2) return false;
-    	try {
-    		int s1 = Integer.parseInt(values[0]);
-        	int s2 = Integer.parseInt(values[1]);
-        	int c1 = Integer.parseInt(valuesClient[0]);
-        	int c2 = Integer.parseInt(valuesClient[1]);
-        	if (s1 < c1) return false;
-        	if (s2 != c2) return false;
-		} catch (Exception e) {
-			//Record error
-			LogMessage msg = new LogMessage();
-			msg.print("Client server compatibility");
-			msg.print(e);
-			registry.getLogger().debug(this, msg);
-			//Notify user that it is not possible to parse
-			String message = "An error occurred while checking " +
-					"the compatibility between client and server." +
-					"\nDo you " +
-					"still want to connect (further errors might occur)?";
-			JFrame f = new JFrame();
-			f.setIconImage(AbstractIconManager.getOMEImageIcon());
-			MessageBox box = new MessageBox(f, "Version Check", message);
-			box.setAlwaysOnTop(true);
-			if (box.centerMsgBox() == MessageBox.YES_OPTION) {
-				return true;
-			}
-			return null;
-		}
-    	
-    	return true;
-    }
-    
-    /** 
-     * Notifies the user that the client and the server are not compatible.
-     * 
-     * @param clientVersion The version of the client.
-     * @param serverVersion The version of the server.
-     * @param hostname The name of the server.
-     */
-    private void notifyIncompatibility(String clientVersion,
-    		String serverVersion, String hostname)
-    {
-    	UserNotifier un = registry.getUserNotifier();
-    	StringBuffer buffer = new StringBuffer();
-    	buffer.append("The client version ("+clientVersion+") is not " +
-    			"compatible with the server:\n"+hostname);
-    	if (serverVersion != null) {
-    		buffer.append(" version:"+serverVersion);
-    	}
-    	buffer.append(".");
-    	un.notifyInfo("Client Server not compatible", buffer.toString());
-    }
-    
+
     /**
      * Returns the credentials.
      * 
@@ -576,18 +500,6 @@ public class DataServicesFactory
     	}
         //Check if client and server are compatible.
         String version = omeroGateway.getServerVersion();
-        Boolean check = checkClientServerCompatibility(version, clientVersion);
-        if (check == null) {
-        	compatible = false;
-        	omeroGateway.logout();
-        	return;
-        }
-        if (!check.booleanValue()) {
-        	compatible = false;
-        	notifyIncompatibility(clientVersion, version, uc.getHostName());
-        	omeroGateway.logout();
-        	return;
-        }
 
         // TODO: Can be removed for >= 5.5.0 release
         container.getRegistry().bind(LookupNames.SERVER_5_4_8_OR_LATER, VersionCompare.compare(version, "5.4.8") >= 0);
