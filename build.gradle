@@ -26,7 +26,7 @@ dependencies {
     implementation("org.apache.httpcomponents:httpcomponents-client:4.5.7")
     implementation("org.jfree:jfreechart:1.0.19")
     implementation("org.openmicroscopy:omero-blitz:5.5.0-m4")
-    implementation("org.swinglabs.swingx:swingx-core:1.6.5-1")
+    implementation("org.swinglabs:swingx:1.6.1")
 }
 
 application {
