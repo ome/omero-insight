@@ -1,8 +1,6 @@
 /*
- * org.openmicroscopy.shoola.MainIJPlugin 
- *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2014 University of Dundee & Open Microscopy Environment.
+ *  Copyright (C) 2006-2019 University of Dundee & Open Microscopy Environment.
  *  All rights reserved.
  *
  *
@@ -24,7 +22,6 @@
 package org.openmicroscopy.shoola;
 
 
-//Java imports
 import java.awt.BorderLayout;
 import java.awt.Menu;
 import java.awt.MenuItem;
@@ -39,6 +36,8 @@ import java.io.IOException;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -51,18 +50,13 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 
-
-
-//Third-party libraries
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.BrowserLauncher;
 import ij.plugin.PlugIn;
+import ij.plugin.frame.Recorder;
 
 
-
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.PluginInfo;
@@ -219,6 +213,65 @@ implements PlugIn
                     IJ.log("Cannot listen to the Quit action of the menu.");
             }
         }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static String getSessionId() {
+        Recorder recorder = Recorder.getInstance();
+        String text = recorder.getText();
+        String lines[] = text.split("\\r?\\n");
+        String session = null;
+        int index = 0;
+        int n = lines.length;
+        while (session == null || index >= n) {
+            String cmd = lines[index];
+            String[] values = cmd.split(":");
+            if (values.length == 2) {
+                String key = values[0];
+                if (key.trim().equals("omero.session")) {
+                    //remove recorder stuff
+                    session  = values[1].trim().replace("();", "");
+                }
+            }
+            index++;
+        }
+        return session;
+    }
+
+    public static Map getSelectedObjects() {
+        Recorder recorder = Recorder.getInstance();
+        String text = recorder.getText();
+        String lines[] = text.split("\\r?\\n");
+        String[] ids = null;
+        String type = null;
+        int index = 1;
+        int n = lines.length;
+        while (ids == null && index < n) {
+            String cmd = lines[lines.length-index];
+            String[] values = cmd.split(":");
+
+            if (values.length == 2) {
+                String key = values[0];
+                if (key.trim().equals("omero.object")) {
+                    //remove recorder stuff
+                    String objects = values[1].trim().replace("();", "");
+                    String[] items = objects.split("=");
+                    type = items[0];
+                    ids = items[1].split(",");
+                }
+            }
+            index++;
+        }
+        Map results = new HashMap();
+        List<Long> p = new ArrayList<Long>();
+        for (int i = 0; i < ids.length; i++) {
+            p.add(Long.valueOf(ids[i]));
+;       }
+        results.put(type, p);
+        return results;
     }
 
     /**
