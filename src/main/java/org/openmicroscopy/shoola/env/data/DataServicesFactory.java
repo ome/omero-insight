@@ -488,7 +488,11 @@ public class DataServicesFactory
         cred.setCheckNetwork(true);
         cred.setCompression(determineCompression(uc.getSpeedLevel()));
         cred.setEncryption(uc.isEncrypted());
-        ExperimenterData exp = omeroGateway.connect(cred);
+        
+		ExperimenterData exp = omeroGateway.connect(cred);
+		//Record the session key if run as plugin
+        String sessionId = omeroGateway.getSessionId(exp);
+        ij.plugin.frame.Recorder.record("omero.session:"+sessionId);
 
 		//check client server version
 		compatible = true;

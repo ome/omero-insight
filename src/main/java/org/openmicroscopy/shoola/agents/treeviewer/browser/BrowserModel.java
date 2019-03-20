@@ -253,6 +253,19 @@ class BrowserModel
     		if (!selectedNodes.contains(display) && display != null)
     			selectedNodes.add(display);
     	}
+        if (TreeViewerAgent.isRunAsPlugin() && selectedNodes.size() > 0) {
+            Iterator<TreeImageDisplay> i = selectedNodes.iterator();
+            String record = "omero.object:";
+            String type = "";
+            String ids = "";
+            while (i.hasNext()) {
+                TreeImageDisplay d = i.next();
+                type = d.getUserObject().getClass().getName();
+                ids += d.getUserObjectId()+",";
+            }
+            record +=type+"="+ids;
+            ij.plugin.frame.Recorder.record(record);
+        }
     }
     
     /**
