@@ -23,7 +23,6 @@
   OMERO.insight is completely written in Java.
 
 
-
   Directory Contents
   ------------------
 
@@ -33,45 +32,44 @@
     + build: This directory contains the tools to compile, run, test, and
           deliver the application.
     + config: Various configuration files required by the application to run.
-    + launch: Launcher scripts and installation instructions bundled with the
-          default application distribution file. Its sub-dirs contain further
-          resources to build platform-specific distributions.
-    + SRC: Contains the application source files.
-    + TEST: The test code.
+    + launch: Its sub-dirs contain further resources to build platform-specific distributions.
+    + src: Contains the application source files.
+    + test: The test code.
     + README: This file.
-
-
 
   Building OMERO.insight
   ----------------------
 
   The compilation, testing, launch, and delivery of the application are
-  automated by means of an Ant (http://ant.apache.org/) build file, located
-  under the build directory. In order to perform a build, all you need is
-  a JDK -- version 1.8 or later. Move to the build directory and, from the
-  command line, enter:
+  automated by means of a Gradle (https://gradle.org/) build file.
+  In order to perform a build, all you need is
+  a JDK -- version 1.8 or later. From the command line, enter:
   
-      java build
+      gradle build
   
-  This will display the available targets to compile, run, test, and create a
-  distribution bundle. Use the target you wish, for example:
-  
-     java build all
-  
-  Because all the tools needed to build the software are already included in
-  the build directory, you don't need to have Ant on your machine.
-  If you wish to use Ant instead, you can still do it by using the build.xml
-  file under the build directory. However, there are some dependencies to
-  satisfy before; these are clearly documented in the build.xml file itself.
+  This will compile, build, test and create a distribution bundle.
+  To run OMERO.insight from the distribution bundle. Unzip omero-insight.zip,
+  go to the omero-insight directory, from the command line, enter for example:
 
+     bin/omero-insight
+
+  To run the OMERO.importer, enter:
+
+     bin/omero-insight containerImporter.xml
+
+  To run OMERO.insight, from the command line, enter:
+
+      gradle run
+
+  To run OMERO.importer, from the command line, enter:
+
+        gradle runImporter
 
 
   Developing OMERO.insight
   ------------------------
 
   See https://docs.openmicroscopy.org/latest/omero/developers/index.html#insight
-
-
 
   Licensing
   ---------
@@ -82,10 +80,7 @@
   https://www.openmicroscopy.org/licensing/ for further details.
 
 
-
   Copyright
   ---------
 
-  Copyright (C) 2006-2014 University of Dundee. All rights reserved.
-
-
+  Copyright (C) 2006-2019 University of Dundee. All rights reserved.
