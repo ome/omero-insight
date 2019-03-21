@@ -4,6 +4,11 @@ plugins {
     id "org.openmicroscopy.project" version "5.5.0-m4"
 }
 
+group = "org.openmicroscopy"
+version = "5.5.0-SNAPSHOT"
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+
 repositories {
     mavenLocal()
     jcenter()
@@ -52,7 +57,7 @@ task omeroijJar(dependsOn: 'classes', type: Jar) {
     from sourceSets.main.output
     manifest = project.manifest {
         attributes("Main-Class": "org.openmicroscopy.shoola.MainIJPlugin")
-        from (jar.manifest) {
+        from(jar.manifest) {
             eachEntry { details ->
                 if (details.baseValue != details.mergeValue && details.baseValue != null) {
                     details.value = baseValue
