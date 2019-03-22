@@ -1,0 +1,23 @@
+settingsEvaluated {
+    it.pluginManagement {
+        repositories {
+            maven {
+                url System.getenv("ARTIFACTORY_URL") ?: 'https://artifacts.openmicroscopy.org/artifactory/maven/'
+            }
+            maven {
+                url System.getenv("GITLAB_URL") ?: 'https://artifacts.openmicroscopy.org/artifactory/maven/'
+            }
+            maven {
+                url System.getenv("MAVEN_RELEASES_REPO_URL") ?: 'https://artifacts.openmicroscopy.org/artifactory/maven/'
+            }
+            maven {
+                url System.getenv("MAVEN_SNAPSHOTS_REPO_URL") ?: 'https://artifacts.openmicroscopy.org/artifactory/maven/'
+            }
+            gradlePluginPortal()
+        }
+    }
+}
+
+// Use a local m2 repo to ensure a clean build
+// Disabled due to broken SNAPSHOT handling.
+// System.setProperty("maven.repo.local", System.getProperty("user.dir") + "/m2/repository")
