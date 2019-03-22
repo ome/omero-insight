@@ -24,6 +24,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh 'gradle --init-script init-ci.gradle publish'
+                archiveArtifacts artifacts: 'build/distributions/*.zip'
             }
         }
     }
