@@ -32,7 +32,9 @@ dependencies {
     implementation("org.jfree:jfreechart:1.0.19")
     implementation("org.openmicroscopy:omero-blitz:5.5.0-m4")
     implementation("org.swinglabs:swingx:1.6.1")
-    implementation("javax.activation:activation:1.1.1")
+    if (JavaVersion.current().isJava9Compatible()) {
+        implementation("javax.activation:activation:1.1.1")
+    }
 }
 
 application {
