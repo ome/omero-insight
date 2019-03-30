@@ -206,7 +206,7 @@ public interface Renderer
     //CodomainMapContext getCodomainMapContext(Class mapType);
 
     /**
-     * Fired if the color model has been changed from RGB -> Greyscale or
+     * Fired if the color model has been changed from RGB &rarr; Greyscale or
      * vice versa.
      */
     void setColorModelChanged();

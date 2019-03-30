@@ -310,7 +310,7 @@ extends BatchCallTree
      * 
      * @param ctx The security context.
      * @param rootNodeType The type of nodes. Can either be 
-     *                      code>ImageData</code>, <code>DatasetData</code>, 
+     *                      <code>ImageData</code>, <code>DatasetData</code>,
      *                      <code>ProjectData</code>, <code>ScreenData</code>,
      *                      <code>PlateData</code>.
      * @param ids The nodes to apply settings to. Mustn't be <code>null</code>.
@@ -332,7 +332,7 @@ extends BatchCallTree
      * @param ctx The security context.
      * @param pixelsID The id of the pixels set of reference.
      * @param rootNodeType The type of nodes. Can either be 
-     *                     code>ImageData</code>, <code>DatasetData</code>.
+     *                     <code>ImageData</code>, <code>DatasetData</code>.
      * @param ids The nodes to apply settings to. Mustn't be <code>null</code>.
      */
     public RenderingSettingsSaver(SecurityContext ctx, long pixelsID,

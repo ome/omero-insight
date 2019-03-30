@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.util.ui.ColouredButton
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
  *
@@ -23,8 +21,6 @@
 
 package org.openmicroscopy.shoola.util.ui;
 
-
-//Java imports
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -33,9 +29,6 @@ import javax.swing.DefaultButtonModel;
 import javax.swing.JButton;
 
 
-//Third-party libraries
-
-//Application-internal dependencies
 
 /** 
  * Customized button used to select the rendered channel.
@@ -45,9 +38,6 @@ import javax.swing.JButton;
  * @author	Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
  * 				<a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
  * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $ $Date: $)
- * </small>
  * @since OME2.2
  */
 public class ColouredButton
@@ -187,8 +177,8 @@ public class ColouredButton
 	}
 
 	/**
-	 * Overridden. Does nothing as it's overwritten by L&F and breaks the 
-	 * colored button.
+	 * Overridden. Does nothing as it's overwritten by the Look And Feel
+	 * and breaks the colored button.
 	 * @see javax.swing.JComponent#setBackground(Color)
 	 */
 	public void setBackground(Color c) {}

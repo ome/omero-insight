@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.env.init.SplashScreenInit
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
  *
@@ -34,7 +32,7 @@ import org.openmicroscopy.shoola.env.ui.UserNotifier;
 
 /** 
  * Does some configuration required for the initialization process to run.
- * Loads L&F, registers for initialization progress notification and
+ * Loads the Look And Feel, registers for initialization progress notification and
  * pops up the splash screen. When the initialization process is finished,
  * we wait until user's credentials are available and then try to log into
  * <i>OMEDS</i>.
@@ -44,10 +42,7 @@ import org.openmicroscopy.shoola.env.ui.UserNotifier;
  * @author  <br>Andrea Falconi &nbsp;&nbsp;&nbsp;&nbsp;
  * 				<a href="mailto:a.falconi@dundee.ac.uk">
  * 					a.falconi@dundee.ac.uk</a>
- * @version 2.2 
- * <small>
- * (<b>Internal version:</b> $Revision$ $Date$)
- * </small>
+ * @version 2.2
  * @since OME2.2
  */
 
@@ -86,8 +81,7 @@ public final class SplashScreenInit
 	 * Does nothing, as this task only requires configuration.
 	 * @see InitializationTask#execute()
 	 */
-	void execute() 
-		throws StartupException
+	void execute()
 	{
 		splashScreen = UIFactory.makeSplashScreen(container);
 		splashScreen.open();

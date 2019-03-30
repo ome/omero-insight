@@ -1,7 +1,5 @@
 /*
- * org.openmicroscopy.shoola.util.file.MSWriter 
- *
-  *------------------------------------------------------------------------------
+ *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
  *
  *
@@ -23,8 +21,6 @@
 package org.openmicroscopy.shoola.util.file;
 
 
-
-//Java imports
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -41,8 +37,6 @@ import java.util.Map.Entry;
 import javax.swing.table.TableModel;
 
 
-
-//Third-party libraries
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -55,9 +49,7 @@ import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 
-//Application-internal dependencies
 import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -630,7 +622,7 @@ public class ExcelWriter
 	
 	/**
 	 * Writes the image with name imageName to the work sheet, at the 
-	 * specified location (rowStart, colStart)->(rowEnd, colEnd).
+	 * specified location (rowStart, colStart)&rarr;(rowEnd, colEnd).
 	 * Returns the (colEnd, rowEnd).
 	 * 
 	 * @param rowStartIndex The index of the start row.

@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.agents.dataBrowser.IconManager 
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2014 University of Dundee. All rights reserved.
  *
@@ -23,11 +21,6 @@
 package org.openmicroscopy.shoola.agents.dataBrowser;
 
 
-//Java imports
-
-//Third-party libraries
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.ui.AbstractIconManager;
 
@@ -46,9 +39,6 @@ import org.openmicroscopy.shoola.env.ui.AbstractIconManager;
  * @author Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
  * <a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
  * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $Date: $)
- * </small>
  * @since OME3.0
  */
 public class IconManager extends AbstractIconManager
@@ -168,7 +158,7 @@ public class IconManager extends AbstractIconManager
     /** The <code>Report</code> icon. */
     public static final int REPORT = 37;
 
-    /** The <48x48 code>Report</code> icon. */
+    /** The 48x48 <code>Report</code> icon. */
     public static final int REPORT_48 = 38;
 
     /** The 48x48 <code>Save As</code> icon. */

@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.agents.dataBrowser.browser.Thumbnail 
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
  *
@@ -23,16 +21,11 @@
 package org.openmicroscopy.shoola.agents.dataBrowser.browser;
 
 
-//Java imports
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import javax.swing.Icon;
 
 import org.openmicroscopy.shoola.util.image.geom.Factory;
-
-//Third-party libraries
-
-//Application-internal dependencies
 
 /** 
  * Defines the functionality required of a thumbnail provider.
@@ -42,9 +35,6 @@ import org.openmicroscopy.shoola.util.image.geom.Factory;
  * @author Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
  * <a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
  * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $Date: $)
- * </small>
  * @since OME3.0
  */
 public interface Thumbnail
@@ -94,7 +84,8 @@ public interface Thumbnail
     /** 
      * Scales the thumbnail.
      * 
-     * @param f scaling factor. Must be a value strictly positive and <=1.
+     * @param f scaling factor.
+     *        Must be a value strictly positive and less or equals to 1.
      */
     public void scale(double f);
     
