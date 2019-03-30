@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.util.ui.filechooser.GenericFileChooser 
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2011 University of Dundee & Open Microscopy Environment.
  *  All rights reserved.
@@ -23,18 +21,15 @@
  */
 package org.openmicroscopy.shoola.util.ui.filechooser;
 
-//Java imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-//Third-party libraries
-import sun.awt.shell.ShellFolder;
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 
 
@@ -69,8 +64,7 @@ public class GenericFileChooser
 	private void handleFileSelection(File f)
 	{
 		if (box == null || f == null) return;
-		if ((f instanceof ShellFolder && ((ShellFolder) f).isLink()) ||
-				f.getName().endsWith(".lnk")) {
+		if (Files.isSymbolicLink(Paths.get(f.getAbsolutePath()))) {
 			JOptionPane.showMessageDialog(null, "Cannot use shortcut " +
 					"from selection box.");
 			box.setSelectedItem(f.getParentFile());
