@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -94,7 +93,6 @@ import ome.formats.importer.ImportLibrary;
 import ome.formats.importer.OMEROWrapper;
 import ome.formats.importer.util.ProportionalTimeEstimatorImpl;
 import ome.formats.importer.util.TimeEstimator;
-import ome.system.UpgradeCheck;
 import ome.util.checksum.ChecksumProvider;
 import ome.util.checksum.ChecksumProviderFactory;
 import ome.util.checksum.ChecksumProviderFactoryImpl;
@@ -1411,30 +1409,6 @@ class OMEROGateway
 			throw new DSOutOfServiceException("Cannot retrieve user's data " +
 					printErrorText(e), e);
 		}
-	}
-
-	/**
-	 * Returns <code>true</code> if an upgrade is required, <code>false</code>
-	 * otherwise.
-	 *
-	 * @param name The name of the agent.
-	 * @return See above.
-	 */
-	boolean isUpgradeRequired(String name)
-	{
-	    ResourceBundle bundle = ResourceBundle.getBundle("omero");
-	    String version = bundle.getString("omero.version");
-	    String url = bundle.getString("omero.upgrades.url");
-	    //Strip the "OMERO" part of the string
-	    if (CommonsLangUtils.isBlank(name)) {
-	        name = "insight";
-	    }
-	    if (name.startsWith("OMERO.")) {
-	        name = name.substring("OMERO.".length());
-	    }
-	    UpgradeCheck check = new UpgradeCheck(url, version, name);
-	    check.run();
-	    return check.isUpgradeNeeded();
 	}
 
 	/**
