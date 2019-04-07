@@ -36,6 +36,7 @@ import javax.swing.Icon;
 import javax.swing.JFrame;
 
 
+import org.openmicroscopy.shoola.Main;
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.OMEROInfo;
@@ -153,7 +154,7 @@ class SplashScreenManager
     		view.requestFocusOnField();
     	}
     }
-    
+
     /** 
      * Initializes the view. 
      * 
@@ -163,10 +164,11 @@ class SplashScreenManager
     {
     	if (view != null) return;	
     	Image img = IconManager.getOMEImageIcon();
-    	Object version = container.getRegistry().lookup(LookupNames.VERSION);
-    	String v = "";
-    	if (version != null && version instanceof String)
-    		v = (String) version;
+		String clientVersion = SplashScreenManager.class.getPackage().getImplementationVersion();
+		if (clientVersion == null) {
+			clientVersion = "Unknown";
+		}
+		container.getRegistry().bind(LookupNames.VERSION, clientVersion);
     	OMEROInfo info = 
     		(OMEROInfo) container.getRegistry().lookup(LookupNames.OMERODS);
     	int p = -1;
@@ -175,7 +177,7 @@ class SplashScreenManager
     	boolean configurable = info.isHostNameConfigurable();
 
         boolean serverAvailable = connectToServer();
-    	view = new ScreenLogin(Container.TITLE, splashscreen, img, v, port,
+    	view = new ScreenLogin(Container.TITLE, splashscreen, img, clientVersion, port,
     			host, serverAvailable);
     	view.setEncryptionConfiguration(info.isEncrypted(),
     			info.isEncryptedConfigurable());
