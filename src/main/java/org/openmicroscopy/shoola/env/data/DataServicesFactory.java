@@ -516,9 +516,6 @@ public class DataServicesFactory
             registry.getLogger().warn(this, "Could not access ConfigService");
         }
 
-        //Upgrade check only if client and server are compatible
-        omeroGateway.isUpgradeRequired(name);
-
         //Post an event to indicate that the user is connected.
         EventBus bus = container.getRegistry().getEventBus();
         bus.post(new ConnectedEvent());
