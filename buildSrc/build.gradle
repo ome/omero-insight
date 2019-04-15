@@ -6,6 +6,7 @@ plugins {
 repositories {
     mavenLocal()
     jcenter()
+    maven { url 'https://artifacts.openmicroscopy.org/artifactory/maven/' }
 }
 
 dependencies {
