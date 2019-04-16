@@ -5,7 +5,10 @@ import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.XmlProvider
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.repositories.ArtifactRepository
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.distribution.Distribution
 import org.gradle.api.distribution.DistributionContainer
 import org.gradle.api.distribution.plugins.DistributionPlugin
@@ -17,11 +20,15 @@ import org.gradle.api.plugins.JavaApplication
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.provider.ProviderFactory
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPom
+import org.gradle.api.publish.maven.MavenPomLicenseSpec
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.application.CreateStartScripts
 import org.gradle.jvm.tasks.Jar
 import org.openmicroscopy.extensions.InstallOptions
 import org.openmicroscopy.extensions.InstallOptionsContainer
@@ -41,8 +48,6 @@ class InsightPlugin implements Plugin<Project> {
     public static final String TASK_RUN_IMPORTER = "runImporter"
 
     public static final String TASK_OMERO_IMAGEJ_JAR = "imageJJar"
-
-    public static final String TASK_IMPORTER_START_SCRIPTS = "importerStartScripts"
 
     public static final String MAIN_INSIGHT = "org.openmicroscopy.shoola.Main"
 
@@ -75,6 +80,7 @@ class InsightPlugin implements Plugin<Project> {
         // We want these applied first
         project.pluginManager.apply(ApplicationPlugin)
         project.pluginManager.apply(JavaPackagerPlugin)
+        project.pluginManager.apply(MavenPublishPlugin)
 
         // Configure java tasks
         addProcessConfigs()
@@ -91,14 +97,14 @@ class InsightPlugin implements Plugin<Project> {
         addRunImporter(mainSrcSet)
         addCreateImageJJar(mainSrcSet)
 
-        // Start scripts
-        addInsightStartScript()
-
         // Distro configs
         configureMainDistribution()
 
         // Configure install options
         configurePackagerPlugin()
+
+        // Add publish
+        addPublishImageJJar()
     }
 
     /**
@@ -135,8 +141,8 @@ class InsightPlugin implements Plugin<Project> {
         javaApplication.mainClassName = MAIN_INSIGHT
         javaApplication.applicationDefaultJvmArgs = DEFAULT_JVM_ARGS
 
-        project.tasks.named(ApplicationPlugin.TASK_RUN_NAME, JavaExec).configure { JavaExec run ->
-            run.setArgs(["container.xml", String.valueOf(project.buildDir)])
+        project.tasks.named(ApplicationPlugin.TASK_RUN_NAME, JavaExec).configure {
+            it.setArgs(["container.xml", String.valueOf(project.buildDir)])
         }
     }
 
@@ -219,20 +225,35 @@ class InsightPlugin implements Plugin<Project> {
         })
     }
 
-    private TaskProvider<CreateStartScripts> addInsightStartScript() {
-        project.tasks.register(TASK_IMPORTER_START_SCRIPTS, CreateStartScripts, new Action<CreateStartScripts>() {
-            @Override
-            void execute(CreateStartScripts startScripts) {
-                startScripts.setDescription("Creates OS specific scripts to run the project as a JVM application.");
-                startScripts.setClasspath(project.tasks.getByName(JavaPlugin.JAR_TASK_NAME).outputs.files +
-                        project.configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME))
-                startScripts.mainClassName = MAIN_INSIGHT
-                startScripts.applicationName = "OMERO.importer"
-                startScripts.outputDir = new File(project.buildDir, "scripts")
-                startScripts.executableDir = "bin"
-                startScripts.defaultJvmOpts = ["-Xms256m", "-Xmx1024m"]
+    private void addPublishImageJJar() {
+        PublishingExtension publishing =
+                project.extensions.getByName(PublishingExtension.NAME) as PublishingExtension
+
+        publishing.publications.create("imageJPlugin", MavenPublication) { MavenPublication pub ->
+            pub.artifact(project.tasks.getByName(TASK_OMERO_IMAGEJ_JAR))
+            pub.setArtifactId("omero-imagej")
+            pub.pom { MavenPom p ->
+                p.licenses { MavenPomLicenseSpec spec ->
+                    spec.license {
+                        it.name.set("GNU General Public License, Version 2")
+                        it.url.set("https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html")
+                        it.distribution.set("repo")
+                        it.comments.set("An omero plugin for ImageJ")
+                    }
+                }
+                p.withXml { XmlProvider xp ->
+                    Node repositoriesNode = xp.asNode().appendNode("repositories")
+                    project.repositories.each { ArtifactRepository repo ->
+                        if (repo instanceof MavenArtifactRepository) {
+                            Node repositoryNode = repositoriesNode.appendNode("repository")
+                            repositoryNode.appendNode("id", repo.name)
+                            repositoryNode.appendNode("name", repo.name)
+                            repositoryNode.appendNode("url", repo.url)
+                        }
+                    }
+                }
             }
-        })
+        }
     }
 
     private Action<? extends Task> addManifest(String mainClass) {
@@ -240,8 +261,6 @@ class InsightPlugin implements Plugin<Project> {
             @Override
             void execute(Jar jar) {
                 jar.manifest.attributes(createBasicManifest(mainClass))
-                jar.manifest.attributes["Class-Path"] =
-                        getRuntimeClasspathConfiguration().collect { it.name }.join(" ")
             }
         }
     }
@@ -252,7 +271,8 @@ class InsightPlugin implements Plugin<Project> {
                 "Built-Date"            : new SimpleDateFormat("dd/MM/yyyy").format(new Date()),
                 "Built-JDK"             : System.getProperty("java.version"),
                 "Built-Gradle"          : project.gradle.gradleVersion,
-                "Main-Class"            : mainClass]
+                "Main-Class"            : mainClass,
+                "Class-Path"            : getRuntimeClasspathConfiguration().collect { it.name }.join(" ")]
     }
 
     private Configuration getRuntimeClasspathConfiguration() {
