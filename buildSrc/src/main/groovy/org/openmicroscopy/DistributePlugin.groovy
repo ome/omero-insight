@@ -6,6 +6,7 @@ import org.gradle.api.distribution.Distribution
 import org.gradle.api.distribution.DistributionContainer
 import org.gradle.api.distribution.plugins.DistributionPlugin
 import org.gradle.api.file.CopySpec
+import org.gradle.api.tasks.bundling.Tar
 
 class DistributePlugin implements Plugin<Project> {
 
@@ -34,6 +35,11 @@ class DistributePlugin implements Plugin<Project> {
 
         configureMainDistribution(distributionContainer, configSpec)
         createImageJPluginDistribution(distributionContainer, configSpec)
+
+        // Skip tar tasks
+        project.tasks.withType(Tar).configureEach {
+            it.setEnabled(false)
+        }
     }
 
     private void configureMainDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
