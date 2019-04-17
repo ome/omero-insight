@@ -62,6 +62,8 @@ class InsightPlugin implements Plugin<Project> {
             it.doLast { CreateStartScripts last ->
                 last.unixScript.text = last.unixScript.text.replace("MY_APP_HOME", "\$APP_HOME")
                 last.windowsScript.text = last.windowsScript.text.replace("MY_APP_HOME", "%~dp0..")
+                // Fix for https://github.com/gradle/gradle/issues/1989
+                last.windowsScript.text = last.windowsScript.text.replaceAll('set CLASSPATH=.*', 'set CLASSPATH=.;%APP_HOME%/lib/*')
             }
         }
     }
