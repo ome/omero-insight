@@ -20,5 +20,13 @@ gradlePlugin {
             id = "org.openmicroscopy.insight"
             implementationClass = "org.openmicroscopy.InsightPlugin"
         }
+        distribute {
+            id = "org.openmicroscopy.distribute"
+            implementationClass = "org.openmicroscopy.DistributePlugin"
+        }
+        publish {
+            id = "org.openmicroscopy.publish"
+            implementationClass = "org.openmicroscopy.PublishPlugin"
+        }
     }
 }
