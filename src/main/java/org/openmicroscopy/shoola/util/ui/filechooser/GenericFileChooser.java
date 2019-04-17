@@ -64,7 +64,7 @@ public class GenericFileChooser
 	private void handleFileSelection(File f)
 	{
 		if (box == null || f == null) return;
-		if (Files.isSymbolicLink(Paths.get(f.getAbsolutePath()))) {
+		if (Files.isSymbolicLink(Paths.get(f.getAbsolutePath())) || f.getName().endsWith(".lnk")) {
 			JOptionPane.showMessageDialog(null, "Cannot use shortcut " +
 					"from selection box.");
 			box.setSelectedItem(f.getParentFile());
