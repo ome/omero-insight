@@ -10,6 +10,7 @@ import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.application.CreateStartScripts
 import org.openmicroscopy.extensions.InstallOptions
 import org.openmicroscopy.extensions.InstallOptionsContainer
 
@@ -54,6 +55,15 @@ class InsightPlugin implements Plugin<Project> {
 
         project.tasks.named(ApplicationPlugin.TASK_RUN_NAME, JavaExec).configure {
             it.setArgs(["container.xml", String.valueOf(project.buildDir)])
+        }
+
+        project.tasks.named(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts).configure {
+            it.classpath += project.fileTree(dir: "src/config", include: "**/*.xml")
+            it.defaultJvmOpts += ["-Duser.dir=MY_APP_HOME/"]
+            it.doLast { CreateStartScripts last ->
+                last.unixScript.text = last.unixScript.text.replace("MY_APP_HOME", "\$APP_HOME")
+                last.windowsScript.text = last.windowsScript.text.replace("MY_APP_HOME", "%~dp0..")
+            }
         }
     }
 
