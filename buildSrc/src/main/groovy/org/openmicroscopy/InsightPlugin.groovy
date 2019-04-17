@@ -58,7 +58,6 @@ class InsightPlugin implements Plugin<Project> {
         }
 
         project.tasks.named(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts).configure {
-            it.classpath += project.fileTree(dir: "src/config", include: "**/*.xml")
             it.defaultJvmOpts += ["-Duser.dir=MY_APP_HOME/"]
             it.doLast { CreateStartScripts last ->
                 last.unixScript.text = last.unixScript.text.replace("MY_APP_HOME", "\$APP_HOME")
