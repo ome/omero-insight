@@ -10,7 +10,6 @@ repositories {
 }
 
 dependencies {
-    implementation "commons-io:commons-io:2.6"
     implementation "org.openmicroscopy:omero-javapackager-plugin:5.5.0-m1"
 }
 
