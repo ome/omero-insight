@@ -45,7 +45,7 @@
   In order to perform a build, all you need is
   a JDK -- version 1.8 or later. From the command line, enter:
   
-      gradle build
+     gradle build
   
   This will compile, build, test and create a distribution bundle.
   To run OMERO.insight from the distribution bundle. Unzip omero-insight.zip,
@@ -59,12 +59,51 @@
 
   To run OMERO.insight, from the command line, enter:
 
-      gradle run
+     gradle run
 
   To run OMERO.importer, from the command line, enter:
 
-        gradle runImporter
-
+     gradle runImporter
+     
+  Deploying OMERO.insight
+  ----------------------   
+  
+  OMERO.insight uses the gradle [java-packager-plugin](https://github.com/ome/omero-javapackager-plugin) and is capable 
+  of creating an installer for the platform the deployment task is run on. __Note, a Java runtime is included
+  with the bundled installer__.
+  
+  __Due to a java runtime being bundled in the installer, it is recommended to use [OpenJDK](https://openjdk.java.net) 
+  as the system's JRE to avoid potential licensing issues.__
+  
+  In order to be able to successfully create an installer a JDK with [`javapacakger`](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javapackager.html) 
+  or an [OpenJFX SDK](https://gluonhq.com/products/javafx/) matched to the version of the system JDK is required 
+  (particularly if you intend to build with a JDK 11 or version greater).
+  
+  ### Windows
+  
+  To set up a build environment with Windows without using a package manager such as [Scoop](https://scoop.sh) or [Chocolatey](https://chocolatey.org)
+  perform the following:
+  
+  #### JDK:
+  
+  1. Download [ojdkbuild](https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.191-1/java-1.8.0-openjdk-1.8.0.191-1.b12.ojdkbuild.windows.x86_64.msi)
+  2. Run the installer
+  3. Once at the _custom setup_ page of the setup select the _OpenJdk Runtime_ drop-down and install the _JAVA_HOME_ feature.
+  4. Whilst on the _custom setup_ page, select to include the _OpenJFX Runtime_
+  
+  #### Inno Setup (required to create .exe installer):
+  
+  1. Download and install [Inno Setup](http://www.jrsoftware.org/isdl.php)
+  2. Add the Inno Setup install directory (default `C:\Program Files (x86)\Inno Setup 5`) to the PATH
+  
+  #### WiX (required to build .msi installer):
+  
+  1. Download and install [WiX 3.0 or greater](http://wix.sf.net)
+  2. Add WiX to the PATH
+  
+  To run the application packager, from the command line enter:
+  
+     gradle packageApplicationExe
 
   Developing OMERO.insight
   ------------------------
