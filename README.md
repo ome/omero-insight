@@ -65,30 +65,32 @@
 
      gradle runImporter
      
-  Deploying OMERO.insight
+  Packaging OMERO.insight
   ----------------------   
   
-  OMERO.insight uses the gradle [java-packager-plugin](https://github.com/ome/omero-javapackager-plugin) and is capable 
-  of creating an installer for the platform the deployment task is run on. __Note, a Java runtime is included
-  with the bundled installer__.
+  OMERO.insight uses the gradle [java-packager-plugin](https://github.com/ome/omero-javapackager-plugin)
+  and is capable of creating an installer for the platform the deployment task is run on. 
+  __Note, a Java runtime is included with the bundled installer__.
   
-  __Due to a java runtime being bundled in the installer, it is recommended to use [OpenJDK](https://openjdk.java.net) 
-  as the system's JRE to avoid potential licensing issues.__
+  __Due to a java runtime being bundled in the installer, it is recommended to use 
+  [OpenJDK](https://openjdk.java.net) as the system's JRE to avoid potential licensing issues.__
   
-  In order to be able to successfully create an installer a JDK with [`javapacakger`](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javapackager.html) 
-  or an [OpenJFX SDK](https://gluonhq.com/products/javafx/) matched to the version of the system JDK is required 
-  (particularly if you intend to build with a JDK 11 or version greater).
+  In order to be able to successfully create an installer a JDK with 
+  [`javapacakger`](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javapackager.html) or 
+  an [OpenJFX SDK](https://gluonhq.com/products/javafx/) matched to the version of the system JDK 
+  is required (particularly if you intend to build with JDK 11 or version greater).
   
   ### Windows
   
-  To set up a build environment with Windows without using a package manager such as [Scoop](https://scoop.sh) or [Chocolatey](https://chocolatey.org)
-  perform the following:
+  To set up a build environment with Windows without using a package manager such as [Scoop](https://scoop.sh) or 
+  [Chocolatey](https://chocolatey.org) perform the following:
   
   #### JDK:
   
   1. Download [ojdkbuild](https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.191-1/java-1.8.0-openjdk-1.8.0.191-1.b12.ojdkbuild.windows.x86_64.msi)
   2. Run the installer
-  3. Once at the _custom setup_ page of the setup select the _OpenJdk Runtime_ drop-down and install the _JAVA_HOME_ feature.
+  3. Once at the _custom setup_ page of the setup select the _OpenJdk Runtime_ drop-down and install the _JAVA_HOME_ 
+     feature.
   4. Whilst on the _custom setup_ page, select to include the _OpenJFX Runtime_
   
   #### Inno Setup (required to create .exe installer):
