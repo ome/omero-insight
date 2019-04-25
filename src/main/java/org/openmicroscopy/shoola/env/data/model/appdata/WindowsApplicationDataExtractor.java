@@ -232,7 +232,8 @@ public class WindowsApplicationDataExtractor implements
 		Icon icon = getSystemIconFor(file);
 
 		IntByReference dwDummy = new IntByReference(0);
-		int fileVersionInfoSize = com.sun.jna.platform.win32.Version.INSTANCE
+
+		int fileVersionInfoSize = Version.INSTANCE
 				.GetFileVersionInfoSize(absPath, dwDummy);
 
 		String applicationName = FilenameUtils.getBaseName(absPath);
