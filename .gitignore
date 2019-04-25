@@ -2,10 +2,10 @@
 *.class
 
 # generated files
-/build/
-/bin/
-/tmp/
-/out/
+build
+bin
+tmp
+out
 
 # Gradle cache
 .gradle
