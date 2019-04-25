@@ -43,6 +43,7 @@ dependencies {
     implementation("org.openmicroscopy:omero-blitz:5.5.0-m5") {
         // Conflicts with `net.java.dev.jna`
         exclude group: "com.sun.jna", module: "jna"
+        exclude group: "org.springframework"
     }
 }
 
