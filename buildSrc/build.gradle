@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation "org.openmicroscopy:omero-javapackager-plugin:5.5.0-m1"
+    implementation "org.openmicroscopy:omero-javapackager-plugin:5.5.0-m2"
 }
 
 gradlePlugin {
