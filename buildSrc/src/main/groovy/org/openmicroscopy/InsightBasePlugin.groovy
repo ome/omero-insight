@@ -46,6 +46,8 @@ class InsightBasePlugin implements Plugin<Project> {
 
     public static final String GROUP_BUILD = BasePlugin.BUILD_GROUP
 
+    public static final List DEFAULT_JVM_ARGS = ["-Xms256m", "-Xmx1024m"]
+
     private Project project
 
     @Override
@@ -131,4 +133,5 @@ class InsightBasePlugin implements Plugin<Project> {
                 "Main-Class"            : mainClass,
                 "Class-Path"            : Utils.getRuntimeClasspathConfiguration(project).collect { it.name }.join(" ")]
     }
+
 }
