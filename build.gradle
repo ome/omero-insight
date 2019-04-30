@@ -1,8 +1,9 @@
 plugins {
     id "java"
     id "org.openmicroscopy.insight"
-    id "org.openmicroscopy.distribute"
     id "org.openmicroscopy.publish"
+    id "org.openmicroscopy.distribute"
+    id "org.openmicroscopy.packager"
     id "org.openmicroscopy.additional-repositories" version "5.5.0-SNAPSHOT"
 }
 

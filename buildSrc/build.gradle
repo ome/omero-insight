@@ -27,5 +27,9 @@ gradlePlugin {
             id = "org.openmicroscopy.publish"
             implementationClass = "org.openmicroscopy.PublishPlugin"
         }
+        packager {
+            id = "org.openmicroscopy.packager"
+            implementationClass = "org.openmicroscopy.PackagerPlugin"
+        }
     }
 }

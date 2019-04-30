@@ -20,6 +20,7 @@
  */
 package org.openmicroscopy
 
+import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -34,6 +35,7 @@ import org.gradle.jvm.tasks.Jar
 
 import java.text.SimpleDateFormat
 
+@CompileStatic
 class InsightBasePlugin implements Plugin<Project> {
 
     public static final String TASK_PROCESS_CONFIGS = "processConfigs"

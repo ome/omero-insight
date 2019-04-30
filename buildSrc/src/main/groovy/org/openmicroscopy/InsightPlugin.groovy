@@ -90,7 +90,7 @@ class InsightPlugin implements Plugin<Project> {
         }
 
         project.tasks.named(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts).configure {
-            DistributePlugin.configureStartScripts(it)
+            Utils.configureStartScripts(it)
         }
     }
 

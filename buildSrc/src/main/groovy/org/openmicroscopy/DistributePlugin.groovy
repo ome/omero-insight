@@ -29,7 +29,6 @@ import org.gradle.api.distribution.Distribution
 import org.gradle.api.distribution.DistributionContainer
 import org.gradle.api.distribution.plugins.DistributionPlugin
 import org.gradle.api.file.CopySpec
-import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.application.CreateStartScripts
@@ -56,8 +55,7 @@ class DistributePlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
 
-        project.pluginManager.apply(InsightBasePlugin)
-        project.pluginManager.apply(ApplicationPlugin)
+        project.pluginManager.apply(InsightPlugin)
 
         // Add CreateStartScripts task for importer, much like what the ApplicationPlugin does for "main" distribution
         addImporterCreateScriptsTask()
@@ -90,7 +88,7 @@ class DistributePlugin implements Plugin<Project> {
                 css.applicationName = "omero-importer"
                 css.outputDir = new File(project.getBuildDir(), "scripts")
                 css.executableDir = "bin"
-                configureStartScripts(css)
+                Utils.configureStartScripts(css)
             }
         })
     }
@@ -154,13 +152,4 @@ class DistributePlugin implements Plugin<Project> {
         return libSpec
     }
 
-    static void configureStartScripts(CreateStartScripts css) {
-        css.defaultJvmOpts += ["-Duser.dir=MY_APP_HOME/"]
-        css.doLast { CreateStartScripts last ->
-            last.unixScript.text = last.unixScript.text.replace("MY_APP_HOME", "\$APP_HOME")
-            last.windowsScript.text = last.windowsScript.text.replace("MY_APP_HOME", "%~dp0..")
-            // Fix for https://github.com/gradle/gradle/issues/1989
-            last.windowsScript.text = last.windowsScript.text.replaceAll('set CLASSPATH=.*', 'set CLASSPATH=.;%APP_HOME%/lib/*')
-        }
-    }
 }
