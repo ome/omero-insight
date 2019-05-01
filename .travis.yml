@@ -1,4 +1,7 @@
 language: java
+os:
+  - osx
+  - linux
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -7,11 +10,16 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gradle  ; fi
+
 install:
   - DIR=$PWD; (cd /tmp; gradle wrapper --gradle-version=5.2.1; mv .gradle gradle gradlew $DIR)
 
 script:
-  - ./gradlew build
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./gradlew packageApplicationDmg ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./gradlew build ; fi
 
 deploy:
   provider: releases
