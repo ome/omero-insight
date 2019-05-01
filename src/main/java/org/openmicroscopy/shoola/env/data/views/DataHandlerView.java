@@ -179,7 +179,7 @@ public interface DataHandlerView
 	/**
 	 * Resets the rendering settings used by the owner of the images contained 
 	 * in the specified datasets.
-	 * If the rootType is <code>ImageData</code, resets the settings to the 
+	 * If the rootType is <code>ImageData</code>, resets the settings to the
 	 * passed images.
 	 * 
 	 * @param ctx The security context.

@@ -2612,10 +2612,10 @@ public class EditorUtil
     }
 
     /**
-     * Returns <code>true</code> if the node can be transfered,
+     * Returns <code>true</code> if the node can be transferred,
      * <code>false</code> otherwise.
      *
-     * @param target The target of the D&D action.
+     * @param target The target of the DnD action.
      * @param src The node to transfer.
      * @param userID The id of the user currently logged in.
      * @return See above.

@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.agents.util.dnd.ObjectToTransfer 
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2011 University of Dundee & Open Microscopy Environment.
  *  All rights reserved.
@@ -29,7 +27,7 @@ import java.util.List;
 import org.openmicroscopy.shoola.agents.util.browser.TreeImageDisplay;
 
 /** 
- * The D&D objects to transfer and the target.
+ * The DnD objects to transfer and the target.
  *
  * @author Jean-Marie Burel &nbsp;&nbsp;&nbsp;&nbsp;
  * <a href="mailto:j.burel@dundee.ac.uk">j.burel@dundee.ac.uk</a>

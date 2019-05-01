@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.util.ui.slider.OneKnobSlider
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006 University of Dundee. All rights reserved.
  *
@@ -23,13 +21,8 @@
 
 package org.openmicroscopy.shoola.util.ui.slider;
 
-//Java imports
 import javax.swing.ImageIcon;
 import javax.swing.JSlider;
-
-//Third-party libraries
-
-//Application-internal dependencies
 
 /** 
 * OneKnobSlider is an extension of the {@link JSlider}, 
@@ -46,9 +39,6 @@ import javax.swing.JSlider;
 * @author	Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
 * 	<a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
 * @version 3.0
-* <small>
-* (<b>Internal version:</b> $Revision: $Date: $)
-* </small>
 * @since OME2.2
 */
 public class OneKnobSlider
@@ -59,7 +49,7 @@ public class OneKnobSlider
 	public static final String ONE_KNOB_RELEASED_PROPERTY =
 		"oneKnobReleasedProperty";
 	
-	/** Slider UI for new L&F. */
+	/** Slider UI for new Look And Feel. */
 	private OneKnobSliderUI	sliderUI;	
 	
 	/** This is set to <code>true</code> if the slider has tooltipString. */

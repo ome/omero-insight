@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.util.concur.ControlFlowObserver
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006 University of Dundee. All rights reserved.
  *
@@ -23,20 +21,13 @@
 
 package org.openmicroscopy.shoola.util.concur;
 
-
-//Java imports
-
-//Third-party libraries
-
-//Application-internal dependencies
-
 /** 
  * Provides a testing contract for classes designed to operate in a 
  * multi-threaded environment.
  * Each class in the <code>concur</code> packages should define "check points"
  * in the object life-line at which execution can be manipulated in order to
- * simulate race conditions, resource contemption, etc.  When a check point is
- * reached observers are notified &151; observers implement this interface. 
+ * simulate race conditions, resource contention, etc.  When a check point is
+ * reached observers are notified, observers implement this interface.
  * This allows testing code to coordinate multiple threads that are in a given
  * object at the same time.
  * 
@@ -46,9 +37,6 @@ package org.openmicroscopy.shoola.util.concur;
  * 				<a href="mailto:a.falconi@dundee.ac.uk">
  * 					a.falconi@dundee.ac.uk</a>
  * @version 2.2
- * <small>
- * (<b>Internal version:</b> $Revision$ $Date$)
- * </small>
  * @since OME2.2
  */
 public interface ControlFlowObserver

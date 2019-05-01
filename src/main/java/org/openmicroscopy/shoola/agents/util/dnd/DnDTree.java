@@ -91,7 +91,7 @@ public class DnDTree
 	implements DragSourceListener, DropTargetListener, DragGestureListener
 {
 
-	/** Bound property indicating that the D&D is completed.*/
+	/** Bound property indicating that the DnD is completed.*/
 	public static final String DRAGGED_PROPERTY = "dragged";
 	
 	/** The supported flavors.*/
@@ -147,10 +147,10 @@ public class DnDTree
     /** Track the last mouse drag position */
     private Point lastPosition;
 
-    /** outer DnD autoscroll rectable */
+    /** outer DnD autoscroll rectangle */
     private Rectangle outer;
 
-    /** inner DnD autoscroll rectable */
+    /** inner DnD autoscroll rectangle */
     private Rectangle inner;
 
     /** DnD autoscroll timer */
@@ -285,8 +285,7 @@ public class DnDTree
 	
 	/** 
 	 * Creates a ghost image.
-	 * 
-	 * @param path The selected path.
+	 *
 	 * @param p The origin of the dragging.
 	 */
 	private void createGhostImage(Point p)
@@ -412,6 +411,7 @@ public class DnDTree
 
 	/**
 	 * Autoscroll to position
+	 * @param p The position.
 	 */
     private void autoscroll(Point position) {
         Scrollable s = (Scrollable) this;

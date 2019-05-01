@@ -535,7 +535,7 @@ public class ROIReader {
      * otherwise.
      *
      * @param f The file to save the results to.
-     * @return Returns <c
+     * @return See above
      */
     public boolean readResults(File f)
         throws IOException
@@ -550,6 +550,7 @@ public class ROIReader {
      * otherwise.
      *
      * @param f The file to save the results to.
+     * @return See above
      */
     public boolean readResults(String f)
         throws IOException

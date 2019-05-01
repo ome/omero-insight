@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.env.LookupNames
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2017 University of Dundee. All rights reserved.
  *
@@ -22,11 +20,6 @@
  */
 package org.openmicroscopy.shoola.env;
 
-//Java imports
-
-//Third-party libraries
-
-//Application-internal dependencies
 
 /** 
  * Its static fields contain the names that have to be used for looking up
@@ -122,7 +115,7 @@ public class LookupNames
 
     /** 
      * Field to check if the server version is 5.4.8 or later.
-     * TODO: Can be removed for >= 5.5.0 release
+     * TODO: Can be removed for 5.5.0 release
      * */
     public static final String SERVER_5_4_8_OR_LATER = "5.4.8 or later";
     
@@ -215,7 +208,7 @@ public class LookupNames
     /** Field to access the <code>OMERO</code> service information. */
     public static final String OMERODS = "/services/OMERODS";
 
-    /** Field to access the <code>L&F</code> information. */
+    /** Field to access the <code>Look And Feel</code> information. */
     public static final String LOOK_N_FEEL = "LookAndFeel";
 
     /** Field to access the <code>Icons factory</code> information. */

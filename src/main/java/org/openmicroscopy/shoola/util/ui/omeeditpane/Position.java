@@ -23,13 +23,8 @@
 package org.openmicroscopy.shoola.util.ui.omeeditpane;
 
 
-//Java imports
 import java.io.Serializable;
 import java.util.Comparator;
-
-//Third-party libraries
-
-//Application-internal dependencies
 
 /** 
  * Locates the position of the text.
@@ -39,9 +34,6 @@ import java.util.Comparator;
  * @author	Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
  * 	<a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
  * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $Date: $)
- * </small>
  * @since OME3.0
  */
 public class Position
@@ -149,7 +141,7 @@ public class Position
 	int length() { return end-start+1; }
 
 	/**
-	 * Controls if the passed object is <,> or = the current one.
+	 * Controls if the passed object is less, greater than or equals to the current one.
 	 * @see Comparator#compare(Object, Object)
 	 */
 	public int compare(Object o1, Object o2)
@@ -189,7 +181,7 @@ public class Position
 	public String toString() { return "["+start+","+end+"]"; }
 
 	/**
-	 * Controls if the passed object is <,> or = the current one.
+	 * Controls if the passed object is less, greater than or equals the current one.
 	 * @see Comparable#compareTo(Object)
 	 */
 	public int compareTo(Position o)

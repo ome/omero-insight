@@ -1,6 +1,4 @@
 /*
- * org.openmicroscopy.shoola.util.ui.UIUtilities
- *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2017 University of Dundee. All rights reserved.
  *
@@ -1222,16 +1220,13 @@ public class UIUtilities
     }
     
     /**
-     * Sets the UI properties of the button to unify the L&F.
+     * Sets the UI properties of the button to unify the Look and Feel.
      * 
      * @param b The button.
      */
     public static void unifiedButtonLookAndFeel(JComponent b)
     {
     	if (b == null) return;
-        //b.setMargin(new Insets(0, 2, 0, 3));
-        //b.setBorderPainted(false);
-        //b.setFocusPainted(false);
     	b.setOpaque(false);
     	b.setBorder(new EmptyBorder(2, 2, 2, 2));
     }
@@ -1245,9 +1240,7 @@ public class UIUtilities
     public static void opacityCheck(AbstractButton b)
     {
     	if (b == null) return;
-    	//String laf = UIManager.getSystemLookAndFeelClassName();
     	b.setContentAreaFilled(!isMacOS());
-    	//b.setContentAreaFilled(!(MAC_L_AND_F.equals(laf)));
     }
     
     /**
@@ -1259,7 +1252,6 @@ public class UIUtilities
     {
     	if (area == null) return;
         area.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-        //area.setForeground(STEELBLUE);
         area.setBackground(BACKGROUND);
         area.setOpaque(true);
         if (area instanceof JTextComponent) 

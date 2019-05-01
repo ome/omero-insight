@@ -103,7 +103,7 @@ public class GraphPane
 	/** Reference to the controller. */
 	private MeasurementViewerControl controller;
 
-	/** The map of <ROIShape, ROIStats> .*/
+	/** The map of {@code <ROIShape, ROIStats>} .*/
 	private Map ROIStats;
 
 	/** The slider controlling the movement of the analysis through Z. */
