@@ -25,10 +25,19 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -f build/distributions/OMERO.insight-* ; fi
 
 deploy:
-  provider: releases
-  api_key: $GITHUB_OAUTH_TOKEN
-  file_glob: true
-  file: build/distributions/*
-  skip_cleanup: true
-  on:
-    tags: true
+  - provider: releases
+    api_key: $GITHUB_OAUTH_TOKEN
+    file_glob: true
+    file: build/distributions/*
+    skip_cleanup: true
+    on:
+      tags: true
+      condition: "$TRAVIS_OS_NAME = linux"
+  - provider: releases
+    api_key: $GITHUB_OAUTH_TOKEN
+    file_glob: true
+    file: build/packaged/main/*
+    skip_cleanup: true
+    on:
+      tags: true
+      condition: "$TRAVIS_OS_NAME = osx"
