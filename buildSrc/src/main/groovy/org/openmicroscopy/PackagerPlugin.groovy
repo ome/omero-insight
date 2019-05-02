@@ -24,6 +24,7 @@ import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.Sync
@@ -59,31 +60,38 @@ class PackagerPlugin implements Plugin<Project> {
     }
 
     private void createImporterInstaller(InstallOptionsContainer container) {
+        final String[] outputTypes = ["dmg", "pkg", "exe", "msi"]
+
+        JavaExec exec = project.tasks.getByName(InsightPlugin.TASK_RUN_IMPORTER) as JavaExec
+        Jar jar = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
+        Sync distTask = project.tasks.getByName(
+                "install${DistributePlugin.DISTRIBUTION_IMPORTER.capitalize()}Dist") as Sync
+
         // Create install option for importer
         container.create("importer", new Action<InstallOptions>() {
             @Override
             void execute(InstallOptions importer) {
-                def exec = project.tasks.getByName(InsightPlugin.TASK_RUN_IMPORTER) as JavaExec
-                def jar = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
-                def installDistTask = project.tasks.getByName(
-                        "install${DistributePlugin.DISTRIBUTION_IMPORTER.capitalize()}Dist") as Sync
-
-                importer.outputTypes = ["dmg", "pkg", "exe", "msi"]
-
+                importer.outputTypes = outputTypes
                 importer.mainClassName = exec.main
                 importer.arguments = exec.args
                 importer.javaOptions = exec.jvmArgs
-
                 importer.mainJar = jar.archiveFileName
                 importer.applicationVersion = jar.archiveVersion
-
-                importer.outputFile = "${project.buildDir}/packaged/${installDistTask.name}/${installDistTask.destinationDir.name}"
-                importer.applicationName = installDistTask.destinationDir.name
-                importer.sourceDir = installDistTask.destinationDir
-                importer.sourceFiles.from(project.fileTree(installDistTask.destinationDir).include("**/*.*"))
+                importer.outputFile = "${project.buildDir}/packaged/${distTask.name}/${distTask.destinationDir.name}"
+                importer.applicationName = distTask.destinationDir.name
+                importer.sourceDir = distTask.destinationDir
+                importer.sourceFiles.from(project.fileTree(distTask.destinationDir).include("**/*.*"))
             }
         })
+
+        project.afterEvaluate {
+            outputTypes.each { String type ->
+                String name = JavaPackagerPlugin.makeTaskName("importer", type)
+                project.tasks.named(name).configure { Task task ->
+                    task.dependsOn(distTask)
+                }
+            }
+        }
     }
-
-
+    
 }
