@@ -93,5 +93,5 @@ class PackagerPlugin implements Plugin<Project> {
             }
         }
     }
-    
+
 }
