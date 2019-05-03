@@ -49,18 +49,14 @@ class PackagerPlugin implements Plugin<Project> {
 
         // Configure main install options (insight)
         InstallOptions main = installOptionsContainer.getByName(JavaPackagerPlugin.MAIN_DEPLOY_NAME)
-        main.exe {
-            it.icon = project.file("icons/omeroInsight.ico")
-        }
-        main.dmg {
-            it.icon = project.file("icons/omeroInsight.icns")
-        }
+        main.icon = "${project.projectDir}/icons/omeroInsight"
+        main.arguments = ["container.xml"]
 
         createImporterInstaller(installOptionsContainer)
     }
 
     private void createImporterInstaller(InstallOptionsContainer container) {
-        final String[] outputTypes = ["dmg", "pkg", "exe", "msi"]
+        final String[] outputTypes = Platform.installerTypesAsString
 
         JavaExec exec = project.tasks.getByName(InsightPlugin.TASK_RUN_IMPORTER) as JavaExec
         Jar jar = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
@@ -72,8 +68,9 @@ class PackagerPlugin implements Plugin<Project> {
             @Override
             void execute(InstallOptions importer) {
                 importer.outputTypes = outputTypes
+                importer.icon = "${project.projectDir}/icons/omeroImporter.ico"
+                importer.arguments = ["containerImporter.xml"]
                 importer.mainClassName = exec.main
-                importer.arguments = exec.args
                 importer.javaOptions = exec.jvmArgs
                 importer.mainJar = jar.archiveFileName
                 importer.applicationVersion = jar.archiveVersion
