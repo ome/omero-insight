@@ -31,8 +31,6 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.application.CreateStartScripts
-import org.openmicroscopy.extensions.InstallOptions
-import org.openmicroscopy.extensions.InstallOptionsContainer
 
 @CompileStatic
 class InsightPlugin implements Plugin<Project> {
@@ -43,8 +41,6 @@ class InsightPlugin implements Plugin<Project> {
 
     public static final String MAIN_INSIGHT = "org.openmicroscopy.shoola.Main"
 
-    private static final List DEFAULT_JVM_ARGS = ["-Xms256m", "-Xmx1024m"]
-
     private Project project
 
     @Override
@@ -54,38 +50,12 @@ class InsightPlugin implements Plugin<Project> {
         // We want these applied first
         project.pluginManager.apply(InsightBasePlugin)
         project.pluginManager.apply(ApplicationPlugin)
-        project.pluginManager.apply(JavaPackagerPlugin)
 
-        // Configure insight tasks
+        // Configure importer tasks
         addRunImporter()
 
         // Configure java tasks
         configureApplicationPlugin()
-
-        // Configure install options
-        configurePackagerPlugin()
-    }
-
-    private void configureApplicationPlugin() {
-        JavaApplication javaApplication =
-                project.extensions.getByName("application") as JavaApplication
-
-        javaApplication.mainClassName = MAIN_INSIGHT
-        javaApplication.applicationDefaultJvmArgs = DEFAULT_JVM_ARGS
-
-        project.tasks.named(ApplicationPlugin.TASK_RUN_NAME, JavaExec).configure {
-            it.setArgs(["container.xml", String.valueOf(project.buildDir)])
-        }
-
-        project.tasks.named(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts).configure {
-            it.defaultJvmOpts += ["-Duser.dir=MY_APP_HOME/"]
-            it.doLast { CreateStartScripts last ->
-                last.unixScript.text = last.unixScript.text.replace("MY_APP_HOME", "\$APP_HOME")
-                last.windowsScript.text = last.windowsScript.text.replace("MY_APP_HOME", "%~dp0..")
-                // Fix for https://github.com/gradle/gradle/issues/1989
-                last.windowsScript.text = last.windowsScript.text.replaceAll('set CLASSPATH=.*', 'set CLASSPATH=.;%APP_HOME%/lib/*')
-            }
-        }
     }
 
     private TaskProvider<JavaExec> addRunImporter() {
@@ -101,25 +71,26 @@ class InsightPlugin implements Plugin<Project> {
                 run.setDescription("Runs this project as the OMERO.importer application")
                 run.setGroup(GROUP_APPLICATION)
                 run.setClasspath(main.runtimeClasspath)
-                run.setJvmArgs(DEFAULT_JVM_ARGS)
+                run.setJvmArgs(InsightBasePlugin.DEFAULT_JVM_ARGS)
                 run.setArgs(["containerImporter.xml", String.valueOf(project.buildDir)])
                 run.setMain(MAIN_INSIGHT)
             }
         })
     }
 
-    private void configurePackagerPlugin() {
-        InstallOptionsContainer installOptionsContainer =
-                project.extensions.getByName("deploy") as InstallOptionsContainer
+    private void configureApplicationPlugin() {
+        JavaApplication javaApplication =
+                project.extensions.getByName("application") as JavaApplication
 
-        // Configure main install options (insight)
-        InstallOptions main =
-                installOptionsContainer.getByName(JavaPackagerPlugin.MAIN_DEPLOY_NAME)
-        main.exe {
-            it.icon = project.file("icons/omeroinsight.ico")
+        javaApplication.mainClassName = MAIN_INSIGHT
+        javaApplication.applicationDefaultJvmArgs = InsightBasePlugin.DEFAULT_JVM_ARGS
+
+        project.tasks.named(ApplicationPlugin.TASK_RUN_NAME, JavaExec).configure {
+            it.setArgs(["container.xml", String.valueOf(project.buildDir)])
         }
-        main.dmg {
-            it.icon = project.file("icons/omeroinsight.icns")
+
+        project.tasks.named(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts).configure {
+            Utils.configureStartScripts(it)
         }
     }
 

@@ -20,6 +20,7 @@
  */
 package org.openmicroscopy
 
+import groovy.transform.CompileStatic
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.XmlProvider
@@ -31,6 +32,7 @@ import org.gradle.api.publish.maven.MavenPomLicenseSpec
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 
+@CompileStatic
 class PublishPlugin implements Plugin<Project> {
 
     private Project project

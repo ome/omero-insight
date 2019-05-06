@@ -20,12 +20,29 @@
  */
 package org.openmicroscopy
 
+import groovy.transform.CompileStatic
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.application.CreateStartScripts
 
+@CompileStatic
 class Utils {
     static Configuration getRuntimeClasspathConfiguration(Project project) {
         project.configurations.findByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)
+    }
+
+    /**
+     * Adds default start script settings applicable to insight and derivative distributions.
+     * @param css CreateStartScripts to configure
+     */
+    static void configureStartScripts(CreateStartScripts css) {
+        css.defaultJvmOpts += ["-Duser.dir=MY_APP_HOME/"]
+        css.doLast { CreateStartScripts last ->
+            last.unixScript.text = last.unixScript.text.replace("MY_APP_HOME", "\$APP_HOME")
+            last.windowsScript.text = last.windowsScript.text.replace("MY_APP_HOME", "%~dp0..")
+            // Fix for https://github.com/gradle/gradle/issues/1989
+            last.windowsScript.text = last.windowsScript.text.replaceAll('set CLASSPATH=.*', 'set CLASSPATH=.;%APP_HOME%/lib/*')
+        }
     }
 }
