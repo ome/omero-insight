@@ -20,6 +20,7 @@ install:
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./gradlew packageApplicationDmg ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" && -n "$TRAVIS_TAG" ]]; then ./gradlew packageImporterApplicationDmg ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -f build/packaged/main/bundles/OMERO.insight-* ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./gradlew build ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -f build/distributions/OMERO.imagej-* ; fi
@@ -42,3 +43,12 @@ deploy:
     on:
       tags: true
       condition: "$TRAVIS_OS_NAME = osx"
+  - provider: releases
+      api_key: $GITHUB_OAUTH_TOKEN
+      file_glob: true
+      script: ./gradlew packageImporterApplicationDmg
+      file: build/packaged/installImporterDist/bundles/*
+      skip_cleanup: true
+      on:
+        tags: true
+        condition: "$TRAVIS_OS_NAME = osx"
