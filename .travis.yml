@@ -46,7 +46,6 @@ deploy:
   - provider: releases
       api_key: $GITHUB_OAUTH_TOKEN
       file_glob: true
-      script: ./gradlew packageImporterApplicationDmg
       file: build/packaged/installImporterDist/bundles/*
       skip_cleanup: true
       on:
