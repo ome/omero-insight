@@ -263,7 +263,7 @@ public class EditableTextComponent extends JPanel {
      * Fires the {@link #EDIT_PROPERTY} property and returns to non-edit mode
      */
     private void save() {
-        this.text = CharMatcher.JAVA_ISO_CONTROL.removeFrom(textPane.getText());
+        this.text = CharMatcher.javaIsoControl().removeFrom(textPane.getText());
         if (this.text.trim().isEmpty() && !permitEmpty) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
