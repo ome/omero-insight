@@ -35,6 +35,11 @@ pipeline {
                 sh 'cd build && curl -sfL https://github.com/ome/build-infra/archive/master.tar.gz | tar -zxf -'
                 sh 'virtualenv build/venv && build/venv/bin/pip install scc'
                 sh """
+                    # Workaround for "unflattened" file, possibly due to matrix
+                    find build/ -name version.tsv -exec cp {} build/ \\;
+                    test -e build/version.tsv
+                    export VERSION_LOG=${env.WORKSPACE}/build/version.tsv
+
                     . build/venv/bin/activate
                     if [ "${env.MERGE_PUSH_BRANCH}" != "null" ]; then
                         export PUSH_BRANCH=${env.MERGE_PUSH_BRANCH}
