@@ -36,7 +36,7 @@ pipeline {
                 sh 'virtualenv build/venv && build/venv/bin/pip install scc'
 
                 copyArtifacts(projectName: 'OMERO-build-push', flatten: true,
-                              filter: 'target/version.tsv', target: 'build')
+                              filter: 'build/version.tsv', target: 'build')
 
                 sh """
                     # Workaround for "unflattened" file, possibly due to matrix
