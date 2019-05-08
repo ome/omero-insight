@@ -40,11 +40,12 @@ dependencies {
     implementation("org.apache.httpcomponents:httpcomponents-client:4.5.7")
     implementation("org.jfree:jfreechart:1.0.19")
     implementation("org.swinglabs:swingx:1.6.1")
+
+    implementation("net.sf.ehcache:ehcache-core:2.6.11")
     
     implementation("org.openmicroscopy:omero-java-gateway:5.5.0-m3") {
         // Conflicts with `net.java.dev.jna`
         exclude group: "com.sun.jna", module: "jna"
-        exclude group: "org.springframework"
     }
 }
 
