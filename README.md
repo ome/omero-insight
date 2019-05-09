@@ -91,7 +91,7 @@
   
   #### WiX (required to build .msi installer):
   
-  1. Download and install [WiX 3.0 or greater](http://wix.sf.net)
+  1. Download and install [WiX 3.0 or greater](http://wixtoolset.org/)
   2. Add WiX to the PATH
   
   To run the application packager, from the command line enter:
