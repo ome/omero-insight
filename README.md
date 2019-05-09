@@ -64,6 +64,12 @@
   [`javapackager`](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javapackager.html) or
   an [OpenJFX SDK](https://gluonhq.com/products/javafx/) matching the version of the system JDK
   is required (particularly if you intend to build with JDK 11 or higher).
+  If you are using [Homebrew](https://brew.sh/), you can install [AdoptOpenJdk 11](https://adoptopenjdk.net/).
+  To install run:
+
+      brew cask install adoptopenjdk
+
+
   
   ### Windows
   
