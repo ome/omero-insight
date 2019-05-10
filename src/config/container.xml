@@ -43,9 +43,9 @@
       <port>4063</port>
       <portSSL>4064</portSSL>
       <!-- Indicates the data transfer is encrypted (slower).
-      The default value is false
+      The default value is true
       -->
-      <encrypted configurable="true">false</encrypted>
+      <encrypted configurable="true">true</encrypted>
     </structuredEntry>
 
     <!-- the value corresponding to the agent defined as the master
