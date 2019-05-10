@@ -48,8 +48,9 @@
       gradle build
   
   This will compile, build, test and create a distribution bundle.
-  To run OMERO.insight from the distribution bundle. Unzip omero-insight.zip,
-  go to the omero-insight directory, from the command line, enter for example:
+  To run OMERO.insight from the distribution bundle unzip
+  `omero-insight.zip` then go to the `omero-insight` directory and from
+  the command line enter, for example:
 
      bin/omero-insight
 
