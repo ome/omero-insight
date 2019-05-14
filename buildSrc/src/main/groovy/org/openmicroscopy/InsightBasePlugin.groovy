@@ -105,7 +105,8 @@ class InsightBasePlugin implements Plugin<Project> {
             void execute(Jar jar) {
                 // This might not be the best way to ensure a parity of names
                 Jar jarTask = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
-                String imageJName = jarTask.archiveBaseName.get().replace("insight", "imagej")
+                String imageJName = jarTask.archiveBaseName.get().replace("insight", "ij")
+                imageJName = imageJName.replace("-", "_")
 
                 jar.setDescription("Assembles a jar for use with ImageJ")
                 jar.setGroup(GROUP_BUILD)
