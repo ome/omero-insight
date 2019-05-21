@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.login.ServerEditor 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2014 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2019 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -485,7 +485,7 @@ public class ServerEditor
 	}
 	
 	/**
-	 * Enables or not the {@link #finishButton}.
+	 * Enables or not the finishButton.
 	 * 
 	 * @param row			The selected row.
 	 * @param previousRow 	The previously selected row.
@@ -587,6 +587,7 @@ public class ServerEditor
 		if (row == -1) return null;
 		String v = (String) table.getValueAt(row, 1);
 		if (v == null) return null;
+		v = v.replaceAll("^https?://", "");
 		String trim = v.trim();
 		if (trim.length() == 0) return null;
 		return trim;
@@ -669,6 +670,7 @@ public class ServerEditor
 		String v;
 		for (int i = 0; i < table.getRowCount(); i++) {
 			v = (String) table.getValueAt(i, 1);
+			v = v.replaceAll("^https?://", "");
 			if (v != null && v.trim().length() > 0)
 				l.put(v, (String) table.getValueAt(i, 2)); 
 		}
