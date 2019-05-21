@@ -587,12 +587,26 @@ public class ServerEditor
 		if (row == -1) return null;
 		String v = (String) table.getValueAt(row, 1);
 		if (v == null) return null;
-		v = v.replaceAll("^https?://", "");
-		String trim = v.trim();
+		String trim = checkServerName(v);
 		if (trim.length() == 0) return null;
 		return trim;
 	}
-	
+
+	/**
+	 * Extracts the server name if an URL has
+	 * been entered.
+	 * @param s The provided 'server name'
+	 * @return The sanitized server name
+	 */
+	private String checkServerName(String s) {
+		s = s.trim();
+		s = s.replaceAll("^https?://", "");
+		if (s.indexOf('/') > 0) {
+			s = s.substring(0, s.indexOf('/'));
+		}
+		return s;
+	}
+
 	/**
 	 * Returns the value of the selected port.
 	 * 
@@ -670,9 +684,8 @@ public class ServerEditor
 		String v;
 		for (int i = 0; i < table.getRowCount(); i++) {
 			v = (String) table.getValueAt(i, 1);
-			v = v.replaceAll("^https?://", "");
 			if (v != null && v.trim().length() > 0)
-				l.put(v, (String) table.getValueAt(i, 2)); 
+				l.put(checkServerName(v), (String) table.getValueAt(i, 2));
 		}
 			
 		if (activeServer != null && l.get(activeServer) == null) 
