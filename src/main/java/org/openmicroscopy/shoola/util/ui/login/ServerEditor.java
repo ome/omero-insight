@@ -599,7 +599,7 @@ public class ServerEditor
 	 * @return The sanitized server name
 	 */
 	private String checkServerName(String s) {
-		s = s.trim();
+		s = s.trim().toLowerCase();
 		s = s.replaceAll("^https?://", "");
 		if (s.indexOf('/') > 0) {
 			s = s.substring(0, s.indexOf('/'));
