@@ -33,6 +33,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -596,15 +598,15 @@ public class ServerEditor
 	 * Extracts the server name if an URL has
 	 * been entered.
 	 * @param s The provided 'server name'
-	 * @return The sanitized server name
+	 * @return The host name
 	 */
 	private String checkServerName(String s) {
-		s = s.trim().toLowerCase();
-		s = s.replaceAll("^https?://", "");
-		if (s.indexOf('/') > 0) {
-			s = s.substring(0, s.indexOf('/'));
+		try {
+			URL url = new URL(s);
+			return url.getHost();
+		} catch (MalformedURLException e) {
+			return s;
 		}
-		return s;
 	}
 
 	/**
