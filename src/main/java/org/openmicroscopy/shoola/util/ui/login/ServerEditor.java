@@ -602,6 +602,7 @@ public class ServerEditor
 	 */
 	private String checkServerName(String s) {
 		s = s.trim();
+		s = s.replaceAll("/+$", "");
 		try {
 			URL url = new URL(s);
 			return url.getHost();
