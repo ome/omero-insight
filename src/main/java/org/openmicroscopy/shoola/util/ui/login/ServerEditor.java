@@ -601,6 +601,7 @@ public class ServerEditor
 	 * @return The host name
 	 */
 	private String checkServerName(String s) {
+		s = s.trim();
 		try {
 			URL url = new URL(s);
 			return url.getHost();
