@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.login.ServerEditor 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2014 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2019 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -485,7 +487,7 @@ public class ServerEditor
 	}
 	
 	/**
-	 * Enables or not the {@link #finishButton}.
+	 * Enables or not the finishButton.
 	 * 
 	 * @param row			The selected row.
 	 * @param previousRow 	The previously selected row.
@@ -587,11 +589,28 @@ public class ServerEditor
 		if (row == -1) return null;
 		String v = (String) table.getValueAt(row, 1);
 		if (v == null) return null;
-		String trim = v.trim();
+		String trim = checkServerName(v);
 		if (trim.length() == 0) return null;
 		return trim;
 	}
-	
+
+	/**
+	 * Extracts the server name if an URL has
+	 * been entered.
+	 * @param s The provided 'server name'
+	 * @return The host name
+	 */
+	private String checkServerName(String s) {
+		s = s.trim();
+		s = s.replaceAll("/+$", "");
+		try {
+			URL url = new URL(s);
+			return url.getHost();
+		} catch (MalformedURLException e) {
+			return s;
+		}
+	}
+
 	/**
 	 * Returns the value of the selected port.
 	 * 
@@ -670,7 +689,7 @@ public class ServerEditor
 		for (int i = 0; i < table.getRowCount(); i++) {
 			v = (String) table.getValueAt(i, 1);
 			if (v != null && v.trim().length() > 0)
-				l.put(v, (String) table.getValueAt(i, 2)); 
+				l.put(checkServerName(v), (String) table.getValueAt(i, 2));
 		}
 			
 		if (activeServer != null && l.get(activeServer) == null) 
