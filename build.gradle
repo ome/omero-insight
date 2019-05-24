@@ -4,7 +4,7 @@ plugins {
     id "org.openmicroscopy.publish"
     id "org.openmicroscopy.distribute"
     id "org.openmicroscopy.packager"
-    id "org.openmicroscopy.additional-repositories" version "5.5.0-m5"
+    id "org.openmicroscopy.additional-repositories" version "5.5.1"
 }
 
 group = "org.openmicroscopy"
@@ -43,7 +43,7 @@ dependencies {
 
     implementation("net.sf.ehcache:ehcache-core:2.6.11")
 
-    implementation("org.openmicroscopy:omero-gateway:5.5.0-m6") {
+    implementation("org.openmicroscopy:omero-gateway:5.5.0") {
         // Conflicts with `net.java.dev.jna`
         exclude group: "com.sun.jna", module: "jna"
     }
