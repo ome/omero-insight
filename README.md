@@ -59,7 +59,7 @@
   __Note, a Java runtime is included with the bundled installer. It is recommended to use
   [OpenJDK](https://openjdk.java.net) as the system's JRE to avoid potential licensing issues.__
   
-  In order to be able to successfully create an installer a JDK with 
+  In order to be able to successfully create an installer, a JDK with
   [`javapackager`](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javapackager.html) or
   an [OpenJFX SDK](https://gluonhq.com/products/javafx/) matching the version of the system JDK
   is required (particularly if you intend to build with JDK 11 or higher).
