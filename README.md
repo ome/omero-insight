@@ -99,13 +99,13 @@
   
   **Inno Setup (required to create .exe installer):**
   
-  1. Download and install [Inno Setup](http://www.jrsoftware.org/isdl.php)
-  2. Add the Inno Setup install directory (default `C:\Program Files (x86)\Inno Setup 5`) to the PATH
+  1. Download and install [Inno Setup](http://www.jrsoftware.org/isdl.php).
+  2. Add the Inno Setup install directory (default `C:\Program Files (x86)\Inno Setup 5`) to the PATH.
   
   **WiX (required to build .msi installer):**
   
-  1. Download and install [WiX 3.0 or greater](http://wixtoolset.org/)
-  2. Add WiX to the PATH
+  1. Download and install [WiX 3.0 or greater](http://wixtoolset.org/).
+  2. Add WiX to the PATH.
  
   ### Packaging
   
@@ -122,15 +122,15 @@
   Developing OMERO.insight
   ------------------------
 
-  See https://docs.openmicroscopy.org/latest/omero/developers/index.html#insight
+  See https://docs.openmicroscopy.org/latest/omero/developers/index.html#insight.
 
   Licensing
   ---------
 
   This software is licensed under the terms of the GNU General Public
-  License (GPL), the full text of which can be found in /lib/licenses/gpl.txt or
-  the top level LICENSE.txt. See /lib/licenses/README and
-  https://www.openmicroscopy.org/licensing/ for further details.
+  License (GPL), the full text of which can be found in
+  the top level LICENSE.txt. See https://www.openmicroscopy.org/licensing/
+  for further details.
 
 
   Copyright
