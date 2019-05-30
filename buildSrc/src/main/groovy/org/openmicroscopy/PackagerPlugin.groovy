@@ -31,6 +31,7 @@ import org.gradle.api.tasks.Sync
 import org.gradle.jvm.tasks.Jar
 import org.openmicroscopy.extensions.InstallOptions
 import org.openmicroscopy.extensions.InstallOptionsContainer
+import org.openmicroscopy.extensions.implementation.WinOptions
 
 @CompileStatic
 class PackagerPlugin implements Plugin<Project> {
@@ -51,13 +52,13 @@ class PackagerPlugin implements Plugin<Project> {
         InstallOptions main = installOptionsContainer.getByName(JavaPackagerPlugin.MAIN_DEPLOY_NAME)
         main.icon = "${project.projectDir}/icons/omeroInsight"
         main.arguments = ["container.xml"]
+        main.exe(winOptions)
+        main.msi(winOptions)
 
         createImporterInstaller(installOptionsContainer)
     }
 
     private void createImporterInstaller(InstallOptionsContainer container) {
-        final String[] outputTypes = Platform.installerTypesAsString
-
         JavaExec exec = project.tasks.getByName(InsightPlugin.TASK_RUN_IMPORTER) as JavaExec
         Jar jar = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
         Sync distTask = project.tasks.getByName(
@@ -67,7 +68,6 @@ class PackagerPlugin implements Plugin<Project> {
         container.create("importer", new Action<InstallOptions>() {
             @Override
             void execute(InstallOptions importer) {
-                importer.outputTypes = outputTypes
                 importer.icon = "${project.projectDir}/icons/omeroImporter.ico"
                 importer.arguments = ["containerImporter.xml"]
                 importer.mainClassName = exec.main
@@ -78,15 +78,24 @@ class PackagerPlugin implements Plugin<Project> {
                 importer.applicationName = distTask.destinationDir.name
                 importer.sourceDir = distTask.destinationDir
                 importer.sourceFiles.from(project.fileTree(distTask.destinationDir).include("**/*.*"))
+                importer.exe(winOptions)
+                importer.msi(winOptions)
             }
         })
 
-        project.afterEvaluate {
-            outputTypes.each { String type ->
-                String name = JavaPackagerPlugin.makeTaskName("importer", type)
-                project.tasks.named(name).configure { Task task ->
-                    task.dependsOn(distTask)
-                }
+        Platform.installerTypesAsString.each { String type ->
+            String name = JavaPackagerPlugin.makeTaskName("importer", type)
+            project.tasks.named(name).configure { Task task ->
+                task.dependsOn(distTask)
+            }
+        }
+    }
+
+    static Action<? extends WinOptions> getWinOptions() {
+        return new Action<WinOptions>() {
+            @Override
+            void execute(WinOptions opts) {
+                opts.startMenuGroup = "OMERO insight"
             }
         }
     }
