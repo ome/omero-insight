@@ -4496,7 +4496,7 @@ class OMEROGateway
 		    service = gw.getSearchService(ctx);
 			service.clearQueries();
 			service.setAllowLeadingWildcard(true);
-			service.setCaseSentivice(context.isCaseSensitive());
+			service.setCaseSensitive(context.isCaseSensitive());
 			Timestamp start = context.getStart();
 			Timestamp end = context.getEnd();
 			//Sets the time
