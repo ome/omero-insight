@@ -188,15 +188,21 @@ public class AdvancedFinder
 			v = convertScope((Integer) i.next());
 			if (v != null) scope.add(v);
 		}
-		if (scope.size() == 0) {
-			scope.addAll(SearchParameters.ALL_SCOPE);
-		}
 		List<Class<? extends DataObject>> types = new ArrayList<Class<? extends DataObject>>();
 		i = ctx.getType().iterator();
 		Class<? extends DataObject> k;
+		boolean isImage = false;
 		while (i.hasNext()) {
 			k = convertType((Integer) i.next());
-			if (k != null) types.add(k);
+			if (k != null) {
+				types.add(k);
+				if (k.equals(ImageData.class)) {
+					isImage = true;
+				}
+			}
+		}
+		if (scope.size() == 0 && isImage) {
+			scope.addAll(SearchParameters.ALL_SCOPE);
 		}
 		
 		SearchParameters searchContext = new SearchParameters(scope, types, query);
