@@ -175,7 +175,7 @@ public class AdvancedFinder
 				"or a valid time interval.");
 			return;
 		}
-		
+
 		List<Integer> context = ctx.getContext();
 		if (context == null || context.size() == 0) {
 			context = new ArrayList<Integer>();
@@ -187,6 +187,9 @@ public class AdvancedFinder
 		while (i.hasNext()) {
 			v = convertScope((Integer) i.next());
 			if (v != null) scope.add(v);
+		}
+		if (scope.size() == 0) {
+			scope.addAll(SearchParameters.ALL_SCOPE);
 		}
 		List<Class<? extends DataObject>> types = new ArrayList<Class<? extends DataObject>>();
 		i = ctx.getType().iterator();
