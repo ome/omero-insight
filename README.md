@@ -16,7 +16,6 @@
 
     + build: This directory contains the tools to compile, run, test and
              deliver the application.
-    + config:
     + src: Contains the application source files, various configuration
            files required by the application to run and the test code.
     + README: This file.
