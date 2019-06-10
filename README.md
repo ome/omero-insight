@@ -2,7 +2,7 @@
   ---------------------
 
   The OMERO.insight Project is a sub-project of the Open Microscopy Environment
-  Project (OME, https://www.openmicroscopy.org/) that focuses on delivering a
+  Project, [OME](https://www.openmicroscopy.org/) that focuses on delivering a
   client for the visualization and manipulation of both image data and metadata
   maintained at an OMERO server site.
   OMERO.insight is completely written in Java.
@@ -14,12 +14,10 @@
   This directory is the repository of the software artifacts of the
   OMERO.insight Project. Its contents are as follows:
 
-    + build: This directory contains the tools to compile, run, test, and
-          deliver the application.
-    + config: Various configuration files required by the application to run.
-    + launch: Its sub-dirs contain further resources to build platform-specific distributions.
-    + src: Contains the application source files.
-    + test: The test code.
+    + build: This directory contains the tools to compile, run, test and
+             deliver the application.
+    + src: Contains the application source files, various configuration
+           files required by the application to run and the test code.
     + README: This file.
 
   Building OMERO.insight
@@ -52,7 +50,7 @@
      gradle runImporter
      
   Packaging OMERO.insight
-  ----------------------   
+  -----------------------
   
   OMERO.insight uses the Gradle [java-packager-plugin](https://github.com/ome/omero-javapackager-plugin)
   and is capable of creating an installer for the platform the deployment task is run on. 
