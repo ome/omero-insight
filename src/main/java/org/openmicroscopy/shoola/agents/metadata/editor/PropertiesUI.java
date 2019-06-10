@@ -687,12 +687,16 @@ public class PropertiesUI
     		label = UIUtilities.setTextFont(EditorUtil.IMPORTED_DATE+":",
         			Font.BOLD, size);
         	value = UIUtilities.createComponent(null);
-        	v =  UIUtilities.formatDefaultDate(image.getInserted());
-        	value.setText(v);
-        	content.add(label, c);
-        	c.gridx++;
-        	content.add(value, c);
-        	c.gridy++; 
+			Timestamp time = image.getInserted();
+        	if (time != null) {
+				v =  UIUtilities.formatDefaultDate(time);
+				value.setText(v);
+				content.add(label, c);
+				c.gridx++;
+				content.add(value, c);
+				c.gridy++;
+			}
+
 		} catch (Exception e) {
 		}
     	
