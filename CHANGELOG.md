@@ -1,3 +1,9 @@
+5.5.1 (June 2019)
+-----------------
+
+- Remove script non longer required.
+- Improve packaging to allow shortcut for executable.
+
 5.5.0 (May 2019)
 ----------------
 
