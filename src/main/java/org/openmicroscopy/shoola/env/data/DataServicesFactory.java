@@ -79,6 +79,8 @@ import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.GroupData;
 
+import ome.system.UpgradeCheck;
+
 
 /** 
  * A factory for the {@link OmeroDataService} and the {@link OmeroImageService}.
@@ -476,6 +478,9 @@ public class DataServicesFactory
 		if (CommonsLangUtils.isBlank(name)) {
             name = LookupNames.MASTER_INSIGHT;
         }
+        if (name.startsWith("OMERO.")) {
+            name = name.substring("OMERO.".length());
+        }
 		LoginCredentials cred = new LoginCredentials();
         cred.getUser().setUsername(uc.getUserName());
         cred.getUser().setPassword(uc.getPassword());
@@ -501,6 +506,7 @@ public class DataServicesFactory
         //Check if client and server are compatible.
         String version = omeroGateway.getServerVersion();
 
+
         // TODO: Can be removed for >= 5.5.0 release
         container.getRegistry().bind(LookupNames.SERVER_5_4_8_OR_LATER, VersionCompare.compare(version, "5.4.8") >= 0);
         
@@ -512,6 +518,14 @@ public class DataServicesFactory
             val = cs.getConfigValue("omero.pixeldata.max_plane_height");
             if (val != null)
                 container.getRegistry().bind(LookupNames.MAX_PLANE_HEIGHT, Integer.parseInt(val));
+        } catch (ServerError e2) {
+            registry.getLogger().warn(this, "Could not access ConfigService");
+        }
+
+        //Register insight
+        try {
+            UpgradeCheck check = new UpgradeCheck(cs.getConfigValue("omero.upgrades.url"), clientVersion, name);
+            check.run();
         } catch (ServerError e2) {
             registry.getLogger().warn(this, "Could not access ConfigService");
         }
