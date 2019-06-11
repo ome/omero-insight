@@ -318,10 +318,13 @@ public class OMETreeTable
 	 */
 	public void expandPath(TreePath path)
 	{
-		super.expandPath(path);
-		if (path == null) return;
+		if (path == null)
+			return;
 		OMETreeNode node = (OMETreeNode) path.getLastPathComponent();
-		if (node != null) node.setExpanded(true);
+		if (node != null && !node.isExpanded()) {
+			node.setExpanded(true);
+			super.expandPath(path);
+		}
 	}
 	
 	/**
