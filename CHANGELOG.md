@@ -1,3 +1,9 @@
+5.5.2 (June 2019)
+-----------------
+
+- Check for upgrade.
+- Fix issue when submitting feedback.
+
 5.5.1 (June 2019)
 -----------------
 
