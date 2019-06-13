@@ -473,6 +473,7 @@ public class DataServicesFactory
 	    
 		if (uc == null)
             throw new NullPointerException("No user credentials.");
+        LogMessage msg;
 		String name = (String) 
 		container.getRegistry().lookup(LookupNames.MASTER);
 		LoginCredentials cred = new LoginCredentials();
@@ -521,7 +522,8 @@ public class DataServicesFactory
             UpgradeCheck check = new UpgradeCheck(cs.getConfigValue("omero.upgrades.url"), clientVersion, name);
             check.run();
         } catch (ServerError e2) {
-            registry.getLogger().warn(this, "Could not access ConfigService");
+            msg = new LogMessage("Could not access ConfigService", e2);
+            registry.getLogger().warn(this, msg);
         }
 
         //Post an event to indicate that the user is connected.
@@ -531,7 +533,7 @@ public class DataServicesFactory
         compatible = true;
         //Register into log file.
         Map<String, String> info = ProxyUtil.collectOsInfoAndJavaVersion();
-        LogMessage msg = new LogMessage();
+        msg = new LogMessage();
         msg.println("Server version: "+version);
         msg.println("Client version: "+clientVersion);
         Entry<String, String> entry;
@@ -561,7 +563,8 @@ public class DataServicesFactory
                 }
             }
         } catch (DSAccessException e1) {
-            registry.getLogger().warn(this, "Could not load omero client properties from the server");
+            msg = new LogMessage("Could not load omero client properties from the server", e1);
+            registry.getLogger().warn(this, msg);
         }
         
         Collection<GroupData> groups;
@@ -653,7 +656,8 @@ public class DataServicesFactory
                 registry.bind(LookupNames.PRIV_EDIT_GROUP, false);
                 registry.bind(LookupNames.PRIV_GROUP_ADD, false);
                 registry.bind(LookupNames.PRIV_MOVE_GROUP, false);
-                registry.getLogger().warn(this, "Could not retrieve admin priviledges.");
+                msg = new LogMessage("Could not retrieve admin privileges.", e1);
+                registry.getLogger().warn(this, msg);
             }
         	
 		} catch (DSAccessException e) {
