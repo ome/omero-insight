@@ -488,12 +488,7 @@ public class DataServicesFactory
         cred.setCheckNetwork(true);
         cred.setCompression(determineCompression(uc.getSpeedLevel()));
         cred.setEncryption(uc.isEncrypted());
-        ExperimenterData exp = null;
-        try {
-            exp = omeroGateway.connect(cred);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        ExperimenterData exp = omeroGateway.connect(cred);
 
 
 		//check client server version
