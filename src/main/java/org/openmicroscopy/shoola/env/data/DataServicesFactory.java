@@ -476,6 +476,9 @@ public class DataServicesFactory
         LogMessage msg;
 		String name = (String) 
 		container.getRegistry().lookup(LookupNames.MASTER);
+        if (CommonsLangUtils.isBlank(name)) {
+            name = LookupNames.MASTER_INSIGHT;
+        }
 		LoginCredentials cred = new LoginCredentials();
         cred.getUser().setUsername(uc.getUserName());
         cred.getUser().setPassword(uc.getPassword());
@@ -512,9 +515,7 @@ public class DataServicesFactory
             val = cs.getConfigValue("omero.pixeldata.max_plane_height");
             if (val != null)
                 container.getRegistry().bind(LookupNames.MAX_PLANE_HEIGHT, Integer.parseInt(val));
-            if (CommonsLangUtils.isBlank(name)) {
-                name = LookupNames.MASTER_INSIGHT;
-            }
+
             if (name.startsWith("OMERO.")) {
                 name = name.substring("OMERO.".length());
             }
