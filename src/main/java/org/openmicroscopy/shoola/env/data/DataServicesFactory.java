@@ -488,8 +488,13 @@ public class DataServicesFactory
         cred.setCheckNetwork(true);
         cred.setCompression(determineCompression(uc.getSpeedLevel()));
         cred.setEncryption(uc.isEncrypted());
-        
-		ExperimenterData exp = omeroGateway.connect(cred);
+        ExperimenterData exp = null;
+        try {
+            exp = omeroGateway.connect(cred);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
 
 		//check client server version
 		compatible = true;
@@ -516,11 +521,12 @@ public class DataServicesFactory
             if (val != null)
                 container.getRegistry().bind(LookupNames.MAX_PLANE_HEIGHT, Integer.parseInt(val));
 
+            String checkname = name;
             if (name.startsWith("OMERO.")) {
-                name = name.substring("OMERO.".length());
+                checkname = name.substring("OMERO.".length());
             }
             //Register insight
-            UpgradeCheck check = new UpgradeCheck(cs.getConfigValue("omero.upgrades.url"), clientVersion, name);
+            UpgradeCheck check = new UpgradeCheck(cs.getConfigValue("omero.upgrades.url"), clientVersion, checkname);
             check.run();
         } catch (ServerError e2) {
             msg = new LogMessage("Could not access ConfigService", e2);
