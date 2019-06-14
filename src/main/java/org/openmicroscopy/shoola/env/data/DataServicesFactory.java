@@ -473,13 +473,11 @@ public class DataServicesFactory
 	    
 		if (uc == null)
             throw new NullPointerException("No user credentials.");
+        LogMessage msg;
 		String name = (String) 
 		container.getRegistry().lookup(LookupNames.MASTER);
-		if (CommonsLangUtils.isBlank(name)) {
+        if (CommonsLangUtils.isBlank(name)) {
             name = LookupNames.MASTER_INSIGHT;
-        }
-        if (name.startsWith("OMERO.")) {
-            name = name.substring("OMERO.".length());
         }
 		LoginCredentials cred = new LoginCredentials();
         cred.getUser().setUsername(uc.getUserName());
@@ -490,8 +488,8 @@ public class DataServicesFactory
         cred.setCheckNetwork(true);
         cred.setCompression(determineCompression(uc.getSpeedLevel()));
         cred.setEncryption(uc.isEncrypted());
-        
-		ExperimenterData exp = omeroGateway.connect(cred);
+        ExperimenterData exp = omeroGateway.connect(cred);
+
 
 		//check client server version
 		compatible = true;
@@ -506,7 +504,6 @@ public class DataServicesFactory
         //Check if client and server are compatible.
         String version = omeroGateway.getServerVersion();
 
-
         // TODO: Can be removed for >= 5.5.0 release
         container.getRegistry().bind(LookupNames.SERVER_5_4_8_OR_LATER, VersionCompare.compare(version, "5.4.8") >= 0);
         
@@ -518,16 +515,17 @@ public class DataServicesFactory
             val = cs.getConfigValue("omero.pixeldata.max_plane_height");
             if (val != null)
                 container.getRegistry().bind(LookupNames.MAX_PLANE_HEIGHT, Integer.parseInt(val));
-        } catch (ServerError e2) {
-            registry.getLogger().warn(this, "Could not access ConfigService");
-        }
 
-        //Register insight
-        try {
-            UpgradeCheck check = new UpgradeCheck(cs.getConfigValue("omero.upgrades.url"), clientVersion, name);
+            String checkname = name;
+            if (name.startsWith("OMERO.")) {
+                checkname = name.substring("OMERO.".length());
+            }
+            //Register insight
+            UpgradeCheck check = new UpgradeCheck(cs.getConfigValue("omero.upgrades.url"), clientVersion, checkname);
             check.run();
         } catch (ServerError e2) {
-            registry.getLogger().warn(this, "Could not access ConfigService");
+            msg = new LogMessage("Could not access ConfigService", e2);
+            registry.getLogger().warn(this, msg);
         }
 
         //Post an event to indicate that the user is connected.
@@ -537,7 +535,7 @@ public class DataServicesFactory
         compatible = true;
         //Register into log file.
         Map<String, String> info = ProxyUtil.collectOsInfoAndJavaVersion();
-        LogMessage msg = new LogMessage();
+        msg = new LogMessage();
         msg.println("Server version: "+version);
         msg.println("Client version: "+clientVersion);
         Entry<String, String> entry;
@@ -567,7 +565,8 @@ public class DataServicesFactory
                 }
             }
         } catch (DSAccessException e1) {
-            registry.getLogger().warn(this, "Could not load omero client properties from the server");
+            msg = new LogMessage("Could not load omero client properties from the server", e1);
+            registry.getLogger().warn(this, msg);
         }
         
         Collection<GroupData> groups;
@@ -659,7 +658,8 @@ public class DataServicesFactory
                 registry.bind(LookupNames.PRIV_EDIT_GROUP, false);
                 registry.bind(LookupNames.PRIV_GROUP_ADD, false);
                 registry.bind(LookupNames.PRIV_MOVE_GROUP, false);
-                registry.getLogger().warn(this, "Could not retrieve admin priviledges.");
+                msg = new LogMessage("Could not retrieve admin privileges.", e1);
+                registry.getLogger().warn(this, msg);
             }
         	
 		} catch (DSAccessException e) {
