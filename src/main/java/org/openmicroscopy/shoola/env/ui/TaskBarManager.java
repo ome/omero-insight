@@ -185,20 +185,22 @@ public class TaskBarManager
 	 */
 	private String loadAbout(String file)
 	{
+		String version = (String) container.getRegistry().lookup(LookupNames.VERSION);
 		String message;
-		try {
-			InputStream fis = IOUtil.readConfigFile(file);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+		try (InputStream fis = IOUtil.readConfigFile(file);
+				BufferedReader in = new BufferedReader(new InputStreamReader(fis))) {
 			StringBuffer buffer = new StringBuffer();
 			int number = 0;
 			String line;
 			while (true) {
                 line = in.readLine();
                 if (line == null) break;
-                if (number != 0) buffer.append(line);
+                if (number != 0) {
+                	line.replaceAll("\\@VERSION\\@", version);
+                	buffer.append(line);
+				}
                 number++;
             }
-			in.close();
             message = buffer.toString();
 		} catch (Exception e) {
 			message = "Error: Cannot find the About file.";
