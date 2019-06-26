@@ -494,8 +494,12 @@ public class DataServicesFactory
 		ExperimenterData exp = omeroGateway.connect(cred);
 		//Record the session key if run as plugin
         String sessionId = omeroGateway.getSessionId(exp);
-        Recorder recorder = new Recorder(false);
-        recorder.record("omero.session:"+sessionId);
+
+        Integer plugin = (Integer) container.getRegistry().lookup(LookupNames.PLUGIN);
+        if (plugin != null && plugin.intValue() > 0) {
+            Recorder recorder = new Recorder(false);
+            recorder.record("omero.session:"+sessionId);
+        }
 
 		//check client server version
 		compatible = true;
