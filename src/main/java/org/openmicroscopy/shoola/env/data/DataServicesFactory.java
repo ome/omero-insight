@@ -81,6 +81,8 @@ import omero.gateway.model.GroupData;
 
 import ome.system.UpgradeCheck;
 
+import ij.plugin.frame.Recorder;
+
 
 /** 
  * A factory for the {@link OmeroDataService} and the {@link OmeroImageService}.
@@ -492,7 +494,8 @@ public class DataServicesFactory
 		ExperimenterData exp = omeroGateway.connect(cred);
 		//Record the session key if run as plugin
         String sessionId = omeroGateway.getSessionId(exp);
-        ij.plugin.frame.Recorder.record("omero.session:"+sessionId);
+        Recorder recorder = new Recorder(false);
+        recorder.record("omero.session:"+sessionId);
 
 		//check client server version
 		compatible = true;
@@ -501,7 +504,7 @@ public class DataServicesFactory
     	String clientVersion = "";
     	if (v != null && v instanceof String)
     		clientVersion = (String) v;
-    	if (uc.getUserName().equals(omeroGateway.getSessionId(exp))) {
+    	if (uc.getUserName().equals(sessionId)) {
     	    container.getRegistry().bind(LookupNames.SESSION_KEY, Boolean.TRUE);
     	}
         //Check if client and server are compatible.

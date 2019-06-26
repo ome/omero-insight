@@ -264,7 +264,7 @@ class BrowserModel
                 ids += d.getUserObjectId()+",";
             }
             record +=type+"="+ids;
-            ij.plugin.frame.Recorder.record(record);
+            ij.plugin.frame.Recorder.getInstance().record(record);
         }
     }
     

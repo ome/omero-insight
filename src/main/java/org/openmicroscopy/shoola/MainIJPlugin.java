@@ -216,8 +216,8 @@ implements PlugIn
     }
 
     /**
-     *
-     * @return
+     * Returns the session Id.
+     * @return See above.
      */
     public static String getSessionId() {
         Recorder recorder = Recorder.getInstance();
@@ -241,6 +241,10 @@ implements PlugIn
         return session;
     }
 
+    /**
+     * Returns the selected objects: key: object type, values: list of ids.
+     * @return See above.
+     */
     public static Map getSelectedObjects() {
         Recorder recorder = Recorder.getInstance();
         String text = recorder.getText();
