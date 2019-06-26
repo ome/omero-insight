@@ -196,7 +196,7 @@ public class TaskBarManager
                 line = in.readLine();
                 if (line == null) break;
                 if (number != 0) {
-                	line.replaceAll("\\@VERSION\\@", version);
+                	line = line.replaceAll("\\@VERSION\\@", version);
                 	buffer.append(line);
 				}
                 number++;
