@@ -215,30 +215,42 @@ implements PlugIn
         }
     }
 
+    private static String parseValue(String refKey) {
+        Recorder recorder = Recorder.getInstance();
+        String text = recorder.getText();
+        String lines[] = text.split("\\r?\\n");
+        String value = null;
+        int index = 0;
+        int n = lines.length;
+        while (value == null || index >= n) {
+            String cmd = lines[index];
+            String[] values = cmd.split(":");
+            if (values.length == 2) {
+                String key = values[0];
+                if (key.trim().equals(refKey)) {
+                    //remove recorder stuff
+                    value  = values[1].trim().replace("();", "");
+                }
+            }
+            index++;
+        }
+        return value;
+    }
+
     /**
      * Returns the session Id.
      * @return See above.
      */
     public static String getSessionId() {
-        Recorder recorder = Recorder.getInstance();
-        String text = recorder.getText();
-        String lines[] = text.split("\\r?\\n");
-        String session = null;
-        int index = 0;
-        int n = lines.length;
-        while (session == null || index >= n) {
-            String cmd = lines[index];
-            String[] values = cmd.split(":");
-            if (values.length == 2) {
-                String key = values[0];
-                if (key.trim().equals("omero.session")) {
-                    //remove recorder stuff
-                    session  = values[1].trim().replace("();", "");
-                }
-            }
-            index++;
-        }
-        return session;
+        return parseValue("omero.session");
+    }
+
+    /**
+     * Returns the hostname.
+     * @return See above.
+     */
+    public static String getHost() {
+        return parseValue("omero.host");
     }
 
     /**

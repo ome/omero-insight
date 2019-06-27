@@ -484,7 +484,7 @@ public class DataServicesFactory
 		LoginCredentials cred = new LoginCredentials();
         cred.getUser().setUsername(uc.getUserName());
         cred.getUser().setPassword(uc.getPassword());
-        cred.getServer().setHostname( uc.getHostName());
+        cred.getServer().setHostname(uc.getHostName());
         cred.getServer().setPort(uc.getPort());
         cred.setApplicationName(name);
         cred.setCheckNetwork(true);
@@ -499,6 +499,8 @@ public class DataServicesFactory
         if (plugin != null && plugin.intValue() > 0) {
             Recorder recorder = new Recorder(false);
             recorder.record("omero.session:"+sessionId);
+            recorder.record("omero.host:"+uc.getHostName());
+            recorder.record("omero.host:"+uc.getPort());
         }
 
 		//check client server version
