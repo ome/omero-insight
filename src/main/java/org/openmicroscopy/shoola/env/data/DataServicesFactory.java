@@ -500,7 +500,7 @@ public class DataServicesFactory
             Recorder recorder = new Recorder(false);
             recorder.record("omero.session:"+sessionId);
             recorder.record("omero.host:"+uc.getHostName());
-            recorder.record("omero.host:"+uc.getPort());
+            recorder.record("omero.port:"+uc.getPort());
         }
 
 		//check client server version

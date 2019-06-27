@@ -254,6 +254,16 @@ implements PlugIn
     }
 
     /**
+     * Returns the hostname.
+     * @return See above.
+     */
+    public static int getPort() {
+        String value = parseValue("omero.port");
+        return Integer.valueOf(value);
+    }
+
+
+    /**
      * Returns the selected objects: key: object type, values: list of ids.
      * @return See above.
      */
