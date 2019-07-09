@@ -43,7 +43,7 @@ dependencies {
 
     implementation("net.sf.ehcache:ehcache-core:2.6.11")
 
-    implementation("org.openmicroscopy:omero-gateway:5.5.2") {
+    implementation("org.openmicroscopy:omero-gateway:5.5.3") {
         // Conflicts with `net.java.dev.jna`
         exclude group: "com.sun.jna", module: "jna"
     }
