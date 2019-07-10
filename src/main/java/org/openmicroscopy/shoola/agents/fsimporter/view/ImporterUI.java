@@ -268,10 +268,9 @@ class ImporterUI extends TopWindow
             p.add(Box.createHorizontalStrut(5));
         }
         b = new JButton(controller.getAction(ImporterControl.CANCEL_BUTTON));
-        if (visible) {
-            p.add(b);
-            p.add(Box.createHorizontalStrut(5));
-        }
+        p.add(b);
+        p.add(Box.createHorizontalStrut(5));
+
         if (!model.isMaster()) {
             p.add(new JButton(controller.getAction(
                     ImporterControl.CLOSE_BUTTON)));
