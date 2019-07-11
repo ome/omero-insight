@@ -205,7 +205,6 @@ class ImporterUIElementLight extends ImporterUIElement {
     }
 
     private void updateDisplay() {
-
         int complete = 0;
         int uploaded = 0;
         for (int i = 1; i < 7; i++) {
@@ -278,11 +277,12 @@ class ImporterUIElementLight extends ImporterUIElement {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         String name = evt.getPropertyName();
+        boolean needsUpdate = false;
         if (FileImportComponentI.IMPORT_FILES_NUMBER_PROPERTY.equals(name)) {
             // -1 to remove the entry for the folder.
             Integer v = (Integer) evt.getNewValue() - 1;
             totalToImport += v;
-            setNumberOfImport();
+            needsUpdate = true;
         } else if (FileImportComponentI.CANCEL_IMPORT_PROPERTY.equals(name)) {
             controller.cancel((FileImportComponentI) evt.getNewValue());
         } else if (Status.STEP_PROPERTY.equals(name)) {
@@ -292,19 +292,17 @@ class ImporterUIElementLight extends ImporterUIElement {
             importStatus.put(id, step);
             if (isScanning != null && isScanning)
                 isScanning = false;
+            needsUpdate = true;
         }
         else if (Status.SCANNING_PROPERTY.equals(name)) {
-            if (isScanning == null)
+            if (isScanning == null) {
                 isScanning = true;
-        }
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                updateDisplay();
+                needsUpdate = true;
             }
-        });
-        
+        }
+
+        if (needsUpdate)
+            updateDisplay();
     }
 
 }
