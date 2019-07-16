@@ -256,7 +256,7 @@ class ImporterUI extends TopWindow
     {
         JPanel p = new JPanel();
         Boolean offline = (Boolean) ImporterAgent.getRegistry().lookup(LookupNames.OFFLINE_IMPORT_ENABLED);
-        boolean visible = offline != null && offline.booleanValue();
+        boolean visible = offline == null || !offline.booleanValue();
         JButton b = new JButton(controller.getAction(ImporterControl.RETRY_BUTTON));
         if (visible) {
             p.add(b);
@@ -268,8 +268,10 @@ class ImporterUI extends TopWindow
             p.add(Box.createHorizontalStrut(5));
         }
         b = new JButton(controller.getAction(ImporterControl.CANCEL_BUTTON));
-        p.add(b);
-        p.add(Box.createHorizontalStrut(5));
+		if (visible) {
+			p.add(b);
+			p.add(Box.createHorizontalStrut(5));
+		}
 
         if (!model.isMaster()) {
             p.add(new JButton(controller.getAction(
