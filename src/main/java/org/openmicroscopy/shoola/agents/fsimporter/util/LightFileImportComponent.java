@@ -174,6 +174,15 @@ public class LightFileImportComponent implements PropertyChangeListener,
         }
     }
 
+    @Override
+    public Collection<? extends FileImportComponentI> getChildren() {
+        try {
+            return this.components.values();
+        } catch( Throwable t) {
+            return Collections.emptyList();
+        }
+    }
+
     /** Initializes the components. */
     private void initComponents() {
         status = new Status(importable.getFile());
@@ -591,24 +600,6 @@ public class LightFileImportComponent implements PropertyChangeListener,
             }
         }
         return false;
-    }
-    
-    @Override
-    public int cancelled() {
-        int c = 0;
-        if (components != null && !components.isEmpty()) {
-            Collection<LightFileImportComponent> values = components.values();
-            synchronized (components) {
-                Iterator<LightFileImportComponent> i = values.iterator();
-                while (i.hasNext()) {
-                    if (i.next().isCancelled())
-                        c++;
-                }
-            }
-        } else if (isCancelled()) {
-            c++;
-        }
-        return c;
     }
 
     /*

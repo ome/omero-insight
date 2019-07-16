@@ -174,6 +174,8 @@ public interface FileImportComponentI {
      */
     public abstract long getExperimenterID();
 
+    public abstract Collection<? extends FileImportComponentI> getChildren();
+
     /**
      * Returns the import error object.
      * 
@@ -205,13 +207,6 @@ public interface FileImportComponentI {
      */
     public abstract boolean isCancelled();
 
-    /**
-     * Returns the number of cancelled imports
-     * 
-     * @return See above.
-     */
-    public int cancelled();
-    
     /**
      * Returns <code>true</code> if the component has imports to cancel,
      * <code>false</code> otherwise.

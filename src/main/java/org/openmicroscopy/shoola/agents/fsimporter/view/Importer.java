@@ -169,16 +169,6 @@ public interface Importer
      */
     void removeImportElement(Object element);
 
-    /** Cancels any on-going import. */
-    public void cancel();
-
-    /**
-     * Cancels the loading of images.
-     * 
-     * @param id The identifier of the import element.
-     */
-    public void cancelImport(int id);
-
     /**
      * Returns <code>true</code> if errors to send, <code>false</code>
      * otherwise.
@@ -221,14 +211,6 @@ public interface Importer
      * @param fc The file to upload or <code>null</code>.
      */
     public void retryUpload(FileImportComponentI fc);
-
-    /**
-     * Returns <code>true</code> if it is the last file to import,
-     * <code>false</code> otherwise.
-     * 
-     * @return See above.
-     */
-    boolean isLastImport();
 
     /**
      * Sets the containers.
