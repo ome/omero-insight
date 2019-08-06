@@ -5918,6 +5918,7 @@ class OMEROGateway
 			} catch (Exception ex) {}
 
 			handleConnectionException(e);
+			status.markedAsFailed(e);
 			if (close) closeImport(ctx, userName);
             return new ImportException(e);
 		} finally {
