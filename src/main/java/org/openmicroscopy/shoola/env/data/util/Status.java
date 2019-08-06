@@ -370,7 +370,7 @@ public class Status implements IObserver {
         firePropertyChange(DUPLICATE_PROPERTY, null, DUPLICATE_PROPERTY);
     }
 
-    /** Marks that the upldoad failed due to connection issue. */
+    /** Marks that the upload failed due to connection issue. */
     public void markedAsFailed(Throwable e) {
         exception = new ImportException(e);
         firePropertyChange(FAILED_PROPERTY, null, e);
