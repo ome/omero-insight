@@ -78,6 +78,9 @@ public class StatusLabel extends JPanel implements PropertyChangeListener {
     private static final String OFFLINE_FAIL_TEXT =
             "Error: The file cannot be imported offline.";
 
+    /** The text indicating the failed import. */
+    public static final String FAILED_TEXT = "Failed to upload";
+
     /** The width of the upload bar. */
     private static final int WIDTH = 200;
 
@@ -235,9 +238,9 @@ public class StatusLabel extends JPanel implements PropertyChangeListener {
             
             processingBar.setValue(status.getStep());
             processingBar.setString(Status.STEPS.get(status.getStep()));
-        } else if(pe.getPropertyName().equals(Status.DUPLICATE_PROPERTY)) {
+        } else if (pe.getPropertyName().equals(Status.DUPLICATE_PROPERTY)) {
             generalLabel.setText(DUPLICATE);
-        } else if(pe.getPropertyName().equals(Status.CANCELLED_PROPERTY)) {
+        } else if (pe.getPropertyName().equals(Status.CANCELLED_PROPERTY)) {
             generalLabel.setText(CANCELLED_TEXT);
         } else if (pe.getPropertyName().equals(Status.OFF_LINE_PROPERTY)) {
             Boolean b = (Boolean) pe.getNewValue();
@@ -246,6 +249,9 @@ public class StatusLabel extends JPanel implements PropertyChangeListener {
             } else {
                 generalLabel.setText(OFFLINE_FAIL_TEXT);
             }
+        } else if (pe.getPropertyName().equals(Status.FAILED_PROPERTY)) {
+            generalLabel.setText(FAILED_TEXT);
+            exception = new ImportException((Throwable) pe.getNewValue());
         }
     }
 
