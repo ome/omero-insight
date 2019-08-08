@@ -245,6 +245,7 @@ class ImporterUIElementDetailed
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+		super.propertyChange(evt);
         String name = evt.getPropertyName();
         if (FileImportComponentI.BROWSE_PROPERTY.equals(name)) {
             List<Object> refNodes = object.getRefNodes();
@@ -252,13 +253,6 @@ class ImporterUIElementDetailed
             if (refNodes != null && refNodes.size() > 0)
                 node = refNodes.get(0);
             browse(evt.getNewValue(), node);
-        } else if (
-            FileImportComponentI.IMPORT_FILES_NUMBER_PROPERTY.equals(
-                    name)) {
-            //-1 to remove the entry for the folder.
-            Integer v = (Integer) evt.getNewValue()-1;
-            totalToImport += v;
-            setNumberOfImport();
         } else if (FileImportComponentI.LOAD_LOGFILEPROPERTY.equals(
                 name)) {
             FileImportComponentI fc = (FileImportComponentI)
@@ -286,10 +280,6 @@ class ImporterUIElementDetailed
         } else if (FileImportComponentI.RETRY_PROPERTY.equals(name)) {
             controller.retryUpload(
                     (FileImportComponent) evt.getNewValue());
-        } else if (
-            FileImportComponentI.CANCEL_IMPORT_PROPERTY.equals(name)) {
-            controller.cancel(
-                    (FileImportComponentI) evt.getNewValue());
         }
     }
 

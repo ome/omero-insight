@@ -28,11 +28,13 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -99,7 +101,7 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
     /** Text indicating to show all the imports. */
     static final String SHOW_ALL = "Show All";
 
-    /** The columns for the layout of the {@link #entries}. */
+    /** The columns for the layout of the entries. */
     private static final double[] COLUMNS = { TableLayout.FILL };
 
     /** The default size of the icon. */
@@ -134,9 +136,6 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
     /** The components to lay out. */
     LinkedHashMap<String, FileImportComponentI> components;
 
-    /** The number of cancellation. */
-    int countCancelled;
-
     /** The number of uploaded files. */
     int countUploaded;
 
@@ -145,16 +144,14 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
 
     /** The number of files uploaded. */
     int countUploadFailure;
-
-    int countMetadata = 0;
-    
-    int countThumbs = 0;
     
     /**
      * The number of failures that occurred during scanning, uploading or
      * processing.
      */
     int countFailure;
+
+    HashSet<FileImportComponentI> cancelledComponents = new HashSet<FileImportComponentI>();
 
     /** The total number of files or folder to import. */
     int totalToImport;
@@ -231,7 +228,6 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
         // matter: the counters are always set to constant values.)
         if (ImporterAgent.isOfflineImport()) {
             offlineCompleted = true;
-            countCancelled = 0;
             countUploadFailure = 0;
             if (result instanceof Exception) {  // see StatusLabel.notifyOfflineImportFailure
                 countFailure = totalToImport;
@@ -504,7 +500,7 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
     void setNumberOfImport()
     {
         StringBuffer buffer = new StringBuffer();
-        int n = countUploaded-countUploadFailure-countCancelled;
+        int n = countUploaded-countUploadFailure;
         buffer.append(n);
         buffer.append(" out of ");
         buffer.append(totalToImport);
@@ -624,12 +620,10 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
     /**
      * Sets the result of the import for the specified file.
      * 
-     * @param f
+     * @param c
      *            The imported file.
      * @param result
      *            The result.
-     * @param index
-     *            The index corresponding to the component
      * @result Returns the formatted result or <code>null</code>.
      */
     Object uploadComplete(FileImportComponentI c, Object result) {
@@ -664,12 +658,10 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
             } else {
                 if (c.isCancelled()) {
                     if (result == null) {
-                        countCancelled++;
                         countImported++;
                         if (isDone() && rotationIcon != null)
                             rotationIcon.stopRotation();
                     } else {
-                        countCancelled--;
                         countUploaded--;
                     }
                 }
@@ -690,7 +682,6 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
                 Boolean b = (Boolean) result;
                 if (!b && c.isCancelled()) {
                     countUploaded++;
-                    countCancelled++;
                     countImported++;
                     if (isDone() && rotationIcon != null)
                         rotationIcon.stopRotation();
@@ -769,20 +760,7 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
         if (ImporterAgent.isOfflineImport()) {
             return offlineCompleted;
         }
-        return countImported == totalToImport;
-    }
-
-    /**
-     * Returns <code>true</code> if there is one remaining import,
-     * <code>false</code> otherwise.
-     * 
-     * @return See above.
-     */
-    boolean isLastImport() {
-        if (ImporterAgent.isOfflineImport()) {
-            return offlineCompleted;
-        }
-        return countImported == (totalToImport - 1);
+        return countImported + cancelled() >= totalToImport;
     }
 
     /**
@@ -838,11 +816,7 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
      * @return See above.
      */
     int cancelled() {
-        int i = 0;
-        for (final FileImportComponentI fic : components.values()) {
-            i += fic.cancelled();
-        }
-        return i;
+        return cancelledComponents.size();
     }
 
     /**
@@ -1161,6 +1135,28 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        String name = propertyChangeEvent.getPropertyName();
+        if (FileImportComponentI.CANCEL_IMPORT_PROPERTY.equals(name)) {
+            FileImportComponentI c = (FileImportComponentI) propertyChangeEvent.getNewValue();
+            cancelledComponents.add(c);
+            cancelledComponents.addAll(c.getChildren());
+        }
+        else if (FileImportComponentI.IMPORT_FILES_NUMBER_PROPERTY.equals(
+                        name)) {
+            //-1 to remove the entry for the folder.
+            Integer v = (Integer) propertyChangeEvent.getNewValue()-1;
+            totalToImport += v;
+            setNumberOfImport();
+        }
+        else if (
+                FileImportComponentI.CANCEL_IMPORT_PROPERTY.equals(name)) {
+            controller.cancel(
+                    (FileImportComponentI) propertyChangeEvent.getNewValue());
         }
     }
 

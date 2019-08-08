@@ -297,7 +297,6 @@ class ImporterModel
 	 */
 	void discard()
 	{
-		cancel();
 		if (loaders.size() > 0) {
 			Iterator<ImagesImporter> i = loaders.values().iterator();
 			while (i.hasNext()) {
@@ -306,15 +305,6 @@ class ImporterModel
 			loaders.clear();
 		}
 		state = Importer.DISCARDED;
-	}
-
-	/**
-	 * Sets the object in the {@link Importer#READY} state.
-	 * Any ongoing data loading will be cancelled.
-	 */
-	void cancel()
-	{
-		//state = Importer.READY;
 	}
 
 	/**
