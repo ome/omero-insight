@@ -79,9 +79,6 @@ public class ImageConverter extends DataConverter
 			} catch (NullPointerException e) {
 				tagMap.put(TagNames.DIMZTC,convertDimZTC(new String[] {null,null,null},REQUIRED));
 			}
-			//TODO
-
-			
 					
 			try{
 				tagMap.put(TagNames.TIMEINC,convertTimeIncrement(image.getPixels().getTimeIncrement(), REQUIRED));
@@ -132,7 +129,7 @@ public class ImageConverter extends DataConverter
 	
 	private TagData convertDimXY(String[] value, boolean prop)
 	{
-		return new TagData(TagNames.OME_ELEM_IMAGE,TagNames.DIMXY,value,prop,TagData.ARRAYFIELDS);
+		return new TagData(TagNames.OME_ELEM_IMAGE,TagNames.DIMXY,value,prop,TagData.ARRAYFIELDS,2);
 	}
 	
 	private TagData convertPixelType(PixelType value, boolean prop)
@@ -153,14 +150,14 @@ public class ImageConverter extends DataConverter
 //		String valY = (valueY != null) ? String.valueOf(valueY.value()) : "";
 //		Unit unit=(valueX!=null) ? valueX.unit() : TagNames.PIXELSIZE_UNIT;
 		ome.model.units.Unit[] val= {valX,valY};
-		TagData pixelSize = new TagData(TagNames.OME_ELEM_IMAGE,TagNames.PIXELSIZE,val,ome.model.units.Length.class,prop,TagData.ARRAYFIELDS);
+		TagData pixelSize = new TagData(TagNames.OME_ELEM_IMAGE,TagNames.PIXELSIZE,val,ome.model.units.Length.class,prop,TagData.ARRAYFIELDS,2);
 		pixelSize.setDocumentListener(createDocumentListenerPosFloat(pixelSize,"Invalid input. Use float >0!"));
 		return pixelSize;		
 	}
 	
 	private TagData convertDimZTC(String[] value, boolean prop)
 	{
-		return new TagData(TagNames.OME_ELEM_IMAGE,TagNames.DIMZTC,value,prop,TagData.ARRAYFIELDS);
+		return new TagData(TagNames.OME_ELEM_IMAGE,TagNames.DIMZTC,value,prop,TagData.ARRAYFIELDS,3);
 	}
 
 	//TODO
@@ -178,7 +175,7 @@ public class ImageConverter extends DataConverter
 //		String symbol = unit==UNITS.REFERENCEFRAME ? "rf" : unit.getSymbol();
 //		String[] val= {valX,valY};
 		ome.model.units.Unit[] val= {valX,valY};
-		TagData stagePos = new TagData(TagNames.OME_ELEM_IMAGE,TagNames.STAGELABEL,val,ome.model.units.Length.class,prop,TagData.ARRAYFIELDS);
+		TagData stagePos = new TagData(TagNames.OME_ELEM_IMAGE,TagNames.STAGELABEL,val,ome.model.units.Length.class,prop,TagData.ARRAYFIELDS,2);
 		return stagePos;
 	}
 

@@ -5,6 +5,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -18,7 +21,14 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 
+/**
+ * 
+ * @author Kunis
+ *
+ */
 public class TemplateDialog extends JDialog implements ActionListener{
 
 	private static String title="Select Modules To Save As Template";
@@ -75,45 +85,53 @@ public class TemplateDialog extends JDialog implements ActionListener{
 	    Border border = BorderFactory.createTitledBorder("Modules");
 	    chBoxPanel.setBorder(border);
 	    
-	    imageCB = new JCheckBox("Image");
-	    imageCB.setSelected(true);
-	    imageCB.addActionListener(this);
-	    chBoxPanel.add(imageCB);
-	    
-	    objectiveCB = new JCheckBox("Objective");
-	    objectiveCB.setSelected(true);
-	    objectiveCB.addActionListener(this);
-	    chBoxPanel.add(objectiveCB);
-	    
-	    detectorCB = new JCheckBox("Detector");
-	    detectorCB.setSelected(true);
-	    detectorCB.addActionListener(this);
-	    chBoxPanel.add(detectorCB);
-	    
-	    lightSourceCB = new JCheckBox("LightSource");
-	    lightSourceCB.setSelected(true);
-	    lightSourceCB.addActionListener(this);
-	    chBoxPanel.add(lightSourceCB);
-	    
-	    channelCB = new JCheckBox("Channel");
-	    channelCB.setSelected(true);
-	    channelCB.addActionListener(this);
-	    chBoxPanel.add(channelCB);
-	    
-	    lightPathCB = new JCheckBox("LightPath");
-	    lightPathCB.setSelected(true);
-	    lightPathCB.addActionListener(this);
-	    chBoxPanel.add(lightPathCB);
-	    
-	    sampleCB = new JCheckBox("Sample");
-	    sampleCB.setSelected(true);
-	    sampleCB.addActionListener(this);
-	    chBoxPanel.add(sampleCB);
-	    
-	    experimentCB = new JCheckBox("Experiment");
-	    experimentCB.setSelected(true);
-	    experimentCB.addActionListener(this);
-	    chBoxPanel.add(experimentCB);
+	    ModuleController controller = ModuleController.getInstance();
+	    HashMap<String,ModuleContent> list=controller.getAvailableContent();
+	    for(Map.Entry<String, ModuleContent> entry:list.entrySet()) {
+	    	JCheckBox ch=new JCheckBox(entry.getKey());
+	    	ch.setSelected(true);
+	    	ch.addActionListener(this);
+	    	chBoxPanel.add(ch);
+	    }
+//	    imageCB = new JCheckBox("Image");
+//	    imageCB.setSelected(true);
+//	    imageCB.addActionListener(this);
+//	    chBoxPanel.add(imageCB);
+//	    
+//	    objectiveCB = new JCheckBox("Objective");
+//	    objectiveCB.setSelected(true);
+//	    objectiveCB.addActionListener(this);
+//	    chBoxPanel.add(objectiveCB);
+//	    
+//	    detectorCB = new JCheckBox("Detector");
+//	    detectorCB.setSelected(true);
+//	    detectorCB.addActionListener(this);
+//	    chBoxPanel.add(detectorCB);
+//	    
+//	    lightSourceCB = new JCheckBox("LightSource");
+//	    lightSourceCB.setSelected(true);
+//	    lightSourceCB.addActionListener(this);
+//	    chBoxPanel.add(lightSourceCB);
+//	    
+//	    channelCB = new JCheckBox("Channel");
+//	    channelCB.setSelected(true);
+//	    channelCB.addActionListener(this);
+//	    chBoxPanel.add(channelCB);
+//	    
+//	    lightPathCB = new JCheckBox("LightPath");
+//	    lightPathCB.setSelected(true);
+//	    lightPathCB.addActionListener(this);
+//	    chBoxPanel.add(lightPathCB);
+//	    
+//	    sampleCB = new JCheckBox("Sample");
+//	    sampleCB.setSelected(true);
+//	    sampleCB.addActionListener(this);
+//	    chBoxPanel.add(sampleCB);
+//	    
+//	    experimentCB = new JCheckBox("Experiment");
+//	    experimentCB.setSelected(true);
+//	    experimentCB.addActionListener(this);
+//	    chBoxPanel.add(experimentCB);
 	    
 	    buttonOK = new JButton("OK");
 	    buttonOK.addActionListener(this);

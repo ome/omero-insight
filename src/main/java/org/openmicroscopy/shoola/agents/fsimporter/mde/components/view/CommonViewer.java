@@ -36,7 +36,6 @@ import javax.swing.plaf.FontUIResource;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.ModuleConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
@@ -60,10 +59,7 @@ public class CommonViewer extends JPanel{
 	
 	/** list of key-values */
 	private ModuleContent content;
-	/** configuration for given key-values*/
-	private ModuleConfiguration configuration;
 	private boolean inputEvent;
-
 
 	/** holds key-values*/
 	private JPanel tagPane;
@@ -71,11 +67,11 @@ public class CommonViewer extends JPanel{
 
 	public CommonViewer() 
 	{
-		this(null,null, true);
+		this(null,true);
 	}
 	
 	public CommonViewer(ModuleContent c) {
-		this(c,null,true);
+		this(c,true);
 	}
 	
 	/**
@@ -85,10 +81,9 @@ public class CommonViewer extends JPanel{
 	 * @param conf
 	 * @param labelVisible TODO
 	 */
-	public CommonViewer(ModuleContent c,ModuleConfiguration conf, boolean labelVisible)
+	public CommonViewer(ModuleContent c,boolean labelVisible)
 	{
 		this.content=c;
-		this.configuration=conf;
 		this.inputEvent=false;
 		this.labelVisible=labelVisible;
 		showModule();
@@ -99,11 +94,17 @@ public class CommonViewer extends JPanel{
 	
 	private void showModule()
 	{
+		setLayout(new BorderLayout());
+		setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		if(content!=null && content.getTagList()!=null) {
 			layoutComponents();
 			buildGUI();
 		}else {
-			System.out.println("ERROR:: Empty Content or tagList [CommonViewer] !!!!");
+			add(new JLabel("Container"));
+//			if(content!=null) {
+//				System.out.println("ERROR:: Empty tagList [CommonViewer] !!!! "+content.getType());
+//			}else
+//				System.out.println("ERROR:: Empty Content [CommonViewer] !!!!");
 		}
 	}
 	
@@ -117,23 +118,15 @@ public class CommonViewer extends JPanel{
 	
 	
 	private void layoutComponents() {
-		setLayout(new BorderLayout());
-		setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-//		setBorder(BorderFactory.createLineBorder(Color.black));
 		tagPane=new JPanel();
 		tagPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		
 		add(tagPane,BorderLayout.CENTER);
-
-		// init tag layout
-		if(configuration!=null)
-			initTags(configuration.getTagList());
-		
 	}
 	
 	
 	/**
-	 * Init given tags and mark it as visible.(Predefinition of gui and values)
+	 * Init given tags and mark it as visible.(Predefinition of gui and values). 
 	 * @param list
 	 */
 	private void initTags(List<TagConfiguration> list) 
@@ -174,35 +167,11 @@ public class CommonViewer extends JPanel{
 	private void addTagToGUI(TagData tag,List<JComponent> labels,List<JComponent> comp)
 	{
 		if(tag != null && tag.isVisible()){
-			labels.add(tag.getTagLabel());
+			labels.add(tag.getTagLabelAndUnit());
 			comp.add(tag.getInputField());
 		}
 	}
-	
-//	private void inputKeyPressed()
-//	{
-//		inputEvent=true;
-//	}
 
-//	public String getTitle() {
-//		return title;
-//	}
-//
-//	public void setTitle(String title) {
-//		this.title = title;
-//	}
-
-	
-
-	public ModuleConfiguration getConfiguration() {
-		return configuration;
-	}
-
-	public void setConfiguration(ModuleConfiguration configuration) {
-		this.configuration = configuration;
-	}
-	
-	
 	
 	public static void addLabelTextRows(List<JComponent> labels,List<JComponent> fields,Container container) {
 		
@@ -249,31 +218,6 @@ public class CommonViewer extends JPanel{
 	}
 	
 	
-
-//	class TagActionListener implements ActionListener
-//	{
-//		private TagData tag;
-//		public TagActionListener(TagData tag)
-//		{
-//			this.tag=tag;
-//		}
-//		@Override
-//		public void actionPerformed(ActionEvent e) {
-//			tag.dataHasChanged(true);
-//			inputKeyPressed();
-//		}
-//		
-//	}
-	
-	
-	//TODO neccessary?
-//	public boolean allDataWasStored()
-//	{
-//		return true;
-//	}
-	
-	
-	
 	/**
 	 * 
 	 * @return list of tagdata with tagData.valueHasChanged()==true
@@ -303,24 +247,6 @@ public class CommonViewer extends JPanel{
 			if(t!=null) t.dataSaved(true);
 		}
 	}
-//	public void resetInputEvent()
-//	{
-//		inputEvent=false;
-//	}
-//	public boolean inputEvent()
-//	{
-//		return inputEvent;
-//	}
-//	public HashMap getMapValueOfExtendedData() {
-//		String id="";
-//		HashMap map = new HashMap<String, String>();
-//		 map.put(id+TagNames.STAGELABEL,null);
-//		
-//		return map;
-//	}
 
-	
-
-	
 
 }

@@ -29,7 +29,7 @@ public class ModuleTreeElement {
 	
 	public ModuleTreeElement(ModuleContent c,DefaultMutableTreeNode parent) {
 		this.type = c==null?TagNames.OME_ROOT:c.getType();
-		this.name="Container";
+//		this.name="Container";
 		this.id=null;
 		this.data=null;
 		this.childIndex=MDEHelper.getChildCount(type, parent);
@@ -59,10 +59,8 @@ public class ModuleTreeElement {
 	public void setData(ModuleContent data) {
 		this.data=data;
 		if(data!=null) {
-			String val=data.getAttributeValue(TagNames.ID);
-			this.id=val;
-			val=data.getAttributeValue(TagNames.MODEL);
-			this.name=val;
+			this.id=data.getAttributeValue(TagNames.ID);
+			this.name=data.getAttributeValue(TagNames.MODEL);
 		}
 	}
 	public String getName() {
@@ -102,10 +100,11 @@ public class ModuleTreeElement {
 	public String toString() {
 //		String elementID = (id==null || id.equals("")) ? type : id+" ["+type+"]";
 		String elementID="["+type+"]" + "{"+childIndex+"}";
-		if(name==null || name.contains("null")) {
-			return elementID;
-		}
-		return name + " ["+type+"]"+ "{"+childIndex+"}";
+		return elementID;
+//		if(name==null || name.contains("null")) {
+//			return elementID;
+//		}
+//		return name + " ["+type+"]"+ "{"+childIndex+"}";
 	}
 	
 	public String getElementName() {

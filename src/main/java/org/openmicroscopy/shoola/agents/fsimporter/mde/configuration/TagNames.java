@@ -46,9 +46,12 @@ import ome.xml.model.primitives.PercentFraction;
 
 public class TagNames 
 {
+	public static final String PREFIX_SETTINGS="User::";
+	
 	public static final String OME_ROOT="OME-Model:";
 	public static final String OME_ELEM_DETECTOR="OME:Detector";
 	public static final String OME_ELEM_IMAGE="OME:Image";
+	public static final String OME_ELEM_EXPERIMENT="OME:Experiment";
 	public static final String OME_ELEM_PLANE="OME:Plane";
 	public static final String OME_ELEM_OBJECTIVE="OME:Objective";
 	public static final String OME_ELEM_CHANNEL="OME:Channel";
@@ -92,9 +95,9 @@ public class TagNames
 	public static final ome.model.enums.UnitsLength WORKDIST_UNIT=ome.model.enums.UnitsLength.MICROMETER;
 	
 	//Objective Settings
-	public static final String CORCOLLAR="User::Correction Collar";
-	public static final String OBJ_MEDIUM="User::Medium";
-	public static final String REFINDEX="User::Refraction Index";
+	public static final String CORCOLLAR=PREFIX_SETTINGS+"Correction Collar";
+	public static final String OBJ_MEDIUM=PREFIX_SETTINGS+"Medium";
+	public static final String REFINDEX=PREFIX_SETTINGS+"Refraction Index";
 	
 	//--------------------------
 	//	CHANNEL
@@ -130,12 +133,12 @@ public class TagNames
 	
 	//DetectorSettings
 	//TODO rename to SET_...
-	public static final String GAIN="User::Gain";
-	public static final String VOLTAGE="User::Voltage";
-	public static final String OFFSET="User::Offset";
-	public static final String CONFZOOM="User::Confocal Zoom";
-	public static final String BINNING="User::Binning";
-	public static final String SUBARRAY="User::Subarray";
+	public static final String GAIN=PREFIX_SETTINGS+"Gain";
+	public static final String VOLTAGE=PREFIX_SETTINGS+"Voltage";
+	public static final String OFFSET=PREFIX_SETTINGS+"Offset";
+	public static final String CONFZOOM=PREFIX_SETTINGS+"Confocal Zoom";
+	public static final String BINNING=PREFIX_SETTINGS+"Binning";
+	public static final String SUBARRAY=PREFIX_SETTINGS+"Subarray";
 	
 //	public static final Unit<ElectricPotential> VOLTAGE_UNIT=UNITS.V;
 	public static final ome.model.enums.UnitsElectricPotential VOLTAGE_UNIT = ome.model.enums.UnitsElectricPotential.VOLT;
@@ -217,8 +220,8 @@ public class TagNames
 	
 	
 	//LightSrcSettings
-	public static final String SET_WAVELENGTH="User::Wavelength";
-	public static final String ATTENUATION="User::Attenuation";
+	public static final String SET_WAVELENGTH=PREFIX_SETTINGS+"Wavelength";
+	public static final String ATTENUATION=PREFIX_SETTINGS+"Attenuation";
 	
 	
 	//--------------------------
@@ -268,29 +271,29 @@ public class TagNames
 
 	
 	// TODO xml schema parser, Annotation as child
-	public static String[] getHasChilds(String type) {
-		switch(type) {
-		case OME_ELEM_IMAGE: return new String[] {OME_ELEM_IMGENV,OME_ELEM_CHANNEL,OME_ELEM_OBJECTIVE};
-		case OME_ELEM_IMGENV: return null;
-		case OME_ELEM_CHANNEL: return new String[] {OME_ELEM_DETECTOR,OME_ELEM_LIGHTPATH,OME_ELEM_LIGHTSOURCE};
-		case OME_ELEM_OBJECTIVE:return null;
-		case OME_ELEM_DETECTOR:return null;
-		case OME_ELEM_FILTER:return null;
-		case OME_ELEM_LIGHTSOURCE:return new String[] {OME_ELEM_LASER,OME_ELEM_ARC,OME_ELEM_FILAMENT,OME_ELEM_LED,OME_ELEM_GENERICEXCITATIONSOURCE};
-		case OME_ELEM_DICHROIC:return null;
-		case OME_ELEM_LASER:return null;
-		case OME_ELEM_ARC:return null;
-		case OME_ELEM_FILAMENT:return null;
-		case OME_ELEM_LED:return null;
-		case OME_ELEM_GENERICEXCITATIONSOURCE:return null;
-		case OME_ELEM_LIGHTPATH_FS: return new String[] {OME_ELEM_FILTER,OME_ELEM_DICHROIC};
-		case OME_ELEM_LIGHTPATH:return new String[] {OME_ELEM_LIGHTPATH_EM,OME_ELEM_DICHROIC,OME_ELEM_LIGHTPATH_EX,OME_ELEM_LIGHTPATH_FS};
-		case OME_ELEM_LIGHTPATH_EM:return new String[] {OME_ELEM_FILTER};
-		case OME_ELEM_LIGHTPATH_EX:return new String[] {OME_ELEM_FILTER};
-		default:
-			return null;
-		}
-	}
+//	public static String[] getHasChilds(String type) {
+//		switch(type) {
+//		case OME_ELEM_IMAGE: return new String[] {OME_ELEM_IMGENV,OME_ELEM_CHANNEL,OME_ELEM_OBJECTIVE};
+//		case OME_ELEM_IMGENV: return null;
+//		case OME_ELEM_CHANNEL: return new String[] {OME_ELEM_DETECTOR,OME_ELEM_LIGHTPATH,OME_ELEM_LIGHTSOURCE};
+//		case OME_ELEM_OBJECTIVE:return null;
+//		case OME_ELEM_DETECTOR:return null;
+//		case OME_ELEM_FILTER:return null;
+//		case OME_ELEM_LIGHTSOURCE:return new String[] {OME_ELEM_LASER,OME_ELEM_ARC,OME_ELEM_FILAMENT,OME_ELEM_LED,OME_ELEM_GENERICEXCITATIONSOURCE};
+//		case OME_ELEM_DICHROIC:return null;
+//		case OME_ELEM_LASER:return null;
+//		case OME_ELEM_ARC:return null;
+//		case OME_ELEM_FILAMENT:return null;
+//		case OME_ELEM_LED:return null;
+//		case OME_ELEM_GENERICEXCITATIONSOURCE:return null;
+//		case OME_ELEM_LIGHTPATH_FS: return new String[] {OME_ELEM_FILTER,OME_ELEM_DICHROIC};
+//		case OME_ELEM_LIGHTPATH:return new String[] {OME_ELEM_LIGHTPATH_EM,OME_ELEM_DICHROIC,OME_ELEM_LIGHTPATH_EX,OME_ELEM_LIGHTPATH_FS};
+//		case OME_ELEM_LIGHTPATH_EM:return new String[] {OME_ELEM_FILTER};
+//		case OME_ELEM_LIGHTPATH_EX:return new String[] {OME_ELEM_FILTER};
+//		default:
+//			return null;
+//		}
+//	}
 	
 	//TODO: lookup table in MDEConfiguration
 	public static String[] getParents(String type) {
@@ -300,18 +303,21 @@ public class TagNames
 		case OME_ELEM_CHANNEL: return new String[] {OME_ELEM_IMAGE};
 		case OME_ELEM_OBJECTIVE:return new String[] {OME_ELEM_IMAGE};
 		case OME_ELEM_DETECTOR:return new String[] {OME_ELEM_CHANNEL};
-		case OME_ELEM_FILTER:return new String[] {OME_ELEM_LIGHTPATH_FS,OME_ELEM_LIGHTPATH_EM,OME_ELEM_LIGHTPATH_EX};
+//		case OME_ELEM_FILTER:return new String[] {OME_ELEM_LIGHTPATH_FS,OME_ELEM_LIGHTPATH_EM,OME_ELEM_LIGHTPATH_EX};
+		case OME_ELEM_FILTER:return new String[] {OME_ELEM_LIGHTPATH_EM,OME_ELEM_LIGHTPATH_EX};
 		case OME_ELEM_LIGHTSOURCE:return new String[] {OME_ELEM_CHANNEL};
 		case OME_ELEM_LASER:return new String[] {OME_ELEM_LIGHTSOURCE};
 		case OME_ELEM_ARC:return new String[] {OME_ELEM_LIGHTSOURCE};
 		case OME_ELEM_FILAMENT:return new String[] {OME_ELEM_LIGHTSOURCE};
 		case OME_ELEM_LED:return new String[] {OME_ELEM_LIGHTSOURCE};
 		case OME_ELEM_GENERICEXCITATIONSOURCE:return new String[] {OME_ELEM_LIGHTSOURCE};
-		case OME_ELEM_DICHROIC:return new String[] {OME_ELEM_LIGHTPATH_FS,OME_ELEM_LIGHTPATH_EM,OME_ELEM_LIGHTPATH_EX};
-		case OME_ELEM_LIGHTPATH_FS: return new String[] {OME_ELEM_LIGHTPATH};
+//		case OME_ELEM_DICHROIC:return new String[] {OME_ELEM_LIGHTPATH_FS,OME_ELEM_LIGHTPATH_EM,OME_ELEM_LIGHTPATH_EX};
+		case OME_ELEM_DICHROIC:return new String[] {OME_ELEM_LIGHTPATH_EM,OME_ELEM_LIGHTPATH_EX};
+//		case OME_ELEM_LIGHTPATH_FS: return new String[] {OME_ELEM_LIGHTPATH};
 		case OME_ELEM_LIGHTPATH:return new String[] {OME_ELEM_CHANNEL};
 		case OME_ELEM_LIGHTPATH_EM:return new String[] {OME_ELEM_LIGHTPATH};
 		case OME_ELEM_LIGHTPATH_EX:return new String[] {OME_ELEM_LIGHTPATH};
+		case OME_ELEM_EXPERIMENT:return new String[] {OME_ROOT};
 		default:
 			return null;
 		}
@@ -585,6 +591,7 @@ public class TagNames
 		put(OME_ELEM_PLANE+"::"+STAGE_POS_Y,STAGEPOS_UNIT);
 		put(OME_ELEM_PLANE+"::"+STAGE_POS_Z,STAGEPOS_UNIT);
 		put(OME_ELEM_IMAGE+"::"+STAGEPOS,STAGEPOS_UNIT);
+		put(OME_ELEM_IMAGE+"::"+STAGELABEL,STAGEPOS_UNIT);
 		put(OME_ELEM_IMAGE+"::"+PIXELSIZE,PIXELSIZE_UNIT);
 		put(OME_ELEM_IMAGE+"::"+TIMEINC,TIMEINC_UNIT);
 		put(OME_ELEM_IMGENV+"::"+TEMP,TEMPERATURE_UNIT);
@@ -663,6 +670,23 @@ public class TagNames
 		System.out.println("ERROR: Can't create UnitEnum: "+className+" : "+symbol);
 		return null;
 	}
-
+	public static String[] getUnitsList(String className) {
+		if(className.equals(ome.model.units.ElectricPotential.class.getName()))
+			return OMEValueConverter.getUnitSymbols(ome.model.enums.UnitsElectricPotential.class);
+		if(className.equals(ome.model.units.Power.class.getName()))
+			return OMEValueConverter.getUnitSymbols(ome.model.enums.UnitsPower.class);
+		if(className.equals(ome.model.units.Frequency.class.getName()))
+			return OMEValueConverter.getUnitSymbols(ome.model.enums.UnitsFrequency.class);
+		if(className.equals(ome.model.units.Pressure.class.getName()))
+			return OMEValueConverter.getUnitSymbols(ome.model.enums.UnitsPressure.class);
+		if(className.equals(ome.model.units.Length.class.getName()))
+			return OMEValueConverter.getUnitSymbols(ome.model.enums.UnitsLength.class);
+		if(className.equals(ome.model.units.Temperature.class.getName()))
+			return OMEValueConverter.getUnitSymbols(ome.model.enums.UnitsTemperature.class);
+		if(className.equals(ome.model.units.Time.class.getName()))
+			return OMEValueConverter.getUnitSymbols(ome.model.enums.UnitsTime.class);
+		
+		return null;
+	}
 	
 }

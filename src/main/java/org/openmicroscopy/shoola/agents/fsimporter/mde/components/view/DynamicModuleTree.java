@@ -22,6 +22,7 @@ import javax.swing.tree.TreePath;
 import ome.xml.model.OME;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEContent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 
 /**
@@ -39,18 +40,15 @@ public class DynamicModuleTree extends JPanel implements ActionListener{
 
 	private static String ADD_NODE_CMD = "add";
 	private static String DELETE_NODE_CMD = "delete";
-	private static String RESET_TREE_CMD = "reset";
+	public static final String RESET_TREE_CMD = "reset";
 	
 	private ModuleTree treePanel;
-	private DefaultMutableTreeNode element;
-	private ModuleController initController;
 	private ModuleController controller;
 	
 	
 //	public DynamicModuleTree(OME ome,ModuleController controller) {
 //		super(new BorderLayout());
 //		this.element=controller.initContent(ome, null);
-//		this.initController=controller;
 //		this.controller=new ModuleController(controller);
 //		treePanel = new ModuleTree(element,this.controller);
 //		
@@ -58,27 +56,25 @@ public class DynamicModuleTree extends JPanel implements ActionListener{
 //		add(generateButtonPane(),BorderLayout.SOUTH);
 //	}
 	
-	public DynamicModuleTree(DefaultMutableTreeNode elem, ModuleController controller) {
+	public DynamicModuleTree(DefaultMutableTreeNode elem,ActionListener listener) {
 		super(new BorderLayout());
-		this.element=elem;
-		this.initController=controller;
-		this.controller=controller;
-		treePanel = new ModuleTree(elem,this.controller);
+		this.controller=ModuleController.getInstance();
+		treePanel = new ModuleTree(elem,listener);
 		
 		
 		add(treePanel,BorderLayout.CENTER);
-		add(generateButtonPane(),BorderLayout.SOUTH);
+		add(generateButtonPane(listener),BorderLayout.SOUTH);
 	}
 
-	public DynamicModuleTree(ModuleController controller) {
-		this(controller.getTree(),controller);
+	public DynamicModuleTree(ActionListener listener) {
+		this(ModuleController.getInstance().getTree(),listener);
 	}
 	
 	
-	private JPanel generateButtonPane() {
+	private JPanel generateButtonPane(ActionListener l) {
 		JButton resetBtn= new JButton("Reset");
 		resetBtn.setActionCommand(RESET_TREE_CMD);
-		resetBtn.addActionListener(this);
+		resetBtn.addActionListener(l);
 		
 		JPanel btnPanel = new JPanel(new GridLayout(0, 1));
 		btnPanel.add(resetBtn);
@@ -89,10 +85,17 @@ public class DynamicModuleTree extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
-		if(RESET_TREE_CMD.equals(cmd)) {
-			treePanel.reset(element,initController);
-			treePanel.printTree(null," ");
-		}
+		//TODO: action listener should be MetaDataDialog
+//		if(RESET_TREE_CMD.equals(cmd)) {
+//			System.out.println("--Reset tree");
+//			List<String> oldTreePaths=MDEHelper.getAllLeafPaths(treePanel.getRoot(), "");
+//			treePanel.reset(controller.getTree(),controller);
+//			List<String> newTreePaths=MDEHelper.getAllLeafPaths(treePanel.getRoot(), "");
+//			System.out.println("\t deleted nodes: "+MDEHelper.getAdditionalLeafPaths(oldTreePaths, newTreePaths));
+//			System.out.println("--TODO: Reset trees of childs of dir tree");
+//			
+//			treePanel.printTree(null," ");
+//		}
 	}
 
 	public void addTreeSelectionListener(MDEContent mdeContent) {
@@ -107,7 +110,9 @@ public class DynamicModuleTree extends JPanel implements ActionListener{
 	public DefaultMutableTreeNode getRootNode() {
 		return treePanel.getRoot();
 	}
-	
+	public ModuleTree getModuleTree() {
+		return treePanel;
+	}
 	
 	public DefaultMutableTreeNode selectFirstNode() {
 		if(getRootNode()==null || getRootNode().getChildCount()==0)

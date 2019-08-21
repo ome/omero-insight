@@ -7,7 +7,6 @@ import ome.xml.model.Experimenter;
 import ome.xml.model.enums.EnumerationException;
 import ome.xml.model.enums.ExperimentType;
 
-import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign.ExperimentModel;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
@@ -19,46 +18,46 @@ public class ExperimentConverter extends DataConverter{
 		tagMap=new LinkedHashMap<String,TagData>();
 	}
 	
-	public LinkedHashMap<String, TagData> convertData(ExperimentModel exp)
+	public LinkedHashMap<String, TagData> convertData(Experiment exp, Experimenter exper)
 	{
 		if(exp!=null) {
 			try{ 
-				tagMap.put(TagNames.DESC,convertDescription(exp.getExperiment().getDescription(), REQUIRED));}
+				tagMap.put(TagNames.DESC,convertDescription(exp.getDescription(), REQUIRED));}
 			catch(NullPointerException e){
 				tagMap.put(TagNames.DESC,convertDescription(null, REQUIRED));
 			}
 			try{ 
-				tagMap.put(TagNames.E_TYPE,convertType(exp.getExperiment().getType(), REQUIRED));
+				tagMap.put(TagNames.E_TYPE,convertType(exp.getType(), REQUIRED));
 			}catch(NullPointerException e){
 				tagMap.put(TagNames.E_TYPE,convertType(null, REQUIRED));
 			}
-			try{ 
-				tagMap.put(TagNames.PROJECTPARTNER,convertProjectPartner(exp.getProjectPartnerName(), REQUIRED));
-			}catch(NullPointerException e){
-				tagMap.put(TagNames.PROJECTPARTNER,convertProjectPartner(null, REQUIRED));
-			}
+//			try{ 
+//				tagMap.put(TagNames.PROJECTPARTNER,convertProjectPartner(exp.getProjectPartnerName(), REQUIRED));
+//			}catch(NullPointerException e){
+//				tagMap.put(TagNames.PROJECTPARTNER,convertProjectPartner(null, REQUIRED));
+//			}
 			try{
 				//			setName(expContainer.getExperimenter(),REQUIRED);
-				tagMap.put(TagNames.EXPNAME,convertName(exp.getExperimenter(),REQUIRED));
+				tagMap.put(TagNames.EXPNAME,convertName(exper,REQUIRED));
 			}catch(NullPointerException e){
 				tagMap.put(TagNames.EXPNAME,convertName((Experimenter)null,REQUIRED));
 			}
-			try{
-				tagMap.put(TagNames.GROUP,convertGroupName(exp.getGroupName(), OPTIONAL));
-			}catch(NullPointerException e){
-				tagMap.put(TagNames.GROUP,convertGroupName(null, OPTIONAL));
-			}
-			try{tagMap.put(TagNames.PROJECTNAME,convertProjectName(exp.getProjectName(), OPTIONAL));
-			}catch(NullPointerException e){
-				tagMap.put(TagNames.PROJECTNAME,convertProjectName(null, OPTIONAL));
-			}
+//			try{
+//				tagMap.put(TagNames.GROUP,convertGroupName(exp.getGroupName(), OPTIONAL));
+//			}catch(NullPointerException e){
+//				tagMap.put(TagNames.GROUP,convertGroupName(null, OPTIONAL));
+//			}
+//			try{tagMap.put(TagNames.PROJECTNAME,convertProjectName(exp.getProjectName(), OPTIONAL));
+//			}catch(NullPointerException e){
+//				tagMap.put(TagNames.PROJECTNAME,convertProjectName(null, OPTIONAL));
+//			}
 		}else {
 			tagMap.put(TagNames.DESC,convertDescription(null, REQUIRED));
 			tagMap.put(TagNames.E_TYPE,convertType(null, REQUIRED));
-			tagMap.put(TagNames.PROJECTPARTNER,convertProjectPartner(null, REQUIRED));
+//			tagMap.put(TagNames.PROJECTPARTNER,convertProjectPartner(null, REQUIRED));
 			tagMap.put(TagNames.EXPNAME,convertName((Experimenter)null,REQUIRED));
-			tagMap.put(TagNames.GROUP,convertGroupName(null, OPTIONAL));
-			tagMap.put(TagNames.PROJECTNAME,convertProjectName(null, OPTIONAL));
+//			tagMap.put(TagNames.GROUP,convertGroupName(null, OPTIONAL));
+//			tagMap.put(TagNames.PROJECTNAME,convertProjectName(null, OPTIONAL));
 		}
 		return tagMap;
 	}

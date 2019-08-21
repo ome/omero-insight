@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -21,8 +22,10 @@ import javax.xml.transform.stream.StreamResult;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
 import org.openmicroscopy.shoola.agents.treeviewer.actions.CreateObjectWithChildren;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -45,22 +48,22 @@ public class XMLWriter {
 	
 	final String CONF = "MDEConfiguration";
 	
-	final String ID="ID";
-	final String NAME="Name";
+	final String ATTR_ID="ID";
+	final String ATTR_NAME="Name";
 	final String HARDWARE_CONF="MDEHardwareConfiguration";
 	final String MIC="Microscope";
 	final String INSTRUMENT="Instrument";
-	final String IDENTS="Idents";
 	final String PARENTS="Parents";
 	final String TAGDATA="TagData";
-	final String TAGDATA_DEF="DefaultValues";
-	final String TAGDATA_VAL="Value";
-	final String TAGDATA_VIS="Visible";
-	final String TAGDATA_UNIT="Unit";
-	final String TYPE="Type";
+	final String TAGDATAPROP="TagDataProp";
+	final String ATTR_TAGDATA_DEF="DefaultValues";
+	final String ATTR_TAGDATA_VAL="Value";
+	final String ATTR_TAGDATA_VIS="Visible";
+	final String ATTR_TAGDATA_UNIT="Unit";
+	final String ATTR_TYPE="Type";
 	private final String MDE_OBJECTS="MDEObjects";
 	private final String MDE_OBJECT="Object";
-	private final String VALUES="Values";
+	private final String ATTR_VALUES="Values";
 	private LinkedHashMap<String, ModuleList> hardwareConfiguration;
 	private LinkedHashMap<String, HashMap<String,ModuleContent>> objectConfiguration;
 	
@@ -69,7 +72,7 @@ public class XMLWriter {
 	/**
 	 * Save objects to file with following element structure:
 	 * <pre>{@code
-	 * 	   <Microscope Name="">
+	 * 	   <Microscope Name=UNIVERSAL>  // content UNIVERSAL are all available objects with all available attributes
 	 * 		<Object Type="">
 	 * 			<TagData ...>
 	 * 			<TagData ...>
@@ -78,19 +81,24 @@ public class XMLWriter {
 	 * 		</Object>
 	 * 		....
 	 * 	   </Microscope>
+	 * 	   <Microscope Name="">
+	 * 	   		<TagDataProp ...>
+	 * 			<TagDataProp ...>
+	 * 			....	
+	 * 	   </Microscope>
 	 * }</pre>
 	 * 
 	 * @param conf
 	 */
-	public Element microscopeObjectsToXml(String micName,HashMap<String, ModuleContent> conf,Document doc) {
+	private Element microscopeObjectsToXml(String micName,HashMap<String, ModuleContent> conf,Document doc) {
 		if(conf==null)
 			return null;
 
 		Element result = doc.createElement(MIC);
-		result.setAttribute(NAME, micName);
-
+		result.setAttribute(ATTR_NAME, micName);
+		boolean fullData=micName.equals(MDEConfiguration.UNIVERSAL);
 		for (Entry<String, ModuleContent> entry : conf.entrySet()) {
-			Element child=createObjectElement(entry.getKey(),entry.getValue(),doc);
+			Element child=createObjectElement(entry.getKey(),entry.getValue(),fullData,doc);
 			if(child!=null)
 				result.appendChild(child);
 		}
@@ -113,26 +121,34 @@ public class XMLWriter {
 	 * @param doc
 	 * @return
 	 */
-	private Element createObjectElement(String type,ModuleContent content, Document doc) {
+	private Element createObjectElement(String type,ModuleContent content, boolean fullData,Document doc) {
 		if(content==null)
 			return null;
 
 		Element result = doc.createElement(MDE_OBJECT);
-		result.setAttribute(TYPE, type);
+		result.setAttribute(ATTR_TYPE, type);
 
 		List<TagData> list= content.getTagList();
 		if(list == null)
 			return result;
 		//add tagData
-		for(int i=0;i<list.size();i++) {
-			Element child = createTagDataElement(list.get(i), doc);
-			if(child!=null)
-				result.appendChild(child);
+		if(fullData) {
+			for(int i=0;i<list.size();i++) {
+				Element child = createTagDataElement(list.get(i), doc);
+				if(child!=null)
+					result.appendChild(child);
+			}
+		}else {
+			for(int i=0;i<list.size();i++) {
+				Element child = createTagDataPropElement(list.get(i), doc);
+				if(child!=null)
+					result.appendChild(child);
+			}
 		}
 		
 		Element parents = doc.createElement(PARENTS);
 		String parentVal=content.getParents()!=null? String.join(",",content.getParents()):"";
-		parents.setAttribute(VALUES,parentVal );
+		parents.setAttribute(ATTR_VALUES,parentVal );
 
 		result.appendChild(parents);
 		
@@ -152,10 +168,11 @@ public class XMLWriter {
 	 * 		<Parent Values=[]>  // string list: p1,p2,p3,...
 	 * 	</Object>
 	 * }</pre>
+	 * @param universal all available objects
 	 * @param nodeList
 	 * @return
 	 */
-	private HashMap<String, ModuleContent> elementsToObjectList(NodeList nodeList){
+	private HashMap<String, ModuleContent> elementsToObjectList(HashMap<String,ModuleContent> universal,NodeList nodeList){
 		if(nodeList==null)
 			return null;
 		HashMap<String, ModuleContent> list=new HashMap<>();
@@ -163,8 +180,9 @@ public class XMLWriter {
 			Node n=nodeList.item(i);
 			if(n.getNodeName().equals(MDE_OBJECT) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
-				String type=eElement.getAttribute(TYPE);
-				list.put(type, elementToModuleContent(eElement,type));
+				String type=eElement.getAttribute(ATTR_TYPE);
+				ModuleContent defContent= universal!=null?universal.get(type):null;
+				list.put(type, elementToModuleContent(defContent,eElement,type));
 			}
 		}
 		return list;
@@ -176,17 +194,37 @@ public class XMLWriter {
 	 * @param type
 	 * @return
 	 */
-	private ModuleContent elementToModuleContent(Element eElement,String type) {
+	private ModuleContent elementToModuleContent(ModuleContent universal,Element eElement,String type) {
 		String parents="";
 		if(eElement.getElementsByTagName(PARENTS)!=null && eElement.getElementsByTagName(PARENTS).getLength()>0)
-			parents=((Element) eElement.getElementsByTagName(PARENTS).item(0)).getAttribute(VALUES);
-		
-		return new ModuleContent(elementsToAttributes(eElement.getElementsByTagName(TAGDATA),type), type,  parents.split(","));
+			parents=((Element) eElement.getElementsByTagName(PARENTS).item(0)).getAttribute(ATTR_VALUES);
+		if(universal==null) {
+			return new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(TAGDATA),type), type,  parents.split(","));
+		}else {
+			return mergeProperties(elementsToTagDataPropList(eElement.getElementsByTagName(TAGDATAPROP)),universal);
+		}
 	}
+	
+	private ModuleContent mergeProperties(LinkedHashMap<String, TagDataProp> propList,
+			ModuleContent universal) {
+		if(universal==null)
+			return null;
+		ModuleContent result= new ModuleContent(universal);
+		LinkedHashMap<String, TagData> list=result.getList();
+		for(Map.Entry<String, TagDataProp> entry:propList.entrySet()) {
+			if(list.containsKey(entry.getKey())) {
+				list.get(entry.getKey()).setProperties(entry.getValue());
+			}
+		}
+		return result;
+	}
+
+
 	
 	//-------------------------------------------------------------------------------------
 	//					Structure
 	//-------------------------------------------------------------------------------------
+	
 	
 	//see: https://examples.javacodegeeks.com/core-java/xml/parsers/documentbuilderfactory/create-xml-file-in-java-using-dom-parser-example/
 	public void saveToXML(DefaultMutableTreeNode tree,String rootName) {
@@ -236,7 +274,7 @@ public class XMLWriter {
 	/**
 	 * Builds structure node {@link ModuleTreeElement}.
 	 * <pre>{@code
-	 * <type ID="" Name="">
+	 * <type ATTR_ID="" Name="">
 	 * 		<Parents Val=<>>
 	 * 		<TagData...>
 	 *		.... 			
@@ -249,9 +287,9 @@ public class XMLWriter {
 			return null;
 		
 		Element result = doc.createElement(elem.getType());
-		Attr attr = doc.createAttribute(ID);
+		Attr attr = doc.createAttribute(ATTR_ID);
 		attr.setValue(elem.getIndex());
-		attr = doc.createAttribute(NAME);
+		attr = doc.createAttribute(ATTR_NAME);
 		attr.setValue(elem.getName());
 		
 		
@@ -278,7 +316,7 @@ public class XMLWriter {
 	 * <xml>
 	 * 	<MDEHardwareConfiguration>
 	 * 		<Microscope Name=<>>
-	 * 			<Instrument Type=<> ID=<>>
+	 * 			<Instrument Type=<> ATTR_ID=<>>
 	 * 				<TagData ...>
 	 * 				<TagData ...>
 	 * 				....
@@ -373,7 +411,7 @@ public class XMLWriter {
 			return null;
 
 		Element result = doc.createElement(MIC);
-		result.setAttribute(NAME, micName);
+		result.setAttribute(ATTR_NAME, micName);
 
 		for (Entry<String, List<ModuleContent>> entry : list.entrySet()) {
 			if(entry.getValue()!=null) {
@@ -391,7 +429,7 @@ public class XMLWriter {
 	/**
 	 * Builds the tag for a certain instrument from {@link ModuleContent} object
 	 * <pre>{@code 
-	 * <Instrument Type="" ID="" >
+	 * <Instrument Type="" ATTR_ID="" >
 	 * 		<TagData...>
 	 * 			
 	 * </Instrument>
@@ -404,8 +442,8 @@ public class XMLWriter {
 			return null;
 		
 		Element result = doc.createElement(INSTRUMENT);
-		result.setAttribute(ID, c.getAttributeValue(TagNames.ID));//TODO necessary?
-		result.setAttribute(TYPE, c.getType());
+		result.setAttribute(ATTR_ID, c.getAttributeValue(TagNames.ID));//TODO necessary?
+		result.setAttribute(ATTR_TYPE, c.getType());
 		
 		List<TagData> list= c.getTagList();
 		if(list == null)
@@ -436,12 +474,38 @@ public class XMLWriter {
 		
 		Element result=doc.createElement(TAGDATA);
 		
-		result.setAttribute(NAME, t.getTagName());
-		result.setAttribute(TYPE, String.valueOf(t.getTagType()));
-		result.setAttribute(TAGDATA_VIS,String.valueOf( t.isVisible()));
-		result.setAttribute(TAGDATA_VAL, t.getTagValue());
-		result.setAttribute(TAGDATA_UNIT, t.getTagUnitString());
-		result.setAttribute(TAGDATA_DEF, t.getDefaultValuesAsString());
+		result.setAttribute(ATTR_NAME, t.getTagName());
+		result.setAttribute(ATTR_TYPE, String.valueOf(t.getTagType()));
+		result.setAttribute(ATTR_TAGDATA_VIS,String.valueOf( t.isVisible()));
+		result.setAttribute(ATTR_TAGDATA_VAL, t.getTagValue());
+		result.setAttribute(ATTR_TAGDATA_UNIT, t.getTagUnitString());
+		result.setAttribute(ATTR_TAGDATA_DEF, t.getDefaultValuesAsString());
+		
+		
+//		attr=doc.createAttribute("Required");
+//		attr.setValue(t.);
+		
+		return result;
+	}
+	
+	/**
+	 * Builds {@link TagData} element with his properties as attributes.
+	 * {@code
+	 * <TagDataProp Name="" Visible="" Unit="">
+	 * }
+	 * @param t
+	 * @param doc
+	 * @return
+	 */
+	private Element createTagDataPropElement(TagData t,Document doc) {
+		if(t==null)
+			return null;
+		
+		Element result=doc.createElement(TAGDATAPROP);
+		
+		result.setAttribute(ATTR_NAME, t.getTagName());
+		result.setAttribute(ATTR_TAGDATA_VIS,String.valueOf( t.isVisible()));
+		result.setAttribute(ATTR_TAGDATA_UNIT, t.getTagUnitString());
 		
 		
 //		attr=doc.createAttribute("Required");
@@ -476,6 +540,32 @@ public class XMLWriter {
 	}
 	
 	
+	/**
+	 * Parse list of {@link TagDataProp} from given NodeList
+	 * {@code
+	 * <TagDataProp Name="" Visible="" Unit="">
+	 * }
+	 * @param nodeList list of elements TagDataProp
+	 * @return
+	 */
+	private LinkedHashMap<String,TagDataProp> elementsToTagDataPropList(NodeList nodeList){
+		if(nodeList==null)
+			return null;
+		LinkedHashMap<String,TagDataProp> list = new LinkedHashMap<>();
+		for(int i=0; i<nodeList.getLength();i++) {
+			Node n=nodeList.item(i);
+			if(n.getNodeName().equals(TAGDATAPROP) && n.getNodeType()==Node.ELEMENT_NODE) {
+				Element eElement=(Element)n;
+				String tagName=eElement.getAttribute(ATTR_NAME);
+				String tagUnit=eElement.getAttribute(ATTR_TAGDATA_UNIT);
+				String tagVis=eElement.getAttribute(ATTR_TAGDATA_VIS);
+				TagDataProp t= new TagDataProp(tagName, tagUnit,Boolean.parseBoolean(tagVis));
+ 				list.put(tagName,t);
+			}
+		}
+		return list;
+	}
+	
 	
 	/**
 	 * Parse list of {@link TagData} from given NodeList
@@ -486,7 +576,7 @@ public class XMLWriter {
 	 * @param parent owned object
 	 * @return
 	 */
-	private LinkedHashMap<String,TagData> elementsToAttributes(NodeList nodeList,String parent){
+	private LinkedHashMap<String,TagData> elementsToTagDataList(NodeList nodeList,String parent){
 		if(nodeList==null)
 			return null;
 		LinkedHashMap<String,TagData> list = new LinkedHashMap<>();
@@ -494,12 +584,12 @@ public class XMLWriter {
 			Node n=nodeList.item(i);
 			if(n.getNodeName().equals(TAGDATA) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
-				String tagName=eElement.getAttribute(NAME);
-				String tagVal=eElement.getAttribute(TAGDATA_VAL);
-				String tagUnit=eElement.getAttribute(TAGDATA_UNIT);
-				String tagVis=eElement.getAttribute(TAGDATA_VIS);
-				String defaultVal = eElement.getAttribute(TAGDATA_DEF);
-				String tagType=eElement.getAttribute(TYPE);
+				String tagName=eElement.getAttribute(ATTR_NAME);
+				String tagVal=eElement.getAttribute(ATTR_TAGDATA_VAL);
+				String tagUnit=eElement.getAttribute(ATTR_TAGDATA_UNIT);
+				String tagVis=eElement.getAttribute(ATTR_TAGDATA_VIS);
+				String defaultVal = eElement.getAttribute(ATTR_TAGDATA_DEF);
+				String tagType=eElement.getAttribute(ATTR_TYPE);
 				//TODO Arrayfield size
 				TagData t= new TagData(parent,tagName, tagVal, false, tagType, defaultVal.split(","));
 				t.setTagUnit(tagUnit);
@@ -514,7 +604,7 @@ public class XMLWriter {
 	/**
 	 * Parse list of instruments to {@link ModuleList} .For instrument elements :
 	 * <pre>{@code 
-	 * <Instrument Type="" ID="" >
+	 * <Instrument Type="" ATTR_ID="" >
 	 * 		<TagData...>
 	 * 			
 	 * </type>
@@ -528,8 +618,8 @@ public class XMLWriter {
 			Node n=nodeList.item(i);
 			if(n.getNodeName().equals(INSTRUMENT) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
-				String type=eElement.getAttribute(TYPE);
-				ModuleContent c=new ModuleContent(elementsToAttributes(eElement.getElementsByTagName(TAGDATA),type), type, null);
+				String type=eElement.getAttribute(ATTR_TYPE);
+				ModuleContent c=new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(TAGDATA),type), type, null);
 				List<ModuleContent> cList=list.get(type);
 				if(cList==null) {
 					cList = new ArrayList<>();
@@ -549,7 +639,7 @@ public class XMLWriter {
 			Node n=nodeList.item(i);
 			if(n.getNodeName().equals(MIC) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
-				String name=eElement.getAttribute(NAME);
+				String name=eElement.getAttribute(ATTR_NAME);
 				list.put(name, elementsToModuleList(eElement.getElementsByTagName(INSTRUMENT)));
 			}
 		}
@@ -560,13 +650,36 @@ public class XMLWriter {
 		if(nodeList==null)
 			return null;
 		 LinkedHashMap<String, HashMap<String,ModuleContent>> list= new LinkedHashMap<>();
+		 
+		 // get UNIVERSAL object list
+		 int universalIdx=-1;
 		 for(int i=0; i<nodeList.getLength();i++) {
 			 Node n=nodeList.item(i);
 			 if(n.getNodeName().equals(MIC) && n.getNodeType()==Node.ELEMENT_NODE) {
 				 Element eElement =(Element)n;
-				 String name= eElement.getAttribute(NAME);
-				 list.put(name, elementsToObjectList(eElement.getElementsByTagName(MDE_OBJECT)));
+				 String name= eElement.getAttribute(ATTR_NAME);
+				 if(name.equals(MDEConfiguration.UNIVERSAL)) {
+					 list.put(name, elementsToObjectList(null,eElement.getElementsByTagName(MDE_OBJECT)));
+				 }
+				 universalIdx=i;
+				 break;
 			 }
+		 }
+		 HashMap<String,ModuleContent> uni;
+		 if((uni=list.get(MDEConfiguration.UNIVERSAL)) !=null) {
+			 for(int i=0; i<nodeList.getLength();i++) {
+				 if(i!=universalIdx) {
+					 Node n=nodeList.item(i);
+					 //TODO: first get UNIVERSAL object list, after that add prop for different mics to this content
+					 if(n.getNodeName().equals(MIC) && n.getNodeType()==Node.ELEMENT_NODE) {
+						 Element eElement =(Element)n;
+						 String name= eElement.getAttribute(ATTR_NAME);
+						 list.put(name, elementsToObjectList(uni,eElement.getElementsByTagName(MDE_OBJECT)));
+					 }
+				 }
+			 }
+		 }else {
+			 System.out.println("ERROR: no objects are given [XMLWriter::elementsToObjects]");
 		 }
 		return list;
 		
@@ -583,4 +696,6 @@ public class XMLWriter {
 		// TODO Auto-generated method stub
 		return objectConfiguration;
 	}
+	
+	
 }

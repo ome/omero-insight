@@ -87,9 +87,9 @@ public class ObjectiveConverter extends DataConverter{
 			} catch (NullPointerException e) {
 				tagMap.put(TagNames.REFINDEX,convertRefractIndex(null, REQUIRED));
 			}
-			try{ tagMap.put(TagNames.MEDIUM,convertMedium(settings.getMedium(), REQUIRED));
+			try{ tagMap.put(TagNames.OBJ_MEDIUM,convertMedium(settings.getMedium(), REQUIRED));
 			} catch (NullPointerException e) { 
-				tagMap.put(TagNames.MEDIUM,convertMedium(null, REQUIRED));
+				tagMap.put(TagNames.OBJ_MEDIUM,convertMedium(null, REQUIRED));
 			}
 			try{ tagMap.put(TagNames.CORCOLLAR,convertCorCollar(settings.getCorrectionCollar(), REQUIRED));
 			} catch (NullPointerException e) {
@@ -97,7 +97,7 @@ public class ObjectiveConverter extends DataConverter{
 			}
 		}else {
 			tagMap.put(TagNames.REFINDEX,convertRefractIndex(null, REQUIRED));
-			tagMap.put(TagNames.MEDIUM,convertMedium(null, REQUIRED));
+			tagMap.put(TagNames.OBJ_MEDIUM,convertMedium(null, REQUIRED));
 			tagMap.put(TagNames.CORCOLLAR,convertCorCollar(null, REQUIRED));
 		}
 		

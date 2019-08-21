@@ -1,9 +1,12 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -48,10 +51,12 @@ import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentListener;
 
 import loci.common.DateTools;
 import ome.model.enums.UnitsLength;
+import ome.model.units.Length;
 import ome.model.units.UNITS;
 import ome.model.units.Unit;
 //import ome.units.UNITS;
@@ -61,10 +66,10 @@ import ome.xml.model.Experimenter;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.OMEValueConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
 import org.slf4j.LoggerFactory;
-
 
 
 /**
@@ -72,7 +77,7 @@ import org.slf4j.LoggerFactory;
  * @author Kunis
  *
  */
-public class TagData
+public class TagData 
 {
 	/** Logger for this class. */
 //	private static Logger LOGGER = Logger.getLogger(UOSMetadataLogger.class.getName());
@@ -92,24 +97,24 @@ public class TagData
 	    "dd/MM/yyyy HH:mm:ss",
 	    "MM/dd/yyyy hh:mm:ss aa",
 	    "yyyyMMdd HH:mm:ss",
-
+	    
 	    "yyyy/MM/dd",
 	    "yyyy/MM/dd HH:mm:ss",
-
+	    
 	    "yyyy-MM-dd HH:mm:ss",
 	    "yyyy-MM-dd HH:mm:ss:SSS",
 	    "yyyy-MM-dd'T'HH:mm:ssZ",
 	    "yyyy-MM-dd",
-
+	    
 	    "dd.MM.yyyy",
 	    "dd.MM.yyyy HH:mm:ss",
 	    "dd.MM.yyyy HH:mm:ss:SSS",
-
+	    
 	    "dd-MM-yyyy HH:mm:ss",
 	    "dd-MM-yyyy"
-
+	   
 	  };
-
+	
 	private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {{
 	    put("^\\d{8}$", "yyyyMMdd");
 	    put("^\\d{1,2}-\\d{1,2}-\\d{4}$", "dd-MM-yyyy");
@@ -137,7 +142,7 @@ public class TagData
 	    put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMMM yyyy HH:mm:ss");
 	    put("^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}:\\d{3}$", "yyyy-MM-dd HH:mm:ss:SSS");
 	}};
-
+	
 	private final String datePattern = DateTools.TIMESTAMP_FORMAT;
 
 	//status of inputfield
@@ -147,16 +152,9 @@ public class TagData
 	public static final int OVERWRITE=3;
 
 	// kind of inputfields
-//	public static final int TEXTFIELD=0;
-//	public static final int COMBOBOX=1;
-//	public static final int TEXTPANE=2; //unused?
-//	public static final int CHECKBOX=3; //unused?
-//	public static final int ARRAYFIELDS=4;
-//	public static final int TIMESTAMP=5;
-//	public static final int LIST=6;
-//	public static final int TEXTAREA=7;
 	public static final String TEXTFIELD="TextField";
 	public static final String COMBOBOX="ComboBox";
+	public static final String CHECK_COMBOBOX="CheckBoxComboBox";
 	public static final String TEXTPANE="TextPane"; //unused?
 	public static final String CHECKBOX="CheckBox"; //unused?
 	public static final String ARRAYFIELDS="ArrayField";
@@ -164,9 +162,8 @@ public class TagData
 	public static final String LIST="List";
 	public static final String TEXTAREA="TextArea";
 
-	private JLabel label;
 	private String tagInfo;
-
+	
 	private int status=INACTIVE;
 	private boolean prop;
 	private String type;
@@ -175,15 +172,21 @@ public class TagData
 	private boolean valChanged;
 	//flag for data was saved after changing or not
 	private boolean valSaved;
-
+	
+	// parent: object name that owned the tag
 	private String parent;
+	// tag name
 	private String name;
+	// tag value (text: value[0], value.length>1 ->
 	private String[] value;
+	// default values, e.g. for comboboxes
 	private String[] defaultValue;
+	// tag unit
 	private ome.model.units.Unit[] unit;
+	// class of unit //TODO: ableiten aus unit
 	private Class unitClass;
-
-
+	
+	
 	private ActionListener fieldActionListener;
 	private DocumentListener fieldDocumentListener;
 
@@ -192,10 +195,10 @@ public class TagData
 	private Color backgroundColor;
 
 	private Border fieldBorder;
-
+	
 	private JComponent inputField;
 
-
+	
 
 	//copy constructor
 	public TagData(TagData orig)
@@ -219,7 +222,7 @@ public class TagData
 		inputField=null;
 		if(orig.defaultValue!=null) defaultValue=orig.defaultValue.clone();
 	}
-
+	
 	/**
 	 * Constructor for TagData element for array fields
 	 * @param name label for tagdata element
@@ -227,21 +230,19 @@ public class TagData
 	 * @param prop property
 	 * @param type type==ARRAYFILEDS
 	 */
-	public TagData(String parent, String name, String[] val, boolean prop,String type)
+	public TagData(String parent, String name, String[] val, boolean prop,String type) 
 	{
 		initTagData(parent,name,val,null,null,prop,type,null);
-//		this(name,val,null,prop,type);
 	}
+	
 
-
-	public TagData(String parent, String name, String val, boolean prop,String type)
+	public TagData(String parent, String name, String val, boolean prop,String type) 
 	{
 		String[] value=new String[] {val};
 		initTagData(parent,name,value,null,null,prop,type,null);
-//		this(name,val,null,prop,type);
 	}
-
-	public TagData(String parent, String name, ome.model.units.Unit unitObj, Class unitClass,boolean prop,String type)
+	
+	public TagData(String parent, String name, ome.model.units.Unit unitObj, Class unitClass,boolean prop,String type) 
 	{
 		String[] valArr=new String[1];
 		valArr[0]="";
@@ -250,7 +251,7 @@ public class TagData
 		}
 		initTagData(parent,name, valArr, new ome.model.units.Unit[] {unitObj},unitClass,prop, type, null);
 	}
-	public TagData(String parent, String name, ome.model.units.Unit[] unitObj, Class unitClass,boolean prop,String type)
+	public TagData(String parent, String name, ome.model.units.Unit[] unitObj, Class unitClass,boolean prop,String type) 
 	{
 		String[] valArr=null;
 		if(unitObj!=null) {
@@ -261,16 +262,46 @@ public class TagData
 					valArr[i]=String.valueOf(unitObj[i].getValue());
 
 			}
-
+			
 		}
 		initTagData(parent,name, valArr, unitObj,unitClass,prop, type, null);
 	}
 
-	public TagData(String parent, String name, String val, boolean prop,String type, String[] defaultVal)
+	public TagData(String parent, String name, String val, boolean prop,String type, String[] defaultVal) 
 	{
 		String[] valArr=new String[1];
 		valArr[0]=val;
 		initTagData(parent,name, valArr, null,null, prop, type, defaultVal);
+	}
+	
+	public TagData(String parent, String name, String[] val, boolean prop, String type, int size) {
+		String[] def= new String[1];
+		def[0]=String.valueOf(size);
+		initTagData(parent,name,val,null,null,prop,type,def);
+	}
+	public TagData(String parent, String name, String val, boolean prop, String type, int size) {
+		String[] def= new String[1];
+		def[0]=String.valueOf(size);
+		String[] valArr=new String[1];
+		valArr[0]=val;
+		initTagData(parent,name,valArr,null,null,prop,type,def);
+	}
+
+	public TagData(String parent, String name, Unit[] unitObj,Class unitClass , boolean prop,
+			String type, int size) {
+		String[] def= new String[1];
+		def[0]=String.valueOf(size);
+		String[] valArr=null;
+		if(unitObj!=null) {
+			valArr=new String[unitObj.length];
+			for(int i=0; i<unitObj.length;i++) {
+				valArr[i]=null;
+				if(unitObj[i]!=null)
+					valArr[i]=String.valueOf(unitObj[i].getValue());
+			}
+		}
+		initTagData(parent,name, valArr, unitObj,unitClass,prop, type, def);
+		
 	}
 
 	private void initTagData(String parent, String name, String[] val, ome.model.units.Unit[] unit,Class unitClass,boolean prop,String type, String[] defaultVal)
@@ -278,12 +309,16 @@ public class TagData
 		if(val==null)
 			val=new String[1];
 		initListener();
-
+		
 		this.type=type;
 		this.name=name;
 		this.value=val;
+		
 		this.unit=unit;
 		this.unitClass=unitClass;
+		
+		
+		
 		this.defaultValue=defaultVal;
 		this.parent=parent;
 		valSaved=true;
@@ -292,11 +327,16 @@ public class TagData
 		setTagProp(prop);
 		visible=true;
 		status=EMPTY;
+		
+		if(unit==null) {
+			getDefaultUnit();
+		}
+		
 		fieldBorder=normalBorder;
 		backgroundColor=noInfo;
 		actionListenerActiv=true;
 	}
-
+	
 //	/**
 //	 * Constructor for TagData element for list fields
 //	 * @param name
@@ -312,7 +352,7 @@ public class TagData
 //		valSaved=true;
 //		label = new JLabel(name+":");
 //		tagInfo="";
-//
+//		
 //		switch (type) {
 //		case LIST:
 //			initListField(expList);
@@ -328,55 +368,104 @@ public class TagData
 //		actionListenerActiv=true;
 //	}
 
+	private void getDefaultUnit() {
+		String unitSymbol=ModuleController.getInstance().getStandardUnitSymbolByName(this.parent,getTagName());
+		setTagUnit(unitSymbol);
+	}
+
 	/**
-	 *
-	 * @param t
-	 * @return true if t!=null and elements name, unit and value are equal or both null or empty string
+	 * Compare this tagdata to specified tagdata.
+	 * @param t The tagdata to compares this {@code TagData} against.
+	 * @return {@code true} if t!=null and elements name, unit and value are equal or both null or empty strings.
 	 */
 	public boolean equals(TagData t) {
 		if(t!=null  && t.tagToString().equals(tagToString())) {
 			return true;
-//			if(t.getTagName()!=null && t.getTagName().equals(getTagName())
-//					&& t.getTagValue()!=null && t.getTagValue().equals(getTagValue()) ) {
-//				if(t.getTagUnit()!=null) {
-//					if(getTagUnit()==null)
-//						return false;
-//					if( !t.getTagUnit().getUnit().getSymbol().equals(getTagUnit().getUnit().getSymbol())) {
-//						return false;
-//					}
-//				}
-//				return true;
-//			}
 		}
 		return false;
 	}
+	
 	/**
-	 * @param t
-	 * @return true if t!=null and elements name, unit and value are equal and not null or empty (except unit)
+	 * Compare this tagdata to specified tagdata.
+	 * @param t The tagdata to compare this {@code TagData} against.
+	 * @return {@code true} if t!=null and elements name, unit and value are equal and not null or empty (except unit)
 	 */
 	public boolean equalContent(TagData t) {
 		if(t!=null && t.tagToString().equals(tagToString())) {
 			return true;
-//			if(t.getTagName()!=null && !t.getTagName().equals("") && t.getTagName().equals(getTagName())
-//					&& t.getTagValue()!=null && !t.getTagValue().equals("") &&t.getTagValue().equals(getTagValue()) ) {
-//				if(t.getTagUnit()!=null) {
-//					if(getTagUnit()==null)
-//						return false;
-//					if( !t.getTagUnit().getUnit().getSymbol().equals(getTagUnit().getUnit().getSymbol())) {
-//						return false;
-//					}
-//				}
-//				return true;
-//			}
 		}
 		return false;
 	}
-
+	
+	/**
+	 * Get tagdata as string. 
+	 * @return {@code "name: value unit}.
+	 */
 	public String tagToString() {
 		String result=name+": "+getTagWholeValue();
 		return result;
 	}
+	
+	
 
+	
+	public JPanel getTagLabelAndUnit() {
+		JPanel labelPane=new JPanel(new BorderLayout());
+		// define size of label panel
+		labelPane.setPreferredSize(new Dimension(200,20));
+		JTextField labelName=new JTextField(""+name+": ");
+		labelName.setEditable(false);
+		
+		if(getTagUnitString().equals("")) {
+			labelPane.add(labelName,BorderLayout.CENTER);
+		}else {
+			JComboBox units=createUnitCombo();
+			if(units!=null) {
+				units.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						setTagUnit((String)((JComboBox<String>) e.getSource()).getSelectedItem());
+						repaintInputField();
+					}
+				});
+				labelPane.add(labelName,BorderLayout.CENTER);
+				labelPane.add(units,BorderLayout.EAST);
+			}
+		}
+		
+		if(status==INACTIVE) {
+			labelName.setEnabled(false);
+		}
+
+		return labelPane;
+	}
+	
+	private JComboBox createUnitCombo() {
+		if(getUnitType()!=null) {
+//			System.out.println("--Create Unit Combo for "+getUnitType());
+			String[] unitsList=TagNames.getUnitsList(getUnitType());
+
+			if(unitsList!=null) {
+				JComboBox units = new JComboBox<>(unitsList);
+
+				// set unit
+				String symbol=getTagUnitString();
+				if(symbol.isEmpty() || symbol.equals("")) {
+					symbol=UnitsLength.REFERENCEFRAME.getSymbol();
+				}
+				for(int i=0; i< units.getItemCount(); i++) {
+					
+					if(units.getItemAt(i).equals(symbol)) {
+						units.setSelectedIndex(i);
+						break;
+					}
+				}
+				return units;
+			}
+		}
+		return null;
+	}
+	
 	public JTextField getTagLabel()
 	{
 		JTextField label;
@@ -386,23 +475,55 @@ public class TagData
 //			String unitSymbol=unit.getUnit().getSymbol().equals(UnitsLength.REFERENCEFRAME)? "rf" : unit.getUnit().getSymbol();
 			label = new JTextField(name+" ["+getTagUnitString()+"]:");
 		}
-
+		
 		if(status==INACTIVE) {
 			label.setEnabled(false);
 		}
 		label.setEditable(false);
-//		label.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+		EmptyBorder emptyBorder = (EmptyBorder) BorderFactory.createEmptyBorder(0,10,0,0);
+		Border lineBorder=label.getBorder();
+		label.setBorder(BorderFactory.createCompoundBorder(lineBorder, emptyBorder));
 //		label.setPreferredSize(new Dimension(150,20));
 		return label;
 	}
-
-
-
+	
+	private void repaintInputField() {
+		switch (type) {
+		case ARRAYFIELDS:
+			setValArrayField((JArray) inputField);
+			break;
+		case TEXTFIELD:
+			setValTextField(inputField);
+			break;
+		case COMBOBOX:
+			setValComboBox(inputField);
+			break;
+		case CHECK_COMBOBOX:
+			setValCheckComboBox(inputField);
+			break;
+		case TEXTPANE:
+			setValTextPane(inputField);
+			break;
+		case TEXTAREA:
+			setValTextArea(inputField);
+			break;
+		case CHECKBOX:
+			setValCheckbox(inputField);
+			break;
+		case TIMESTAMP:
+			setValTimestamp(inputField);
+			break;
+		default:
+			break;
+		}
+		inputField.revalidate();
+		inputField.repaint();
+	}
+	
 	public JComponent getInputField()
 	{
 //		MonitorAndDebug.printConsole("-- Create tagField: "+name+","+listToString(value)+","+unit+","+type+","+status+","+visible);
-		int size=value!=null ? value.length : 1;
-
+		
 		// save tagdata if focus of inputfield lost
 		FocusListener listener=new FocusListener() {
 			@Override
@@ -419,7 +540,7 @@ public class TagData
 
 			}
 		};
-
+		
 		KeyListener listenerKey=new KeyListener() {
 
 			@Override
@@ -434,7 +555,7 @@ public class TagData
 				}catch(Exception ex) {
 					ex.printStackTrace();
 				}
-				valChanged=true;
+				valChanged=true;	
 				valSaved=false;
 			}
 			@Override
@@ -443,10 +564,12 @@ public class TagData
 				// TODO Auto-generated method stub
 			}
 		};
-
+		
 		switch (type) {
 		case ARRAYFIELDS:
-			inputField=new JArray(size);
+			int defaultSize = (defaultValue!=null && defaultValue[0]!=null && !defaultValue[0].equals(""))? Integer.parseInt(defaultValue[0]):1;
+			int size=value!=null ? value.length : defaultSize;
+			inputField=new JArray(defaultSize);
 			setValArrayField((JArray) inputField);
 			inputField.setToolTipText(tagInfo);
 //			inputField.setPreferredSize(new Dimension(250,20));
@@ -468,6 +591,14 @@ public class TagData
 			inputField.addKeyListener(listenerKey);
 			inputField.setToolTipText(tagInfo);
 //			inputField.setPreferredSize(new Dimension(250,20));
+			break;
+		case CHECK_COMBOBOX:
+			inputField =initCheckComboBox();
+			setValCheckComboBox(inputField);
+			((CheckBoxCombo) inputField).addActionListener(fieldActionListener);
+			inputField.addFocusListener(listener);
+			inputField.addKeyListener(listenerKey);
+			inputField.setToolTipText(tagInfo);
 			break;
 		case TEXTPANE:
 			inputField=new JTextPane();
@@ -511,24 +642,21 @@ public class TagData
 			break;
 		}
 		setTagValue(value);
-
+		
 		addDocumentListener(inputField);
-
+		
 		inputField.setBackground(backgroundColor);
 		inputField.setBorder(fieldBorder);
 		if(status==INACTIVE) {
 			inputField.setEnabled(false);
 		}
-
+		
+		// disable edit of ID field
+		if(name.equals(TagNames.ID))
+			inputField.setEnabled(false);
+		
 		return inputField;
 	}
-//	public JComponent getGUIComponent()
-//	{
-//		//create label
-//		label=getTagLabel();
-//		return null;
-//	}
-
 
 	private JComponent initListField(List<Experimenter> expList)
 	{
@@ -536,6 +664,16 @@ public class TagData
 		return field;
 	}
 
+	private JComponent initCheckComboBox()
+	{
+		CheckBoxCombo field;
+		if(defaultValue!=null) {
+			field = new CheckBoxCombo(defaultValue);
+		}else {
+			field= new CheckBoxCombo();
+		}
+		return field;
+	}
 
 	private JComponent initComboBox()
 	{
@@ -547,31 +685,6 @@ public class TagData
 		}else{
 			field = new JComboBox<String>();
 		}
-
-		//		 UIManager.put("ComboBox.background", new ColorUIResource(noInfo));
-		//		  UIManager.put("JTextField.background", new ColorUIResource(noInfo));
-		//		  ((JComboBox<String>) inputField).getEditor().getEditorComponent().setBackground(noInfo);
-		//		((JTextField) ((JComboBox<String>) inputField).getEditor().getEditorComponent()).setBackground(noInfo);
-		//		Color[] colors={noInfo};
-		//		DefaultComboBoxModel model = new DefaultComboBoxModel(colors);
-		//		((JComboBox<String>) inputField).setModel(model);
-		//		((JComboBox<String>) inputField).setRenderer(new CBoxRenderer());
-
-		//		((JComboBox<String>) inputField).addActionListener(fieldActionListener);
-
-		//			((JComboBox<String>) inputField).addActionListener(new ActionListener(){
-		//				public void actionPerformed(ActionEvent evt)
-		//				{
-		////					int commandId = Integer.parseInt(evt.getActionCommand());
-		////					switch (commandId) {
-		////					case SET_CB_VAL:
-		////						JComboBox<String> cb = (JComboBox<String>)evt.getSource();
-		////				        String chName = (String)cb.getSelectedItem();
-		////				         int ch=cb.getSelectedIndex();
-		////					}
-		//				}
-		//			});
-
 		return field;
 	}
 
@@ -592,12 +705,12 @@ public class TagData
 				}
 			}
 		};
-
-
+		
+		
 
 
 	}
-
+	
 	public void setActionListener(ActionListener a) {
 		fieldActionListener=a;
 	}
@@ -605,22 +718,22 @@ public class TagData
 	{
 		actionListenerActiv=a;
 	}
-
-
+	
+			
 	/** Action Listener for tagData*/
 	private void addActionListener(JComponent field)
 	{
 		if(fieldActionListener==null)
 			return;
 		if(type==COMBOBOX)
-			((JComboBox)field).addActionListener(fieldActionListener);
-
+			((JComboBox)field).addActionListener(fieldActionListener); 
+		
 //		switch (type) {
 //		case TEXTFIELD:
 //			((JTextField)inputField).addActionListener(l);
 //			break;
 //		case COMBOBOX:
-//			((JComboBox)inputField).addActionListener(l);
+//			((JComboBox)inputField).addActionListener(l); 
 //			break;
 //		case TEXTPANE:
 //			break;
@@ -639,16 +752,16 @@ public class TagData
 //			break;
 //		}
 	}
-
+	
 	public void setDocumentListener(DocumentListener l)
 	{
 		fieldDocumentListener=l;
 	}
-
+	
 	private void addDocumentListener(JComponent field) {
 		if(fieldDocumentListener==null)
 			return;
-
+		
 		switch (type) {
 		case TEXTFIELD:
 			((JTextField)field).getDocument().addDocumentListener(fieldDocumentListener);
@@ -679,7 +792,7 @@ public class TagData
 	public String getDefaultValuesAsArrayString() {
 		return Arrays.toString(defaultValue);
 	}
-
+	
 	public void setDefaultValues(String[] list)
 	{
 		if(list==null)
@@ -687,6 +800,10 @@ public class TagData
 		defaultValue=list;
 	}
 
+	/**
+	 * Get tagdata value and unit as string.
+	 * @return {@code "value"} for textfield without unit; {@code "value unit"} for textfield with unit; {@code "value1,value2 unit"} for arrayfield with unit;
+	 */
 	public String getTagWholeValue() {
 		if(unit==null)
 			return getTagValue();
@@ -694,25 +811,50 @@ public class TagData
 			return getTagValue()+" "+getTagUnitString();
 		}
 	}
+	
+	/**
+	 * Get name of this tag.
+	 * @return tag name.
+	 */
 	public String getTagName(){
 		return this.name;
 	}
-
+	
+	/**
+	 * Check if tag value is null or "".
+	 * @return {@code true} if value is null or "", else {@code false}. 
+	 */
+	public boolean isEmptyValue() {
+		if(value==null || getTagValue().equals("")) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Get value array.
+	 * @return
+	 */
 	public String[] getTagValueAsArray()
 	{
 		return value;
 	}
-
+	
 	/**
-	 *
-	 * @return tag values as string; v1,v2,v3,...
+	 * Get tag value as string, separated by comma.
+	 * @return tag values as string: {@code value1,value2,value3,...}
 	 */
 	public String getTagValue()
 	{
 		return arrayToString(value);
 	}
-
-	public String getTagValue(int index)
+	
+	/**
+	 * Get value at given index. If tag value is null or index is bigger then value.size return "".
+	 * @param index
+	 * @return
+	 */
+	public String getTagValue(int index) 
 	{
 		if(index >= value.length) {
 			return "";
@@ -720,25 +862,22 @@ public class TagData
 			return value[index];
 		}
 	}
-
-
+	
+	
 	public void saveTagValue(String[] newValue) {
-//		MonitorAndDebug.printConsole("-- CHECK tagdata "+name+" = ["+listToString(newValue)+"] \t old: ["+listToString(value)+"]");
 		if(newValue!=null && value!=null) {
 			if(!arrayToString(value).equals(arrayToString(newValue)) ) {
-//				MonitorAndDebug.printConsole("-- SAVE tagdata "+name);
 				dataHasChanged(true);
 				value=newValue;
 			}
 		}
-
 	}
-
+	
 	private void saveTagValue(JComponent source) throws Exception
 	{
 		if(source==null)
 			return;
-
+		
 		String[] val=null;
 			switch (type) {
 			case ARRAYFIELDS:
@@ -778,58 +917,61 @@ public class TagData
 				val=new String[1];
 				val[0]= ((JCheckBox)source).isSelected()? "true" : "false";
 				break;
+			case CHECK_COMBOBOX:
+				val = ((CheckBoxCombo) source).getSelectedVal();
+				break;
 			default:
 				break;
 			}
 //			MonitorAndDebug.printConsole("-- CHECK tagdata "+name+" = ["+listToString(val)+"] \t old: ["+listToString(value)+"]");
 			if(val!=null && value!=null) {
 				if(!arrayToString(value).equals(arrayToString(val)) ) {
-
+					
 					dataHasChanged(true);
 					value=val;
 //					MonitorAndDebug.printConsole("-- SAVE tagdata "+name+" = "+listToString(value));
 				}
 			}
 	}
-
+	
 //	public List<Experimenter> getListValues()
 //	{
 //		if(type == LIST){
-//
+//			
 //			List<Experimenter> list = ((ExperimenterBox) inputField).getExperimenterList();
-//
+//			
 //			return list;
 //		}
-//
+//		
 //		return null;
 //	}
 
-
-
+	
+	
 	private String listToString(List<String> list)
 	{
 		String res="";
-
+		
 		if(list==null || list.isEmpty())
 			return res;
-
+		
 		for(String s:list){
 			if(!s.equals(""))
 				res+=s+",";
 		}
 		if(res.endsWith(","))
 			res=res.substring(0, res.length()-1);
-
+		
 		return res;
 	}
-
+	
 	private String arrayToString(String[] list)
 	{
 		String res=null;
-
+		
 		if(list==null)
 			return res;
-
+		
 		res="";
 		for(String s:list){
 			if(s!=null && !s.equals(""))
@@ -837,50 +979,78 @@ public class TagData
 		}
 		if(res.endsWith(","))
 			res=res.substring(0, res.length()-1);
-
+		
 		return res;
 	}
+	
 
-
-
+	
 	public String getTagUnitString()
 	{
 		if(unit!=null && unit[0]!=null)
 			return unit[0].getUnit().getSymbol();
-
+		
 		return ModuleController.getInstance().getStandardUnitSymbolByName(this.parent,getTagName());
 	}
-
-
-
+	
 	private Unit[] getTagUnit()
 	{
 		return unit;
 	}
 
+	private void setTagData(ome.model.units.Unit[] u) {
+		if(u==null || u.length==0)
+			return;
+		for(int i=0; i<u.length; i++) {
+			value[i]=u[i]!=null? String.valueOf(u[i].getValue()):"";
+		}
+		unit=u;
+	}
 	public void setTagUnit(ome.model.units.Unit[] u)
 	{
 		unit=u;
 		if(unit!=null && unit.length>0 && unit[0]!=null) unitClass=unit[0].getClass();
 	}
-
+	
 	public String getUnitType()
 	{
-		if(unitClass==null)
+		if(unitClass==null) {
+			if(getTagUnitString()!=null && !getTagUnitString().equals("")) {
+				return TagNames.getUnit(getTagUnitString()).getClass().getName();
+			}
 			return "";
+		}
 		return unitClass.getName();
 
 	}
+	
+	/**
+	 * set unitsymbol. If unitsymbol is differ from current unit -> convert value
+	 * @param unitsymbol
+	 */
 	public void setTagUnit(String unitsymbol) {
-		if(unitsymbol==null || unitsymbol.equals(""))
+		if(unitsymbol==null || unitsymbol.equals("") || getTagValue().trim().equals(""))
 			return;
-		Unit[] u=new Unit[1];
-
-		u[0]=TagNames.getUnit(unitsymbol);
-		setTagUnit(u);
-
+		Unit[] newVal=null;
+	
+		// conversion necessary?
+		if(value!= null &&  unit!=null && unit[0]!=null &&
+				unit[0].getUnit()!=null && 
+				!unitsymbol.equals(unit[0].getUnit().getSymbol())) {
+			System.out.println("--Convert unit of "+name+": "+unit[0].getUnit().getSymbol()+" -> "+unitsymbol);
+			newVal=OMEValueConverter.convert(value,unit,unitsymbol);
+			if(newVal!=null) {
+				setTagData(newVal);
+				return;
+			}
+		}
+		
+		newVal=new Unit[1];
+		newVal[0]=TagNames.getUnit(unitsymbol);
+		setTagUnit(newVal);
+		
 	}
-
+	
 //	public void setTagValue(Experimenter val)
 //	{
 //		activateActionListener(false);
@@ -895,7 +1065,7 @@ public class TagData
 //		}
 //		activateActionListener(true);
 //	}
-//
+//	
 //	public void setTagValue(List<Experimenter> val)
 //	{
 //		activateActionListener(false);
@@ -910,7 +1080,7 @@ public class TagData
 //		}
 //		activateActionListener(true);
 //	}
-
+	
 	public void setTagValue(Unit unit, Class unitClass, boolean property) {
 		setTagValue(new ome.model.units.Unit[] {unit},unitClass,property);
 	}
@@ -942,7 +1112,7 @@ public class TagData
 		setTagProp(property);
 		valChanged=false;
 	}
-
+	
 	public void setTagValue(ome.model.units.Unit val, int index, boolean property)
 	{
 		if(val!=null) {
@@ -959,14 +1129,14 @@ public class TagData
 		setTagValue(val);
 		setTagProp(property);
 		valChanged=false;
-
+		
 	}
 
 	private void setTagValue(String val, int index)
 	{
 		if(val!=null && !val.equals(""))
 			valSaved=false;
-
+		
 		switch (type) {
 		case ARRAYFIELDS:
 			if(value==null)
@@ -983,25 +1153,18 @@ public class TagData
 		setTagStatus( val.equals("") ? EMPTY : (status==EMPTY ? SET : OVERWRITE));
 	}
 
-	private void setTagValue(String[] val)
+	/**
+	 * Set value of tag.
+	 * @param val
+	 */
+	private void setTagValue(String[] val) 
 	{
-//		switch (type) {
-//		case ARRAYFIELDS:
-////			inputField.setBorder(normalBorder);
-//			// split string
-//			for(int i=0; i<val.length; i++){
-//				setValArrayField(val[i], i);
-//			}
-//		default:
-//			break;
-//		}
 		value=val;
 		setTagStatus( (val.length==0) ? EMPTY : (status==EMPTY ? SET : OVERWRITE));
 	}
 
-	public void setTagValue(String val)
+	public void setTagValue(String val) 
 	{
-//		inputField.setBorder(normalBorder);
 		if(val==null || val.equals("")){
 			backgroundColor=noInfo;
 		}else{
@@ -1012,21 +1175,21 @@ public class TagData
 		value[0]=val;
 		setTagStatus( val.equals("") ? EMPTY : (status==EMPTY ? SET : OVERWRITE));
 		valChanged=false;
-
+		
 	}
-
-	private String readTimestamp(JComponent inputField,String val)
+	
+	private String readTimestamp(JComponent inputField,String val) 
 	{
 		String creationDate = ((JTextField)inputField).getText();
 		try{
 			// parse to yyyy-MM-ddT00:00:00
 			String date = DateTools.formatDate(creationDate, DATE_FORMATS_TAGS);
-
+			
 			//parsing successfull?
 			if(creationDate!= null && !creationDate.equals("") && !creationDate.equals(datePattern) && date ==null){
 				date = parseDate(creationDate);
-
-
+				
+				
 				// show warn dialog
 				if(date==null){
 					String formats="";
@@ -1035,26 +1198,26 @@ public class TagData
 					}
 					LOGGER.warn("unknown creation date format: {}", creationDate);
 					MonitorAndDebug.printConsole("unknown creation date format: "+ creationDate);
-//					WarningDialog ld = new WarningDialog("Unknown Timestamp Format!",
+//					WarningDialog ld = new WarningDialog("Unknown Timestamp Format!", 
 //							"Can't parse given timestamp ["+name+": "+creationDate+"] ! Please use one of the following date formats:\n"+formats,
 //							this.getClass().getSimpleName());
 //					ld.setVisible(true);
 				}
 			}
-
+			
 			val=date;//DateTools.formatDate(((JTextField)inputField).getText(), DateTools.TIMESTAMP_FORMAT);
 		}catch(Exception e){
 			LOGGER.warn("unknown creation date format: {}", creationDate);
 			MonitorAndDebug.printConsole("unknown creation date format: "+ creationDate);
 //			LOGGER.error("Wrong string input format timestamp: "+name+": "+creationDate);
-//			ExceptionDialog ld = new ExceptionDialog("Timestamp Format Error!",
+//			ExceptionDialog ld = new ExceptionDialog("Timestamp Format Error!", 
 //					"Wrong timestamp format at input at "+name,e,
 //					this.getClass().getSimpleName());
 //			ld.setVisible(true);
 		}
 		return val;
 	}
-
+	
 	//http://stackoverflow.com/questions/3389348/parse-any-date-in-java
 	/**
 	 * Determine SimpleDateFormat pattern matching with the given date string. Returns null if
@@ -1073,7 +1236,7 @@ public class TagData
 	   System.out.println("Can't parse date: "+dateString+". Unknown date format!");
 	    return null; // Unknown format.
 	}
-
+	
 
 	private String parseDate(String val) throws Exception
 	{
@@ -1082,11 +1245,11 @@ public class TagData
 		if(s==null){
 			dateformat=DateTools.ISO8601_FORMAT;
 			s=DateTools.formatDate(val, dateformat);
-
+			
 		}
 		DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateformat);
 		DateFormat df=new SimpleDateFormat(dateformat);
-
+		
 		Date d=null;
 		try {
 			d=df.parse(s);
@@ -1100,7 +1263,7 @@ public class TagData
 		}
 	}
 
-	private void setValTimestamp(JComponent inputField)
+	private void setValTimestamp(JComponent inputField) 
 	{
 //		if(val==null || val.equals("")){
 //			((JTextField) inputField).setText(datePattern.toLowerCase());
@@ -1114,11 +1277,11 @@ public class TagData
 			if(s==null){
 				dateformat=DateTools.ISO8601_FORMAT;
 				s=DateTools.formatDate(val, dateformat);
-
+				
 			}
 			DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateformat);
 			DateFormat df=new SimpleDateFormat(dateformat);
-
+			
 			Date d=null;
 			try {
 				d=df.parse(s);
@@ -1129,7 +1292,7 @@ public class TagData
 				((JTextField) inputField).setText("");
 				e1.printStackTrace();
 			}
-
+			
 			try {
 				//			((JTextField) inputField).setText( d.toString());
 				SimpleDateFormat f=new SimpleDateFormat(DateTools.TIMESTAMP_FORMAT);
@@ -1140,17 +1303,17 @@ public class TagData
 				setTagInfoError(val+". Invalid Date Format!");
 				e.printStackTrace();
 			}
-
+			
 		}
-
+				
 	}
 
 	//TODO value==String[]
-	private void setValArrayField(JArray field)
+	private void setValArrayField(JArray field) 
 	{
 		if(value==null){
 			field.setBackground(noInfo,"");
-
+			
 		}else{
 			field.setValues(value);
 //			if(value.length!= inputField.getComponentCount()){
@@ -1174,7 +1337,7 @@ public class TagData
 //		}
 //	}
 
-	private void setValCheckbox(JComponent inputField)
+	private void setValCheckbox(JComponent inputField) 
 	{
 		boolean bVal=BooleanUtils.toBoolean(value[0]);
 		((JCheckBox) inputField).setSelected(bVal);
@@ -1183,7 +1346,7 @@ public class TagData
 	private void setValTextPane(JComponent inputField) {
 		((JTextPane) inputField).setText(value[0]);
 	}
-
+	
 	private void setValTextArea(JComponent inputField){
 		((ScrollableTextPane)inputField).setText(value[0]);
 	}
@@ -1195,9 +1358,13 @@ public class TagData
 				((JComboBox<String>) inputField).setSelectedIndex(c);
 //				  UIManager.put("ComboBox.background", new ColorUIResource(fillInfo));
 //				  UIManager.put("JTextField.background", new ColorUIResource(fillInfo));
-//				((JTextField) ((JComboBox<String>) inputField).getEditor().getEditorComponent()).setBackground(fillInfo);
+//				((JTextField) ((JComboBox<String>) inputField).getEditor().getEditorComponent()).setBackground(fillInfo); 
 			}
 		}
+	}
+	
+	private void setValCheckComboBox(JComponent inputField) {
+		((CheckBoxCombo) inputField).init(value);
 	}
 
 	private void setValTextField(JComponent inputField) {
@@ -1219,9 +1386,15 @@ public class TagData
 	public void setTagProp(boolean prop) {
 		this.prop = prop;
 	}
-
+	
 	public String getTagType() {
 		return type;
+	}
+	
+	public Class getTagTypeClass() {
+		if(inputField==null)
+			return String.class;
+		return inputField.getClass();
 	}
 
 	public void setEnable(boolean val)
@@ -1230,13 +1403,13 @@ public class TagData
 			status=INACTIVE;
 	}
 
-
+	
 
 	public boolean valueHasChanged()
 	{
 //		if(type==LIST)
 //			return ((ExperimenterBox)inputField).valueChanged();
-
+	
 		return valChanged;
 	}
 	public boolean isDataSaved(){
@@ -1245,7 +1418,7 @@ public class TagData
 	public void dataSaved(boolean b){
 		valSaved=b;
 	}
-
+	
 	public void dataHasChanged(boolean b){
 		valChanged=b;
 		if(b)
@@ -1264,24 +1437,24 @@ public class TagData
 		return tagInfo;
 	}
 
-	public void setTagInfoError(String tagInfo)
+	public void setTagInfoError(String tagInfo) 
 	{
 		this.tagInfo = tagInfo;
-
+		
 		if(!tagInfo.equals("")){
 			fieldBorder=errorBorder;
-
+			
 		}else{
 			fieldBorder=normalBorder;
 		}
-
-
+		
+		
 	}
 
 	class ScrollableTextPane extends JScrollPane
 	{
 		JTextArea area;
-
+		
 		public ScrollableTextPane()
 		{
 			area=new JTextArea();
@@ -1289,18 +1462,18 @@ public class TagData
 			area.setLineWrap(true);
 			area.setWrapStyleWord(true);
 			setViewportView(area);
-
+			
 		}
 		public void setTextAreaRows(int r)
 		{
 			area.setRows(r);
 		}
-
+		
 		public void setText(String val)
 		{
 			area.setText(val);
 		}
-
+		
 		public String getText()
 		{
 			return area.getText();
@@ -1313,15 +1486,15 @@ public class TagData
 			if(area!=null)
 				area.setBackground(bg);
 		}
-
+		
 		@Override
 		public void addKeyListener(KeyListener l) {
 			area.addKeyListener(l);
 		}
-
+		
 
 	}
-
+	
 	/**
 	 * Own class for arrayfield component
 	 * @author Kunis
@@ -1332,7 +1505,7 @@ public class TagData
 		public JArray(int size) {
 			setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 			setBorder(new EmptyBorder(0, 0, 0, 0));
-
+			
 			FocusListener flTextField=new FocusListener() {
 				@Override
 				public void focusLost(FocusEvent e) {
@@ -1346,7 +1519,7 @@ public class TagData
 
 				@Override
 				public void focusGained(FocusEvent e) {
-
+					
 				}
 			};
 			KeyListener klTextField=new KeyListener() {
@@ -1361,15 +1534,15 @@ public class TagData
 					}catch(Exception ex) {
 						ex.printStackTrace();
 					}
-					valChanged=true;
+					valChanged=true;	
 					valSaved=false;
 				}
 				@Override
 				public void keyPressed(KeyEvent e) {
 				}
 			};
-
-
+			
+			
 			comp=new JTextField[size];
 			for(int i=0; i<size; i++){
 				JTextField txtF=new JTextField(10);
@@ -1377,10 +1550,10 @@ public class TagData
 				txtF.addFocusListener(flTextField);
 				txtF.addKeyListener(klTextField);
 				comp[i]=txtF;
-
+			
 				this.add(txtF);
 			}
-
+			
 		}
 		public void setValue(String val,int index) {
 			if(comp!=null && comp.length>index && comp[index]!=null) {
@@ -1391,7 +1564,7 @@ public class TagData
 			if(comp!=null) {
 				for(int i=0; i<comp.length;i++) {
 					if(values.length>i) {
-
+						
 						if(values[i]==null || values[i].equals("")){
 							values[i]="";
 							comp[i].setBackground(noInfo);
@@ -1413,7 +1586,7 @@ public class TagData
 				res=res.substring(0, res.length()-1);
 			return res;
 		}
-
+		
 		public String[] getValuesAsArray() throws Exception
 		{
 			if(comp==null)
@@ -1424,8 +1597,8 @@ public class TagData
 			}
 			return res;
 		}
-
-
+		
+		
 		public void setBackground(Color c, String text) {
 			if(comp==null)
 				return;
@@ -1453,10 +1626,15 @@ public class TagData
 					t.setPreferredSize(subD);
 			}
 		}
-
+		
 	}
 
+	public void setProperties(TagDataProp prop) {
+		setVisible(prop.getVisible());
+		setTagUnit(prop.getUnitSymbol());
+	}
 
+	
 
 
 }

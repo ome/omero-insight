@@ -24,15 +24,18 @@ public class ModuleList extends HashMap<String, List<ModuleContent>> {
 	 * @param orig
 	 */
 	public ModuleList(ModuleList orig) {
-		for (Map.Entry<String,List<ModuleContent>> entry: orig.entrySet()) {
-			List<ModuleContent> newList = new ArrayList<>();
-			if(entry.getValue()!=null) {
-				for(ModuleContent c : entry.getValue()) {
-					newList.add(new ModuleContent(c));
+		if(orig!=null) {
+
+			for (Map.Entry<String,List<ModuleContent>> entry: orig.entrySet()) {
+				List<ModuleContent> newList = new ArrayList<>();
+				if(entry.getValue()!=null) {
+					for(ModuleContent c : entry.getValue()) {
+						newList.add(new ModuleContent(c));
+					}
+					this.put(entry.getKey(), newList);
+				}else {
+					this.put(entry.getKey(),null);
 				}
-				this.put(entry.getKey(), newList);
-			}else {
-				this.put(entry.getKey(),null);
 			}
 		}
 	}

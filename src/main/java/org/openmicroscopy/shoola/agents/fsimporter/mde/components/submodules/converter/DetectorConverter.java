@@ -52,31 +52,31 @@ public class DetectorConverter extends DataConverter{
 		JLabel label=new JLabel(name);
 		label.setBorder(new EmptyBorder(0, 0, 0, 10));
 		labelPane.add(label);
-
+		
 		IconManager icons = IconManager.getInstance();
 		JButton applyBtn = new JButton(icons.getIcon(IconManager.ADD_12));
 		applyBtn.setToolTipText("Apply table selection");
 		applyBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		applyBtn.setActionCommand(String.valueOf(index));
 		if(listeners!=null && listeners.size()>0)applyBtn.addActionListener(listeners.get(0));
-
+		
 		labelPane.add(applyBtn);
 
 		return labelPane;
 	}
-
-
+	
+	
 
 	public LinkedHashMap<String, TagData> convertData(Detector detector, DetectorSettings settings)
 	{
 		tagMap=new LinkedHashMap<String,TagData>();
 		if(detector!=null) {
 			try{tagMap.put(TagNames.ID,convertID(detector.getID(), REQUIRED));
-			} catch (NullPointerException e) {
+			} catch (NullPointerException e) { 
 				tagMap.put(TagNames.ID,convertID(null, REQUIRED));
 			}
 			try{tagMap.put(TagNames.MODEL,convertModel(detector.getModel(), REQUIRED));
-			} catch (NullPointerException e) {
+			} catch (NullPointerException e) { 
 				tagMap.put(TagNames.MODEL,convertModel(null, REQUIRED));
 			}
 			try{tagMap.put(TagNames.MANUFAC,convertManufact(detector.getManufacturer(),  REQUIRED));
@@ -87,12 +87,12 @@ public class DetectorConverter extends DataConverter{
 				tagMap.put(TagNames.D_TYPE,convertType(detector.getType(),  REQUIRED));
 				//if(detector.getType()!=null)
 				//TODOactivateAttributesForType(detector.getType());
-			} catch (NullPointerException e) {
+			} catch (NullPointerException e) { 
 				tagMap.put(TagNames.D_TYPE,convertType(null,  REQUIRED));
 			}
 
 			try{tagMap.put(TagNames.ZOOM,convertZoom(detector.getZoom(), REQUIRED));
-			} catch (NullPointerException e) {
+			} catch (NullPointerException e) { 
 				tagMap.put(TagNames.ZOOM,convertZoom(null, REQUIRED));
 			}
 			try{tagMap.put(TagNames.AMPLGAIN,convertAmplGain(detector.getAmplificationGain(),  REQUIRED));
@@ -101,7 +101,7 @@ public class DetectorConverter extends DataConverter{
 			}
 
 			try{tagMap.put(TagNames.VOLTAGE,convertVoltage(detector.getVoltage(), REQUIRED));
-			} catch (NullPointerException e) {
+			} catch (NullPointerException e) { 
 				tagMap.put(TagNames.VOLTAGE,convertVoltage(null, REQUIRED));
 			}
 			try{ tagMap.put(TagNames.OFFSET,convertOffset(detector.getOffset(), REQUIRED));
@@ -136,16 +136,16 @@ public class DetectorConverter extends DataConverter{
 				tagMap.put(TagNames.OFFSET,convertOffset(null, REQUIRED));
 			}
 			try{ tagMap.put(TagNames.CONFZOOM,convertConfocalZoom(settings.getZoom(), REQUIRED));
-			} catch (NullPointerException e) {
+			} catch (NullPointerException e) { 
 				tagMap.put(TagNames.CONFZOOM,convertConfocalZoom(null, REQUIRED));
 			}
 			try{ tagMap.put(TagNames.BINNING,convertBinning(settings.getBinning(), REQUIRED));
-			} catch (NullPointerException e) {
+			} catch (NullPointerException e) { 
 				tagMap.put(TagNames.BINNING,convertBinning(null, REQUIRED));
 			}
 			try{
 				tagMap.put(TagNames.SUBARRAY,convertSubarray(settings.getSubarray(), REQUIRED));
-			} catch (NullPointerException e) {
+			} catch (NullPointerException e) { 
 				tagMap.put(TagNames.SUBARRAY,convertSubarray(null, REQUIRED));
 			}
 		}else {
@@ -258,7 +258,7 @@ public class DetectorConverter extends DataConverter{
 	 * Parser
 	 * --------------------------------------------------------*/
 
-	private static DetectorType parseDetectorType(String c)
+	private static DetectorType parseDetectorType(String c) 
 	{
 		if(c==null || c.equals(""))
 			return null;
@@ -288,6 +288,6 @@ public class DetectorConverter extends DataConverter{
 
 		return Binning.fromString(c);
 	}
-
-
+	
+	
 }

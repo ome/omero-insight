@@ -229,6 +229,8 @@ public class FNode extends DefaultMutableTreeNode
 	public void setContainer(NodeContainer cont) {
 		this.container= cont;
 	}
+	
+	
 	public void reset() {
 		container=null;
 		

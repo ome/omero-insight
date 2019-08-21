@@ -15,19 +15,21 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 public class ModuleContentTableModel extends DefaultTableModel{
 	private String[] idents;
 	private boolean isEditable;
-//	private Class[] columnTypes;
+	private Class[] columnTypes;
 	
 	public ModuleContentTableModel()
 	{
 		super(new Object[][] {},
 				new String[] {"ID","Model", "Manufactur"});
-//		columnTypes = new Class[] {String.class,String.class,String.class};
+		columnTypes = new Class[] {String.class,String.class,String.class};
 		isEditable=false;
 
 	}
 	public ModuleContentTableModel(String[] idents) {
 		super(new Object[][] {},idents);
 		this.idents=idents;
+		if(idents!=null)
+			this.columnTypes=new Class[idents.length];
 		this.isEditable=false;
 	}
 	
@@ -47,8 +49,8 @@ public class ModuleContentTableModel extends DefaultTableModel{
 		if(l!=null) {
 			for(int i=0; i< idents.length;i++) {
 				try {
-					//TODO: converter read ID element first
-					o[i]=l.containsKey(idents[i])? l.get(idents[i]).getTagValue():"";
+						o[i]=l.containsKey(idents[i])? l.get(idents[i]).getTagValue():"";
+						columnTypes[i]=l.get(idents[i]).getTagTypeClass();
 				}catch(Exception err){
 					err.printStackTrace();
 				}
@@ -93,7 +95,8 @@ public class ModuleContentTableModel extends DefaultTableModel{
 		this.isEditable=isEditable;
 	}
 	
-//	public Class getColumnClass(int columnIndex) {
-//		return columnTypes[columnIndex];
-//	}
+	public Class getColumnClass(int columnIndex) {
+//		return getValueAt(0, c).getClass();
+		return columnTypes[columnIndex];
+	}
 }

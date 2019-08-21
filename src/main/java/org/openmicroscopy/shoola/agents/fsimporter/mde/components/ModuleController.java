@@ -25,20 +25,13 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.red
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleTree;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.CustomViewProperties;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.hardware.LatticeScope;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.hardware.LeicaLSMSP5;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.hardware.OlympusLSMFV1000;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.hardware.OlympusTIRF3Line;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.hardware.OlympusTIRF4Line_SMT;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.hardware.OlympusTIRF4Line_STORM;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.hardware.StandardMic;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.hardware.ZeissCellObserverSD;
+
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ArcConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ChannelConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DetectorConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DichroicConverter;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ExperimentConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilamentConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilterConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilterSetConverter;
@@ -85,10 +78,13 @@ public class ModuleController {
 		
 		standardTree = new DefaultMutableTreeNode(new ModuleTreeElement(null, null));
 		ModuleTreeElement img = createElement(TagNames.OME_ELEM_IMAGE,standardTree);
-		img.printContent();
+//		img.printContent();
 		DefaultMutableTreeNode image= new DefaultMutableTreeNode(img);
 		standardTree.add(image);
 		
+		ModuleTreeElement exp=createElement(TagNames.OME_ELEM_EXPERIMENT, standardTree);
+		DefaultMutableTreeNode experiment = new DefaultMutableTreeNode(exp);
+		standardTree.add(experiment);
 		
 		ModuleTreeElement obj = createElement(TagNames.OME_ELEM_OBJECTIVE,image);
 		image.add(new DefaultMutableTreeNode(obj));
@@ -129,7 +125,7 @@ public class ModuleController {
 		
 	}
 	
-	private ModuleTreeElement createElement(String type,DefaultMutableTreeNode parent) {
+	public ModuleTreeElement createElement(String type,DefaultMutableTreeNode parent) {
 		if(getContentOfType(type)==null) {
 			System.out.println("ERROR: no content found for type  "+type);
 		}
@@ -152,6 +148,12 @@ public class ModuleController {
 			return ModuleTree.cloneTreeNode(mdeConf.getTree());
 		}
 	}
+	
+	public HashMap<String,ModuleContent> getAvailableContent(){
+		if(mdeConf==null)
+			return initDefaultOMEObjects();
+		return mdeConf.getAvailableContentList(getCurrentMicName());
+	}
 
 	/**
 	 * Default OME objects content
@@ -165,6 +167,11 @@ public class ModuleController {
 		ModuleContent img= new ModuleContent((new ImageConverter()).convertData(null),thisType,
 				TagNames.getParents(thisType));
 		defaultContent.put(thisType, img);
+		
+		thisType=TagNames.OME_ELEM_EXPERIMENT;
+		ModuleContent exp= new ModuleContent((new ExperimentConverter()).convertData(null,null),thisType,
+				TagNames.getParents(thisType));
+		defaultContent.put(thisType, exp);
 		
 		thisType=TagNames.OME_ELEM_OBJECTIVE;
 		ModuleContent obj=new ModuleContent((new ObjectiveConverter()).convertData(null, null),
@@ -238,11 +245,11 @@ public class ModuleController {
 		ModuleContent lpEx=new ModuleContent(null,thisType,TagNames.getParents(thisType));
 		defaultContent.put(thisType,lpEx);
 		
-		thisType=TagNames.OME_ELEM_LIGHTPATH_FS;
-		ModuleContent lpFs=new ModuleContent(null,thisType,TagNames.getParents(thisType));
-		defaultContent.put(thisType,lpFs);
+//		thisType=TagNames.OME_ELEM_LIGHTPATH_FS;
+//		ModuleContent lpFs=new ModuleContent(null,thisType,TagNames.getParents(thisType));
+//		defaultContent.put(thisType,lpFs);
 		
-		//TODO: OME:Microscope, Filterset, Experiment
+		//TODO: OME:Microscope, Filterset,
 		return defaultContent;
 		
 	}
@@ -295,12 +302,12 @@ public class ModuleController {
 		return new ModuleContent(mdeConf.getContent(micName, moduleType));
 	}
 	
-	
+	//TODO docu
 	public DefaultMutableTreeNode cloneTreeStructure(DefaultMutableTreeNode node,DefaultMutableTreeNode p) {
 		DefaultMutableTreeNode cloneNode = null;
 		
-		cloneNode=new DefaultMutableTreeNode(
-				new ModuleTreeElement(getContentOfType(((ModuleTreeElement) node.getUserObject()).getType()),p));
+		cloneNode=new DefaultMutableTreeNode(ModuleController.getInstance().createElement(((ModuleTreeElement) node.getUserObject()).getType(), p));
+//				new ModuleTreeElement(getContentOfType(((ModuleTreeElement) node.getUserObject()).getType()),p));
 		for(int i = 0 ; i < node.getChildCount(); i++) {
 			cloneNode.add(cloneTreeStructure((DefaultMutableTreeNode) node.getChildAt(i),cloneNode));
 		}
@@ -308,27 +315,12 @@ public class ModuleController {
 	}
 	
 	
+	
+	
 	public void setCurrentMicName(String micName) {
 		this.micName=micName;
 	}
 	
-	//TODO filter and dichroic list missing
-	//TODO:replace by configuration file values
-	public ModuleList getCustomSettings(CustomViewProperties customSettings) {
-		// save microscope instrument lists to listOfDefaultMicValues
-//		System.out.println("-- read out microscope instruments to default mic values [MDEController]");
-		ModuleList hardwareList=new ModuleList();
-		hardwareList.put(TagNames.OME_ELEM_OBJECTIVE, MDEParser.parseObjectiveList(customSettings.getMicObjList(),this));
-		hardwareList.put(TagNames.OME_ELEM_DETECTOR, MDEParser.parseDetectorList(customSettings.getMicDetectorList(),this));
-		hardwareList.put(TagNames.OME_ELEM_LASER, MDEParser.parseLightSourceLaser(customSettings.getMicLightSrcList(),this));
-		hardwareList.put(TagNames.OME_ELEM_FILAMENT, MDEParser.parseLightSourceFilament(customSettings.getMicLightSrcList(),this));
-		hardwareList.put(TagNames.OME_ELEM_ARC, MDEParser.parseLightSourceArc(customSettings.getMicLightSrcList(),this));
-		hardwareList.put(TagNames.OME_ELEM_LED, MDEParser.parseLightSourceLED(customSettings.getMicLightSrcList(),this));
-		hardwareList.put(TagNames.OME_ELEM_GENERICEXCITATIONSOURCE, MDEParser.parseLightSourceGES(customSettings.getMicLightSrcList(),this));
-//		hardwareList.put("OME:Filter", MDEParser.parseFilterList(customSettings.getMicLightPathFilterList()));
-//		hardwareList.put("OME:Dichroic", MDEParser.parseDichroicList(customSettings.getMicLightPathFilterList()));
-		return hardwareList;
-	}
 	
 	public void initMDEConfiguration(String curMic) {
 		System.out.println("-- load MDE configuration");
@@ -368,9 +360,9 @@ public class ModuleController {
 //		System.out.println("-- serach for parent: "+type);
 		HashMap<String,ModuleContent> contentList=mdeConf.getAvailableContentList(getCurrentMicName());
 		for(Entry<String, ModuleContent> entry: contentList.entrySet()) {
-			System.out.println("-- check moduleContent for possible insert: "+entry.getKey());
+//			System.out.println("-- check moduleContent for possible insert: "+entry.getKey()+" - "+Arrays.toString(entry.getValue().getParents()));
 			if(entry.getValue().hasParent(type)) {
-//				System.out.println("-- ok");
+//				System.out.println("\t ok");
 				list.add(entry.getKey());
 			}
 		}
@@ -383,7 +375,7 @@ public class ModuleController {
 
 	public String[] getMicNames() {
 		if(mdeConf==null)
-			return null;
+			return new String[] {mdeConf.UNIVERSAL};
 
 		return mdeConf.getMicNames();
 	}

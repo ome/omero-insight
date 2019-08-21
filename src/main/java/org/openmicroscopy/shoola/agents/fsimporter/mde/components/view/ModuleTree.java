@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 	private static String POPUP_COPY = "copy";
 	private static String POPUP_PASTE = "paste";
 //	private static String POPUP_CUT = "cut";
-	private static String POPUP_DEL = "delete";
+	public static final String POPUP_DEL = "delete";
 	private static String POPUP_INSERT ="insert";
 	private static String POPUP_INSERT_ALL ="insertAll";
 	
@@ -62,10 +63,14 @@ public class ModuleTree extends JPanel implements ActionListener{
 	private DefaultMutableTreeNode copyVal;
 	private JPopupMenu popup;
 	
-	public ModuleTree(DefaultMutableTreeNode elem,ModuleController controller) {
+	private boolean changeTreeStructure;
+	
+	
+	public ModuleTree(DefaultMutableTreeNode elem, ActionListener l) {
 		super(new GridLayout(1,0));
-		this.controller=controller;
-		buildContextMenu();
+		this.controller=ModuleController.getInstance();
+		this.changeTreeStructure=false;
+		buildContextMenu(l);
 		buildTree(elem);
 //		selectFirstNode();
 		
@@ -89,7 +94,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 		treeModel=(DefaultTreeModel) tree.getModel();
 		treeModel.addTreeModelListener(new ModuleTreeListener());
 		
-		tree.setEditable(true);
+		tree.setEditable(false);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
@@ -103,14 +108,14 @@ public class ModuleTree extends JPanel implements ActionListener{
 		
 	}
 	
-	private void buildContextMenu()
+	private void buildContextMenu(ActionListener l)
 	{
 		popup = new JPopupMenu();
-		JMenu view = new JMenu("View");
-		JMenuItem view_browse = new JMenuItem("Browse");
-		JMenuItem view_compare = new JMenuItem("Compare");
-		view.add(view_browse);
-		view.add(view_compare);
+//		JMenu view = new JMenu("View");
+//		JMenuItem view_browse = new JMenuItem("Browse");
+//		JMenuItem view_compare = new JMenuItem("Compare");
+//		view.add(view_browse);
+//		view.add(view_compare);
 		
 		JMenu edit = new JMenu("Edit");
 		
@@ -128,7 +133,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 		
 		JMenuItem edit_delete = new JMenuItem("Delete");
 		edit_delete.setActionCommand(POPUP_DEL);
-		edit_delete.addActionListener(this);
+		edit_delete.addActionListener(l);
 		
 		edit.add(edit_copy);
 		edit.add(edit_paste);
@@ -152,7 +157,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 			public void menuCanceled(MenuEvent e) {	}
 		});
 		popup.add(insert);
-		popup.add(view);
+//		popup.add(view);
 		popup.add(edit);
 		
 		
@@ -169,19 +174,18 @@ public class ModuleTree extends JPanel implements ActionListener{
 			node.setActionCommand(POPUP_INSERT_ALL);
 			node.addActionListener(this);
 			insert.add(node);
-		}else {
-			String[] list = controller.getPossibleChilds(((ModuleTreeElement)current.getUserObject()).getType());
-			if(list!=null && list.length>0) {
-				for(String s:list) {
-					JMenuItem node = new JMenuItem(s);
-					node.setActionCommand(POPUP_INSERT);
-					node.addActionListener(this);
-					insert.add(node);
-				}
-			}else {
-				JMenuItem node = new JMenuItem("No childs to insert");
+		}
+		String[] list = controller.getPossibleChilds(((ModuleTreeElement)current.getUserObject()).getType());
+		if(list!=null && list.length>0) {
+			for(String s:list) {
+				JMenuItem node = new JMenuItem(s);
+				node.setActionCommand(POPUP_INSERT);
+				node.addActionListener(this);
 				insert.add(node);
 			}
+		}else {
+			JMenuItem node = new JMenuItem("No childs to insert");
+			insert.add(node);
 		}
 	}
 
@@ -223,6 +227,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 		}
 		if(thisElem!=null) {
 			System.out.println("-- addNode: "+getName(thisElem) + " at "+parent.getUserObject().toString());
+			this.changeTreeStructure=true;
 			((ModuleTreeElement)thisElem.getUserObject()).setChildIndex(parent);
 			
 			System.out.println("\t => Node = "+getName(thisElem));
@@ -246,28 +251,16 @@ public class ModuleTree extends JPanel implements ActionListener{
 	{
 		this.controller=controller;
 		this.removeAll();
+		this.changeTreeStructure=true;
 		buildTree(elem);
 		revalidate();
 		repaint();
 	}
 
-	// TODO: remove from moduleList
-	public void removeSelection(boolean removeAll) {
-		if(removeAll) {
-//			TODO
-		}else {
-			TreePath selectedNode = tree.getSelectionPath();
-			if(selectedNode!=null) {
-				DefaultMutableTreeNode current = (DefaultMutableTreeNode) selectedNode.getLastPathComponent();
-				ModuleTreeElement cElem=(ModuleTreeElement)current.getUserObject();
-				System.out.println("-- delete node : "+cElem.toString());
-				
-				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) current.getParent();
-				if(parent!=null) {
-					treeModel.removeNodeFromParent(current);
-				}
-			}
-		}
+	
+	
+	public void removeNodeFromParent(DefaultMutableTreeNode current) {
+		treeModel.removeNodeFromParent(current);
 	}
 	
 	/**
@@ -275,7 +268,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 	 * @param node
 	 */
 	public void pasteNode(DefaultMutableTreeNode node) {
-		
+		this.changeTreeStructure=true;
 		System.out.println("-- paste node "+getName(node));
 		DefaultMutableTreeNode cNode=insertNode(node);
 		printTree(root," ");
@@ -294,6 +287,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 	}
 
 	public DefaultMutableTreeNode insertNode(String type) {
+		this.changeTreeStructure=true;
 		TreePath parentPath=tree.getSelectionPath();
 		DefaultMutableTreeNode parent=root;
 		if(parentPath!=null) {
@@ -313,7 +307,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 	 * @param node
 	 */
 	public DefaultMutableTreeNode insertNode(DefaultMutableTreeNode node) {
-		
+		this.changeTreeStructure=true;
 		if(node==null)
 			return null;
 		System.out.println("--insert node tree");
@@ -424,14 +418,16 @@ public class ModuleTree extends JPanel implements ActionListener{
 			if(copyVal!=null)
 				pasteNode(copyVal);
 		}
-		if(POPUP_DEL.equals(cmd)) {
-			removeSelection(false);
-		}
+		
 		if(POPUP_INSERT.equals(cmd)) {
 			insertNode(((JMenuItem) e.getSource()).getText());
 		}
 		if(POPUP_INSERT_ALL.equals(cmd)) {
-			insertNode(controller.getTree());
+			DefaultMutableTreeNode tree=controller.getTree();
+			System.out.println("-- insert "+tree.getChildCount()+" childs to tree");
+			for(int i=0; i<tree.getChildCount();i++) {
+				insertNode((DefaultMutableTreeNode)tree.getChildAt(i));
+			}
 		}
 		
 	}
@@ -476,6 +472,13 @@ public class ModuleTree extends JPanel implements ActionListener{
 	{
 		return tree;
 	}
+	
+	public boolean changeTreeStructure() {
+		return changeTreeStructure;
+	}
+
+
+	
 	
 	//TODO: get tree data
 }

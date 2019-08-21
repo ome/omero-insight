@@ -5,9 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.ModuleConfiguration;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 /**
@@ -114,30 +111,51 @@ public class ModuleContent {
 	}
 	
 	public void setAttributes(LinkedHashMap<String, TagData> list) {
+		setProperties(list);
 		tagList=list;
 	}
 	
+	/**
+	 * set properties like visible, unit in given list according the setting in tagList
+	 * @param list data for object
+	 */
+	private void setProperties(LinkedHashMap<String, TagData> list) {
+		if(tagList==null)
+			return;
+		for(Map.Entry<String, TagData> entry : tagList.entrySet()) {
+			if(list.containsKey(entry.getKey())) {
+				TagData data=list.get(entry.getKey());
+				data.setVisible(entry.getValue().isVisible());
+				if(!data.getTagUnitString().equals(entry.getValue().getTagUnitString())) {
+					//TODO umrechnen:
+					data.setTagUnit(entry.getValue().getTagUnitString());
+				}
+			}
+		}
+	}
+
+
 	public List<TagData> getTagList(){
 		if(tagList!=null)
 			return new ArrayList<TagData>(tagList.values());
 		return null;
 	}
 	
-	public void specifyView(ModuleConfiguration conf) {
-		if(conf==null)
-			return;
-		List<TagConfiguration> list=conf.getTagList();
-		if(list==null)
-			return;
-		
-		for(int i=0; i<list.size();i++){
-			TagConfiguration t=list.get(i);
-			if(t.getName()!=null){
-				if(tagList.containsKey(t.getName()))
-					tagList.get(t.getName()).setVisible(t.isVisible());
-			}
-		}
-	}
+//	public void specifyView(ModuleConfiguration conf) {
+//		if(conf==null)
+//			return;
+//		List<TagConfiguration> list=conf.getTagList();
+//		if(list==null)
+//			return;
+//		
+//		for(int i=0; i<list.size();i++){
+//			TagConfiguration t=list.get(i);
+//			if(t.getName()!=null){
+//				if(tagList.containsKey(t.getName()))
+//					tagList.get(t.getName()).setVisible(t.isVisible());
+//			}
+//		}
+//	}
 	
 	/**
 	 * Replace element at i with given tagdata

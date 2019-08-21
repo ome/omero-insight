@@ -24,10 +24,13 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign.ObjectTable;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
 import org.openmicroscopy.shoola.util.ui.JXTaskPaneContainerSingle;
+import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
+import org.jdesktop.swingx.VerticalLayout;
 
 /**
  * Visualize ModuleContent
@@ -52,11 +55,12 @@ public class ModuleContentGUI extends JPanel {
 		this.hardwareTables=hardwareTables;
 		if(root!=null) {
 //			this.name=root.getUserObject().toString();
-			
+			System.out.println("---------------------------------------------------------------------------");
+//			System.out.println("-- vizualise content: "+root.getUserObject().toString()+"------------------------");
 			PropertyChangeListener listener=new PropertyChangeListener() {
 				@Override
 				public void propertyChange(PropertyChangeEvent e) {
-					System.out.printf("-- Property change: '%s': '%s' -> '%s'%n ",e.getPropertyName(),e.getOldValue(),e.getNewValue());
+					System.out.printf("-- Property change: '%s': '%s' -> '%s'%n [ModuleContent]",e.getPropertyName(),e.getOldValue(),e.getNewValue());
 					//TODO: add/remove detector, lightSource, lightPath
 //					if(e.getPropertyName().equals("numberOfChannels") && 
 //							(Integer)e.getOldValue()<(Integer)e.getNewValue())
@@ -68,7 +72,12 @@ public class ModuleContentGUI extends JPanel {
 				}
 			};
 			JXTaskPaneContainer panel= new JXTaskPaneContainer();
-			panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+			panel.setBackground(UIUtilities.BACKGROUND);
+			if (panel.getLayout() instanceof VerticalLayout) {
+				VerticalLayout vl = (VerticalLayout) panel.getLayout();
+				vl.setGap(2);
+			}
+			panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
 			
 			addContent(panel,root);
 			add(panel,BorderLayout.CENTER);
@@ -85,57 +94,34 @@ public class ModuleContentGUI extends JPanel {
 		
 	}
 	
-	
-
-	private JXTaskPane createTaskPane(String name) {
-		JXTaskPane taskPane = new JXTaskPane();
-		taskPane.setAnimated(false);
-
-		Container c = taskPane.getContentPane();
-		if (color != null) {
-			c.setBackground(color);
-			taskPane.setBackground(color);
-		}
-		if (c instanceof JComponent) 
-			((JComponent) c).setBorder(BorderFactory.createEmptyBorder(
-					1, 1, 1, 1));
-		taskPane.setTitle(name);
-		taskPane.setCollapsed(false);
-		Font font = taskPane.getFont();
-		taskPane.setFont(font.deriveFont(font.getSize2D()-2));
-		
-		return taskPane;
-	}
-	
 	private void addContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
-		if(((ModuleTreeElement) node.getUserObject()).isContainer())
-			return;
-		
-		
 		if(node.getChildCount()>0) {
 //			System.out.println("-- vizualise content: "+node.getUserObject().toString());
-			JXTaskPane taskPane=createTaskPane(node.getUserObject().toString());
-			
 //			System.out.println("\t vizualise content of childs of "+node.getUserObject().toString()+"...");
 			JXTaskPaneContainer nodeContent = new JXTaskPaneContainer();
-			nodeContent.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+			nodeContent.setBackground(UIUtilities.BACKGROUND);
+			if (nodeContent.getLayout() instanceof VerticalLayout) {
+				VerticalLayout vl = (VerticalLayout) nodeContent.getLayout();
+				vl.setGap(2);
+			}
+			nodeContent.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
 			//add this content
 			try {
-				ContentViewer pane = new ContentViewer(node.getUserObject().toString(), 
+				JXTaskPane taskPane=new ContentViewer(node.getUserObject().toString(), 
 						getHardwareTable(((ModuleTreeElement) node.getUserObject()).getType()), ((ModuleTreeElement)node.getUserObject()).getData());
 				//			pane.addPropertyChangeListener(listener);
-				nodeContent.add(pane);
-
+				for(int i = 0 ; i < node.getChildCount(); i++) {
+					addContent(nodeContent,(DefaultMutableTreeNode)node.getChildAt(i));
+				}
+				//						System.out.println("\t ... vizualise content of childs of "+node.getUserObject().toString());
+				taskPane.add(nodeContent);
+				//						((JComponent) taskPane.getContentPane()).setBorder(BorderFactory.createEmptyBorder(0,1,0,0));
+				parent.add(taskPane);
 			}catch(Exception e) {
 				MonitorAndDebug.printConsole("ERROR: can't load content of "+node.getUserObject().toString());
 				e.printStackTrace();
 			}
-			for(int i = 0 ; i < node.getChildCount(); i++) {
-				addContent(nodeContent,(DefaultMutableTreeNode)node.getChildAt(i));
-			}
-//			System.out.println("\t ... vizualise content of childs of "+node.getUserObject().toString());
-			taskPane.add(nodeContent);
-			parent.add(taskPane);
+			
 		}else {
 			addLeafContent(parent,node);
 		}
@@ -143,73 +129,35 @@ public class ModuleContentGUI extends JPanel {
 	
 	private void addLeafContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
 //		System.out.println("-- vizualise leaf content: "+node.getUserObject().toString());
-		
+
 		ModuleContent content=((ModuleTreeElement)node.getUserObject()).getData();
-		JXTaskPane taskPane=createTaskPane(node.getUserObject().toString());
-		
+
 		if(controller!=null && content!=null) {
-//			LinkedHashMap<String, TagData> tagList = content.getList();
-			
 			try {
-				ContentViewer pane = new ContentViewer(node.getUserObject().toString(), 
+				JXTaskPane taskPane=new ContentViewer(node.getUserObject().toString(), 
 						getHardwareTable(((ModuleTreeElement) node.getUserObject()).getType()), content);
 				//			pane.addPropertyChangeListener(listener);
-				taskPane.add(pane);
-
+				parent.add(taskPane);
 			}catch(Exception e) {
 				MonitorAndDebug.printConsole("ERROR: can't load content of "+node.getUserObject().toString());
 				e.printStackTrace();
 			}
+		}else {
+			System.out.println("\t content is empty [addLeafContent]");
 		}
-		parent.add(taskPane);
 	}
 	
+	/**
+	 * 
+	 * @param key
+	 * @return a copy of hardware table
+	 */
 	private ObjectTable getHardwareTable(String key)
 	{
 		if(hardwareTables==null)
 			return null;
-		return hardwareTables.get(key);
+		if(hardwareTables.get(key)==null)
+			return null;
+		return new ObjectTable(hardwareTables.get(key));
 	}
-	
-	
-	private void addContentPanel(Object parent,ModuleTreeElement elem)
-	{
-//		if(elem!=null) {
-//			String name=elem.getName()+"["+elem.getIndex()+"]";
-//			if(elem.getChilds().size()>0) {
-//				JXTaskPaneContainer containerElem = new JXTaskPaneContainer();
-//				for(ModuleTreeElement child:elem.getChilds()) {
-//					addContentPanel(containerElem, child);
-//				}
-//			}else {
-//				try {
-//					ContentViewer pane = new ContentViewer(controller.getDefaultValues(elem.getName()), controller.getModule(elem.getName(), elem.getIndex()));
-//					//			pane.addPropertyChangeListener(listener);
-//					Color color=new Color(240, 240, 240);
-//					JXTaskPane taskPane = new JXTaskPane();
-//					taskPane.setAnimated(false);
-//
-//					Container c = taskPane.getContentPane();
-//					if (color != null) {
-//						c.setBackground(color);
-//						taskPane.setBackground(color);
-//					}
-//					if (c instanceof JComponent) 
-//						((JComponent) c).setBorder(BorderFactory.createEmptyBorder(
-//								1, 1, 1, 1));
-//					taskPane.setTitle(name);
-//					taskPane.setCollapsed(false);
-//					Font font = taskPane.getFont();
-//					taskPane.setFont(font.deriveFont(font.getSize2D()-2));
-//					taskPane.add(pane);
-//
-//				}catch(Exception e) {
-//					MonitorAndDebug.printConsole("ERROR: can't load content of "+name);
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-	}
-
-	
 }

@@ -1,6 +1,7 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.components.view;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import javax.swing.BorderFactory;
@@ -9,13 +10,16 @@ import javax.swing.JPanel;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign.ObjectTable;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
+import org.jdesktop.swingx.JXTaskPane;
 
-public class ContentViewer extends JPanel{
+public class ContentViewer extends JXTaskPane{
 	private String title;
 	private ModuleContent content;
 	private ObjectTable availableElems;
 	private CommonViewer tagPane;
 	private String tagLayout;
+	private JPanel mainPanel;
 //	private ModuleTable table;
 	
 	private final int LABEL_W=170;
@@ -24,15 +28,24 @@ public class ContentViewer extends JPanel{
 		this.title=title;
 		this.content=content;
 		this.availableElems=avElems;
+//		System.out.println("-- layout Content "+title);
+
 		layoutComponents();
-		revalidate();
-		repaint();
+		
+		
+		Font font = getFont();
+//		taskPane.setFont(font.deriveFont(font.getSize2D()-2));
+		setFont(font.deriveFont(font.getStyle(), font.getSize() - 2));
+		setCollapsed(false);
+		setTitle(title);
+		add(mainPanel);
 	}
 
 	private void layoutComponents() {
+		mainPanel=new JPanel();
+		mainPanel.setLayout(new BorderLayout(0,0));
+		mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		if(content!=null) {
-			setLayout(new BorderLayout(0,0));
-
 			GridBagLayout gridbag = new GridBagLayout();
 			GridBagConstraints gridBagConstraints = new GridBagConstraints();
 			String tableLayout = BorderLayout.NORTH;
@@ -40,52 +53,46 @@ public class ContentViewer extends JPanel{
 
 			
 			if(availableElems!=null) {
-//				System.out.println("-- layout hardware table "+title+" [ContenViewer]");
+				// get original content (define in image file )based by id
+//				int oIdx=availableElems.getOriginalIndex(content.getAttributeValue(TagNames.ID));
+				// get index of content
 				int idx=availableElems.getElementIndex(content);
-				JPanel p=availableElems.buildGUI(idx,this);
-				add(p,tableLayout);
+				
+				JPanel p=availableElems.buildGUI(idx, -1, this);
+//				System.out.println("-- layout hardware table "+title+", select "+idx+" [ContenViewer]");
+				mainPanel.add(p,tableLayout);
 				tagLayout=BorderLayout.CENTER;
 			}
 			tagPane=new CommonViewer(content);
-			add(tagPane,tagLayout);
-			setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+			mainPanel.add(tagPane,tagLayout);
+			mainPanel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		}else {
+			System.out.println("\t\t -> empty content "+title);
 		}
+		mainPanel.revalidate();
+		mainPanel.repaint();
 	}
 	
 	/**
-	 * @param c
+	 * take over data from selected elem in available object table
+	 * @param newC object values that should be the new value
+	 * @param origC original object content
 	 */
 	public void replaceData(ModuleContent newC,ModuleContent origC)
 	{
 //		System.out.println("-- replace data [ContentViewer]");
 		content=MDEHelper.replaceUnchangedData(content, origC, newC);
+		title=newC.getAttributeValue(TagNames.MODEL)!=null?newC.getAttributeValue(TagNames.MODEL):"";
 		
-		System.out.println("--input at "+(content.getInput()!=null? content.getInput().size():"null"));
-		remove(tagPane);
+//		System.out.println("--input at "+content.getType()+", change elems:"+(content.getInput()!=null? content.getInput().size():"null"));
+		mainPanel.remove(tagPane);
 		tagPane=new CommonViewer(content);
 //		System.out.println("-- new elem: "+newContent.getList().get(TagNames.ID).getTagValue());
-		add(tagPane,tagLayout);
+		mainPanel.add(tagPane,tagLayout);
 		tagPane.revalidate();
 		tagPane.repaint();
-		revalidate();
-		repaint();
+		mainPanel.revalidate();
+		mainPanel.repaint();
 	}
 	
-	
-
-	// TODO: nur ein teil der infos in availableElem element -> test ID,Model,Manufacturer
-//	private int getIndexOfCurrentObject() {
-//		if(availableElems==null) {
-//			return -1;
-//		}
-//		System.out.println("-- find current element in hardwarelist [ContenViewer]");
-//		int index=0;
-//		for(ModuleContent c:availableElems) {
-//			if(MDEHelper.isEqual(c, content)) {
-//				return index;
-//			}
-//			index++;
-//		}
-//		return -1;
-//	}
 }

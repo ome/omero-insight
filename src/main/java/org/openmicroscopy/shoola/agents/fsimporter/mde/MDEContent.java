@@ -1,6 +1,7 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.con
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ChannelConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DetectorConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DichroicConverter;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ExperimentConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilamentConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilterConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilterSetConverter;
@@ -41,6 +43,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.mod
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign.ObjectTable;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.DynamicModuleTree;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleContentGUI;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleTree;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
@@ -60,17 +63,16 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	 * @param root
 	 * @param controller
 	 */
-	public MDEContent(OME ome, DefaultMutableTreeNode root,ModuleController controller) {
+	public MDEContent(OME ome, DefaultMutableTreeNode root,ModuleController controller,ActionListener listener) {
 		super(new BorderLayout());
 		
 		System.out.println("-- create Content from file [MDEContent]");
 		this.controller = controller;
-		controller.printObjects();
-		moduleTree =new DynamicModuleTree(initTree(ome, root),controller);
+//		controller.printObjects();
+		moduleTree =new DynamicModuleTree(initTree(ome, root),listener);
 		createInstrumentTables(fileInstrumentValues);
 		
 		moduleContentPanel = new JPanel(new BorderLayout());
-		showModuleContent(moduleTree.getRootNode());
 		
 		JScrollPane scrollView=new JScrollPane(moduleContentPanel);
 		
@@ -79,9 +81,6 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		splitPane.setResizeWeight(0.5);
 		splitPane.setDividerLocation(150);
 		add(splitPane,BorderLayout.CENTER);
-		
-//		add(moduleTree,BorderLayout.WEST);
-//		add(scrollView,BorderLayout.CENTER);
 		
 		selectModuleAction(moduleTree.selectFirstNode());
 		
@@ -95,16 +94,15 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	 * @param root
 	 * @param controller
 	 */
-	public MDEContent(DefaultMutableTreeNode root, ModuleController controller,boolean isDir,ModuleList instrumentList) {
+	public MDEContent(DefaultMutableTreeNode root, ModuleController controller,boolean isDir,ModuleList instrumentList,ActionListener listener) {
 		super(new BorderLayout());
 		System.out.println("-- create Content from given tree [MDEContent]");
 		this.controller = controller;
-		controller.printObjects();
+//		controller.printObjects();
 		this.fileInstrumentValues=instrumentList;
 		createInstrumentTables(instrumentList);
-		moduleTree = root==null? new DynamicModuleTree(controller): new DynamicModuleTree(root,controller);
+		moduleTree = root==null? new DynamicModuleTree(listener): new DynamicModuleTree(root,listener);
 		moduleContentPanel = new JPanel(new BorderLayout());
-		showModuleContent(root);
 		
 		JScrollPane scrollView=new JScrollPane(moduleContentPanel);
 		
@@ -113,9 +111,6 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		splitPane.setResizeWeight(0.5);
 		splitPane.setDividerLocation(150);
 		add(splitPane,BorderLayout.CENTER);
-		
-//		add(moduleTree,BorderLayout.WEST);
-//		add(scrollView,BorderLayout.CENTER);
 		
 		selectModuleAction(moduleTree.selectFirstNode());
 		
@@ -133,12 +128,14 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	private void selectModuleAction(DefaultMutableTreeNode object) {
 		if(object!=null) {
 			System.out.println("-- select module: "+object.getUserObject().toString()+", childs: "+object.getChildCount());
+			System.out.println("CALL selectModuleAction::showModuleContent");
 			showModuleContent(object);
 		}
 	}
 	
 	
 	private void showModuleContent(DefaultMutableTreeNode object) {
+//		System.out.println("CALL showModuleContent");
 		//remove former content
 		moduleContentPanel.removeAll();
 		moduleContentPanel.add(new ModuleContentGUI(object,hardwareTables),BorderLayout.CENTER);
@@ -171,6 +168,11 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		return moduleTree.getRootNode();
 	}
 	
+	public ModuleTree getModuleTree() {
+		if(moduleTree==null)
+			return null;
+		return moduleTree.getModuleTree();
+	}
 	
 	/**
 	 * Read ome-xml from image file and return tree generated from file 
@@ -190,6 +192,14 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		for(int i=0; i<ome.sizeOfImageList() ;i++) {
 			root=initImageContent(root,ome,i);
 		}
+		
+		Experiment exp=null;
+		Experimenter exper=null;
+		if(ome.copyExperimentList()!=null && ome.copyExperimentList().size()>0)
+			exp=ome.getExperiment(0);
+		if(ome.copyExperimenterList()!=null && ome.copyExperimenterList().size()>0)
+			exper=ome.getExperimenter(0);
+		addContent(createContent(TagNames.OME_ELEM_EXPERIMENT, (new ExperimentConverter()).convertData(exp, exper)), 0, root);
 		
 		return root;
 	}
@@ -216,7 +226,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		List<DefaultMutableTreeNode> childs=MDEHelper.getListOfChilds(c.getType(), parent);
 		DefaultMutableTreeNode node=null;
 		if(childs!=null && !childs.isEmpty()) {
-			System.out.println("-- addContent of type "+c.getType()+",childlist : "+childs.size()+", index: "+index);
+//			System.out.println("-- addContent of type "+c.getType()+",childlist : "+childs.size()+", index: "+index);
 			if(childs.size()<=index) { 
 				System.out.println("--insert new subtree of type : "+c.getType());
 				DefaultMutableTreeNode newChild=controller.cloneTreeStructure(childs.get(0), parent);
@@ -249,7 +259,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 			System.out.println("ERROR: no tree is given");
 		}
 		
-		System.out.println("--Read file content [ModuleController::initImageContent]");
+		System.out.println("--Read file content index: "+i+" [MDEContent::initImageContent]");
 		List<Objective> objList=null;
 		List<Detector> detectorList=null;
 		List<LightSource> lightSourceList=null;
@@ -361,21 +371,21 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 			
 			if(fs!=null) {
 				//TODO container or not?
-				DefaultMutableTreeNode fsNode = addContent(createContent(TagNames.OME_ELEM_LIGHTPATH_FS,(new FilterSetConverter()).convertData(fs)),0,chNode);
-				
-				List<Filter> fs_exc=fs.copyLinkedExcitationFilterList();
-				List<Filter> fs_em=fs.copyLinkedEmissionFilterList();
-				
-				if(fs_exc!=null && fs_exc.size() >0) {
-					createNode(TagNames.OME_ELEM_LIGHTPATH_EX,fs_exc,filterList,fsNode);
-				}
-				Dichroic dich=fs.getLinkedDichroic();
-				if(dich!=null) {
-					addContent(createContent(TagNames.OME_ELEM_DICHROIC,(new DichroicConverter()).convertData(dich)),0,fsNode);
-				}
-				if(fs_em!=null && fs_em.size() >0) {
-					createNode(TagNames.OME_ELEM_LIGHTPATH_EM,fs_em,filterList,fsNode);
-				}
+//				DefaultMutableTreeNode fsNode = addContent(createContent(TagNames.OME_ELEM_LIGHTPATH_FS,(new FilterSetConverter()).convertData(fs)),0,chNode);
+//				
+//				List<Filter> fs_exc=fs.copyLinkedExcitationFilterList();
+//				List<Filter> fs_em=fs.copyLinkedEmissionFilterList();
+//				
+//				if(fs_exc!=null && fs_exc.size() >0) {
+//					createNode(TagNames.OME_ELEM_LIGHTPATH_EX,fs_exc,filterList,fsNode);
+//				}
+//				Dichroic dich=fs.getLinkedDichroic();
+//				if(dich!=null) {
+//					addContent(createContent(TagNames.OME_ELEM_DICHROIC,(new DichroicConverter()).convertData(dich)),0,fsNode);
+//				}
+//				if(fs_em!=null && fs_em.size() >0) {
+//					createNode(TagNames.OME_ELEM_LIGHTPATH_EM,fs_em,filterList,fsNode);
+//				}
 			}
 			idx++;
 		}
@@ -631,7 +641,8 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		
 		if(fileInstruments!=null) {
 //			fileInstruments.print("---------------------FILE INSTRUMENTS:");
-			if(controller.getInstrumentsForCurrentMic()!=null)
+			System.out.println("-- Add file instruments");
+//			if(controller.getInstrumentsForCurrentMic()!=null)
 //				controller.getInstrumentsForCurrentMic().print("--------------CONF INSTRUMENTS:");
 			for (Entry<String, List<ModuleContent>> entry : fileInstruments.entrySet()) {
 				String key = entry.getKey();
@@ -643,6 +654,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 //					System.out.println("-- add FILE instruments "+key+" : "+valFile.size()+" [MDEContent]");
 					hardware.addAll(valFile);
 					if(values!=null) {
+						System.out.println("-- Add define instruments");
 //						System.out.println("-- add CONF instruments "+key+" : "+values.size()+" [MDEContent]");
 						//merge fileInstruments and hardware stations
 						hardware.addAll(values);
@@ -655,6 +667,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 				hardwareTables.put(key,objTable );
 			}
 		}else {
+			System.out.println("-- Add define instruments");
 			ModuleList mList=controller.getInstrumentsForCurrentMic();
 			if(mList!=null) {
 				for (Entry<String, List<ModuleContent>> entry : mList.entrySet()) {

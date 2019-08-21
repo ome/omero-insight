@@ -1,6 +1,7 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.configuration;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -11,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +21,8 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -36,6 +40,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -52,20 +57,26 @@ import org.openmicroscopy.shoola.util.MonitorAndDebug;
  * @author Kunis
  *
  */
-public class HardwareConfigurator extends JDialog implements ActionListener, ListSelectionListener{
+public class HardwareConfigurator extends JDialog implements ActionListener{
 	public static final String CMD_APPLY = "apply";
 	public static final String CMD_CANCEL = "cancel";
 	public static final String CMD_SAVE = "save";
-	public static final String CMD_NEW = "create new microsocope";
-	public static final String CMD_CHOOSE_OBJ="choose object";
+	public static final String CMD_NEW_MIC = "create new microsocope";
+	public static final String CMD_DEL_MIC = "delete selected microsocope";
+	public static final String CMD_NEW_OBJ = "add new object";
+	public static final String CMD_DEL_OBJ ="delete selected object";
 	
+	final int WIDTH=1000;
+	final int HEIGHT=600;
 	private ModuleController controller;
-	private DefaultListModel<String> listModel;
-	private JList list;
+	private DefaultListModel<String> listModelMic;
+	private JList micList;
+	private DefaultListModel<String> listModelObj;
+	private JList objList;
+	
 	private JTextField txtMicName;
 	private JPanel tablePanel;
 	private MDEConfiguration conf;
-	private MDEConfiguration originConf;
 	private String currentMic;
 	private String[] availableMics;
 	private JComboBox<String> objects;
@@ -75,125 +86,237 @@ public class HardwareConfigurator extends JDialog implements ActionListener, Lis
 		super(parent,"Hardware Configurator");
 		this.dialog=dialog;
 		this.controller=ModuleController.getInstance();
-		this.conf=controller.getMDEConfiguration();
-		this.originConf=new MDEConfiguration(conf);
+		// work on a copy
+		this.conf=new MDEConfiguration(controller.getMDEConfiguration());
 		this.currentMic=controller.getCurrentMicName();
 		this.availableMics=conf.getMicNames();
 		buildGUI();
 		
 		revalidate();
 		repaint();
+		setResizable(true);
 		pack();
 		setVisible(true);
 	}
 	
 	private void buildGUI() {
-		this.setBounds(200,200,635,340);
+		System.out.println("--BUILD GUI : HardwareConfiguration");
 		getContentPane().setLayout(new BorderLayout(5,5));
 		setModal(true);
 		
 		loadMicroscopeList();
-//		listModel=new DefaultListModel<>();
-//		String[] names = controller.getHardwareConfiguration().getMicNames();
-//		if(names !=null) {
-//			for(String s:names) {
-//				listModel.addElement(s);
-//			}
-//		}
-	
-		JPanel main=new JPanel(new BorderLayout());
-		
-		
-		// list right side
-		list=new JList(listModel);
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list.setSelectedIndex(controller.getMicIndex(currentMic));
-        list.addListSelectionListener(this);
-        list.setVisibleRowCount(10);
         
-        JScrollPane listScrollPane = new JScrollPane(list);
+        JPanel listPaneMic=createMicPanel();
+        JPanel listPaneObj=createObjPanel();
         
-        JPanel listPane=new JPanel(new BorderLayout());
-        listPane.add(listScrollPane,BorderLayout.CENTER);
-        
-        JButton btnNew = new JButton("Add");
-        btnNew.setBounds(300, 240, 80, 20);
-        btnNew.setActionCommand(CMD_NEW);
-        btnNew.addActionListener(this);
-        
-        txtMicName=new JTextField(50);
-        
-        JPanel newMicPane=new JPanel(new BorderLayout());
-        newMicPane.add(txtMicName,BorderLayout.CENTER);
-        newMicPane.add(btnNew,BorderLayout.EAST);
-        
-        listPane.add(newMicPane,BorderLayout.SOUTH);
+        JPanel listPane=new JPanel(new GridLayout(0,2));
+//        listPane.setPreferredSize(new Dimension(WIDTH,HEIGHT));
+        listPane.add(listPaneMic);
+        listPane.add(listPaneObj);
         
         // button pane
 		JPanel btnPanel=new JPanel();
 		
 		JButton btnApply=new JButton("Apply");
-        btnApply.setBounds(300, 240, 80, 20);
         btnApply.setActionCommand(CMD_APPLY);
         btnApply.addActionListener(this);
         btnPanel.add(btnApply);
         
         JButton btnCancel=new JButton("Cancel");
-        btnCancel.setBounds(300, 240, 80, 20);
         btnCancel.setActionCommand(CMD_CANCEL);
         btnCancel.addActionListener(this);
         btnPanel.add(btnCancel);
         
-        JButton btnSave=new JButton("Save");
-        btnSave.setBounds(300, 240, 80, 20);
+        JButton btnSave=new JButton("Save To File");
         btnSave.setActionCommand(CMD_SAVE);
         btnSave.addActionListener(this);
         btnPanel.add(btnSave);
-        
-        JPanel newTablePanel=new JPanel(new BorderLayout());
-        String[] items=conf.getNameOfObjects();//controller.getDefaultContentsName();
-        objects=new JComboBox<String>(items);
-        JButton btnAddObjects=new JButton("Add");
-        btnAddObjects.setBounds(300, 240, 80, 20);
-        btnAddObjects.setActionCommand(CMD_CHOOSE_OBJ);
-        btnAddObjects.addActionListener(this);
-        JLabel lblObjects = new JLabel("Add new table for:");
-        lblObjects.setLabelFor(objects);
-        newTablePanel.add(lblObjects,BorderLayout.WEST);
-        newTablePanel.add(objects,BorderLayout.CENTER);
-        newTablePanel.add(btnAddObjects,BorderLayout.EAST);
        
-        tablePanel=new JPanel(new GridLayout(0, 1));
-		getInstrumentsTables(currentMic); 
+        tablePanel=new JPanel(new BorderLayout());
+//        tablePanel.setPreferredSize(new Dimension(300,500));
+//		getInstrumentTables(currentMic,(String) objList.getSelectedValue()); 
 		JScrollPane scrollView = new JScrollPane(tablePanel);
 		
-		JPanel tbPane=new JPanel(new BorderLayout());
-		tbPane.add(newTablePanel,BorderLayout.NORTH);
-		tbPane.add(scrollView,BorderLayout.CENTER);
-		
-		main.add(listPane,BorderLayout.WEST);
-		main.add(tbPane,BorderLayout.CENTER);
+		JPanel main=new JPanel(new BorderLayout());
+		main.setPreferredSize(new Dimension(WIDTH,HEIGHT));
+		main.add(listPane,BorderLayout.NORTH);
+		main.add(scrollView,BorderLayout.CENTER);
 		main.add(btnPanel,BorderLayout.SOUTH);
 		
 		getContentPane().add(main,BorderLayout.CENTER);
+		pack();
 		
 	}
 	
+	private JPanel createObjPanel() {
+		loadObjectList(currentMic);
+		objList=new JList<String>(listModelObj);
+		objList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		objList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting() == false) {
+					if (objList.getSelectedIndex() != -1) {
+						String newObj=(String) objList.getSelectedValue();
+						saveCurrentTable();
+						// TODO: refresh view
+						if(tablePanel!=null) tablePanel.removeAll();
+						System.out.println("-- Load table for "+currentMic+"::"+newObj);
+						getInstrumentTables(currentMic, newObj);
+						revalidate();
+						repaint();
+					} 
+				}
+			}
+		});
+		
+		if(!listModelObj.isEmpty()) 
+			objList.setSelectedIndex(0);
+		objList.setVisibleRowCount(10);
+
+		JScrollPane listScrollPane = new JScrollPane(objList);
+		JPanel pane=new JPanel(new BorderLayout());
+		pane.setBorder(new TitledBorder(BorderFactory.createLineBorder(Color.black), "Objects"));
+		pane.add(listScrollPane,BorderLayout.CENTER);
+
+		JButton btnNewObj = new JButton("Add");
+		btnNewObj.setActionCommand(CMD_NEW_OBJ);
+		btnNewObj.addActionListener(this);
+		
+		 JButton btnDelObj = new JButton("Delete");
+		 btnDelObj.setActionCommand(CMD_DEL_OBJ);
+		 btnDelObj.addActionListener(this);
+		 
+		 JPanel btnPanelObj=new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		 btnPanelObj.add(btnNewObj);
+		 btnPanelObj.add(btnDelObj);
+
+        String[] items=conf.getNameOfObjects();//controller.getDefaultContentsName();
+        objects=new JComboBox<String>(items);
+
+		JPanel newObjPane=new JPanel(new BorderLayout());
+		newObjPane.add(objects,BorderLayout.CENTER);
+		newObjPane.add(btnPanelObj,BorderLayout.EAST);
+
+		pane.add(newObjPane,BorderLayout.SOUTH);
+		return pane;
+	}
+
+	private JPanel createMicPanel() {
+		// list right side
+		micList=new JList(listModelMic);
+		micList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		micList.setSelectedIndex(controller.getMicIndex(currentMic));
+		micList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting() == false) {
+					if (micList.getSelectedIndex() != -1) {
+						String newSelection=availableMics[micList.getSelectedIndex()];
+						// save input
+						saveCurrentTable();
+						currentMic=newSelection;
+						// remove table for preview selection
+						if(tablePanel!=null) tablePanel.removeAll();
+						// load new objects
+						loadObjectList(newSelection);
+						// show table for first object
+						if(!listModelObj.isEmpty()) 
+							objList.setSelectedIndex(0);
+						objList.revalidate();
+						objList.repaint();
+						revalidate();
+						repaint();
+					} 
+				}	
+			}
+		});
+		
+		micList.setVisibleRowCount(10);
+
+		JScrollPane listScrollPane = new JScrollPane(micList);
+		
+		JPanel pane=new JPanel(new BorderLayout());
+		pane.setBorder(new TitledBorder(BorderFactory.createLineBorder(Color.black), "Microscope"));
+		pane.add(listScrollPane,BorderLayout.CENTER);
+        
+        JButton btnNewMic = new JButton("Add");
+//        btnNewMic.setBounds(300, 240, 80, 20);
+        btnNewMic.setActionCommand(CMD_NEW_MIC);
+        btnNewMic.addActionListener(this);
+        
+        JButton btnDelMic = new JButton("Delete");
+        btnDelMic.setActionCommand(CMD_DEL_MIC);
+        btnDelMic.addActionListener(this);
+        
+        JPanel btnPanelMic=new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        btnPanelMic.add(btnNewMic);
+        btnPanelMic.add(btnDelMic);
+        
+        txtMicName=new JTextField();
+        
+//        JPanel newMicPane=new JPanel(new BorderLayout());
+//        newMicPane.add(txtMicName,BorderLayout.CENTER);
+//        newMicPane.add(btnNewMic,BorderLayout.EAST);
+        JPanel newMicPane=new JPanel(new BorderLayout());
+        newMicPane.add(txtMicName,BorderLayout.CENTER);
+//        newMicPane.add(Box.createHorizontalStrut(2));
+        newMicPane.add(btnPanelMic,BorderLayout.EAST);
+        
+        pane.add(newMicPane,BorderLayout.SOUTH);
+        pane.revalidate();
+        pane.repaint();
+		return pane;
+	}
+
+	
+	private void deleteObject() {
+		String objName= (String) objList.getSelectedValue();
+		String micName = (String) micList.getSelectedValue();
+		int objIndex = objList.getSelectedIndex();
+		System.out.println("-- DELETE ["+micName+"::"+objName+"]: on index "+objIndex+"/"+objList.getModel().getSize());
+		// delete from objList
+		((DefaultListModel)objList.getModel()).remove(objIndex);
+		// delete from instrument list
+		conf.removeHardwareConfInstrumentForMicroscope(objName,micName);
+		ModuleList hardware = conf.getInstruments(micName);
+		System.out.println("\t\t Instruments["+micName+"]: "+hardware.keySet());
+		
+		tablePanel.removeAll();
+		tablePanel.revalidate();
+		tablePanel.repaint();
+		
+		
+	}
 	/**
 	 * Load hardware specification for selected micrsocope micName.
 	 * @param micName
 	 */
-	private void getInstrumentsTables(String micName) {
-		
-		ModuleList hardware = conf.getInstruments(micName);
-		currentMic=micName;
-//		System.out.println("-- load instruments for "+currentMic);
-		for (Entry<String, List<ModuleContent>> entry : hardware.entrySet()) {
-			if(entry.getValue()!=null) {
-//			System.out.println("-- load content "+entry.getKey()+": "+entry.getValue().size());
-			tablePanel.add(new InstrumentTable(entry.getValue(), entry.getKey()));
-			}
+	private void getInstrumentTables(String micName,String instrument) {
+		if(tablePanel==null) {
+			System.out.println("ERROR: tablePanel is not defined");
+			return;
 		}
+		System.out.println("-- getInstrumentTable for: "+micName+"::"+instrument);
+		ModuleList hardware = conf.getInstruments(micName);
+		if(hardware==null) {
+			System.out.println("\tMic not available: "+micName);
+			return;
+		}
+		List<ModuleContent> cInstrument=hardware.get(instrument);
+		if(cInstrument==null) {
+			if(instrument==null)
+				return;
+			System.out.println("\tHardware not available: "+instrument);
+			tablePanel.add(new InstrumentTable(null, instrument),BorderLayout.CENTER);
+		}else {
+			System.out.println("\tload instrument "+instrument+"["+cInstrument.size()+"] for "+micName);
+			tablePanel.add(new InstrumentTable(cInstrument,instrument),BorderLayout.CENTER);
+		}
+		tablePanel.revalidate();
+		tablePanel.repaint();
+		
 	}
 
 	/**
@@ -219,6 +342,12 @@ public class HardwareConfigurator extends JDialog implements ActionListener, Lis
 		table.setModel(dataModel);
 		table.setPreferredScrollableViewportSize(new Dimension(table.getWidth(), 60));
 		table.setFillsViewportHeight(true);
+		// hide ID column
+		try {
+			table.getColumn(TagNames.ID).setMinWidth(0); // Must be set before maxWidth!!
+			table.getColumn(TagNames.ID).setMaxWidth(0);
+			table.getColumn(TagNames.ID).setWidth(0);
+		}catch(Exception e) {}
 
 	    TableCellListener tcl = new TableCellListener(table, new EditAction(table, type));
 		
@@ -230,7 +359,6 @@ public class HardwareConfigurator extends JDialog implements ActionListener, Lis
 		String cmd = e.getActionCommand();
 		switch(cmd) {
 		case CMD_CANCEL:
-			conf=originConf;
 			setVisible(false);
 			dispose();
 			break;
@@ -241,95 +369,158 @@ public class HardwareConfigurator extends JDialog implements ActionListener, Lis
 			setVisible(false);
 			dispose();
 			//TODO: repaint MDECONTENT
+			firePropertyChange(MetaDataDialog.REFRESH_MIC_CONTENT, false, true);
 			break;
 		case CMD_SAVE:
 			saveCurrentTable();
 			conf.writeToFile();
 			//TODO: repaint MDECONTENT
 			break;
-		case CMD_NEW:
+		case CMD_NEW_MIC:
 			saveCurrentTable();
 			createNewMicroscope(txtMicName.getText());
 			// delete textfield value
 			txtMicName.setText("");
 			break;
-		case CMD_CHOOSE_OBJ:
+		case CMD_NEW_OBJ:
+			System.out.println("-- HardwareConf::Add new objectTable");
 			String obj=String.valueOf(objects.getSelectedItem());
-			tablePanel.add(new InstrumentTable(null, obj));
-			 tablePanel.revalidate();
-             tablePanel.repaint();
-             revalidate();
-             repaint();
+			createNewObject(obj);
+			
+			break;
+			
+		case CMD_DEL_MIC:
+			deleteMicroscope();
+			break;
+		case CMD_DEL_OBJ:
+			deleteObject();
 			break;
 		}
-			
-		
 	}
 
+	private void createNewObject(String obj) {
+		String micName = (String) micList.getSelectedValue();
+		conf.setInstrumentForMicroscope(micName, obj, null);
+		listModelObj.addElement(obj);
+		objList.setSelectedIndex(listModelObj.getSize()-1);
+		objList.revalidate();
+		objList.repaint();
+		revalidate();
+		repaint();
+	}
+
+	/**
+	 * Delete selected microscope in micList.
+	 */
+	private void deleteMicroscope() {
+		String micName= (String) micList.getSelectedValue();
+		if(micName.equals(MDEConfiguration.UNIVERSAL))
+			return;
+		int micIndex = micList.getSelectedIndex();
+		System.out.println("-- DELETE ["+micName+"]: on index "+micIndex+"/"+micList.getModel().getSize());
+		if(micName==null || micName.equals("") )
+			return;
+		// delete from micList
+		((DefaultListModel)micList.getModel()).remove(micIndex);
+		
+		// delete in conf
+		conf.removeHardwareConfForMicroscope(micName);
+		micList.setSelectedIndex(0);
+		
+	}
+	
 	private void createNewMicroscope(String micName) {
+		if(micName==null || micName.equals(""))
+			return;
 		conf.addInstrumentsForMicroscope(micName, new ModuleList());
 		//reload list
 		loadMicroscopeList();
 //		listModel.addElement(micName);
-		list.setSelectedIndex(listModel.getSize());
+		micList.setSelectedIndex(listModelMic.getSize());
 //		availableMics=conf.getMicNames();
 		revalidate();
 		repaint();
 	}
 
 	private void loadMicroscopeList() {
-		if(listModel==null)
-			listModel=new DefaultListModel<>();
-		listModel.clear();
+		if(listModelMic==null)
+			listModelMic=new DefaultListModel<>();
+		listModelMic.clear();
 		String[] names = conf.getMicNames();
 		if(names !=null) {
 			for(String s:names) {
-				listModel.addElement(s);
+				listModelMic.addElement(s);
 			}
 		}
-		if(list!=null) {
-			list.revalidate();
-			list.repaint();
+		if(micList!=null) {
+			micList.revalidate();
+			micList.repaint();
 		}
-		availableMics=conf.getMicNames();
+		availableMics=names;
+		System.out.println("-- Load available mic list: ");
+		System.out.println("\t"+Arrays.toString(availableMics));
 	}
+	
+	
+	
+	private void loadObjectList(String mic) {
+		if(listModelObj==null) {
+			listModelObj=new DefaultListModel<>();
+		}
+		listModelObj.clear();
+		
+		ModuleList hardware = conf.getInstruments(mic);
+		
+		if(hardware!=null) {
+			System.out.println("\t\t Instruments["+mic+"]: "+hardware.keySet());
+			System.out.println("-- Load objects for "+mic);
+			for (Entry<String, List<ModuleContent>> entry : hardware.entrySet()) {
+				if(entry.getValue()!=null && entry.getValue().size()>0) {
+					listModelObj.addElement(entry.getKey());
+					System.out.println("\t list object : "+entry.getKey()+"["+entry.getValue().size()+"]");
+				}
+			}
+			if(objList!=null) {
+				objList.revalidate();
+				objList.repaint();
+			}
+			
+		}
+	}
+	
 	
 	//TODO
 	private void saveCurrentTable() {
-		System.out.println("-- Save current instrument definition for microscope: "+currentMic);
-		ModuleList result=new ModuleList();
-		for(Component c:tablePanel.getComponents()) {
-			if(c instanceof InstrumentTable) {
-				List<ModuleContent> list = ((InstrumentTable) c).getContent();
-//				System.out.println("------------ parse from "+((InstrumentTable) c).getInstrumentName());
-//				for(ModuleContent mc:list) {
-//					System.out.println("\t"+mc.getAttributeValue(TagNames.MODEL));
-//				}
-				result.put(((InstrumentTable) c).getInstrumentName(), list);
+		if(tablePanel!=null && tablePanel.getComponentCount()>0) {
+			for(Component c:tablePanel.getComponents()) {
+				if(c instanceof InstrumentTable) {
+					System.out.println("-- Save instrument definition : "+currentMic+" : "+((InstrumentTable) c).getInstrumentName());
+					List<ModuleContent> list = ((InstrumentTable) c).getContent();
+					conf.setInstrumentForMicroscope(currentMic, ((InstrumentTable) c).getInstrumentName(), ((InstrumentTable) c).getContent());
+				}
 			}
 		}
-		
-		conf.addInstrumentsForMicroscope(currentMic, result);
 	}
 
 	// show tables for current selected microscope, save content of last selection
-	@Override
-	public void valueChanged(ListSelectionEvent e) {
-		 if (e.getValueIsAdjusting() == false) {
-	            if (list.getSelectedIndex() != -1) {
-	            	String newSelection=availableMics[list.getSelectedIndex()];
-	            	saveCurrentTable();
-	    			// TODO: refresh view
-	            	tablePanel.removeAll();
-	                getInstrumentsTables(newSelection);
-	                tablePanel.revalidate();
-	                tablePanel.repaint();
-	                revalidate();
-	                repaint();
-	 
-	            } 
-	        }		
-	}
+//	@Override
+//	public void valueChanged(ListSelectionEvent e) {
+//		System.out.println("List selection for: "+e.getSource());
+//		if (e.getValueIsAdjusting() == false) {
+//			if (micList.getSelectedIndex() != -1) {
+//				String newSelection=availableMics[micList.getSelectedIndex()];
+//				saveCurrentTable();
+//				// TODO: refresh view
+//				tablePanel.removeAll();
+//				getInstrumentsTables(newSelection);
+//				tablePanel.revalidate();
+//				tablePanel.repaint();
+//				revalidate();
+//				repaint();
+//
+//			} 
+//		}		
+//	}
 	
 	/*
 	 *  This class listens for changes made to the data in the table via the
@@ -552,21 +743,26 @@ public class HardwareConfigurator extends JDialog implements ActionListener, Lis
 			
 			JPanel thisTable = new JPanel(new BorderLayout());
 			thisTable.add(t.getTableHeader(),BorderLayout.PAGE_START);
+			
 			thisTable.add(t,BorderLayout.CENTER);
 			JScrollPane scrollPane = new JScrollPane(thisTable);
 			
-			JButton addBtn = new JButton("+");
+			JButton addBtn = new JButton("Add");
 			addBtn.addActionListener(new AddAction(t, name));
-			JButton delBtn = new JButton("-");
+			JButton delBtn = new JButton("Delete");
 			delBtn.addActionListener(new DelAction(t, name));
 			
-			JPanel keyPanel=new JPanel(new FlowLayout());
-			keyPanel.add(new JLabel(name));
+			JPanel keyPanel=new JPanel(new FlowLayout(FlowLayout.RIGHT));
+//			keyPanel.add(new JLabel(name));
 			keyPanel.add(addBtn);
 			keyPanel.add(delBtn);
 			
-			add(keyPanel,BorderLayout.NORTH);
+			add(keyPanel,BorderLayout.SOUTH);
 			add(scrollPane,BorderLayout.CENTER);
+			setBorder(new TitledBorder(BorderFactory.createLineBorder(Color.black), name));
+			
+			revalidate();
+			repaint();
 		}
 		
 		public String getInstrumentName() {

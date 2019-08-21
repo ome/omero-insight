@@ -1,8 +1,11 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -14,11 +17,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ContentViewer;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleContentTableModel;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 
 
 /**
@@ -40,9 +45,36 @@ public class ObjectTable extends JPanel{
 		currentSelection=-1;
 	}
 	
+	public ObjectTable(ObjectTable orig) {
+		if(orig!=null) {
+			if(orig.availableObjects!=null) {
+				this.availableObjects=new ArrayList<>();
+				for(ModuleContent c:orig.availableObjects) {
+					this.availableObjects.add(new ModuleContent(c));
+				}
+			}
+			this.currentSelection=orig.currentSelection;
+		}
+	}
+	
+	
 	public void setCurrentSelected(int index) {
 		this.currentSelection=index;
 	}
+	
+	
+	public int getOriginalIndex(String id) {
+		int oidx=0;
+		for(ModuleContent c:availableObjects) {
+			if(c.getAttributeValue(TagNames.ID).equals(id)) {
+				return oidx;	
+			}
+			oidx++;
+		}
+		return -1;
+	}
+	
+	
 	/**
 	 * 
 	 * @param c
@@ -51,16 +83,21 @@ public class ObjectTable extends JPanel{
 	public int getElementIndex(ModuleContent elem) {
 		int idx=0;
 		
+		if(currentSelection!=-1)
+			return currentSelection;
+		
 		if(availableObjects!=null && elem.getList()!=null) {
+//			System.out.println("-- looking for elem index of "+elem.getType()+"["+availableObjects.size()+"]"+" [ObjectTable]");
 			for(ModuleContent c:availableObjects) {
 				if(MDEHelper.isEqual(c, elem)) {
-					System.out.println("--getElemIndex selected element "+idx+", "+elem.getType()+" [ObjectTable::getElementIndex]");
+//					System.out.println("--getElemIndex selected element "+idx+", "+elem.getType()+" [ObjectTable::getElementIndex]");
 					return idx;
 				}
 				idx++;
 			}
 		}
-		System.out.println("--getElementIndex not found ("+elem.getType()+")");
+//		System.out.println("--element index not found ("+elem.getType()+")");
+		
 		return -1;
 	}
 	
@@ -76,12 +113,6 @@ public class ObjectTable extends JPanel{
 		}
 		if(dataModel!=null) {
 			table.setModel(dataModel);
-			if(currentSelection!=-1) {
-				table.setRowSelectionInterval(currentSelection, currentSelection);
-				System.out.println("#### Table current element "+currentSelection+", selected: "+table.getSelectedRow());
-			}else {
-				System.out.println("#### Table current element is -1");
-			}
 		}
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setPreferredScrollableViewportSize(new Dimension(table.getWidth(), 60));
@@ -90,7 +121,7 @@ public class ObjectTable extends JPanel{
 		return table;
 	}
 	
-	public JPanel buildGUI(int selectedIndex,final ContentViewer contentViewer)
+	public JPanel buildGUI(int selectedIndex,final int originalIndex,final ContentViewer contentViewer)
 	{
 		JPanel panel=new JPanel();
 		panel.setLayout(new BorderLayout());
@@ -104,8 +135,21 @@ public class ObjectTable extends JPanel{
 		label.setFont(new Font("Tahoma", Font.BOLD, 11));
 
 		JTable table = getObjectTable();
-		
-		
+		if(selectedIndex!=-1) {
+			table.setRowSelectionInterval(selectedIndex, selectedIndex);
+		}
+//		if(originalIndex!=-1) {
+//			table.getColumn(TagNames.ID).setCellRenderer(new DefaultTableCellRenderer() {
+//				@Override
+//				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+//					 DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+//			            if (row == originalIndex) {
+//			            	renderer.setForeground(Color.red);
+//			            }
+//			          return renderer;
+//				}
+//			});
+//		}
 		addListSelectionListener(contentViewer,table);
 		JScrollPane scrollPane = new JScrollPane(table);
 		
@@ -136,7 +180,7 @@ public class ObjectTable extends JPanel{
 						idx=e.getLastIndex();
 					}
 					if(idx>-1 && idx<availableObjects.size()) {
-						System.out.println("-- replace "+currentSelection+" with table element "+idx);
+						System.out.println("-- "+availableObjects.get(0).getType()+" replace "+currentSelection+" with table element "+idx);
 						ModuleContent c=availableObjects.get(idx);
 						ModuleContent origContent=null;
 						if(currentSelection!=-1) origContent=availableObjects.get(currentSelection);
@@ -193,4 +237,6 @@ public class ObjectTable extends JPanel{
 			table.getSelectionModel().addListSelectionListener(listener);
 		
 	}
+	
+	
 }
