@@ -1,3 +1,10 @@
+5.5.3 (July 2019)
+-----------------
+
+- Fix SSL cipher issue to allow Insight to be used from Fedora 30
+- Fix stack overflow exception
+- Bump to omero-gateway-java 5.5.3
+
 5.5.2 (June 2019)
 -----------------
 

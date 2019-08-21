@@ -335,16 +335,8 @@ public class ThumbnailLoader extends BatchCallTree {
                 store.setRenderingDefId(rndDefId);
         }
 
-        if ((boolean) context.lookup(LookupNames.SERVER_5_4_8_OR_LATER)) {
-            // If the client is connecting to a server with version 5.4.8 or greater, use the thumbnail
-            // loading function that doesn't return a clock.
-            // TODO: Can be removed for >= 5.5.0 release
-            return store.getThumbnailWithoutDefault(omero.rtypes.rint(sizeX),
-                    omero.rtypes.rint(sizeY));
-        } else {
-            return store.getThumbnail(omero.rtypes.rint(sizeX),
-                    omero.rtypes.rint(sizeY));
-        }
+        return store.getThumbnailWithoutDefault(omero.rtypes.rint(sizeX),
+                omero.rtypes.rint(sizeY));
     }
 
     /**

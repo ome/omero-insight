@@ -115,8 +115,8 @@ public class LookupNames
 
     /**
      * Field to check if the server version is 5.4.8 or later.
-     * TODO: Can be removed for 5.5.0 release
      * */
+    @Deprecated
     public static final String SERVER_5_4_8_OR_LATER = "5.4.8 or later";
 
     /** Maximum plane width for non pyramid images **/

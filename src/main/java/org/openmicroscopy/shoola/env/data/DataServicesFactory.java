@@ -490,7 +490,6 @@ public class DataServicesFactory
         cred.setEncryption(uc.isEncrypted());
         ExperimenterData exp = omeroGateway.connect(cred);
 
-
 		//check client server version
 		compatible = true;
         //Register into log file.
@@ -504,9 +503,6 @@ public class DataServicesFactory
         //Check if client and server are compatible.
         String version = omeroGateway.getServerVersion();
 
-        // TODO: Can be removed for >= 5.5.0 release
-        container.getRegistry().bind(LookupNames.SERVER_5_4_8_OR_LATER, VersionCompare.compare(version, "5.4.8") >= 0);
-        
         IConfigPrx cs = omeroGateway.getGateway().getConfigService(new SecurityContext(exp.getGroupId()));
         try {
             String val = cs.getConfigValue("omero.pixeldata.max_plane_width");
