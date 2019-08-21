@@ -573,8 +573,7 @@ class TreeViewerModel
 			currentLoader = new DataObjectUpdater(component,ctx,  map,
 					DataObjectUpdater.COPY_AND_PASTE);
 		else if (copyIndex == TreeViewer.CUT_AND_PASTE) {
-			Map toRemove = buildCutMap(nodesToCopy);
-			currentLoader = new DataObjectUpdater(component, ctx, map, toRemove,
+			currentLoader = new DataObjectUpdater(component, ctx, map, null,
 					DataObjectUpdater.CUT_AND_PASTE);
 		}
 		currentLoader.load();
