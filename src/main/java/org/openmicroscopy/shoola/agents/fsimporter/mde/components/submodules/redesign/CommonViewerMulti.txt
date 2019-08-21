@@ -1,0 +1,306 @@
+package org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ChannelConverter;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.ModuleConfiguration;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+import org.openmicroscopy.shoola.util.MonitorAndDebug;
+
+import ome.xml.model.ManufacturerSpec;
+import ome.xml.model.Objective;
+import ome.xml.model.Detector;
+import ome.xml.model.Channel;
+import ome.xml.model.LightSource;
+
+public class CommonViewerMulti<S extends Object> extends JPanel{
+	
+	
+	List<MDEModel> elementList;
+	HardwareList<S> availableObj;
+	ModuleConfiguration conf;
+	Class type;
+	private boolean isDir;
+	private JComponent elements;
+	private PropertyChangeSupport changes = new PropertyChangeSupport(this);
+
+	public CommonViewerMulti(List<MDEModel> list,
+			HardwareList<S> availableObj ,ModuleConfiguration conf, boolean isDir,Class type)
+	{
+		this.isDir=isDir;
+		elementList=list;
+		this.availableObj=availableObj;
+		this.conf=conf;
+		this.type=type;
+		showModules();
+		revalidate();
+		repaint();
+	}
+
+	
+
+	private void showModules()
+	{
+		this.removeAll();
+		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
+		int height = 0;
+		if(availableObj!=null) {
+			addExtendedElements();
+			height=110; //TODO
+		}else {
+			addElements();
+		}
+		add(getLabelPane(height));
+		JScrollPane sPane=new JScrollPane();
+		sPane.setViewportView(elements);
+		sPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+		sPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		sPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		add(sPane);
+	}
+
+	private void addElements() 
+	{
+		if(elementList==null)
+			return;
+		// get elements
+		elements=new JPanel();
+		elements.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		//natural height, max width
+//		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets=new Insets(0,0,20,0);
+		
+		for(int i=0; i<elementList.size(); i++) {
+			LinkedHashMap<String, TagData> tagList=(LinkedHashMap<String, TagData>)elementList.get(i).getTagList();
+			if(elementList.get(i).getName().contains("Channel")) {
+				String name = "Channel "+i;
+				
+				c.gridx=i;
+				c.gridy=0;
+				elements.add(new ChannelLabel(name, isDir, i,elementList.size()),c);
+				
+//				JPanel view=new CommonViewer(name, tagList, conf, false);
+//				view.setPreferredSize(new Dimension(50,view.getHeight()));
+				c.gridx=i;
+				c.gridy=1;
+				elements.add(new CommonViewer(name, tagList, conf, false),c);
+			}
+		}
+	}
+
+	private JPanel getLabelPane(int height)
+	{
+		// get labels
+		JPanel labels = new JPanel();
+		labels.setBorder(BorderFactory.createEmptyBorder(35+height, 0, 20, 0));
+		labels.setLayout(new BoxLayout(labels, BoxLayout.Y_AXIS));//CommonViewer.getLabelPane(list.get(0).getTagList());
+		for(TagData t:((LinkedHashMap<String, TagData>)elementList.get(0).getTagList()).values()) {
+			if(t!=null && t.isVisible()) {
+//				System.out.println("-- Label: "+t.getTagLabelAsJText().getText());
+			labels.add(t.getTagLabel());
+			}
+		}
+		return labels;
+	}
+
+	private void addExtendedElements() 
+	{
+		System.out.println("-- load extended elements");
+		if(elementList==null)
+			return ;
+		// get elements
+		elements=new JPanel();
+		
+		elements.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		//natural height, max width
+//		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets=new Insets(0,0,20,0);
+		
+		for(int i=0; i<elementList.size(); i++) {
+			LinkedHashMap<String, TagData> tagList= (LinkedHashMap<String, TagData>)elementList.get(i).getTagList();
+//			if(elementList.get(i).getName().contains("Detector")) {
+				String name = elementList.get(i).getName()+" "+i;
+				
+				c.gridx=i;
+				c.gridy=0;
+				elements.add(new JLabel(name),c);
+				
+				c.gridx=i;
+				c.gridy=1;
+				int idx=-1;//isDir?-1:i;
+//				ObjectTablePane table= new ObjectTablePane(availableObj,tagList, type, idx);
+//				
+//				elements.add(new CommonViewerExtended(name, tagList, conf, true,false,table),c);
+//			}
+		}
+	}
+	
+	class ChannelLabel extends JPanel{
+		int index;
+		CustomButton removeButton;
+		CustomButton addButton;
+		public ChannelLabel(String name,boolean isDir, int modulIdx, int size) {
+			this.index=modulIdx;
+			setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			setBorder(new EmptyBorder(5, 2, 2, 2));
+			setOpaque(false);
+			addLabel(name);
+			removeButton=new CustomButton("x");
+			addButton = new CustomButton("+");
+			if(isDir && modulIdx==size-1) {
+				showRemove();
+				showAdd();
+			}else {
+				hideRemove();
+				hideAdd();
+			}
+			add(removeButton);
+			add(addButton);
+		}
+		private void addLabel(String name) {
+			JLabel label=new JLabel(name);
+			label.setBorder(new EmptyBorder(0, 0, 0, 10));
+			add(label);
+		}
+		
+		public void hideRemove() {
+			removeButton.setVisible(false);
+		}
+		public void showRemove()
+		{
+			removeButton.setVisible(true);
+		}
+		
+		public void hideAdd() {
+			addButton.setVisible(false);
+		}
+		public void showAdd()
+		{
+			addButton.setVisible(true);
+		}
+		
+		
+		class CustomButton extends JButton implements MouseListener {
+			public CustomButton(String text) {
+				int size = 15;
+				setText(text);
+				/** set size for button close */
+				setPreferredSize(new Dimension(size, size));
+
+				setToolTipText("remove channel module");
+
+				/** set transparent */
+				setContentAreaFilled(false);
+
+				/** set border for button */
+				setBorder(new EtchedBorder());
+				/** don't show border */
+				setBorderPainted(false);
+
+				setFocusable(false);
+
+				/** add event with mouse */
+				addMouseListener(this);
+
+			}
+
+			/** when click button, tab will close */
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (this.getText().equals("x")) {
+					// remove channel and his linked detector, lightSrc, lightPath
+					CommonViewerMulti.this.removeChannel(index);
+				}else if(this.getText().equals("+")) {
+					CommonViewerMulti.this.addChannel(index+1);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			/** show border button when mouse hover */
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				setBorderPainted(true);
+				setForeground(Color.RED);
+			}
+
+			/** hide border when mouse not hover */
+			@Override
+			public void mouseExited(MouseEvent e) {
+				setBorderPainted(false);
+				setForeground(Color.BLACK);
+			}
+		}
+		
+	}
+
+	public void removeChannel(int index) {
+		System.out.println("-- REMOVE CHANNEL ADD INDEX: "+index);
+//TODO: remove component at index, remove element from modellist
+		int oldSize = elementList.size();
+		if(oldSize>1) {
+			elementList.remove(oldSize-1);
+			changes.firePropertyChange("numberOfChannels", oldSize, elementList.size());
+			showModules();
+			revalidate();
+			repaint();
+		}
+		
+	}
+
+
+
+	public void addChannel(int i) {
+		int oldIndex = elementList.size();
+		elementList.add(new MDEModel("Channel",(new ChannelConverter()).convertData(null)));
+		changes.firePropertyChange("numberOfChannels", oldIndex, elementList.size());
+		showModules();
+		revalidate();
+		repaint();
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener l)
+	{
+		changes.addPropertyChangeListener(l);
+	}
+	
+	public void removePropertyChangeListener(PropertyChangeListener l)
+	{
+		changes.removePropertyChangeListener(l);
+	}
+
+	
+}

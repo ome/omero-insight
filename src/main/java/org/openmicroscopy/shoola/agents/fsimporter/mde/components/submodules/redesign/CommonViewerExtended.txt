@@ -1,0 +1,301 @@
+package org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.ModuleConfiguration;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagConfiguration;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+
+import org.openmicroscopy.shoola.util.MonitorAndDebug;
+import org.openmicroscopy.shoola.util.ui.ScrollablePanel;
+import org.slf4j.LoggerFactory;
+
+import ome.xml.model.ManufacturerSpec;
+/**
+ * 
+ * @author Susanne Kunis
+ * Viewer for module with:
+ * title
+ * available elements (optional)
+ * tags
+ * settings (optional)
+ *
+ */
+public class CommonViewerExtended extends JPanel{
+
+
+	
+//		private static final org.slf4j.Logger LOGGER =
+//				LoggerFactory.getLogger(CommonViewer.class);
+		
+
+		private String title;
+		
+		/** list of key-values (keys=["tags","settings"])*/
+		LinkedHashMap<String,TagData> tagList;
+		
+		/** configuration for given key-values*/
+		private ModuleConfiguration configuration;
+
+		private boolean inputEvent;
+
+		private GridBagLayout gridbag;
+
+		private GridBagConstraints gridBagConstraints;
+		/** holds key-values*/
+		private CommonViewer tagPane;
+		/** scrollpane for available elements: hardware spec+file*/
+		private JPanel availableElemPane;
+		
+		/** available component list visible or not */
+		private boolean showAvailableElem;
+		private String tagLayout;
+
+		private boolean labelVisible;
+		
+		public CommonViewerExtended(String title) 
+		{
+			this(title,null,null,false,true,null);
+		}
+		
+		
+		public  CommonViewerExtended(String title,LinkedHashMap<String,TagData> listTags, ModuleConfiguration conf,
+				boolean showHardwareList,boolean labelVisible,ObjectTable tablePane)
+		{
+			this.title=title;
+			this.tagList=listTags;
+			this.configuration=conf;
+			this.inputEvent=false;
+			this.showAvailableElem=showHardwareList;
+			this.labelVisible=labelVisible;
+//			tablePane.addListSelectionListener(this);
+			if(showAvailableElem) {
+				availableElemPane=tablePane;
+			}
+			showModule();
+			revalidate();
+			repaint();
+		}
+		
+		
+		private void showModule()
+		{
+			if(tagList!=null) {
+				layoutComponents();
+			}
+		}
+		
+		public LinkedHashMap<String, TagData> getTagList()
+		{
+			return tagList;
+		}
+		
+		private void layoutComponents() {
+			setLayout(new BorderLayout(0,0));
+
+			gridbag = new GridBagLayout();
+			gridBagConstraints = new GridBagConstraints();
+			String tableLayout = BorderLayout.NORTH;
+			tagLayout=BorderLayout.NORTH;
+			
+			
+				if(availableElemPane!=null) {
+					add(availableElemPane,BorderLayout.NORTH);
+					tagLayout=BorderLayout.CENTER;
+				}
+			
+			tagPane=new CommonViewer(title, tagList, configuration, labelVisible);
+			add(tagPane,tagLayout);
+			setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+
+			// init tag layout
+			List<TagConfiguration> list=configuration.getTagList();
+			initTags(list);
+		}
+		
+
+		
+		/**
+		 * Set src(tag!=null)=input(tag!=null) && src(tag==null)=input(tag!=null), but delete data by this not possible (input==null || input="")
+		 * @param m
+		 */
+		public void replaceData(LinkedHashMap<String, TagData> tagMapIn,boolean onlyChangedObj)
+		{
+			if(tagMapIn!=null){
+				System.out.println("-- Replace DATA ");
+				for(Map.Entry<String, TagData> entry : tagMapIn.entrySet()) {
+					String keyIn=entry.getKey();
+					TagData valIn=entry.getValue();
+						
+					boolean replace=true;
+					if(valIn.getTagValue()==null || valIn.getTagValue().equals("")) {
+						replace=false;
+//						System.out.println("-- Given data is empty -> replace=false");
+					}
+					
+					if(onlyChangedObj && !valIn.valueHasChanged()) {
+						replace = false;
+//						System.out.println("-- No changes in given data -> replace = false");
+					}
+					
+					MonitorAndDebug.printConsole("\t -> "+keyIn+" : \tin = "+valIn.getTagValue()+" => exist = "+(tagList.get(keyIn)!=null?tagList.get(keyIn).getTagValue():"null")+";\treplace= "+replace); 
+					if(replace) {
+						saveTagValue(keyIn,valIn.getTagValueAsArray());
+//						tagList.put(keyIn, new TagData(valIn));
+					}
+				}
+				
+				removeContent();
+				setContent(new CommonViewer(title,tagList,configuration, labelVisible));
+				add(tagPane,tagLayout);
+				revalidate();
+				repaint();
+			}
+			
+		}
+		
+		private void saveTagValue(String keyIn, String[] tagValueAsArray) {
+			tagList.get(keyIn).saveTagValue(tagValueAsArray);
+		}
+
+
+		private void removeContent()
+		{
+			remove(tagPane);
+		}
+		private void setContent(CommonViewer view)
+		{
+			tagPane=view;
+		}
+
+		/**
+		 * Init given tags and mark it as visible.(Predefinition of gui and values)
+		 * @param list
+		 */
+		private void initTags(List<TagConfiguration> list) 
+		{
+			if(list==null)
+				return;
+			// main tags
+			
+			if(tagList!=null) {
+				for(int i=0; i<list.size();i++){
+					TagConfiguration t=list.get(i);
+					if(t.getName()!=null){
+						if(tagList.containsKey(t.getName()))
+							tagList.get(t.getName()).setVisible(t.isVisible());
+					}
+				}
+			}
+		}
+		
+		private void inputKeyPressed()
+		{
+			inputEvent=true;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public void setTitle(String title) {
+			this.title = title;
+		}
+
+		public ModuleConfiguration getConfiguration() {
+			return configuration;
+		}
+
+		public void setConfiguration(ModuleConfiguration configuration) {
+			this.configuration = configuration;
+		}
+
+//		class TagActionListener implements ActionListener
+//		{
+//			private TagData tag;
+//			public TagActionListener(TagData tag)
+//			{
+//				this.tag=tag;
+//			}
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				tag.dataHasChanged(true);
+////				tag.saveTagValue((JComponent) e.getSource());
+//				inputKeyPressed();
+//			}
+//		}
+		
+		
+		//TODO neccessary?
+		public boolean allDataWasStored()
+		{
+			return true;
+		}
+		
+		/**
+		 * 
+		 * @return list of tagdata with tagData.valueHasChanged()==true
+		 */
+		public List<TagData> getChangedTags()
+		{
+			List<TagData> list = new ArrayList<TagData>();
+			
+			for(TagData t:tagList.values()) {
+				if(t.valueHasChanged())
+					list.add(t);
+			}
+			
+			return list;
+		}
+		/*
+		 * Reset input event, set all data as saved
+		 * Attention: wrong input( at saveData() use catch case) will not be save
+		 */
+		public void afterSavingData() {
+			resetInputEvent();
+			if(tagList!=null){
+				for(TagData t: tagList.values()){
+					if(t!=null) t.dataSaved(true);
+				}
+			}
+		}
+		public void resetInputEvent()
+		{
+			inputEvent=false;
+		}
+		public boolean inputEvent()
+		{
+			return inputEvent;
+		}
+		public HashMap getMapValueOfExtendedData() {
+			String id="";
+			HashMap map = new HashMap<String, String>();
+			 map.put(id+TagNames.STAGELABEL,null);
+			
+			return map;
+		}
+
+
+}

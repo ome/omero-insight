@@ -11,7 +11,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -35,6 +36,9 @@ import org.openmicroscopy.shoola.agents.events.importer.ImportStatusEvent;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.chooser.ImportDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.chooser.ImportLocationSettings;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
+import org.openmicroscopy.shoola.env.LookupNames;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ImportUserData;
 import org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponent;
 import org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponentI;
 import org.openmicroscopy.shoola.agents.fsimporter.util.ObjectToCreate;
@@ -42,6 +46,7 @@ import org.openmicroscopy.shoola.agents.treeviewer.view.TreeViewer;
 import org.openmicroscopy.shoola.agents.util.ViewerSorter;
 import org.openmicroscopy.shoola.agents.util.browser.TreeImageDisplay;
 import org.openmicroscopy.shoola.agents.util.browser.TreeViewerTranslator;
+
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.events.ExitApplication;
 import org.openmicroscopy.shoola.env.data.events.LogOff;
@@ -67,11 +72,11 @@ import omero.gateway.model.PlateData;
 import omero.gateway.model.ProjectData;
 import omero.gateway.model.ScreenData;
 
-/** 
+/**
  * Implements the {@link Importer} interface to provide the functionality
  * required of the hierarchy viewer component.
  * This class is the component hub and embeds the component's MVC triad.
- * It manages the component's state machine and fires state change 
+ * It manages the component's state machine and fires state change
  * notifications as appropriate, but delegates actual functionality to the
  * MVC sub-components.
  *
@@ -94,34 +99,41 @@ class ImporterComponent
 	/** Text displayed in dialog box when cancelling import.*/
 	private static final String CANCEL_TEXT = "Are you sure you want to " +
 			"cancel all imports that have not yet started?";
-	
+
 	/** Title displayed in dialog box when cancelling import.*/
 	private static final String CANCEL_TITLE = "Cancel Import";
-	
+
 	/** If a given plane is larger than the size, the thumbnail is not loaded.*/
 	private static final int MAX_SIZE = 2000*2000;
-	
+
 	/** The Model sub-component. */
 	private ImporterModel 	model;
-	
+
 	/** The Controller sub-component. */
 	private ImporterControl 	controller;
-	
+
 	/** The View sub-component. */
 	private ImporterUI 		view;
-	
+
 	/** Reference to the chooser used to select the files to import. */
 	private ImportDialog	chooser;
 
+	/** Reference to the metadata chooser used to specificate metadata for the files to import. */
+	private MetaDataDialog	metaDataChooser;
+
 	/** Flag indicating that the window has been marked to be closed.*/
 	private boolean 		markToclose;
-	
+
+	/** holds import information like group, project, importer, dataset**/
+	private ImportUserData importUserData;
+
+	private boolean metaDataCreated;
 	/**
 	 * Posts event if required indicating the status of the import process.
-	 * 
+	 *
 	 * @param element The UI element to handle.
 	 * @param result The formatted result.
-	 * @param startUpload Pass <code>true</code> to indicate to start the 
+	 * @param startUpload Pass <code>true</code> to indicate to start the
 	 * upload, <code>false</code> otherwise.
 	 */
 	private void handleCompletion(ImporterUIElement element, Object result,
@@ -137,7 +149,7 @@ class ImporterComponent
 				model.importCompleted(element.getID());
 				view.onImportEnded(element);
 			}
-			
+
 			if (markToclose) {
 				view.setVisible(false);
 			} else {
@@ -174,11 +186,11 @@ class ImporterComponent
 			fireStateChange();
 		}
 	}
-	
+
 	/**
 	 * Imports the data for the specified import view.
-	 * 
-	 * @param element The import view. 
+	 *
+	 * @param element The import view.
 	 */
 	private void importData(ImporterUIElement element)
 	{
@@ -186,12 +198,12 @@ class ImporterComponent
 		view.setSelectedPane(element, true);
 		model.fireImportData(element.getData(), element.getID());
 	}
-	
+
 	/**
 	 * Creates a new instance.
-	 * The {@link #initialize() initialize} method should be called straight 
+	 * The {@link #initialize() initialize} method should be called straight
 	 * after to complete the MVC set up.
-	 * 
+	 *
 	 * @param model The Model sub-component. Mustn't be <code>null</code>.
 	 */
 	ImporterComponent(ImporterModel model)
@@ -201,6 +213,7 @@ class ImporterComponent
 		controller = new ImporterControl(this);
 		view = new ImporterUI();
 		markToclose = false;
+		metaDataCreated=false;
 	}
 
 	/** Links up the MVC triad. */
@@ -222,19 +235,19 @@ class ImporterComponent
         }
         return false;
     }
-    
+
 	/**
 	 * Resets the identifier of the group.
-	 * 
+	 *
 	 * @param groupID The id to set.
 	 */
 	void resetGroup(long groupID) { model.setGroupId(groupID); }
-	
-	/** 
-	 * Indicates that the group has been successfully switched if 
+
+	/**
+	 * Indicates that the group has been successfully switched if
 	 * <code>true</code>, unsuccessfully if <code>false</code>.
-	 * 
-	 * @param success 	Pass <code>true</code> if successful, 
+	 *
+	 * @param success 	Pass <code>true</code> if successful,
 	 * 					<code>false</code> otherwise.
 	 */
 	void onGroupSwitched(boolean success)
@@ -245,10 +258,10 @@ class ImporterComponent
 		GroupData group = exp.getDefaultGroup();
 		long oldGroup = model.getGroupId();
 		model.setGroupId(group.getId());
-		ImportLocationDetails details = 
+		ImportLocationDetails details =
 				new ImportLocationDetails(chooser.getType());
 		refreshContainers(details);
-		firePropertyChange(CHANGED_GROUP_PROPERTY, oldGroup, 
+		firePropertyChange(CHANGED_GROUP_PROPERTY, oldGroup,
 				model.getGroupId());
 	}
 
@@ -259,17 +272,17 @@ class ImporterComponent
         discard();
         model.setState(NEW);
     }
-    
+
 	/**
 	 * Sets the display mode.
-	 * 
+	 *
 	 * @param displayMode The value to set.
 	 */
 	void setDisplayMode(int displayMode)
 	{
-		
+
 	}
-	
+
 	/** Refreshes the view when a user reconnects.*/
 	void onReconnected()
 	{
@@ -281,25 +294,25 @@ class ImporterComponent
 			return;
 		view.reset();
 		model.setGroupId(group.getId());
-		
+
 		ImportLocationDetails info = new ImportLocationDetails(chooser.getType());
 		refreshContainers(info);
-		firePropertyChange(CHANGED_GROUP_PROPERTY, oldGroup, 
+		firePropertyChange(CHANGED_GROUP_PROPERTY, oldGroup,
 				model.getGroupId());
 	}
-	
+
 	/**
 	 * Returns the sorted list of groups the current user has access to
 	 * @return see above.
 	 */
 	private Collection<GroupData> loadGroups() {
 		Collection set = ImporterAgent.getAvailableUserGroups();
-		
+
         if (set == null || set.size() <= 1) return null;
-        
+
         ViewerSorter sorter = new ViewerSorter();
         List<GroupData> sortedGroups = sorter.sort(set);
-        
+
         return sortedGroups;
 	}
 
@@ -332,6 +345,18 @@ class ImporterComponent
             view.selectChooser();
         }
         chooser.setSelectedGroup(getSelectedGroup());
+
+				String microscopeName = (String) ImporterAgent.getRegistry().lookup(LookupNames.MICROSCOPE_WORKSTATION);
+
+				//MDE
+				if(metaDataChooser==null){
+					metaDataChooser = new MetaDataDialog(view,model.getSupportedFormats(),type,
+				  controller.getAction(ImporterControl.CANCEL_BUTTON),this,
+				  chooser.getImportButton(),chooser.getCancelImportButton(), microscopeName);
+				  metaDataChooser.addPropertyChangeListener(controller);
+				  view.addMDComponent(metaDataChooser);
+				}
+
         if (model.isMaster() || CollectionUtils.isEmpty(objects) || !reactivate)
             refreshContainers(new ImportLocationDetails(type));
         //load available disk space
@@ -342,7 +367,7 @@ class ImporterComponent
         }
     }
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#activate(int, TreeImageDisplay, Collection, long)
 	 */
@@ -352,13 +377,13 @@ class ImporterComponent
 		activate(type, selectedContainer, objects, userId, true);
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#getView()
 	 */
 	public JFrame getView() { return view; }
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#discard()
 	 */
@@ -371,13 +396,13 @@ class ImporterComponent
 		}
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#getState()
 	 */
 	public int getState() { return model.getState(); }
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#importData(ImportableObject)
 	 */
@@ -414,8 +439,8 @@ class ImporterComponent
 			bus.post(event);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#uploadComplete(ImportableFile, Object, int)
 	 */
@@ -429,7 +454,7 @@ class ImporterComponent
 		}
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#setExistingTags(Collection)
 	 */
@@ -439,8 +464,8 @@ class ImporterComponent
 		model.setTags(tags);
 		if (chooser != null) chooser.setTags(tags);
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#loadExistingTags()
 	 */
@@ -449,16 +474,16 @@ class ImporterComponent
 		if (model.getState() == DISCARDED) return;
 		Collection tags = model.getTags();
 		if (tags != null) setExistingTags(tags);
-		else model.fireTagsLoading();	
+		else model.fireTagsLoading();
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#submitFiles()
 	 */
 	public void submitFiles() { controller.submitFiles(null); }
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#removeImportElement(Object)
 	 */
@@ -473,7 +498,7 @@ class ImporterComponent
 		}
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#cancel()
 	 */
@@ -483,7 +508,7 @@ class ImporterComponent
 			model.cancel();
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#cancelImport(int)
 	 */
@@ -492,8 +517,8 @@ class ImporterComponent
 		//if (model.getState() != DISCARDED)
 		//	model.cancel(id);
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#hasFailuresToSend()
 	 */
@@ -503,8 +528,8 @@ class ImporterComponent
 			return false;
 		return view.hasFailuresToSend();
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#hasFailuresToSend()
 	 */
@@ -514,8 +539,8 @@ class ImporterComponent
 			return false;
 		return view.hasFailuresToReupload();
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#setDiskSpace(DiskQuota)
 	 */
@@ -526,8 +551,8 @@ class ImporterComponent
 		if (chooser != null && chooser.isVisible())
 			chooser.setDiskSpace(quota);
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#close()
 	 */
@@ -540,8 +565,8 @@ class ImporterComponent
 		}
 		view.setVisible(false);
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#retryUpload(FileImportComponent)
 	 */
@@ -568,7 +593,7 @@ class ImporterComponent
 		importData(object);
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#isLastImport()
 	 */
@@ -579,7 +604,7 @@ class ImporterComponent
 		return element.isLastImport();
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#hasOnGoingImport()
 	 */
@@ -598,8 +623,8 @@ class ImporterComponent
 		}
 		return false;
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#refreshContainers(int)
 	 */
@@ -617,7 +642,7 @@ class ImporterComponent
 		model.fireContainerLoading(rootType, false, false, details.getUser());
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#setContainers(Collection, boolean, int, long)
 	 */
@@ -645,7 +670,7 @@ class ImporterComponent
 		}
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#cancelAllImports()
 	 */
@@ -653,7 +678,7 @@ class ImporterComponent
 	{
 		if (model.getState() != DISCARDED) {
 			Collection<ImporterUIElement> list = view.getImportElements();
-			List<ImporterUIElement> 
+			List<ImporterUIElement>
 			toImport = new ArrayList<ImporterUIElement>();
 			if (CollectionUtils.isEmpty(list)) return;
 			Iterator<ImporterUIElement> i = list.iterator();
@@ -706,8 +731,8 @@ class ImporterComponent
 		model.fireDataCreation(data);
 		fireStateChange();
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#getSelectedGroup()
 	 */
@@ -730,7 +755,7 @@ class ImporterComponent
 		return exp.getDefaultGroup();
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#showMenu(int, Component, Point)
 	 */
@@ -739,8 +764,8 @@ class ImporterComponent
 		if (model.getState() == DISCARDED) return;
 		view.showMenu(menuId, source, point);
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#setUserGroup(GroupData)
 	 */
@@ -790,7 +815,7 @@ class ImporterComponent
 		}
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#logOff()
 	 */
@@ -801,19 +826,19 @@ class ImporterComponent
 		reg.getEventBus().post(new LogOff());
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#isMaster()
 	 */
 	public boolean isMaster() { return model.isMaster(); }
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link TreeViewer} interface.
 	 * @see Importer#getDisplayMode()
 	 */
 	public int getDisplayMode() { return model.getDisplayMode(); }
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link TreeViewer} interface.
 	 * @see Importer#hasOnGoingUpload()
 	 */
@@ -834,7 +859,7 @@ class ImporterComponent
 		return false;
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link TreeViewer} interface.
 	 * @see Importer#onImportComplete(FileImportComponent)
 	 */
@@ -854,7 +879,7 @@ class ImporterComponent
 			}
 			return;
 		}
-		
+
 		element.setImportResult(component, result);
 		handleCompletion(element, result, !component.hasParent());
 		Collection<PixelsData> pixels = (Collection<PixelsData>) result;
@@ -885,7 +910,7 @@ class ImporterComponent
         }
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#onUploadComplete(FileImportComponent)
 	 */
@@ -904,8 +929,8 @@ class ImporterComponent
 			bus.post(e);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#setImportResult(Object, Object)
 	 */
@@ -918,19 +943,19 @@ class ImporterComponent
 		c.setStatus(result);
 	}
 
-    /** 
+    /**
      * Implemented as specified by the {@link Importer} interface.
      * @see Importer#getImportFor()
      */
     public long getImportFor() { return model.getImportFor(); }
 
-    /** 
+    /**
      * Implemented as specified by the {@link Importer} interface.
      * @see Importer#canImportAs()
      */
     public boolean canImportAs() { return model.canImportAs(); }
 
-    /** 
+    /**
      * Implemented as specified by the {@link Importer} interface.
      * @see Importer#getAvailableGroups()
      */
@@ -939,7 +964,7 @@ class ImporterComponent
         return model.getAvailableGroups();
     }
 
-    /** 
+    /**
      * Implemented as specified by the {@link Importer} interface.
      * @see Importer#isSystemGroup(long, String)
      */
@@ -948,7 +973,7 @@ class ImporterComponent
         return model.isSystemGroup(groupID, key);
     }
 
-    /** 
+    /**
      * Implemented as specified by the {@link Importer} interface.
      * @see Importer#importResults(ResultsObject, boolean)
      */

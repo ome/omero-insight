@@ -97,6 +97,7 @@ import org.openmicroscopy.shoola.util.ui.ClosableTabbedPaneComponent;
 import org.openmicroscopy.shoola.util.ui.NumericalTextField;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import org.openmicroscopy.shoola.util.ui.filechooser.GenericFileChooser;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
 
 import omero.gateway.model.DataObject;
 import omero.gateway.model.DatasetData;
@@ -137,9 +138,22 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 	/** Bound property indicating to import the selected files. */
 	public static final String IMPORT_PROPERTY = "import";
+	public static final String STARTIMPORT_PROPERTY = "startImport";
 
 	/** Bound property indicating to refresh the location. */
 	public static final String REFRESH_LOCATION_PROPERTY = "refreshLocation";
+
+	/** Bound property indicating to add files to the queue-> refresh fileView MetaDataDialog. */
+	public static final String REFRESH_FILE_LIST = "refreshMetaList";
+
+	/** Bound property indicating to add files to the queue by MDE*/
+	public static final String ADD_AND_REFRESH_FILE_LIST="addAndRefreshMetaList";
+
+	public static final String ADD_MAP_ANNOTATION = "addMapAnnotation";
+
+	public static final String SHOW_METADATA_DIALOG="showMetaDataEditor";
+
+	public static final String REFRESH_TITLE="refreshDialogTitle";
 
 	// Command Ids
 	/** Action id indicating to import the selected files. */
@@ -160,6 +174,8 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	/** Action id indicating to refresh the file chooser. */
 	private static final int CMD_REFRESH_FILES = 6;
 
+	/** Action id indicating to show metadata editor (MDE). */
+		private static final int CMD_MDE= 7;
 	// String constants
 
 	/** Naming Option display text */
@@ -175,6 +191,9 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	/** Text for the Import button */
 	private static final String TEXT_IMPORT = "Import";
 
+	/** Text for the go to MDE button */
+	private static final String TEXT_MDE= " MDE >>";
+
 	/** Tooltip text for the Import button */
 	private static final String TOOLTIP_IMPORT =
 			"Import the selected files or directories";
@@ -184,7 +203,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 	/** Text for metadata pane title */
 	private static final String TEXT_SKIP_COMPUTE_TITLE = "Import Speedup";
-	
+
 	/** Text for metadata pane */
     private static final String TEXT_SKIP_COMPUTE = "Shorten the import by skipping...";
 
@@ -285,6 +304,9 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	/** Button to import the files. */
 	private JButton importButton;
 
+	/** Button to show MDE*/
+	private JButton mdeButton;
+
 	/** Button to refresh the file chooser. */
 	private JButton refreshFilesButton;
 
@@ -314,6 +336,9 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 	/** Map hosting the tags. */
 	private Map<JButton, TagAnnotationData> tagsMap;
+
+	/** Map hosting mapAnnotations from mde for files*/
+	private Map<String,MapAnnotationObject> mapAnnotation;
 
 	/** The action listener used to handle tag selection. */
 	private ActionListener tagSelectionListener;
@@ -396,6 +421,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 		table.addFiles(fileList, importSettings);
 		importButton.setEnabled(table.hasFilesToImport());
+		mdeButton.setEnabled(table.hasFilesToImport());
 	}
 
 	/** Displays the location of the import.*/
@@ -638,6 +664,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		numberOfFolders.setColumns(3);
 		numberOfFolders.addPropertyChangeListener(this);
 		tagsMap = new LinkedHashMap<JButton, TagAnnotationData>();
+		mapAnnotation=new LinkedHashMap<String,MapAnnotationObject>();
 
 		IconManager icons = IconManager.getInstance();
 
@@ -752,6 +779,11 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		importButton.addActionListener(this);
 		importButton.setEnabled(false);
 
+		mdeButton = new JButton(TEXT_MDE);
+		mdeButton.setActionCommand("" + CMD_MDE);
+		mdeButton.addActionListener(this);
+		mdeButton.setEnabled(false);
+
 		pixelsSize = new ArrayList<NumericalTextField>();
 		NumericalTextField field;
 		for (int i = 0; i < 3; i++) {
@@ -809,6 +841,8 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	private JPanel buildToolBarRight() {
 		JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		bar.add(cancelImportButton);
+		bar.add(Box.createHorizontalStrut(5));
+		bar.add(mdeButton);
 		bar.add(Box.createHorizontalStrut(5));
 		bar.add(importButton);
 		bar.add(Box.createHorizontalStrut(10));
@@ -1140,6 +1174,9 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 			}
 		}
 
+		// set map annotations from mde
+		object.setMapAnnotation(mapAnnotation);
+
 		object.setScanningDepth(ImporterAgent.getScanningDepth());
 		Boolean loadThumbnails = (Boolean) ImporterAgent.getRegistry()
 				.lookup(LOAD_THUMBNAIL);
@@ -1190,11 +1227,12 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		if (!ImporterAgent.isOfflineImport()) {
 		    object.setSkipChoices(skipComputePanel.getChoices());
 		}
-		
+
 
 		firePropertyChange(IMPORT_PROPERTY, null, object);
 		table.removeAllFiles();
 		tagsMap.clear();
+		mapAnnotation.clear();
 		tagsPane.removeAll();
 		tagsPane.repaint();
 	}
@@ -1644,6 +1682,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
         }
         table.addFiles(list, settings);
         importButton.setEnabled(table.hasFilesToImport());
+				mdeButton.setEnabled(table.hasFilesToImport());
    }
 
     /**
@@ -1670,10 +1709,13 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 		if (FileSelectionTable.ADD_PROPERTY.equals(name)) {
 			showLocationDialog();
+			firePropertyChange(REFRESH_FILE_LIST,null,table.getFilesToImport());
 		} else if (FileSelectionTable.REMOVE_PROPERTY.equals(name)) {
 			int n = handleFilesSelection(chooser.getSelectedFiles());
 			table.allowAddition(n > 0);
 			importButton.setEnabled(table.hasFilesToImport());
+			mdeButton.setEnabled(table.hasFilesToImport());
+			firePropertyChange(REFRESH_FILE_LIST,null,table.getFilesToImport());
 		} else if (JFileChooser.SELECTED_FILES_CHANGED_PROPERTY.equals(name)) {
 			int n = handleFilesSelection(chooser.getSelectedFiles());
 			table.allowAddition(n > 0);
@@ -1720,7 +1762,8 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 		switch (commandId) {
 			case CMD_IMPORT:
-				importFiles();
+				//importFiles();
+				firePropertyChange(STARTIMPORT_PROPERTY,false,true);
 				break;
 			case CMD_CLOSE:
 				firePropertyChange(CANCEL_SELECTION_PROPERTY,
@@ -1745,7 +1788,37 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 				ImportLocationDetails details = new ImportLocationDetails(getType());
 				firePropertyChange(REFRESH_LOCATION_PROPERTY, null, details);
 				break;
+			case CMD_MDE:
+				firePropertyChange(SHOW_METADATA_DIALOG,false,true);
+				break;
 		}
+	}
+
+
+
+	public FileFilter getFileFilter()
+	{
+		return chooser!=null ? chooser.getFileFilter() : null;
+	}
+
+	public void setMapAnnotation(String fileName, MapAnnotationObject map)
+	{
+		mapAnnotation.put(fileName, map);
+	}
+
+	public void deleteMapAnnotations()
+	{
+		mapAnnotation.clear();
+	}
+
+
+	public JButton getImportButton() {
+		return importButton;
+	}
+
+
+	public JButton getCancelImportButton() {
+		return cancelImportButton;
 	}
 
 }

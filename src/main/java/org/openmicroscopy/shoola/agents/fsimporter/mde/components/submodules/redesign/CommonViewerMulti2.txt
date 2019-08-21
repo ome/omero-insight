@@ -1,0 +1,400 @@
+package org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.text.PlainView;
+
+import ome.xml.model.Detector;
+import ome.xml.model.LightSource;
+import ome.xml.model.LightPath;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ChannelConverter;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DataConverter;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DetectorConverter;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilterConverter;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.LightSourceConverter;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.model.xml.Channel;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign.CommonViewerMulti.ChannelLabel;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign.CommonViewerMulti.ChannelLabel.CustomButton;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.ModuleConfiguration;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+import org.openmicroscopy.shoola.util.ui.IconManager;
+
+public class CommonViewerMulti2<S extends Object> extends JPanel{
+
+	private final int LABEL_W=170;
+	private final ImageIcon APPLY_ICON = new ImageIcon("/icons/baseline-add-black-18/1x/baseline_add_black_18dp.png");
+	private final Color b1=new Color(200, 200, 220);
+	List<MDEModel> elementList;
+	HardwareList<S> availableObj;
+	ModuleConfiguration conf;
+	Class type;
+	private boolean isDir;
+	private JComponent elements;
+	private PropertyChangeSupport changes = new PropertyChangeSupport(this);
+	private ObjectTable table;
+	private DataConverter converter;
+	private List<ActionListener> listener;
+
+	public CommonViewerMulti2(List<MDEModel> list,
+			HardwareList<S> availableObj ,ModuleConfiguration conf, boolean isDir,Class type)
+	{
+		this.isDir=isDir;
+		elementList=list;
+		this.availableObj=availableObj;
+		this.conf=conf;
+		this.type=type;
+		loadOMEConverter();
+		
+//		this.table=new ObjectTablePane(availableObj,null, type, -1);
+		showModules();
+		revalidate();
+		repaint();
+	}
+	
+	private void loadOMEConverter() {
+		converter=null;
+		listener = new ArrayList<>();
+		
+		ActionListener applyListener=new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				try {
+					System.out.println("-- ACTION on element "+type.getName()+": "+e.getActionCommand());
+//					showSubCompForSelection( ((JComboBox)e.getSource()).getSelectedItem().toString());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		};
+		
+		System.out.print("-- Set Converter");
+		if(type.isAssignableFrom(Channel.class)) {
+			converter = new ChannelConverter();
+			// listener add/remove channel
+//			listener.add(arg0)
+			System.out.println("-- Set Converter Channel");
+		}else if(type.isAssignableFrom(LightSource.class)) {
+			converter = new LightSourceConverter();
+			listener.add(applyListener);
+			System.out.println("-- Set Converter LightSource");
+		}else if(type.isAssignableFrom(LightPath.class)) {
+			System.out.println("-- Set Converter Filter");
+			converter = new FilterConverter();
+		}else if(type.isAssignableFrom(Detector.class)) {
+			System.out.println("-- Set Converter Detector");
+			converter = new DetectorConverter();
+			listener.add(applyListener);
+		}
+	}
+	
+
+	private void showModules()
+	{
+		this.removeAll();
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		
+		JPanel tags=new JPanel();
+//		tags.setLayout(new BoxLayout(tags,BoxLayout.X_AXIS));
+		tags.setLayout(new BorderLayout());
+		tags.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		
+		JPanel labels=new JPanel();
+		
+		
+		if(type.isAssignableFrom(Channel.class)) {
+			addElements();
+			labels=getLabelPane(4);
+		}else if(type.isAssignableFrom(LightSource.class)){
+			add(table);
+			addElements();
+			labels=new JPanel();
+		}else {
+			add(table);
+			addElements();
+			labels=getLabelPane(11);
+		}
+		labels.setPreferredSize(new Dimension(LABEL_W,labels.getHeight()));
+		
+		JScrollPane sPane=new JScrollPane();
+		sPane.setViewportView(elements);
+		sPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+		
+		sPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		sPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		labels.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		sPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		tags.add(labels,BorderLayout.WEST);
+		tags.add(sPane,BorderLayout.CENTER);
+		
+		add(tags);
+		
+	}
+
+	private void addElements() {
+		if(elementList==null)
+			return;
+
+		// get elements
+		elements=new JPanel();
+		elements.setLayout(new GridLayout(0,elementList.size()));
+		elements.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		for(int i=0; i<elementList.size(); i++) {
+			String name = elementList.get(i).getName()+" "+i;
+			LinkedHashMap<String, TagData> tagList=(LinkedHashMap<String, TagData>)elementList.get(i).getTagList();
+			addElement(name, i, tagList);
+		}
+
+	}
+	
+	private void addElement(String name,int index,LinkedHashMap<String, TagData> tagList) {
+		boolean labelVisible=false;
+		if(type.isAssignableFrom(LightSource.class))
+			labelVisible=true;
+		
+		if(converter==null || converter.getLabel(name, index, null)==null)
+			elements.add(createSubElement(new ElementLabel(name), new CommonViewer(name, tagList, conf, labelVisible), index));
+		else
+			elements.add(createSubElement(converter.getLabel(name, index, listener), new CommonViewer(name, tagList, conf, labelVisible), index));
+	}
+	
+	private JComponent createSubElement(JComponent label,JComponent viewer, int i) {
+		JPanel subElement=new JPanel();
+		GridBagLayout gridbag = new GridBagLayout();
+		subElement.setLayout(gridbag);
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.NORTHWEST;
+		if(i%2==0) {
+			subElement.setBackground(b1);
+			subElement.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, b1));
+		}else {
+			subElement.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		}
+		
+		c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
+		c.fill = GridBagConstraints.HORIZONTAL;  
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx=1.0;
+		subElement.add(label,c);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;     //end row
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 1;
+		c.weightx=1.0;
+		subElement.add(viewer,c);
+		return subElement;
+	}
+
+	private JPanel getLabelPane(int height)
+	{
+		List<JComponent> labels= new ArrayList<JComponent>();
+		if(elementList.get(0).getTagList() instanceof LinkedHashMap<?, ?>) {
+			for(TagData t:((LinkedHashMap<String, TagData>)elementList.get(0).getTagList()).values()) {
+				if(t != null && t.isVisible()){
+					labels.add(t.getTagLabel());
+				}
+			}
+		}
+		JPanel result=new JPanel();
+		result.setBorder(BorderFactory.createEmptyBorder(height, 2, 0, 0));
+		CommonViewer.addLabelTextRows(labels, null, result);
+		
+		return result;
+	}
+
+	class ElementLabel extends JPanel{
+		JButton applyBtn;
+		public ElementLabel(String name) {
+			setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
+			setBorder(new EmptyBorder(5, 2, 2, 2));
+			setOpaque(false);
+			addLabel(name);
+			IconManager icons = IconManager.getInstance();
+			applyBtn = new JButton(icons.getIcon(IconManager.ADD_12));
+			applyBtn.setToolTipText("Apply table selection");
+			applyBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
+			add(applyBtn);
+		}
+		private void addLabel(String name) {
+			JLabel label=new JLabel(name);
+			label.setBorder(new EmptyBorder(0, 0, 0, 10));
+			add(label);
+		}
+	}
+	
+	class ChannelLabel extends JPanel{
+		int index;
+		CustomButton removeButton;
+		CustomButton addButton;
+		public ChannelLabel(String name,boolean isDir, int modulIdx, int size) {
+			this.index=modulIdx;
+			setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
+//			setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			setBorder(new EmptyBorder(5, 2, 2, 2));
+			setOpaque(false);
+			addLabel(name);
+			removeButton=new CustomButton("x");
+			addButton = new CustomButton("+");
+			if(isDir && modulIdx==size-1) {
+				showRemove();
+				showAdd();
+			}else {
+				hideRemove();
+				hideAdd();
+			}
+			add(removeButton);
+			add(addButton);
+		}
+		private void addLabel(String name) {
+			JLabel label=new JLabel(name);
+			label.setBorder(new EmptyBorder(0, 0, 0, 10));
+			add(label);
+		}
+		
+		public void hideRemove() {
+			removeButton.setVisible(false);
+		}
+		public void showRemove()
+		{
+			removeButton.setVisible(true);
+		}
+		
+		public void hideAdd() {
+			addButton.setVisible(false);
+		}
+		public void showAdd()
+		{
+			addButton.setVisible(true);
+		}
+		
+		
+		class CustomButton extends JButton implements MouseListener {
+			public CustomButton(String text) {
+				int size = 15;
+				setText(text);
+				/** set size for button close */
+				setPreferredSize(new Dimension(size, size));
+
+				setToolTipText("remove channel module");
+
+				/** set transparent */
+				setContentAreaFilled(false);
+
+				/** set border for button */
+				setBorder(new EtchedBorder());
+				/** don't show border */
+				setBorderPainted(false);
+
+				setFocusable(false);
+
+				/** add event with mouse */
+				addMouseListener(this);
+
+			}
+
+			/** when click button, tab will close */
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (this.getText().equals("x")) {
+					// remove channel and his linked detector, lightSrc, lightPath
+					CommonViewerMulti2.this.removeChannel(index);
+				}else if(this.getText().equals("+")) {
+					CommonViewerMulti2.this.addChannel(index+1);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			/** show border button when mouse hover */
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				setBorderPainted(true);
+				setForeground(Color.RED);
+			}
+
+			/** hide border when mouse not hover */
+			@Override
+			public void mouseExited(MouseEvent e) {
+				setBorderPainted(false);
+				setForeground(Color.BLACK);
+			}
+		}
+		
+	}
+
+	public void removeChannel(int index) {
+		System.out.println("-- REMOVE CHANNEL ADD INDEX: "+index);
+//TODO: remove component at index, remove element from modellist
+		int oldSize = elementList.size();
+		if(oldSize>1) {
+			elementList.remove(oldSize-1);
+			changes.firePropertyChange("numberOfChannels", oldSize, elementList.size());
+			showModules();
+			revalidate();
+			repaint();
+		}
+		
+	}
+
+
+
+	public void addChannel(int i) {
+		int oldIndex = elementList.size();
+		elementList.add(new MDEModel("Channel",(new ChannelConverter()).convertData(null)));
+		changes.firePropertyChange("numberOfChannels", oldIndex, elementList.size());
+		showModules();
+		revalidate();
+		repaint();
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener l)
+	{
+		changes.addPropertyChangeListener(l);
+	}
+	
+	public void removePropertyChangeListener(PropertyChangeListener l)
+	{
+		changes.removePropertyChangeListener(l);
+	}
+}
