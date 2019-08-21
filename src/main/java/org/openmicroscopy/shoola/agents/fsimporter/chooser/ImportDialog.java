@@ -305,7 +305,9 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	private JButton importButton;
 
 	/** Button to show MDE*/
-	private JButton mdeButton;
+	private JButton showMDEButton;
+	private JButton mdeImportButton;
+	private JButton mdeCancelImportButton;
 
 	/** Button to refresh the file chooser. */
 	private JButton refreshFilesButton;
@@ -420,8 +422,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		chooser.setSelectedFile(new File("."));
 
 		table.addFiles(fileList, importSettings);
-		importButton.setEnabled(table.hasFilesToImport());
-		mdeButton.setEnabled(table.hasFilesToImport());
+		enablesButtons(table.hasFilesToImport());
 	}
 
 	/** Displays the location of the import.*/
@@ -773,16 +774,24 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		cancelImportButton = new JButton(importerAction);
 		importerAction.setEnabled(false);
 
+		mdeCancelImportButton=new JButton(importerAction);
+
 		importButton = new JButton(TEXT_IMPORT);
 		importButton.setToolTipText(TOOLTIP_IMPORT);
 		importButton.setActionCommand("" + CMD_IMPORT);
 		importButton.addActionListener(this);
 		importButton.setEnabled(false);
 
-		mdeButton = new JButton(TEXT_MDE);
-		mdeButton.setActionCommand("" + CMD_MDE);
-		mdeButton.addActionListener(this);
-		mdeButton.setEnabled(false);
+		mdeImportButton = new JButton(TEXT_IMPORT);
+		mdeImportButton.setToolTipText(TOOLTIP_IMPORT);
+		mdeImportButton.setActionCommand("" + CMD_IMPORT);
+		mdeImportButton.addActionListener(this);
+		mdeImportButton.setEnabled(false);
+
+		showMDEButton = new JButton(TEXT_MDE);
+		showMDEButton.setActionCommand("" + CMD_MDE);
+		showMDEButton.addActionListener(this);
+		showMDEButton.setEnabled(false);
 
 		pixelsSize = new ArrayList<NumericalTextField>();
 		NumericalTextField field;
@@ -842,9 +851,10 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		bar.add(cancelImportButton);
 		bar.add(Box.createHorizontalStrut(5));
-		bar.add(mdeButton);
-		bar.add(Box.createHorizontalStrut(5));
+
 		bar.add(importButton);
+		bar.add(Box.createHorizontalStrut(10));
+		bar.add(showMDEButton);
 		bar.add(Box.createHorizontalStrut(10));
 		return bar;
 	}
@@ -1149,6 +1159,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	public void importFiles() {
 		option = CMD_IMPORT;
 		importButton.setEnabled(false);
+		mdeImportButton.setEnabled(false);
 		// Set the current directory as the defaults
 		File dir = chooser.getCurrentDirectory();
 		if (dir != null)
@@ -1681,8 +1692,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
             settings = locationDialog.getImportSettings();
         }
         table.addFiles(list, settings);
-        importButton.setEnabled(table.hasFilesToImport());
-				mdeButton.setEnabled(table.hasFilesToImport());
+        enablesButtons(table.hasFilesToImport());
    }
 
     /**
@@ -1713,8 +1723,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		} else if (FileSelectionTable.REMOVE_PROPERTY.equals(name)) {
 			int n = handleFilesSelection(chooser.getSelectedFiles());
 			table.allowAddition(n > 0);
-			importButton.setEnabled(table.hasFilesToImport());
-			mdeButton.setEnabled(table.hasFilesToImport());
+			enablesButtons(table.hasFilesToImport());
 			firePropertyChange(REFRESH_FILE_LIST,null,table.getFilesToImport());
 		} else if (JFileChooser.SELECTED_FILES_CHANGED_PROPERTY.equals(name)) {
 			int n = handleFilesSelection(chooser.getSelectedFiles());
@@ -1813,12 +1822,17 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 
 	public JButton getImportButton() {
-		return importButton;
+		return mdeImportButton;
 	}
 
 
 	public JButton getCancelImportButton() {
-		return cancelImportButton;
+		return mdeCancelImportButton;
+	}
+	private void enablesButtons(boolean enable) {
+		importButton.setEnabled(enable);
+		mdeImportButton.setEnabled(enable);
+		showMDEButton.setEnabled(enable);
 	}
 
 }
