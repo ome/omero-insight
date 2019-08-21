@@ -1,127 +1,88 @@
-  OMERO.insight Project
+  OMERO.mde 
   ---------------------
 
-  The OMERO.insight Project is a sub-project of the Open Microscopy Environment
-  Project, [OME](https://www.openmicroscopy.org/) that focuses on delivering a
-  client for the visualization and manipulation of both image data and metadata
-  maintained at an OMERO server site.
-  OMERO.insight is completely written in Java.
+  Extension of OMERO.importer to get an overview of available metadata provided by the selected image container and annotate images at import step by standardized key-value templates. 
 
-
-  Directory Contents
-  ------------------
-
-  This directory is the repository of the software artifacts of the
-  OMERO.insight Project. Its contents are as follows:
-
-    + build: This directory contains the tools to compile, run, test and
-             deliver the application.
-    + src: Contains the application source files, various configuration
-           files required by the application to run and the test code.
-    + README: This file.
-
-  Building OMERO.insight
-  ----------------------
-
-  The compilation, testing, launch, and delivery of the application are
-  automated by means of a Gradle (https://gradle.org/) build file.
-  In order to perform a build, all you need is
-  a JDK -- version 1.8 or later. From the command line, enter:
+  MDE configuration file
+  ---------------------
+  Save mdeConfiguration.xml in the directory <user>/omero/ to specify available objects and how the look likes.
+  The microscope element can be understood more generally as a template category.
   
-     gradle build
+  Element MDEObjects (in progress)
+  ---------------------
+  Default: 
   
-  This will compile, build, test and create a distribution bundle.
-  To run OMERO.insight from the distribution bundle unzip
-  `omero-insight.zip` then go to the `omero-insight` directory and from
-  the command line enter, for example:
-
-     bin/omero-insight
-
-  To run the OMERO.importer, enter:
-
-     bin/omero-insight containerImporter.xml
-
-  To run OMERO.insight, from the command line, enter:
-
-     gradle run
-
-  To run OMERO.importer, from the command line, enter:
-
-     gradle runImporter
-     
-  Packaging OMERO.insight
-  -----------------------
-  
-  OMERO.insight uses the Gradle [java-packager-plugin](https://github.com/ome/omero-javapackager-plugin)
-  and is capable of creating an installer for the platform the deployment task is run on. 
-  
-  __Note, a Java runtime is included with the bundled installer. It is recommended to use
-  [OpenJDK](https://openjdk.java.net) as the system's JRE to avoid potential licensing issues.__
-  
-  In order to be able to successfully create an installer, a JDK with
-  [`javapackager`](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javapackager.html) or
-  an [OpenJFX SDK](https://gluonhq.com/products/javafx/) matching the version of the system JDK
-  is required (particularly if you intend to build with JDK 11 or higher).
-  
-  ### OSX
-  
-  If you are using [Homebrew](https://brew.sh/), you can install, for example, [OpenJDK 8](https://www.azul.com/downloads/zulu/)
-  which comes bundled with JavaFX.
-  To install run:
-
-      brew cask install zulu8
-      
-  ### Windows
-  
-  #### Scoop:
-  
-      scoop bucket add java
-  
-      scoop install zulufx8
-  
-  #### Chocolatey:
-  
-      choco install zulu8
-
-  #### Manually:     
-  
-  To set up a build environment with Windows without using a package manager such as [Scoop](https://scoop.sh) or 
-  [Chocolatey](https://chocolatey.org) perform the following: 
-
-  **JDK:**
-  
-  1. Download [ojdkbuild](https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.191-1/java-1.8.0-openjdk-1.8.0.191-1.b12.ojdkbuild.windows.x86_64.msi).
-  2. Run the installer.
-  3. Once at the _custom setup_ page of the setup select the _OpenJDK Runtime_ drop-down and install the _JAVA_HOME_ 
-     feature.
-  4. Whilst on the _custom setup_ page, select to include the _OpenJFX Runtime_.
-  
-  **Inno Setup (required to create .exe installer):**
-  
-  1. Download and install [Inno Setup](http://www.jrsoftware.org/isdl.php).
-  2. Add the Inno Setup install directory (default `C:\Program Files (x86)\Inno Setup 5`) to the PATH.
-  
-  **WiX (required to build .msi installer):**
-  
-  1. Download and install [WiX 3.0 or greater](http://wixtoolset.org/).
-  2. Add WiX to the PATH.
- 
-  ### Packaging
-  
-  To run the application packager, from the command line enter:
-  
-  **Windows**
-  
-     gradle packageApplicationExe
-     
-  **OSX**
+    <Microscope Name="Universal">
     
-     gradle packageApplicationDmg
-
-  Developing OMERO.insight
-  ------------------------
-
-  See https://docs.openmicroscopy.org/latest/omero/developers/index.html#insight.
+ holds most of objects specified in the ome schema (https://www.openmicroscopy.org/Schemas/Documentation/Generated/OME-2016-06/ome.html). 
+  
+  You can add a child 
+  
+    <Object Type=<yourObjectName>> 
+    
+  in this element to create a new custom object with key-values as `TagData` elements. 
+  Please specify an insertion point for every object by defining a parent object. 
+  E.g. object OME:Detector has the insertion OME:Channel - that means that OME:Detector can only be a subobject of an OME:Channel object.
+  
+    <Parents Values="OME:Channel" />
+  
+  There are different editor input field types for TagData:
+  
+  `TextField` define like: 
+  
+      <TagData DefaultValues="" 
+                Name="Name" 
+                Type="TextField" 
+                Unit=""
+                Value="" 
+                Visible="true" />
+  `TextArea` define like:
+  
+      <TagData DefaultValues="" 
+                Name="Description" 
+                Type="TextArea"
+                Unit="" 
+                Value="" 
+                Visible="true" />
+  `ArrayField` define like (for an array of 2 elements):
+  
+    <TagData DefaultValues="2" 
+              Name="Dim X x Y"
+              Type="ArrayField" 
+              Unit="" Value="" 
+              Visible="true" />
+  `ComboBox` define like:
+  
+    <TagData DefaultValues="CCD,IntensifiedCCD,AnalogVideo,PMT,Photodiode,Spectroscopy,LifetimeImaging,
+                              CorrelationSpectroscopy,FTIR,EMCCD,APD,CMOS,EBCCD,Other"
+					    Name="DetectorType" 
+              Type="ComboBox" 
+              Unit="" 
+              Value="PMT"
+              Visible="true" />
+          
+  `TimeStamp` define like:
+  
+    <TagData DefaultValues="" 
+              Name="Acquisition Time"
+              Type="TimeStamp" 
+              Unit="" 
+              Value="" 
+              Visible="true" />
+  
+  
+  Element MDEHardwareConfiguration
+  -------------------------
+  List of available instruments (==objects) for specified microscope. E.g.
+  LeicaLSM SP5 instruments:
+    
+    OME:Dichroic,OME:Detector,OME:Laser,OME:Arc,OME:Objective,OME:Filter
+    
+  <p align="center">
+  <img src="images/ConfigurationPanel.PNG" width="350" title="hover text">
+  </p>
+     
+ 
 
   Licensing
   ---------
@@ -135,4 +96,4 @@
   Copyright
   ---------
 
-  Copyright (C) 2006-2019 University of Dundee. All rights reserved.
+  Copyright (C) 2006-2019 University Osnabrueck. All rights reserved.
