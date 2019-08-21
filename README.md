@@ -3,12 +3,13 @@
 
   Extension of OMERO.importer to get an overview of available metadata provided by the selected image container and annotate images at import step by standardized key-value templates. 
 
-  MDE configuration file
+  Customize MDE
   ---------------------
-  Save mdeConfiguration.xml in the directory <user>/omero/ to specify available objects and how the look likes.
+  Save mdeConfiguration.xml in the directory <user>/omero/ to specify available objects and how the look likes. You can use the mdeConfiguration.xml example file or create a new under OMERO.importer>MDE>Configuration...>Save To File.
+	
   The microscope element can be understood more generally as a template category.
   
-  Element MDEObjects (in progress)
+  mdeConfiguration.xml: Element MDEObjects (in progress)
   ---------------------
   Default: 
   
@@ -71,7 +72,7 @@
               Visible="true" />
   
   
-  Element MDEHardwareConfiguration
+  mdeConfiguration.xml: Element MDEHardwareConfiguration
   -------------------------
   List of available instruments (==objects) for specified microscope. E.g.
   LeicaLSM SP5 instruments:
@@ -79,7 +80,7 @@
     OME:Dichroic,OME:Detector,OME:Laser,OME:Arc,OME:Objective,OME:Filter
     
   <p align="center">
-  <img src="images/ConfigurationPanel.PNG" width="350" title="hover text">
+  <img src="images/ConfigurationPanel.PNG" width="550" title="hover text">
   </p>
      
  
