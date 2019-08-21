@@ -97,7 +97,7 @@ public class ServerEditor
 	static final String 		APPLY_SERVER_PROPERTY = "applyServer";
 	
 	/** Separator used when storing various servers. */
-    static final String			SERVER_PORT_SEPARATOR = ":";
+    static final String			SERVER_PORT_SEPARATOR = "\t";
     
     /** Separator used when storing various servers. */
     static final String			SERVER_NAME_SEPARATOR = ",";
@@ -107,9 +107,6 @@ public class ServerEditor
     
     /** The minimum port value. */
     static final int			MAX_PORT = 64000;
-    
-    /** The old port value. */
-    private static final List<String>	OLD_PORTS;
     
     /** Example of a new server. */
     private static final String	EXAMPLE = "e.g. test.openmicroscopy.org " +
@@ -126,13 +123,7 @@ public class ServerEditor
     
 	/** Font for progress bar label. */
 	private static final Font	FONT = new Font("SansSerif", Font.ITALIC, 10);
-	
-	static {
-		OLD_PORTS = new ArrayList<String>();
-		OLD_PORTS.add(""+1099);
-		OLD_PORTS.add(""+4063);
-	}
-	
+
 	/** Button to remove server from the list. */
 	private JButton			removeButton;
 	
@@ -164,13 +155,10 @@ public class ServerEditor
 	 * The server the user is currently connected to or <code>null</code>
 	 * if not connected.
 	 */
-	private String			activeServer;
+	private String			activeServer = "";
 	
     /** The port used to connect to the active server. */
-	private String			activePort;
-	
-	/** The default port value. */
-	private String			defaultPort;
+	private String			activePort = "";
 	
 	/** The original row selected corresponding to the server. */
 	private int				originalRow;
@@ -393,41 +381,24 @@ public class ServerEditor
 	}
 	
 	/** 
-	 * Creates a new instance. 
-	 * 
-	 * @param defaultPort The default port to use.
+	 * Creates a new instance.
 	 */
-	ServerEditor(String defaultPort)
+	ServerEditor()
 	{
-		this(null, null, defaultPort);
+		this(null, null);
 	}
-	
-	/** 
-	 * Creates a new instance. 
-	 * 
-	 * @param activeServer  The server the user is currently connected to.
-	 * @param defaultPort The default port to use.
-	 */
-	ServerEditor(String activeServer, String defaultPort)
-	{
-		this(activeServer, null, defaultPort);
-	}
-	
+
 	/**
 	 * Creates a new instance.
 	 * 
 	 * @param activeServer  The server the user is currently connected to.
 	 * @param activePort	The port used by the server.
-	 * @param defaultPort	The default port to use.
 	 */
-	ServerEditor(String activeServer, String activePort, String defaultPort)
+	ServerEditor(String activeServer, String activePort)
 	{
 		icons = IconManager.getInstance();
-		this.activeServer = activeServer;
-		if (defaultPort == null) defaultPort = "";
-		this.defaultPort = defaultPort;
-		if (activePort == null || activePort.trim().length() == 0)
-			this.activePort = defaultPort;
+		this.activeServer = activeServer == null ? "" : activeServer;
+		this.activePort = activePort == null ? "" : activePort;
 		int n = 0; 
 		Map<String, String> servers = getServers();
 		if (servers != null) n = servers.size();
@@ -436,14 +407,6 @@ public class ServerEditor
 		editedRow = -1;
 		buildGUI();
 	}
-	
-    
-    /**
-     * Returns the default port value.
-     * 
-     * @return See above.
-     */
-    String getDefaultPort() { return defaultPort; }
     
 	/**
 	 * Sets the editing mode.
@@ -650,7 +613,11 @@ public class ServerEditor
         String servers = prefs.get(OMERO_SERVER, null);
         if (servers == null || servers.length() == 0)  return null;
         String[] l = servers.split(SERVER_NAME_SEPARATOR, 0);
-        
+
+		// previous port separator was ':'; update to new separator (tab)
+		// (TODO: this can be removed in later versions)
+		servers = servers.replaceAll(":(\\d+)", "\t$1");
+
         if (l == null) return null;
         Map<String, String> listOfServers = new LinkedHashMap<String, String>();
         int index;
@@ -659,15 +626,13 @@ public class ServerEditor
         String[] values;
         for (index = 0; index < l.length; index++) {
         	server = l[index].trim();
-        	if (server.length() > 0) {
+        	if (server.length() > 1) {
         		values = server.split(SERVER_PORT_SEPARATOR, 0);
             	name = values[0];
             	if (values.length > 1) {
             		p = values[1];
-            		if (OLD_PORTS.contains(p))
-            			p = defaultPort;
             	}
-            	else p = defaultPort;
+            	else p = "";
             	if (!name.equals(activeServer))
             		listOfServers.put(name, p);
         	}
@@ -697,11 +662,6 @@ public class ServerEditor
 		
 		
 		Preferences prefs = Preferences.userNodeForPackage(ServerEditor.class);
-		if (l == null || l.size() == 0) {
-		//if (l != null) {
-			prefs.put(OMERO_SERVER, "");
-			return;
-		}
 		Map<String, String> 
 		servers = new LinkedHashMap<String, String>(l.size());
 		Set set = l.entrySet();
@@ -714,23 +674,25 @@ public class ServerEditor
 			if (!name.equals(serverName))
 				servers.put(name, (String) entry.getValue());
 		}
-		if (serverName != null && serverName.length() != 0)
+		if (serverName != null && serverName.length() > 0)
 			servers.put(serverName, port);
 		i = servers.entrySet().iterator();
 		int n = servers.size()-1;
 		int index = 0;
 		String list = "";
-		String value;
 		StringBuffer buffer = new StringBuffer();
 		while (i.hasNext()) {
 			entry = (Entry) i.next();
-			buffer.append((String) entry.getKey());
-			buffer.append(SERVER_PORT_SEPARATOR);
-			if (entry.getValue() != null)
-				buffer.append((String) entry.getValue());
-			else buffer.append(defaultPort);
-			
-			if (index != n) buffer.append(SERVER_NAME_SEPARATOR);
+			String k = (String) entry.getKey();
+			if (k.trim().length() > 0) {
+				buffer.append((String) entry.getKey());
+				buffer.append(SERVER_PORT_SEPARATOR);
+				if (entry.getValue() != null)
+					buffer.append((String) entry.getValue());
+
+				if (index != n)
+					buffer.append(SERVER_NAME_SEPARATOR);
+			}
 			index++;
 		}
 		list = buffer.toString();
@@ -834,7 +796,7 @@ public class ServerEditor
 		} else newRow[1] = "";
 		setButtonsEnabled(true);
 		//addButton.setEnabled(true);
-		newRow[2] = defaultPort;
+		newRow[2] = "";
 		model.insertRow(m, newRow);
 		model.fireTableDataChanged();
 		requestFocusOnEditedCell(m, 1);

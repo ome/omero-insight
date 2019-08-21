@@ -104,7 +104,7 @@ class ServerTable
 			objects = new Object[1][3];
 			objects[0][0] = icon;
 			objects[0][1] = "";
-			objects[0][2] = parent.getDefaultPort();
+			objects[0][2] = "";
 			focus = Boolean.valueOf(false);
 		} else {
 			objects = new Object[servers.size()][3];

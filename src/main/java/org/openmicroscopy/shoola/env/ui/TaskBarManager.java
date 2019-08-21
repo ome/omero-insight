@@ -504,15 +504,13 @@ public class TaskBarManager
     		v = (String) version;
     	OMEROInfo omeroInfo = (OMEROInfo) container.getRegistry().lookup(
     				LookupNames.OMERODS);
-        
-    	String port = ""+omeroInfo.getPortSSL();
     	String f = container.getConfigFileRelative(Container.CONFIG_DIR);
 
     	String n = (String) container.getRegistry().lookup(
 				LookupNames.SPLASH_SCREEN_LOGO);
 
 		reconnectDialog = new ScreenLoginDialog(Container.TITLE,
-				getSplashScreen(Factory.createIcon(n, f)), img, v, port);
+				getSplashScreen(Factory.createIcon(n, f)), img, v);
 		reconnectDialog.setStatusVisible(false);
 		reconnectDialog.showConnectionSpeed(true);
 		reconnectDialog.addPropertyChangeListener(new PropertyChangeListener() {
@@ -856,7 +854,7 @@ public class TaskBarManager
 	}
 	
 	/**
-	 * Attaches the {@link #doExit() exit} action to all exit buttons and
+	 * Attaches the exit action to all exit buttons and
 	 * fires {@link #synchConnectionButtons()} when the window is first open.
 	 */
 	private void attachOpenExitListeners()
@@ -1030,15 +1028,13 @@ public class TaskBarManager
 		    	OMEROInfo info = 
 		    		(OMEROInfo) container.getRegistry().lookup(
 		    				LookupNames.OMERODS);
-		        
-		    	String port = ""+info.getPortSSL();
 		    	String f = container.getConfigFileRelative(null);
 
 				String n = (String) container.getRegistry().lookup(
 						LookupNames.SPLASH_SCREEN_LOGO);
 
 		    	login = new ScreenLoginDialog(Container.TITLE,
-		    		getSplashScreen(Factory.createIcon(n, f)), img, v, port);
+		    		getSplashScreen(Factory.createIcon(n, f)), img, v);
 		    	login.setEncryptionConfiguration(info.isEncrypted(),
 		    			info.isEncryptedConfigurable());
 		    	login.setHostNameConfiguration(info.getHostName(),

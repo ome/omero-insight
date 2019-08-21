@@ -479,11 +479,8 @@ public class DataServicesFactory
         if (CommonsLangUtils.isBlank(name)) {
             name = LookupNames.MASTER_INSIGHT;
         }
-		LoginCredentials cred = new LoginCredentials();
-        cred.getUser().setUsername(uc.getUserName());
-        cred.getUser().setPassword(uc.getPassword());
-        cred.getServer().setHostname( uc.getHostName());
-        cred.getServer().setPort(uc.getPort());
+		LoginCredentials cred = new LoginCredentials(uc.getUserName(), uc.getPassword(),
+                uc.getHostName(), uc.getPort());
         cred.setApplicationName(name);
         cred.setCheckNetwork(true);
         cred.setCompression(determineCompression(uc.getSpeedLevel()));

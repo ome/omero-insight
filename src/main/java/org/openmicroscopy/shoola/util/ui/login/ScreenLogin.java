@@ -189,7 +189,7 @@ public class ScreenLogin
 	private int					speedIndex;
 	
 	/** The port value. */
-	private int					selectedPort;
+	private int					selectedPort = -1;
 	
 	/** Indicates to show or hide the connection speed option. */
 	private boolean				connectionSpeed;
@@ -546,7 +546,7 @@ public class ScreenLogin
 					serverName = i.next();
 					if (k == n) {
 						value = servers.get(serverName);
-						if (value != null) {
+						if (value != null && value.length() > 0) {
 							try {
 								selectedPort = Integer.parseInt(value);
 							} catch (Exception e) {}
@@ -570,7 +570,7 @@ public class ScreenLogin
 					serverName = i.next();
 					if (k == n) {
 						value = servers.get(serverName);
-						if (value != null) {
+						if (value != null && value.length() > 0) {
 							try {
 								selectedPort = Integer.parseInt(value);
 							} catch (Exception e) {}
@@ -842,7 +842,7 @@ public class ScreenLogin
 		}
 		String[] values = s.split(ServerEditor.SERVER_PORT_SEPARATOR, 0);
 		s = values[0];
-		if (values.length == 2) {
+		if (values.length == 2 && values[1].length() > 0) {
 			try {
 				selectedPort = Integer.parseInt(values[1]);
 			} catch (Exception e) {}
@@ -1042,13 +1042,12 @@ public class ScreenLogin
 	 * @param logo The frame's background logo. Mustn't be <code>null</code>.
 	 * @param frameIcon The image icon for the window.
 	 * @param version The version of the software.
-	 * @param defaultPort The default port.
 	 * @param hostName The default host name.
 	 * @param serverAvailable Pass <code>true</code> if the client needs to 
 	 * connect to a server, <code>false</code> otherwise.
 	 */
 	public ScreenLogin(String title, Icon logo, Image frameIcon, String version,
-			String defaultPort, String hostName, boolean serverAvailable)
+			String hostName, boolean serverAvailable)
 	{
 		super(title);
 		setName("login window");
@@ -1059,7 +1058,7 @@ public class ScreenLogin
 		else d = DEFAULT_SIZE;
 		setSize(d);
 		setPreferredSize(d);
-		editor = new ServerEditor(defaultPort);
+		editor = new ServerEditor();
 		editor.addPropertyChangeListener(ServerEditor.REMOVE_PROPERTY, this);
 		speedIndex = retrieveConnectionSpeed();
 		initialize(getUserName(), hostName);
@@ -1091,12 +1090,10 @@ public class ScreenLogin
 	 * 					 Mustn't be <code>null</code>.
 	 * @param frameIcon  The image icon for the window.
 	 * @param version	 The version of the software.
-	 * @param defaultPort The default port.
 	 */
-	public ScreenLogin(String title, Icon logo, Image frameIcon, String version,
-			String defaultPort)
+	public ScreenLogin(String title, Icon logo, Image frameIcon, String version)
 	{
-		this(title, logo, frameIcon, version, defaultPort, null, true);
+		this(title, logo, frameIcon, version, null, true);
 	}
 
 	/**
@@ -1109,7 +1106,7 @@ public class ScreenLogin
 	 */
 	public ScreenLogin(String title, Icon logo, Image frameIcon)
 	{
-		this(title, logo, frameIcon, null, null);
+		this(title, logo, frameIcon, null);
 	}
 
 	/**
@@ -1122,7 +1119,7 @@ public class ScreenLogin
 	 */
 	public ScreenLogin(Icon logo, Image frameIcon, String version)
 	{
-		this(null, logo, frameIcon, version, null);
+		this(null, logo, frameIcon, version);
 	}
 
 	/**
@@ -1134,7 +1131,7 @@ public class ScreenLogin
 	 */
 	public ScreenLogin(Icon logo, Image frameIcon)
 	{
-		this(null, logo, frameIcon, null, null);
+		this(null, logo, frameIcon, null);
 	}
 	
 	/** 
@@ -1379,11 +1376,7 @@ public class ScreenLogin
             } else {
                 serverName = hostName;
                 originalServerName = serverName;
-                if (port < 0) {
-                    selectedPort = Integer.parseInt(editor.getDefaultPort());
-                } else {
-                    selectedPort = port;
-                }
+				selectedPort = port;
                 setNewServer(originalServerName);
             }
         }

@@ -171,17 +171,15 @@ class SplashScreenManager
 		container.getRegistry().bind(LookupNames.VERSION, clientVersion);
     	OMEROInfo info = 
     		(OMEROInfo) container.getRegistry().lookup(LookupNames.OMERODS);
-    	int p = -1;
-    	String port = ""+ info.getPortSSL();
     	String host = info.getHostName();
     	boolean configurable = info.isHostNameConfigurable();
 
         boolean serverAvailable = connectToServer();
-    	view = new ScreenLogin(Container.TITLE, splashscreen, img, clientVersion, port,
+    	view = new ScreenLogin(Container.TITLE, splashscreen, img, clientVersion,
     			host, serverAvailable);
     	view.setEncryptionConfiguration(info.isEncrypted(),
     			info.isEncryptedConfigurable());
-    	view.setHostNameConfiguration(host, configurable, p);
+    	view.setHostNameConfiguration(host, configurable, -1);
 		view.showConnectionSpeed(true);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension d = view.getPreferredSize();

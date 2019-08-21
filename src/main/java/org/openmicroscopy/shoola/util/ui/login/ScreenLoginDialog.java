@@ -76,7 +76,7 @@ public class ScreenLoginDialog
 	 */
 	public ScreenLoginDialog(String title, Icon logo, Image frameIcon)
 	{
-		this(title, logo, frameIcon, null, null);
+		this(title, logo, frameIcon, null);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class ScreenLoginDialog
 	 */
 	public ScreenLoginDialog(Icon logo, Image frameIcon, String version)
 	{
-		this(null, logo, frameIcon, version, null);
+		this(null, logo, frameIcon, version);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class ScreenLoginDialog
 	 */
 	public ScreenLoginDialog(Icon logo, Image frameIcon)
 	{
-		this(null, logo, frameIcon, null, null);
+		this(null, logo, frameIcon, null);
 	}
 
 	/**
@@ -112,12 +112,11 @@ public class ScreenLoginDialog
 	 * 					 Mustn't be <code>null</code>.
 	 * @param frameIcon  The image icon for the window.
 	 * @param version	 The version of the software.
-	 * @param defaultPort The default port.
 	 */
 	public ScreenLoginDialog(String title, Icon logo, Image frameIcon, 
-			String version, String defaultPort)
+			String version)
 	{
-		view = new ScreenLogin(title, logo, frameIcon, version, defaultPort);
+		view = new ScreenLogin(title, logo, frameIcon, version);
 		view.addPropertyChangeListener(this);
 		setProperties();
 		getContentPane().add(view.getContentPane().getComponent(0));
