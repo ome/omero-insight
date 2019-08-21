@@ -43,9 +43,13 @@ class DistributePlugin implements Plugin<Project> {
 
     public static final String DISTRIBUTION_NAME_IMAGEJ = "OMERO.imagej"
 
+    public static final String DISTRIBUTION_NAME_FIJI = "OMERO.fiji"
+
     public static final String DISTRIBUTION_IMPORTER = "importer"
 
     public static final String DISTRIBUTION_IMAGEJ = "imagej"
+
+    public static final String DISTRIBUTION_FIJI = "fiji"
 
     public static final String TASK_IMPORTER_START_SCRIPTS = "importerStartScripts"
 
@@ -72,6 +76,7 @@ class DistributePlugin implements Plugin<Project> {
         configureMainDistribution(distributionContainer, configSpec)
         createImporterDistribution(distributionContainer, configSpec)
         createImageJPluginDistribution(distributionContainer, configSpec)
+        createImageJFatJarPluginDistribution(distributionContainer, configSpec)
 
         // Skip tar tasks
         project.tasks.withType(Tar).configureEach {
@@ -134,6 +139,23 @@ class DistributePlugin implements Plugin<Project> {
 
             CopySpec childSpec = project.copySpec()
             childSpec.with(libChildSpec)
+            childSpec.with(mainSpec)
+
+            imageJ.contents.with(childSpec)
+        }
+    }
+
+    private void createImageJFatJarPluginDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
+        // Create and configure imageJ distribution
+        distributionContainer.create(DISTRIBUTION_FIJI) { Distribution imageJ ->
+            imageJ.baseName = DISTRIBUTION_NAME_FIJI
+            imageJ.contents.with(configSpec)
+
+            CopySpec mainSpec = project.copySpec()
+            mainSpec.into("")
+            mainSpec.from(project.tasks.named(InsightBasePlugin.TASK_OMERO_IMAGEJ_FAT_JAR))
+
+            CopySpec childSpec = project.copySpec()
             childSpec.with(mainSpec)
 
             imageJ.contents.with(childSpec)

@@ -20,11 +20,14 @@
  */
 package org.openmicroscopy
 
+import com.github.jengelman.gradle.plugins.shadow.ShadowBasePlugin
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
@@ -42,6 +45,8 @@ class InsightBasePlugin implements Plugin<Project> {
 
     public static final String TASK_OMERO_IMAGEJ_JAR = "imageJJar"
 
+    public static final String TASK_OMERO_IMAGEJ_FAT_JAR = "imageJFatJar"
+
     public static final String MAIN_INSIGHT = "org.openmicroscopy.shoola.Main"
 
     public static final String MAIN_IMAGEJ = "org.openmicroscopy.shoola.MainIJPlugin"
@@ -57,10 +62,12 @@ class InsightBasePlugin implements Plugin<Project> {
         this.project = project
 
         project.pluginManager.apply(JavaPlugin)
+        project.pluginManager.apply(ShadowBasePlugin)
 
         configureJarTask()
         addProcessConfigs()
         addCreateImageJJar()
+        addCreateImageJFatJar()
     }
 
     /**
@@ -107,21 +114,74 @@ class InsightBasePlugin implements Plugin<Project> {
                 // This might not be the best way to ensure a parity of names
                 Jar jarTask = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
 
-                // Rename omero-insight to omero_ij
-                String imageJName = jarTask.archiveBaseName.get().replace("insight", "ij")
-                imageJName = imageJName.replace("-", "_")
-
+                jar.archiveBaseName.set(createImageJName(jarTask, "ij"))
                 jar.setDescription("Assembles a jar for use with ImageJ")
                 jar.setGroup(GROUP_BUILD)
                 jar.dependsOn(project.tasks.getByName(JavaPlugin.CLASSES_TASK_NAME))
                 jar.from(main.output)
-                jar.archiveBaseName.set(imageJName)
                 jar.doFirst(addManifest(MAIN_IMAGEJ, "lib"))
             }
         })
     }
+    
+    private TaskProvider<ShadowJar> addCreateImageJFatJar() {
+        JavaPluginConvention convention = project.convention.getPlugin(JavaPluginConvention)
 
-    private Action<? extends Task> addManifest(String mainClass, String classPathDir = "") {
+        SourceSet main =
+                convention.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+
+        project.tasks.register(TASK_OMERO_IMAGEJ_FAT_JAR, ShadowJar, new Action<ShadowJar>() {
+            @Override
+            void execute(ShadowJar shadow) {
+                // Rename omero-insight to omero_ij
+                Jar jarTask = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
+
+                shadow.archiveBaseName.set(createImageJName(jarTask, "fiji"))
+                shadow.archiveClassifier.set("all")
+                shadow.description = "Create a combined JAR of project and runtime dependencies"
+                shadow.conventionMapping.with {
+                    map('classifier') {
+                        'all'
+                    }
+                }
+
+                shadow.manifest.inheritFrom jarTask.manifest
+                shadow.configurations = [Utils.getRuntimeClasspathConfiguration(project)]
+                shadow.exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA',
+                        'META-INF/*.RSA', 'module-info.class')
+                shadow.from(main.output)
+                shadow.doFirst(addShadowConfigToClassPath())
+            }
+        })
+    }
+
+    private String createImageJName(Jar jarTask, String replacement) {
+        // Rename omero-insight to omero_ij
+        String imageJName = jarTask.archiveBaseName.get().replace("insight", replacement)
+        return imageJName.replace("-", "_")
+    }
+
+    private Action<? extends Task> addShadowConfigToClassPath() {
+        return new Action<ShadowJar>() {
+            @Override
+            void execute(ShadowJar shadow) {
+                Configuration shadowConfig =
+                        project.configurations.findByName(ShadowBasePlugin.CONFIGURATION_NAME)
+
+                if (shadowConfig) {
+                    if (shadowConfig.files) {
+                        Jar jarTask = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
+                        def libs = [jarTask.manifest.attributes.get('Class-Path')]
+                        libs.addAll shadowConfig.files.collect { "${it.name}" }
+                        shadow.manifest.attributes['Class-Path'] = libs.findAll { it }.join(' ')
+                    }
+                }
+            }
+        }
+    }
+
+    private Action<? extends Task> addManifest(String mainClass) {
+
         return new Action<Jar>() {
             @Override
             void execute(Jar jar) {
