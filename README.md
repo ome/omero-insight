@@ -1,7 +1,7 @@
   OMERO.mde 
   ---------------------
 
-  Extension of OMERO.importer to get an overview of available metadata provided by the selected image container and annotate images at import step by standardized key-value templates. 
+  Extension of OMERO.importer to get an overview of available metadata provided by the selected image container and annotate images at import step by standardized key-value templates. Changes of metadata provided by image will save as key-value pairs.
 
   Customize MDE
   ---------------------
