@@ -358,7 +358,6 @@ public class ImportableObject
 	public void printMapAnnotationList()
 	{
 		if(mapAnnots!=null){
-			System.out.println("MAP-ANNOTATION_LIST");
 			MapAnnotationObject.printMapAnnotations(mapAnnots);
 		}else
 			System.out.println("MAP-ANNOTATION_LIST : 0");

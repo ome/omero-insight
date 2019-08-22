@@ -63,6 +63,9 @@ import omero.model.Channel;
 import omero.model.Dataset;
 import omero.model.IObject;
 import omero.model.Image;
+import omero.model.MapAnnotation;
+import omero.model.MapAnnotationI;
+import omero.model.NamedValue;
 import omero.model.Pixels;
 import omero.model.Project;
 import omero.model.ProjectDatasetLink;
@@ -232,7 +235,7 @@ class OmeroImageServiceImpl
 			if (close) gateway.closeImport(ctx, userName);
 			return Boolean.valueOf(false);
 		}
-    Map<String,MapAnnotationObject> map=new HashMap<>();
+		Map<String,MapAnnotationObject> map=new HashMap<>();
 		map.putAll(object.getMap());
 
 		Entry<File, Status> entry;
@@ -279,7 +282,7 @@ class OmeroImageServiceImpl
 							importIc = icContainers.get(0);
               List<Annotation> newList=addMetaDataAnnotations(map, list, file);
 							importIc.setCustomAnnotationList(newList);
-							importIc.setCustomAnnotationList(list);
+							
 							label.setCallback(gateway.importImageFile(ctx,
 									object, ioContainer, importIc,
 									label, toClose, userName));
@@ -1277,8 +1280,9 @@ class OmeroImageServiceImpl
 					return new ImportException(
 							ImportException.FILE_NOT_VALID_TEXT);
 				}
-				importIc = icContainers.get(0);
+				
         List<Annotation> newList=addMetaDataAnnotations(map, customAnnotationList, file);
+				importIc = icContainers.get(0);
 				importIc.setCustomAnnotationList(newList);
 				status.setUsedFiles(importIc.getUsedFiles());
 				//Check after scanning
@@ -1429,6 +1433,8 @@ class OmeroImageServiceImpl
 			if (isOfflineImport()) {
 			    setContainerForOfflineImport(importable, ioContainer);
 			} else {
+				//set annotation map again (seems to be overwrite/delete somewhere above)
+				object.setMapAnnotation(map);
 		         //import the files that are not hcs files.
 	            importCandidates(ctx, otherFiles, status, object,
 	                    ioContainer, customAnnotationList, userID, close, false,
