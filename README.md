@@ -5,7 +5,7 @@
 
   Customize MDE
   ---------------------
-  Save mdeConfiguration.xml in the directory <user>/omero/ to specify available objects and how the look likes. You can use the mdeConfiguration.xml example file or create a new under OMERO.importer>MDE>Configuration...>Save To File.
+  Save mdeConfiguration.xml in the directory <user>/omero/ to specify available objects and how the looks like. You can use the mdeConfiguration.xml example file or create a new under OMERO.importer>MDE>Configuration...>Save To File.
 	
   The microscope element can be understood more generally as a template category.
   
@@ -15,32 +15,48 @@
   
     <Microscope Name="Universal">
     
- holds most of objects specified in the ome schema (https://www.openmicroscopy.org/Schemas/Documentation/Generated/OME-2016-06/ome.html). 
+ hold all available object specifications. Predefined are most of objects specified in the ome schema (https://www.openmicroscopy.org/Schemas/Documentation/Generated/OME-2016-06/ome.html). 
   
   You can add a child 
   
     <Object Type=<yourObjectName>> 
     
-  in this element to create a new custom object with key-values as `TagData` elements. 
+  in this element to create a new custom object with key-values as `TagData` elements (see example object `Available InputFields` in mdeConfiguration.xml in this repository). 
   Please specify an insertion point for every object by defining a parent object. 
   E.g. object OME:Detector has the insertion OME:Channel - that means that OME:Detector can only be a subobject of an OME:Channel object.
   
     <Parents Values="OME:Channel" />
+  For any new microscope you add to the xml MDEObject element you can specify which of these objects are available and how the looks like (overwrite TagData properties by defining `TagDataProp` to hide a TagData or change default unit).
   
+  
+  TagData
+  ---------------------------------
   There are different editor input field types for TagData:
+  <p align="center">
+  <img src="images/AvailableInputFields.PNG" width="550" title="hover text">
+  </p>
   
   `TextField` define like: 
   
       <TagData DefaultValues="" 
-                Name="Name" 
+                Name="Tag of Type TextField" 
                 Type="TextField" 
                 Unit=""
+                Value="" 
+                Visible="true" />
+		
+`TextField with unit` define like: 
+  
+      <TagData DefaultValues="" 
+                Name="Tag of Type TextField with unit" 
+                Type="TextField" 
+                Unit="nm"
                 Value="" 
                 Visible="true" />
   `TextArea` define like:
   
       <TagData DefaultValues="" 
-                Name="Description" 
+                Name="Tag of Type TextArea" 
                 Type="TextArea"
                 Unit="" 
                 Value="" 
@@ -48,28 +64,38 @@
   `ArrayField` define like (for an array of 2 elements):
   
     <TagData DefaultValues="2" 
-              Name="Dim X x Y"
+              Name="Tag of Type ArrayField"
               Type="ArrayField" 
-              Unit="" Value="" 
+              Unit="" 
+	      Value="" 
+              Visible="true" />
+	      
+ `ArrayField` with unit define like (for an array of 3 elements):
+  
+    <TagData DefaultValues="3" 
+              Name="Tag of Type ArrayField with unit"
+              Type="ArrayField" 
+              Unit="s" 
+	      Value="" 
               Visible="true" />
   `ComboBox` define like:
   
-    <TagData DefaultValues="CCD,IntensifiedCCD,AnalogVideo,PMT,Photodiode,Spectroscopy,LifetimeImaging,
-                              CorrelationSpectroscopy,FTIR,EMCCD,APD,CMOS,EBCCD,Other"
-					    Name="DetectorType" 
+    <TagData DefaultValues="Value1,Value2,Value3"
+    	      Name="tag of Type ComboBox" 
               Type="ComboBox" 
               Unit="" 
-              Value="PMT"
+              Value="Value1"
               Visible="true" />
           
   `TimeStamp` define like:
   
     <TagData DefaultValues="" 
-              Name="Acquisition Time"
+              Name="Tag of Type TimeStamp"
               Type="TimeStamp" 
               Unit="" 
               Value="" 
               Visible="true" />
+  
   
   
   mdeConfiguration.xml: Element MDEHardwareConfiguration
