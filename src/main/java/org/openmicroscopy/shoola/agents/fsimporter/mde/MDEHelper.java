@@ -301,8 +301,8 @@ public class MDEHelper {
 	 * @return
 	 */
 	private static DefaultMutableTreeNode findNode(DefaultMutableTreeNode n, DefaultMutableTreeNode tree) {
-		 for (Enumeration <DefaultMutableTreeNode> e = tree.preorderEnumeration(); e.hasMoreElements();) {
-	            DefaultMutableTreeNode d = e.nextElement();
+		 for (Enumeration e = tree.preorderEnumeration(); e.hasMoreElements();) {
+	            DefaultMutableTreeNode d = (DefaultMutableTreeNode) e.nextElement();
 	            if(compareNodes(n,d)) {
 	            	System.out.println("-- Search for "+n.getUserObject().toString() +" - FOUND at level "+d.getLevel()+" [MDEParser::findNode]");
 	            	return d;
