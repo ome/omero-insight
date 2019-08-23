@@ -106,11 +106,13 @@ public class MapAnnotationObject {
 	
 	static public void printMapAnnotations(Map<String,MapAnnotationObject> map)
 	{
+System.out.println("******* MAP ************");
 		for (Iterator i = map.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry next = (Map.Entry)i.next();
 			System.out.println("\t mapAnnotation - : "+next.getKey());
 			printObject((MapAnnotationObject) next.getValue());
 		}
+System.out.println("******* END MAP************");
 	}
 	
 	static public void printObject(MapAnnotationObject o)

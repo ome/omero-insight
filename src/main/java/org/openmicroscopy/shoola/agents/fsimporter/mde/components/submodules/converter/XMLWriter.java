@@ -590,9 +590,8 @@ public class XMLWriter {
 				String tagVis=eElement.getAttribute(ATTR_TAGDATA_VIS);
 				String defaultVal = eElement.getAttribute(ATTR_TAGDATA_DEF);
 				String tagType=eElement.getAttribute(ATTR_TYPE);
-				//TODO Arrayfield size
-				TagData t= new TagData(parent,tagName, tagVal, false, tagType, defaultVal.split(","));
-				t.setTagUnit(tagUnit);
+				
+				TagData t= new TagData(parent,tagName, tagVal, tagUnit,false, tagType, defaultVal.split(","));
 				t.setVisible(Boolean.parseBoolean(tagVis));
 				list.put(tagName,t);
 			}

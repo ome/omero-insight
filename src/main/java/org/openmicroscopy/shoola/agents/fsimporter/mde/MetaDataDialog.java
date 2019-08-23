@@ -199,7 +199,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 	/**
 	 * Creates a new instance.
-	 *
+	 * 
 	 * @param owner
 	 *            The owner of the dialog.
 	 * @param filters
@@ -255,13 +255,13 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	}
 
 
-	//private Experimenter convertExperimenter(ExperimenterData expData)
+	//private Experimenter convertExperimenter(ExperimenterData expData) 
 	//{
 	//    Experimenter exp=new Experimenter();
 	//    try{exp.setFirstName(expData.getFirstName());}catch(Exception e){};
 	//    try{exp.setLastName(expData.getLastName());}catch(Exception e){};
 	////	try{exp.setID((expData.getId());}catch(Exception e){};
-	//
+	//    
 	//    return exp;
 	//}
 
@@ -325,17 +325,17 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 		// set default microscope workstation
 		int indexMic = controller.getMicIndex(microscope);
 		if(indexMic!=-1){
-			mics.setSelectedIndex(indexMic);
+			mics.setSelectedIndex(indexMic); 
 		}else {
 			mics.setSelectedIndex(0);
-		}
+		}		
 	}
 
 
 	/**
 	 * Create a tree that allows one selection at a time
 	 */
-	private void initFileTree()
+	private void initFileTree() 
 	{
 		FNode rootNode=new FNode("ImportQueue");
 
@@ -379,8 +379,8 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 		return bar;
 	}
 
-	/**
-	 * Build toolbar at the bottom of panel
+	/** 
+	 * Build toolbar at the bottom of panel 
 	 * @returns JPanel
 	 */
 	private JPanel buildToolbar()
@@ -426,13 +426,13 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 
 	/**
-	 * Init and layout gui
+	 * Init and layout gui 
 	 */
 	private void buildGUI()
 	{
 		setLayout(new BorderLayout(0,0));
 
-		JSplitPane splitPane;
+		JSplitPane splitPane;		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,buildFileView(),metaPanel);
 		splitPane.setResizeWeight(0.5);
 		splitPane.setDividerLocation(150);
@@ -456,7 +456,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	/**
 	 * load predefined value, parent, import and model data and visible MDE
 	 * Tree: if node has a tree: load tree, else load parent tree + file content
-	 * Data: if node has content: load content, else load file data + parent data, if available.
+	 * Data: if node has content: load content, else load file data + parent data, if available. 
 	 * 		Parent data overwrite this file data.
 	 * @param node selected node in the filetree
 	 * @param reload TODO
@@ -469,13 +469,13 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 		MonitorAndDebug.printConsole("[TREE] -- Node: "+node.toString()+" ##############################################");
 		DefaultMutableTreeNode pTree=null;
-		if(node.getContainer()==null || node.getContainer().getTreeNode()==null)
+		if(node.getContainer()==null || node.getContainer().getTreeNode()==null) 
 		{
 			MonitorAndDebug.printConsole("-- create new container [MetaDataDialog::loadAndShowDataForSelection]");
-			//get parent tree and data
+			//get parent tree and data 
 
 			pTree=getNextAvailableParentTree(node);
-
+			
 			// is selection a file or directory
 			try {
 				if(file.equals("")){
@@ -569,7 +569,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 			System.out.println("+++ EVENT TREE DESELECT "+node.getAbsolutePath()+"+++\n");
 			MonitorAndDebug.printConsole("## Deselect "+node.getAbsolutePath()+" [MetaDataDialog::deselectNodeAction]");
 			LOGGER.debug("MetaDataDialog::Deselect node action for "+node.getAbsolutePath());
-
+			
 			// get user input
 			HashMap<String,List<TagData>> input = MDEHelper.getInput(contentTree);
 			System.out.println("-- Input of:");
@@ -627,7 +627,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 			}
 		}
 	}
-
+	
 	private void resetObjectTree() {
 		System.out.println("-- PRESS RESET object tree");
 		ModuleTree treePanel=getCurrentModuleTree();
@@ -642,8 +642,10 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 			resetObjectTreeOfChilds((FNode)fileTree.getLastSelectedPathComponent(),deleteNodes);
 			//		treePanel.printTree(null," ");
 		}
+		//reload view
+		loadAndShowDataForSelection((FNode)fileTree.getLastSelectedPathComponent(), true);
 	}
-
+	
 	private void removeObject() {
 		System.out.println("-- PRESS DELETE object tree");
 		ModuleTree treePanel=getCurrentModuleTree();
@@ -659,7 +661,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 					List<String> oldTreePaths=MDEHelper.getAllLeafPaths(treePanel.getRoot(), "");
 					//delete node in current tree
 					treePanel.removeNodeFromParent(current);
-
+					
 					List<String> newTreePaths=MDEHelper.getAllLeafPaths(treePanel.getRoot(), "");
 					List<String> deleteNodes = MDEHelper.getAdditionalLeafPaths(oldTreePaths, newTreePaths);
 					System.out.println("\t deleted nodes: "+deleteNodes);
@@ -670,7 +672,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 			}
 		}
 	}
-
+	
 	private void resetObjectTreeOfChilds(FNode node,List<String> deleteObjectPaths) {
 		if(node !=null) {
 			for(int i=0; i<node.getChildCount();i++){
@@ -734,7 +736,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 	/**
 	 * Reacts to property fired by the table.
-	 *
+	 * 
 	 * @see PropertyChangeListener#propertyChange(PropertyChangeEvent)
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -745,7 +747,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 	/**
 	 * Cancels or imports the files.
-	 *
+	 * 
 	 * @see ActionListener#actionPerformed(ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent evt) {
@@ -868,7 +870,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	}
 
 	@Override
-	public void valueChanged(TreeSelectionEvent e)
+	public void valueChanged(TreeSelectionEvent e) 
 	{
 		if(!disableTreeListener){
 			FNode selectedNode=null;
@@ -898,9 +900,9 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	 * Call methods for selected node in the tree.
 	 * @param selectedNode
 	 */
-	private void selectNodeAction(FNode selectedNode)
+	private void selectNodeAction(FNode selectedNode) 
 	{
-
+		
 		if(selectedNode!=null ){
 			System.out.println("+++ EVENT TREE SELECT "+selectedNode.getAbsolutePath()+"+++\n");
 			MonitorAndDebug.printConsole("\n# MetaDataDialog::selectNodeAction("+selectedNode.getAbsolutePath()+")");
@@ -912,17 +914,17 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 			revalidate();
 			repaint();
-		}
+		}		
 	}
 
 
 	@Override
-	public void treeCollapsed(TreeExpansionEvent arg0)
+	public void treeCollapsed(TreeExpansionEvent arg0) 
 	{ }
 
 
 	@Override
-	public void treeExpanded(TreeExpansionEvent arg0)
+	public void treeExpanded(TreeExpansionEvent arg0) 
 	{}
 
 
@@ -930,7 +932,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	 * Show selected series
 	 */
 	@Override
-	public void valueChanged(ListSelectionEvent e)
+	public void valueChanged(ListSelectionEvent e) 
 	{
 		if (e.getValueIsAdjusting() == false) {
 			//			if (seriesList.getSelectedIndex() != -1) {
@@ -948,7 +950,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 
 	@Override
-	public void itemStateChanged(ItemEvent e)
+	public void itemStateChanged(ItemEvent e) 
 	{
 		if(!disableItemListener) {
 			System.out.println("--ItemStateChanged");
@@ -1051,7 +1053,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	 * Save all input of editor as mapannotation for import
 	 * @param text
 	 */
-	public void saveChanges(String text)
+	public void saveChanges(String text) 
 	{
 		MonitorAndDebug.printConsole("\n+++ EVENT: IMPORT SAVE CHANGES ++++\n");
 		deselectNodeAction((FNode)fileTree.getLastSelectedPathComponent());
@@ -1109,7 +1111,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 	/**
 	 * Sets the name of the microscope workstation in the preferences.
-	 *
+	 * 
 	 * @param name The name to set.
 	 */
 	public void setMicroscopeName(String  name)
@@ -1192,7 +1194,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	 */
 	public void setTemplateName(File file)
 	{
-		if (file == null)
+		if (file == null) 
 			return;
 		String name=file.getAbsolutePath();
 		Preferences prefs = Preferences.userNodeForPackage(MetaDataDialog.class);

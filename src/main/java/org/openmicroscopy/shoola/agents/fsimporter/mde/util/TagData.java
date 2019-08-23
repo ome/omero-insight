@@ -162,6 +162,9 @@ public class TagData
 	public static final String LIST="List";
 	public static final String TEXTAREA="TextArea";
 
+	private static final int SIZE_LABEL_W = 300;
+	private static final int SIZE_LABEL_H = 20;
+
 	private String tagInfo;
 	
 	private int status=INACTIVE;
@@ -181,10 +184,10 @@ public class TagData
 	private String[] value;
 	// default values, e.g. for comboboxes
 	private String[] defaultValue;
-	// tag unit
-	private ome.model.units.Unit[] unit;
-	// class of unit //TODO: ableiten aus unit
+	// class of unit elem of ome.model.units.Unit
 	private Class unitClass;
+	// default unit
+	private String[] unitSymbol;
 	
 	
 	private ActionListener fieldActionListener;
@@ -203,7 +206,8 @@ public class TagData
 	//copy constructor
 	public TagData(TagData orig)
 	{
-		unit=orig.unit;//TODO clone array
+//		unit=orig.unit;//TODO clone array
+		unitSymbol=orig.unitSymbol;
 		if(orig.value!=null) value=orig.value.clone();
 		status=orig.status;
 		prop=orig.prop;
@@ -246,25 +250,41 @@ public class TagData
 	{
 		String[] valArr=new String[1];
 		valArr[0]="";
+		String[] uSymbol=new String[1];
 		if(unitObj!=null) {
 			valArr[0]=String.valueOf(unitObj.getValue());
+			uSymbol[0]=unitObj.getUnit().getSymbol();
 		}
-		initTagData(parent,name, valArr, new ome.model.units.Unit[] {unitObj},unitClass,prop, type, null);
+		initTagData(parent,name, valArr, uSymbol,unitClass,prop, type, null);
 	}
+	
+	public TagData(String parent, String name, String val, String unitSymbol, boolean prop, String type,
+			String[] defaultVal) {
+		String[] valArr=new String[1];
+		valArr[0]="";
+		String[] uSymbol=new String[1];
+		valArr[0]=String.valueOf(val);
+		uSymbol[0]=unitSymbol;
+		Class unitclazz = TagNames.getUnitClassFromSymbol(unitSymbol);
+		initTagData(parent,name, valArr, uSymbol,unitclazz,prop, type, defaultVal);
+	}
+	
 	public TagData(String parent, String name, ome.model.units.Unit[] unitObj, Class unitClass,boolean prop,String type) 
 	{
 		String[] valArr=null;
+		String[] uSymbols=null;
 		if(unitObj!=null) {
 			valArr=new String[unitObj.length];
+			uSymbols=new String[unitObj.length];
 			for(int i=0; i<unitObj.length;i++) {
 				valArr[i]=null;
-				if(unitObj[i]!=null)
+				if(unitObj[i]!=null) {
 					valArr[i]=String.valueOf(unitObj[i].getValue());
-
+					uSymbols[i]=unitObj[i].getUnit().getSymbol();
+				}
 			}
-			
 		}
-		initTagData(parent,name, valArr, unitObj,unitClass,prop, type, null);
+		initTagData(parent,name, valArr, uSymbols,unitClass,prop, type, null);
 	}
 
 	public TagData(String parent, String name, String val, boolean prop,String type, String[] defaultVal) 
@@ -292,19 +312,23 @@ public class TagData
 		String[] def= new String[1];
 		def[0]=String.valueOf(size);
 		String[] valArr=null;
+		String[] uSymbols=null;
 		if(unitObj!=null) {
 			valArr=new String[unitObj.length];
+			uSymbols=new String[unitObj.length];
 			for(int i=0; i<unitObj.length;i++) {
 				valArr[i]=null;
-				if(unitObj[i]!=null)
+				if(unitObj[i]!=null) {
 					valArr[i]=String.valueOf(unitObj[i].getValue());
+					uSymbols[i]=unitObj[i].getUnit().getSymbol();
+				}
 			}
 		}
-		initTagData(parent,name, valArr, unitObj,unitClass,prop, type, def);
+		initTagData(parent,name, valArr, uSymbols,unitClass,prop, type, def);
 		
 	}
 
-	private void initTagData(String parent, String name, String[] val, ome.model.units.Unit[] unit,Class unitClass,boolean prop,String type, String[] defaultVal)
+	private void initTagData(String parent, String name, String[] val, String[] unit,Class unitClass,boolean prop,String type, String[] defaultVal)
 	{
 		if(val==null)
 			val=new String[1];
@@ -314,10 +338,8 @@ public class TagData
 		this.name=name;
 		this.value=val;
 		
-		this.unit=unit;
 		this.unitClass=unitClass;
-		
-		
+		this.unitSymbol=unit;
 		
 		this.defaultValue=defaultVal;
 		this.parent=parent;
@@ -337,36 +359,6 @@ public class TagData
 		actionListenerActiv=true;
 	}
 	
-//	/**
-//	 * Constructor for TagData element for list fields
-//	 * @param name
-//	 * @param model list model
-//	 * @param prop
-//	 * @param type
-//	 */
-//	public TagData(String name, List<Experimenter> expList, boolean prop, int type)
-//	{
-//		initListener();
-//		this.type=type;
-//		this.name=name;
-//		valSaved=true;
-//		label = new JLabel(name+":");
-//		tagInfo="";
-//		
-//		switch (type) {
-//		case LIST:
-//			initListField(expList);
-//			break;
-//		default:
-//			initTextField();
-//			break;
-//		}
-//
-//		label.setLabelFor(inputField);
-//		setTagProp(prop);
-//		visible=false;
-//		actionListenerActiv=true;
-//	}
 
 	private void getDefaultUnit() {
 		String unitSymbol=ModuleController.getInstance().getStandardUnitSymbolByName(this.parent,getTagName());
@@ -412,7 +404,7 @@ public class TagData
 	public JPanel getTagLabelAndUnit() {
 		JPanel labelPane=new JPanel(new BorderLayout());
 		// define size of label panel
-		labelPane.setPreferredSize(new Dimension(200,20));
+		labelPane.setPreferredSize(new Dimension(SIZE_LABEL_W,SIZE_LABEL_H));
 		JTextField labelName=new JTextField(""+name+": ");
 		labelName.setEditable(false);
 		
@@ -441,12 +433,13 @@ public class TagData
 	}
 	
 	private JComboBox createUnitCombo() {
+		JComboBox units = new JComboBox<>();
 		if(getUnitType()!=null) {
 //			System.out.println("--Create Unit Combo for "+getUnitType());
 			String[] unitsList=TagNames.getUnitsList(getUnitType());
 
 			if(unitsList!=null) {
-				JComboBox units = new JComboBox<>(unitsList);
+				units = new JComboBox<>(unitsList);
 
 				// set unit
 				String symbol=getTagUnitString();
@@ -460,32 +453,13 @@ public class TagData
 						break;
 					}
 				}
-				return units;
+			}else {
+				System.out.println("Unit not available :: "+getUnitType());
 			}
 		}
-		return null;
+		return units;
 	}
 	
-	public JTextField getTagLabel()
-	{
-		JTextField label;
-		if(unit==null) {
-			label = new JTextField(name+":");
-		}else {
-//			String unitSymbol=unit.getUnit().getSymbol().equals(UnitsLength.REFERENCEFRAME)? "rf" : unit.getUnit().getSymbol();
-			label = new JTextField(name+" ["+getTagUnitString()+"]:");
-		}
-		
-		if(status==INACTIVE) {
-			label.setEnabled(false);
-		}
-		label.setEditable(false);
-		EmptyBorder emptyBorder = (EmptyBorder) BorderFactory.createEmptyBorder(0,10,0,0);
-		Border lineBorder=label.getBorder();
-		label.setBorder(BorderFactory.createCompoundBorder(lineBorder, emptyBorder));
-//		label.setPreferredSize(new Dimension(150,20));
-		return label;
-	}
 	
 	private void repaintInputField() {
 		switch (type) {
@@ -805,7 +779,7 @@ public class TagData
 	 * @return {@code "value"} for textfield without unit; {@code "value unit"} for textfield with unit; {@code "value1,value2 unit"} for arrayfield with unit;
 	 */
 	public String getTagWholeValue() {
-		if(unit==null)
+		if(unitSymbol==null)
 			return getTagValue();
 		else {
 			return getTagValue()+" "+getTagUnitString();
@@ -881,7 +855,6 @@ public class TagData
 		String[] val=null;
 			switch (type) {
 			case ARRAYFIELDS:
-				System.out.println("ARRAYFIELD: \n"+source);
 				if(source instanceof JArray) {
 					try {
 						val=((JArray) source).getValuesAsArray();
@@ -934,20 +907,6 @@ public class TagData
 			}
 	}
 	
-//	public List<Experimenter> getListValues()
-//	{
-//		if(type == LIST){
-//			
-//			List<Experimenter> list = ((ExperimenterBox) inputField).getExperimenterList();
-//			
-//			return list;
-//		}
-//		
-//		return null;
-//	}
-
-	
-	
 	private String listToString(List<String> list)
 	{
 		String res="";
@@ -987,36 +946,31 @@ public class TagData
 	
 	public String getTagUnitString()
 	{
-		if(unit!=null && unit[0]!=null)
-			return unit[0].getUnit().getSymbol();
+		if(unitSymbol!=null && unitSymbol[0]!=null)
+			return unitSymbol[0];
 		
 		return ModuleController.getInstance().getStandardUnitSymbolByName(this.parent,getTagName());
 	}
 	
-	private Unit[] getTagUnit()
-	{
-		return unit;
-	}
-
 	private void setTagData(ome.model.units.Unit[] u) {
 		if(u==null || u.length==0)
 			return;
 		for(int i=0; i<u.length; i++) {
-			value[i]=u[i]!=null? String.valueOf(u[i].getValue()):"";
+			if(u[i]!=null) {
+				value[i]=String.valueOf(u[i].getValue());
+				unitSymbol[i]=u[i].getUnit().getSymbol();
+			}else {
+				value[i]="";
+				unitSymbol[i]=null;
+			}
 		}
-		unit=u;
-	}
-	public void setTagUnit(ome.model.units.Unit[] u)
-	{
-		unit=u;
-		if(unit!=null && unit.length>0 && unit[0]!=null) unitClass=unit[0].getClass();
 	}
 	
 	public String getUnitType()
 	{
 		if(unitClass==null) {
-			if(getTagUnitString()!=null && !getTagUnitString().equals("")) {
-				return TagNames.getUnit(getTagUnitString()).getClass().getName();
+			if(getTagUnitString()!=null && !getTagUnitString().equals("") && TagNames.getUnitClassFromSymbol(getTagUnitString())!=null) {
+				return TagNames.getUnitClassFromSymbol(getTagUnitString()).getName();
 			}
 			return "";
 		}
@@ -1034,69 +988,25 @@ public class TagData
 		Unit[] newVal=null;
 	
 		// conversion necessary?
-		if(value!= null &&  unit!=null && unit[0]!=null &&
-				unit[0].getUnit()!=null && 
-				!unitsymbol.equals(unit[0].getUnit().getSymbol())) {
-			System.out.println("--Convert unit of "+name+": "+unit[0].getUnit().getSymbol()+" -> "+unitsymbol);
-			newVal=OMEValueConverter.convert(value,unit,unitsymbol);
+		if(value!= null &&  unitSymbol!=null && unitSymbol[0]!=null &&
+				unitSymbol[0]!=null && 	!unitsymbol.equals(unitSymbol[0])) {
+			newVal=OMEValueConverter.convert(value,unitSymbol[0],unitsymbol);
 			if(newVal!=null) {
 				setTagData(newVal);
 				return;
 			}
 		}
 		
-		newVal=new Unit[1];
-		newVal[0]=TagNames.getUnit(unitsymbol);
-		setTagUnit(newVal);
-		
-	}
-	
-//	public void setTagValue(Experimenter val)
-//	{
-//		activateActionListener(false);
-//		if(val==null || val.equals("")){
-//			inputField.setBackground(noInfo);
-//		}else{
-//			inputField.setBackground(fillInfo);
-//		}
-////		inputField.setBorder(normalBorder);
-//		if(type==LIST){
-//			((ExperimenterBox) inputField).addElement(val);
-//		}
-//		activateActionListener(true);
-//	}
-//	
-//	public void setTagValue(List<Experimenter> val)
-//	{
-//		activateActionListener(false);
-//		if(val==null || val.isEmpty()){
-//			inputField.setBackground(noInfo);
-//		}else{
-//			inputField.setBackground(fillInfo);
-//		}
-////		inputField.setBorder(normalBorder);
-//		if(type==LIST){
-//			((ExperimenterBox) inputField).addExperimenterList(val);
-//		}
-//		activateActionListener(true);
-//	}
-	
-	public void setTagValue(Unit unit, Class unitClass, boolean property) {
-		setTagValue(new ome.model.units.Unit[] {unit},unitClass,property);
-	}
-	public void setTagValue(Unit[] unit, Class unitClass, boolean property)
-	{
-		this.unit=unit;
-		this.unitClass=unitClass;
-		if(unit!=null) {
-			for(int i=0; i<unit.length;i++) {
-				setTagValue(String.valueOf(unit[i].getValue()),i);
-			}
-		}else {
-			setTagValue("");
+		if(newVal==null) {
+			newVal=new Unit[1];
+			newVal[0]=TagNames.getUnit(unitsymbol);
 		}
-		setTagProp(property);
-		valChanged=false;
+		unitClass=newVal[0].getClass();
+		if(unitSymbol==null) {
+			unitSymbol=new String[value.length];
+		}
+		for(int i=0; i<unitSymbol.length; i++)
+			this.unitSymbol[i]=unitsymbol;	
 	}
 
 	public void setTagValue(String val, boolean property)
@@ -1265,10 +1175,6 @@ public class TagData
 
 	private void setValTimestamp(JComponent inputField) 
 	{
-//		if(val==null || val.equals("")){
-//			((JTextField) inputField).setText(datePattern.toLowerCase());
-//			((JTextField) inputField).setForeground(Color.gray);
-//		}else{
 		String val=value[0];
 		if(val!=null && !val.equals("")){
 			((JTextField) inputField).setForeground(Color.black);
@@ -1313,29 +1219,11 @@ public class TagData
 	{
 		if(value==null){
 			field.setBackground(noInfo,"");
-			
 		}else{
 			field.setValues(value);
-//			if(value.length!= inputField.getComponentCount()){
-//				LOGGER.error("Wrong input for "+name);
-//			}
-//			for(int i=0; i<value.length;i++)
-//			{
-//				setValArrayField(inputField,value[i], i);
-//			}
 		}
 	}
-//	private void setValArrayField(JComponent inputField,String s,int i)
-//	{
-//		JTextField txtF=(JTextField) inputField.getComponent(i);
-//		txtF.setText(s);
-//		if(s==null || s.equals("")){
-//			s="";
-//			txtF.setBackground(noInfo);
-//		}else{
-//			txtF.setBackground(fillInfo);
-//		}
-//	}
+
 
 	private void setValCheckbox(JComponent inputField) 
 	{
@@ -1356,9 +1244,6 @@ public class TagData
 		{
 			if(((JComboBox<String>) inputField).getItemAt(c).equals(value[0])){
 				((JComboBox<String>) inputField).setSelectedIndex(c);
-//				  UIManager.put("ComboBox.background", new ColorUIResource(fillInfo));
-//				  UIManager.put("JTextField.background", new ColorUIResource(fillInfo));
-//				((JTextField) ((JComboBox<String>) inputField).getEditor().getEditorComponent()).setBackground(fillInfo); 
 			}
 		}
 	}

@@ -98,7 +98,9 @@ public class MDEConfiguration {
 		this.defaultUnitMap=new HashMap<>();
 		if(orig.defaultUnitMap!=null) {
 			for(Entry<String, UnitEnum> entry:orig.defaultUnitMap.entrySet()) {
-				this.defaultUnitMap.put(entry.getKey(), TagNames.getUnitEnum(TagNames.getUnit(entry.getValue().getSymbol()).getClass().getName(), entry.getValue().getSymbol()));
+				String uClass = TagNames.getUnitClassFromSymbol(entry.getValue().getSymbol())!=null?TagNames.getUnitClassFromSymbol(entry.getValue().getSymbol()).getName():null;
+				UnitEnum uEnum = TagNames.getUnitEnum(uClass, entry.getValue().getSymbol());
+				this.defaultUnitMap.put(entry.getKey(), uEnum);
 			}
 		}
 	}

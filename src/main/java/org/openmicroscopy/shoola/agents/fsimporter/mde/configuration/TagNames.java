@@ -613,6 +613,9 @@ public class TagNames
 	
 	
 	public static ome.model.units.Unit getUnit(String unitSymbol){
+		if(unitSymbol==null || unitSymbol.equals("")) {
+			return null;
+		}
 		if(ome.model.enums.UnitsElectricPotential.bySymbol(unitSymbol)!=null) {
 			return new ome.model.units.ElectricPotential(0, ome.model.enums.UnitsElectricPotential.bySymbol(unitSymbol));
 		}else if(ome.model.enums.UnitsPower.bySymbol(unitSymbol)!=null) {
@@ -631,7 +634,12 @@ public class TagNames
 		System.out.println("ERROR: cannot parse "+unitSymbol);
 		return null;
 	}
-	
+	public static Class getUnitClassFromSymbol(String unitSymbol) {
+		ome.model.units.Unit unit=getUnit(unitSymbol);
+		if(unit==null)
+			return null;
+		return unit.getClass();
+	}
 	public static Class getUnitClass(String className) {
 		if(className.equals(ome.model.units.ElectricPotential.class.getName()))
 			return ome.model.units.ElectricPotential.class;
