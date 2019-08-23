@@ -108,7 +108,7 @@
   <p align="center">
   <img src="images/ConfigurationPanel.PNG" width="550" title="hover text">
   </p>
-     
+  Please specify new elements by using the `Configuration` dialog in MDE.
  
 
   Licensing
