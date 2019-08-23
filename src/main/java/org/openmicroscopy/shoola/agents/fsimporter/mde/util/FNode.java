@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.NodeContainer;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.NodeContainer;
 import org.openmicroscopy.shoola.env.data.model.ImportableFile;
 
 public class FNode extends DefaultMutableTreeNode

@@ -1,4 +1,4 @@
-package org.openmicroscopy.shoola.agents.fsimporter.mde.microscope;
+package org.openmicroscopy.shoola.agents.fsimporter.mde.util;
 
 import java.util.HashMap;
 import java.util.List;

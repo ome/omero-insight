@@ -68,7 +68,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleTre
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.HardwareConfigurator;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.ObjectConfigurator;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.microscope.NodeContainer;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.NodeContainer;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.EditorFileBrowser;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ExceptionDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.FNode;
