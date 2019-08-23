@@ -26,7 +26,7 @@
   E.g. object OME:Detector has the insertion OME:Channel - that means that OME:Detector can only be a subobject of an OME:Channel object.
   
     <Parents Values="OME:Channel" />
-  For any new microscope you add to the xml MDEObject element you can specify which of these objects are available and how the looks like (hide TagData, change default unit).
+  For any new microscope you add to the xml MDEObject element you can specify which of these objects are available and how the looks like (overwrite TagData properties by defining `TagDataProp` to hide a TagData or change default unit).
   
   
   TagData
