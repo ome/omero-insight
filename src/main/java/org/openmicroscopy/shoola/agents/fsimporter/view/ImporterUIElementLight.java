@@ -27,8 +27,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -57,8 +59,6 @@ import org.openmicroscopy.shoola.util.ui.UIUtilities;
  *         href="mailto:d.lindner@dundee.ac.uk">d.lindner@dundee.ac.uk</a>
  */
 class ImporterUIElementLight extends ImporterUIElement {
-
-    private Map<Integer, Integer> importStatus = new ConcurrentHashMap<Integer, Integer>();
 
     private JProgressBar upload = new JProgressBar(SwingConstants.HORIZONTAL);
     private JProgressBar processed = new JProgressBar(SwingConstants.HORIZONTAL);
@@ -204,68 +204,70 @@ class ImporterUIElementLight extends ImporterUIElement {
         add(info, BorderLayout.CENTER);
     }
 
-    private void updateDisplay() {
+    // Prevent GUI updates queueing up and freezing
+    AtomicBoolean updateRequest = new AtomicBoolean(false);
 
-        int complete = 0;
-        int uploaded = 0;
-        for (int i = 1; i < 7; i++) {
-            int c = 0;
-            for (int step : importStatus.values()) {
-                if (i == step)
-                    c++;
-            }
-            uploaded += c;
-            if (i == 6)
-                complete = c;
+    @Override
+    void setNumberOfImport() {
+        if (!updateRequest.get()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    ImporterUIElementLight.super.setNumberOfImport();
+                    updateRequest.set(true);
+                    updateGUI();
+                }
+            });
         }
+    }
 
-        if (isScanning != null) {
-            if (isScanning) {
-                scanningBusy.setBusy(true);
-            }
-            else {
-                scanningBusy.setBusy(false);
-                scanningBusy.setIcon(IconManager.getInstance().getIcon(IconManager.APPLY));
-            }
-        }
-        
-        
-        int cancelled = super.cancelled();
-        
-        upload.setValue(uploaded);
+    private void updateGUI() {
+        updateRequest.set(false);
+
+        upload.setValue(super.countUploaded);
         upload.setMaximum(super.totalToImport);
-        uploadBusy.setText(+uploaded + "/" + super.totalToImport);
-        // if there are many imports to cancel this might take a while; in that
-        // case until all cancellations went through there might have been another
-        // upload happened so this could sum up to something > super.totalToImport
+        uploadBusy.setText(+super.countUploaded + "/" + super.totalToImport);
+
+        processed.setValue(super.countImported);
+        processed.setMaximum(super.countUploaded);
+        processedBusy.setText(super.countImported + "/" + super.countUploaded);
+
         if (super.isDone()) {
             uploadBusy.setBusy(false);
             uploadBusy.setIcon(IconManager.getInstance().getIcon(IconManager.APPLY));
-        }  else {
-            uploadBusy.setBusy(true);
-        }
-        
-        processed.setValue(complete);
-        processed.setMaximum(uploaded);
-        processedBusy.setText(complete + "/" + uploaded);
-        if (super.isDone()) {
             processedBusy.setBusy(false);
             processedBusy.setIcon(IconManager.getInstance().getIcon(IconManager.APPLY));
+
+            int cancelled = super.cancelled();
+            if (cancelled > 0) {
+                if (!this.cancelledLabel.isVisible())
+                    this.cancelledLabel.setVisible(true);
+                if (!this.cancelled.getText().equals(""+cancelled))
+                    this.cancelled.setText(""+cancelled);
+                if (!this.cancelled.isVisible())
+                    this.cancelled.setVisible(true);
+            }
         } else {
-            processedBusy.setBusy(true);
+            if (!uploadBusy.isBusy())
+                uploadBusy.setBusy(true);
+            if (!processedBusy.isBusy())
+                processedBusy.setBusy(true);
         }
-        
-        errors.setText("" + super.countFailure);
-        
-        if (cancelled > 0) {
-            this.cancelledLabel.setVisible(true);
-            this.cancelled.setText(""+cancelled);
-            this.cancelled.setVisible(true);
+
+        if (scanningBusy.isBusy() && super.countUploaded > 0) {
+            scanningBusy.setBusy(false);
+            scanningBusy.setIcon(IconManager.getInstance().getIcon(IconManager.APPLY));
         }
-        
+
         if (super.countFailure > 0) {
-            super.filterButton.setEnabled(true);
+            if (!super.filterButton.isEnabled())
+                super.filterButton.setEnabled(true);
+            if (!errors.getText().equals("" + super.countFailure))
+                errors.setText("" + super.countFailure);
         }
+
+        if (updateRequest.get())
+            updateGUI();
     }
 
     @Override
@@ -276,35 +278,10 @@ class ImporterUIElementLight extends ImporterUIElement {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        String name = evt.getPropertyName();
-        if (FileImportComponentI.IMPORT_FILES_NUMBER_PROPERTY.equals(name)) {
-            // -1 to remove the entry for the folder.
-            Integer v = (Integer) evt.getNewValue() - 1;
-            totalToImport += v;
-            setNumberOfImport();
-        } else if (FileImportComponentI.CANCEL_IMPORT_PROPERTY.equals(name)) {
-            controller.cancel((FileImportComponentI) evt.getNewValue());
-        } else if (Status.STEP_PROPERTY.equals(name)) {
-            String[] tmp = ((String) evt.getNewValue()).split("_");
-            int id = Integer.parseInt(tmp[0]);
-            int step = Integer.parseInt(tmp[1]);
-            importStatus.put(id, step);
-            if (isScanning != null && isScanning)
-                isScanning = false;
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        super.propertyChange(propertyChangeEvent);
+        if (isScanning == null) {
+            scanningBusy.setBusy(true);
         }
-        else if (Status.SCANNING_PROPERTY.equals(name)) {
-            if (isScanning == null)
-                isScanning = true;
-        }
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                updateDisplay();
-            }
-        });
-        
     }
-
 }

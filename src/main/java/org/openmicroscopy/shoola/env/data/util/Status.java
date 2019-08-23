@@ -111,6 +111,9 @@ public class Status implements IObserver {
     /** Bound property indicating that the current import step has changed. */
     public static final String STEP_PROPERTY = "step";
 
+    /** Bound property indicating that the current import step has changed. */
+    public static final String FAILED_PROPERTY = "failed";
+
     /**
      * The number of processing sets. 1. Importing Metadata 2. Processing Pixels
      * 3. Generating Thumbnails 4. Processing Metadata 5. Generating Objects
@@ -365,6 +368,12 @@ public class Status implements IObserver {
     public void markedAsDuplicate() {
         this.markedAsDuplicate = true;
         firePropertyChange(DUPLICATE_PROPERTY, null, DUPLICATE_PROPERTY);
+    }
+
+    /** Marks that the upload failed due to connection issue. */
+    public void markedAsFailed(Throwable e) {
+        exception = new ImportException(e);
+        firePropertyChange(FAILED_PROPERTY, null, e);
     }
 
     /**

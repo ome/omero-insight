@@ -1022,7 +1022,16 @@ public class FileImportComponent
      */
     @Override
     public long getExperimenterID() { return importable.getUser().getId(); }
-	
+
+	@Override
+	public Collection<? extends FileImportComponentI> getChildren() {
+		try {
+			return this.components.values();
+		} catch( Throwable t) {
+			return Collections.emptyList();
+		}
+	}
+
 	/* (non-Javadoc)
      * @see org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponentI#getImportErrorObject()
      */
@@ -1089,22 +1098,6 @@ public class FileImportComponent
         }
 		return false;
 	}
-	
-    @Override
-    public int cancelled() {
-        int c = 0;
-        if (components != null) {
-            Collection<FileImportComponent> values = components.values();
-            synchronized (components) {
-                Iterator<FileImportComponent> i = values.iterator();
-                while (i.hasNext()) {
-                    if (i.next().isCancelled())
-                        c++;
-                }
-            }
-        }
-        return c;
-    }
 
 	/* (non-Javadoc)
      * @see org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponentI#hasImportToCancel()

@@ -19,8 +19,8 @@ install:
   - DIR=$PWD; (cd /tmp; gradle wrapper --gradle-version=5.2.1; mv .gradle gradle gradlew $DIR)
 
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./gradlew packageApplicationDmg ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" && -n "$TRAVIS_TAG" ]]; then ./gradlew packageImporterApplicationDmg ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_retry ./gradlew packageApplicationDmg ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" && -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationDmg ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -f build/packaged/main/bundles/OMERO.insight-* ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./gradlew build ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -f build/distributions/OMERO.imagej-* ; fi

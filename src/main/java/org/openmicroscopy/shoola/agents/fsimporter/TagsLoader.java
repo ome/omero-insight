@@ -113,7 +113,6 @@ public class TagsLoader
         registry.getLogger().error(this, msg);
         registry.getUserNotifier().notifyError("Data Retrieval Failure", 
                                                s, exc);
-		viewer.cancel();
 	}
 	
 }

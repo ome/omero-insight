@@ -500,26 +500,6 @@ class ImporterComponent
 
 	/**
 	 * Implemented as specified by the {@link Importer} interface.
-	 * @see Importer#cancel()
-	 */
-	public void cancel()
-	{
-		if (model.getState() != DISCARDED)
-			model.cancel();
-	}
-
-	/**
-	 * Implemented as specified by the {@link Importer} interface.
-	 * @see Importer#cancelImport(int)
-	 */
-	public void cancelImport(int id)
-	{
-		//if (model.getState() != DISCARDED)
-		//	model.cancel(id);
-	}
-
-	/**
-	 * Implemented as specified by the {@link Importer} interface.
 	 * @see Importer#hasFailuresToSend()
 	 */
 	public boolean hasFailuresToSend()
@@ -591,17 +571,6 @@ class ImporterComponent
 		}
 		object.reUpload(list);
 		importData(object);
-	}
-
-	/**
-	 * Implemented as specified by the {@link Importer} interface.
-	 * @see Importer#isLastImport()
-	 */
-	public boolean isLastImport()
-	{
-		ImporterUIElement element = view.getSelectedPane();
-		if (element == null) return false;
-		return element.isLastImport();
 	}
 
 	/**
