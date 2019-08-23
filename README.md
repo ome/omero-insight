@@ -32,19 +32,31 @@
   TagData
   ---------------------------------
   There are different editor input field types for TagData:
+  <p align="center">
+  <img src="images/AvailableInputFields.PNG" width="550" title="hover text">
+  </p>
   
   `TextField` define like: 
   
       <TagData DefaultValues="" 
-                Name="Name" 
+                Name="Tag of Type TextField" 
                 Type="TextField" 
                 Unit=""
+                Value="" 
+                Visible="true" />
+		
+`TextField with unit` define like: 
+  
+      <TagData DefaultValues="" 
+                Name="Tag of Type TextField with unit" 
+                Type="TextField" 
+                Unit="nm"
                 Value="" 
                 Visible="true" />
   `TextArea` define like:
   
       <TagData DefaultValues="" 
-                Name="Description" 
+                Name="Tag of Type TextArea" 
                 Type="TextArea"
                 Unit="" 
                 Value="" 
@@ -52,24 +64,33 @@
   `ArrayField` define like (for an array of 2 elements):
   
     <TagData DefaultValues="2" 
-              Name="Dim X x Y"
+              Name="Tag of Type ArrayField"
               Type="ArrayField" 
-              Unit="" Value="" 
+              Unit="" 
+	      Value="" 
+              Visible="true" />
+	      
+ `ArrayField` with unit define like (for an array of 3 elements):
+  
+    <TagData DefaultValues="3" 
+              Name="Tag of Type ArrayField with unit"
+              Type="ArrayField" 
+              Unit="s" 
+	      Value="" 
               Visible="true" />
   `ComboBox` define like:
   
-    <TagData DefaultValues="CCD,IntensifiedCCD,AnalogVideo,PMT,Photodiode,Spectroscopy,LifetimeImaging,
-                              CorrelationSpectroscopy,FTIR,EMCCD,APD,CMOS,EBCCD,Other"
-		Name="DetectorType" 
+    <TagData DefaultValues="Value1,Value2,Value3"
+    	      Name="tag of Type ComboBox" 
               Type="ComboBox" 
               Unit="" 
-              Value="PMT"
+              Value="Value1"
               Visible="true" />
           
   `TimeStamp` define like:
   
     <TagData DefaultValues="" 
-              Name="Acquisition Time"
+              Name="Tag of Type TimeStamp"
               Type="TimeStamp" 
               Unit="" 
               Value="" 
