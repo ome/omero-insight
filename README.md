@@ -5,7 +5,7 @@
 
   Customize MDE
   ---------------------
-  Save mdeConfiguration.xml in the directory <user>/omero/ to specify available objects and how the look likes. You can use the mdeConfiguration.xml example file or create a new under OMERO.importer>MDE>Configuration...>Save To File.
+  Save mdeConfiguration.xml in the directory <user>/omero/ to specify available objects and how the looks like. You can use the mdeConfiguration.xml example file or create a new under OMERO.importer>MDE>Configuration...>Save To File.
 	
   The microscope element can be understood more generally as a template category.
   
@@ -15,18 +15,22 @@
   
     <Microscope Name="Universal">
     
- holds most of objects specified in the ome schema (https://www.openmicroscopy.org/Schemas/Documentation/Generated/OME-2016-06/ome.html). 
+ hold all available object specifications. Predefined are most of objects specified in the ome schema (https://www.openmicroscopy.org/Schemas/Documentation/Generated/OME-2016-06/ome.html). 
   
   You can add a child 
   
     <Object Type=<yourObjectName>> 
     
-  in this element to create a new custom object with key-values as `TagData` elements. 
+  in this element to create a new custom object with key-values as `TagData` elements (see example object `Available InputFields` in mdeConfiguration.xml in this repository). 
   Please specify an insertion point for every object by defining a parent object. 
   E.g. object OME:Detector has the insertion OME:Channel - that means that OME:Detector can only be a subobject of an OME:Channel object.
   
     <Parents Values="OME:Channel" />
+  For any new microscope you add to the xml MDEObject element you can specify which of these objects are available and how the looks like (hide TagData, change default unit).
   
+  
+  TagData
+  ---------------------------------
   There are different editor input field types for TagData:
   
   `TextField` define like: 
@@ -56,7 +60,7 @@
   
     <TagData DefaultValues="CCD,IntensifiedCCD,AnalogVideo,PMT,Photodiode,Spectroscopy,LifetimeImaging,
                               CorrelationSpectroscopy,FTIR,EMCCD,APD,CMOS,EBCCD,Other"
-					    Name="DetectorType" 
+		Name="DetectorType" 
               Type="ComboBox" 
               Unit="" 
               Value="PMT"
@@ -70,6 +74,7 @@
               Unit="" 
               Value="" 
               Visible="true" />
+  
   
   
   mdeConfiguration.xml: Element MDEHardwareConfiguration
