@@ -377,15 +377,6 @@
 			<Object Type="OME:EmissionFilter">
 				<Parents Values="" />
 			</Object>
-			<Object Type="Observed Sample">
-				<TagData DefaultValues="2" Name="Grid (XY)"
-					Type="ArrayField" Unit="" Value="" Visible="true" />
-				<TagData DefaultValues="" Name="Object Type" Type="TextArea"
-					Unit="" Value="" Visible="true" />
-				<TagData DefaultValues="" Name="Object Nr:" Type="TextField"
-					Unit="" Value="" Visible="true" />
-				<Parents Values="OME-Model:" />
-			</Object>
 			<Object Type="OME:Filter">
 				<TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
 					Value="" Visible="true" />
@@ -426,13 +417,6 @@
 				<TagData DefaultValues="" Name="Manufacturer"
 					Type="TextField" Unit="" Value="" Visible="true" />
 				<Parents Values="OME:EmissionFilter,OME:ExcitationFilter" />
-			</Object>
-			<Object Type="Raw Material">
-				<TagData DefaultValues="" Name="Code" Type="TextField"
-					Unit="" Value="" Visible="true" />
-				<TagData DefaultValues="" Name="Description" Type="TextArea"
-					Unit="" Value="" Visible="true" />
-				<Parents Values="OME-Model:" />
 			</Object>
 			<Object Type="OME:LightEmittingDiode">
 				<TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
@@ -530,15 +514,6 @@
 			<Object Type="OME:LightPath">
 				<Parents Values="" />
 			</Object>
-			<Object Type="Sample Preparation">
-				<TagData DefaultValues="" Name="Preparation Date"
-					Type="TimeStamp" Unit="" Value="" Visible="true" />
-				<TagData DefaultValues="" Name="Description" Type="TextArea"
-					Unit="" Value="" Visible="true" />
-				<TagData DefaultValues="" Name="Gridbox Nr."
-					Type="TextField" Unit="" Value="" Visible="true" />
-				<Parents Values="OME-Model:" />
-			</Object>
 			<Object Type="OME:Image">
 				<TagData DefaultValues="" Name="Name" Type="TextField"
 					Unit="" Value="" Visible="true" />
@@ -555,9 +530,26 @@
 				<TagData DefaultValues="3" Name="Dim Z x T x C"
 					Type="ArrayField" Unit="" Value="" Visible="true" />
 				<TagData DefaultValues="" Name="Time Increment"
-					Type="TextField" Unit="s" Value="" Visible="true" />
+					Type="TextField" Unit="ms" Value="" Visible="true" />
 				<TagData DefaultValues="2" Name="Stage Label (XY)"
 					Type="ArrayField" Unit="reference frame" Value="" Visible="true" />
+				<Parents Values="OME-Model:" />
+			</Object>
+			<Object Type="Available InputFields">
+				<TagData DefaultValues="2" Name="Tag of Type ArrayField"
+					Type="ArrayField" Unit="" Value="" Visible="true" />
+				<TagData DefaultValues="3" Name="Tag of Type ArrayField with Unit"
+						Type="ArrayField" Unit="s" Value="" Visible="true" />
+				<TagData DefaultValues="" Name="Tag of Type TextArea" Type="TextArea"
+					Unit="" Value="" Visible="true" />
+				<TagData DefaultValues="" Name="Tag of Type TextField" Type="TextField"
+					Unit="" Value="" Visible="true" />
+				<TagData DefaultValues="" Name="Tag of Type TextField with Unit" Type="TextField"
+						Unit="nm" Value="" Visible="true" />
+				<TagData DefaultValues="Value1,Value2,Value3" Name="Tag of Type ComboBox" Type="ComboBox"
+						Unit="" Value="Value1" Visible="true" />
+				<TagData DefaultValues="" Name="Tag of Type TimeStamp" Type="TimeStamp"
+								Unit="" Value="" Visible="true" />
 				<Parents Values="OME-Model:" />
 			</Object>
 		</Microscope>
@@ -579,7 +571,6 @@
 				<TagDataProp Name="User::Binning" Unit="" Visible="true" />
 				<TagDataProp Name="User::Subarray" Unit=""
 					Visible="true" />
-				<Parents Values="OME:Channel" />
 			</Object>
 			<Object Type="OME:Laser">
 				<TagDataProp Name="ID" Unit="" Visible="true" />
@@ -601,7 +592,6 @@
 					Visible="true" />
 				<TagDataProp Name="User::Attenuation" Unit=""
 					Visible="true" />
-				<Parents Values="OME:LightSource" />
 			</Object>
 			<Object Type="OME:Arc">
 				<TagDataProp Name="ID" Unit="" Visible="true" />
@@ -612,7 +602,6 @@
 					Visible="true" />
 				<TagDataProp Name="User::Attenuation" Unit=""
 					Visible="true" />
-				<Parents Values="OME:LightSource" />
 			</Object>
 			<Object Type="OME:Objective">
 				<TagDataProp Name="ID" Unit="" Visible="true" />
@@ -633,10 +622,8 @@
 				<TagDataProp Name="User::Medium" Unit="" Visible="true" />
 				<TagDataProp Name="User::Correction Collar" Unit=""
 					Visible="true" />
-				<Parents Values="OME:Image" />
 			</Object>
 			<Object Type="OME:EmissionFilter">
-				<Parents Values="" />
 			</Object>
 			<Object Type="OME:Filter">
 				<TagDataProp Name="ID" Unit="" Visible="true" />
@@ -646,7 +633,6 @@
 				<TagDataProp Name="Filterwheel" Unit="" Visible="true" />
 				<TagDataProp Name="CutIn" Unit="nm" Visible="true" />
 				<TagDataProp Name="CutOut" Unit="nm" Visible="true" />
-				<Parents Values="OME:EmissionFilter,OME:ExcitationFilter" />
 			</Object>
 			<Object Type="OME:ImagingEnvironment">
 				<TagDataProp Name="Temperature" Unit="°C" Visible="true" />
@@ -654,16 +640,13 @@
 					Visible="true" />
 				<TagDataProp Name="Humidity %" Unit="" Visible="true" />
 				<TagDataProp Name="CO2 Percent %" Unit="" Visible="true" />
-				<Parents Values="OME:Image" />
 			</Object>
 			<Object Type="OME:ExcitationFilter">
-				<Parents Values="" />
 			</Object>
 			<Object Type="OME:Dichroic">
 				<TagDataProp Name="ID" Unit="" Visible="true" />
 				<TagDataProp Name="Model" Unit="" Visible="true" />
 				<TagDataProp Name="Manufacturer" Unit="" Visible="true" />
-				<Parents Values="OME:EmissionFilter,OME:ExcitationFilter" />
 			</Object>
 			<Object Type="OME:LightEmittingDiode">
 				<TagDataProp Name="ID" Unit="" Visible="true" />
@@ -674,7 +657,6 @@
 					Visible="true" />
 				<TagDataProp Name="User::Attenuation" Unit=""
 					Visible="true" />
-				<Parents Values="OME:LightSource" />
 			</Object>
 			<Object Type="OME:Channel">
 				<TagDataProp Name="Name" Unit="" Visible="true" />
@@ -694,10 +676,8 @@
 				<TagDataProp Name="ND Filter" Unit="" Visible="true" />
 				<TagDataProp Name="Pinhole Size" Unit="µm"
 					Visible="true" />
-				<Parents Values="OME:Image" />
 			</Object>
 			<Object Type="OME:LightSource">
-				<Parents Values="" />
 			</Object>
 			<Object Type="OME:Experiment">
 				<TagDataProp Name="Description" Unit="" Visible="true" />
@@ -705,7 +685,6 @@
 					Visible="true" />
 				<TagDataProp Name="Experimenter Name" Unit=""
 					Visible="true" />
-				<Parents Values="OME-Model:" />
 			</Object>
 			<Object Type="OME:Filament">
 				<TagDataProp Name="ID" Unit="" Visible="true" />
@@ -717,7 +696,6 @@
 					Visible="true" />
 				<TagDataProp Name="User::Attenuation" Unit=""
 					Visible="true" />
-				<Parents Values="OME:LightSource" />
 			</Object>
 			<Object Type="OME:Generic_Excitation_Src">
 				<TagDataProp Name="ID" Unit="" Visible="true" />
@@ -732,7 +710,6 @@
 				<Parents Values="OME:LightSource" />
 			</Object>
 			<Object Type="OME:LightPath">
-				<Parents Values="" />
 			</Object>
 			<Object Type="OME:Image">
 				<TagDataProp Name="Name" Unit="" Visible="true" />
@@ -749,12 +726,11 @@
 				<TagDataProp Name="Stage Label (XY)"
 					Unit="reference frame" Visible="true" />
 				<Parents Values="OME-Model:" />
+			<Object Type="Available InputFields">
+				<TagDataProp Name="Tag of Type ArrayField"	Unit=""  Visible="false" />
+				<TagDataProp Name="Tag of Type ArrayField with Unit" Unit="s"  Visible="true" />
+				<TagDataProp Name="Tag of Type TextArea" Unit="" Visible="false" />
 			</Object>
-			<Object Type="Observed Sample">
-				<TagDataProp Name="Grid (XY)" Unit="" Visible="false" />
-				<TagDataProp Name="Object Type" Unit="" Visible="true" />
-				<TagDataProp Name="Object Nr:" Unit="" Visible="true" />
-				<Parents Values="OME-Model:" />
 			</Object>
 		</Microscope>
 	</MDEObjects>
