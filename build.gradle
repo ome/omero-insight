@@ -32,7 +32,9 @@ dependencies {
     implementation("info.clearthought:table-layout:4.3.0")
     implementation("insight:JHotDraw:7.0.9")
     implementation("net.imagej:ij:1.48s")
-    implementation("net.java.dev.jna:jna-platform:5.3.0")
+    implementation("net.java.dev.jna:jna-platform:5.3.0") {
+        exclude group: "com.sun.jna", module: "jna"
+    }
     implementation("org.apache.poi:poi:4.0.1")
     implementation("org.apache.commons:commons-collections4:4.3")
     implementation("org.apache.httpcomponents:httpmime:4.5.7")
