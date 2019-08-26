@@ -127,7 +127,7 @@ class DistributePlugin implements Plugin<Project> {
             imageJ.contents.with(configSpec)
 
             CopySpec libChildSpec = createLibSpec(null)
-            
+
             CopySpec mainSpec = project.copySpec()
             mainSpec.into("")
             mainSpec.from(project.tasks.named(InsightBasePlugin.TASK_OMERO_IMAGEJ_JAR))
@@ -151,7 +151,7 @@ class DistributePlugin implements Plugin<Project> {
     private CopySpec createLibSpec(TaskProvider<? extends Task> jarTask) {
         CopySpec libSpec = project.copySpec()
         libSpec.into("lib")
-        if (jarTask != null)  {
+        if (jarTask != null) {
             libSpec.from(jarTask)
         }
         libSpec.from(Utils.getRuntimeClasspathConfiguration(project))

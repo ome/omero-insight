@@ -68,6 +68,7 @@ class InsightBasePlugin implements Plugin<Project> {
      */
     private void configureJarTask() {
         project.tasks.named(JavaPlugin.JAR_TASK_NAME, Jar).configure { Jar jar ->
+
             jar.doFirst(addManifest(MAIN_INSIGHT))
         }
     }
@@ -105,6 +106,8 @@ class InsightBasePlugin implements Plugin<Project> {
             void execute(Jar jar) {
                 // This might not be the best way to ensure a parity of names
                 Jar jarTask = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
+
+                // Rename omero-insight to omero_ij
                 String imageJName = jarTask.archiveBaseName.get().replace("insight", "ij")
                 imageJName = imageJName.replace("-", "_")
 
@@ -113,28 +116,28 @@ class InsightBasePlugin implements Plugin<Project> {
                 jar.dependsOn(project.tasks.getByName(JavaPlugin.CLASSES_TASK_NAME))
                 jar.from(main.output)
                 jar.archiveBaseName.set(imageJName)
-                jar.doFirst(addManifest(MAIN_IMAGEJ))
+                jar.doFirst(addManifest(MAIN_IMAGEJ, "lib"))
             }
         })
     }
 
-    private Action<? extends Task> addManifest(String mainClass) {
+    private Action<? extends Task> addManifest(String mainClass, String classPathDir = "") {
         return new Action<Jar>() {
             @Override
             void execute(Jar jar) {
-                jar.manifest.attributes(createBasicManifest(mainClass))
+                jar.manifest.attributes(createBasicManifest(mainClass, classPathDir))
             }
         }
     }
 
-    private Map<String, ?> createBasicManifest(String mainClass) {
+    private Map<String, ?> createBasicManifest(String mainClass, String classPathDir) {
         return ["Implementation-Title"  : project.name.replace("[^A-Za-z0-9]", ""),
                 "Implementation-Version": project.version,
                 "Built-Date"            : new SimpleDateFormat("dd/MM/yyyy").format(new Date()),
                 "Built-JDK"             : System.getProperty("java.version"),
                 "Built-Gradle"          : project.gradle.gradleVersion,
                 "Main-Class"            : mainClass,
-                "Class-Path"            : Utils.getRuntimeClasspathConfiguration(project).collect { it.name }.join(" ")]
+                "Class-Path"            : Utils.createClassPath(project, classPathDir)]
     }
 
 }
