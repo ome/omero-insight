@@ -45,7 +45,7 @@ class InsightBasePlugin implements Plugin<Project> {
 
     public static final String TASK_OMERO_IMAGEJ_JAR = "imageJJar"
 
-    public static final String TASK_OMERO_IMAGEJ_FAT_JAR = "imageJFatJar"
+    public static final String TASK_OMERO_IMAGEJ_FAT_JAR = TASK_OMERO_IMAGEJ_JAR//"imageJFatJar"
 
     public static final String MAIN_INSIGHT = "org.openmicroscopy.shoola.Main"
 
@@ -66,7 +66,7 @@ class InsightBasePlugin implements Plugin<Project> {
 
         configureJarTask()
         addProcessConfigs()
-        addCreateImageJJar()
+        //addCreateImageJJar()
         addCreateImageJFatJar()
     }
 
@@ -136,7 +136,7 @@ class InsightBasePlugin implements Plugin<Project> {
                 // Rename omero-insight to omero_ij
                 Jar jarTask = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
 
-                shadow.archiveBaseName.set(createImageJName(jarTask, "fiji"))
+                shadow.archiveBaseName.set(createImageJName(jarTask, "ij"))
                 shadow.archiveClassifier.set("all")
                 shadow.description = "Create a combined JAR of project and runtime dependencies"
                 shadow.conventionMapping.with {

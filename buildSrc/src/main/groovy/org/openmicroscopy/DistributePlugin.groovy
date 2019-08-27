@@ -43,13 +43,13 @@ class DistributePlugin implements Plugin<Project> {
 
     public static final String DISTRIBUTION_NAME_IMAGEJ = "OMERO.imagej"
 
-    public static final String DISTRIBUTION_NAME_FIJI = "OMERO.fiji"
+    public static final String DISTRIBUTION_NAME_FIJI = DISTRIBUTION_NAME_IMAGEJ//"OMERO.fiji"
 
     public static final String DISTRIBUTION_IMPORTER = "importer"
 
     public static final String DISTRIBUTION_IMAGEJ = "imagej"
 
-    public static final String DISTRIBUTION_FIJI = "fiji"
+    public static final String DISTRIBUTION_FIJI = DISTRIBUTION_IMAGEJ//"fiji"
 
     public static final String TASK_IMPORTER_START_SCRIPTS = "importerStartScripts"
 
@@ -75,7 +75,7 @@ class DistributePlugin implements Plugin<Project> {
 
         configureMainDistribution(distributionContainer, configSpec)
         createImporterDistribution(distributionContainer, configSpec)
-        createImageJPluginDistribution(distributionContainer, configSpec)
+        //createImageJPluginDistribution(distributionContainer, configSpec)
         createImageJFatJarPluginDistribution(distributionContainer, configSpec)
 
         // Skip tar tasks
