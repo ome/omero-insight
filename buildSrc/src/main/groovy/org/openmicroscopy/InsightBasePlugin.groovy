@@ -123,7 +123,7 @@ class InsightBasePlugin implements Plugin<Project> {
             }
         })
     }
-    
+
     private TaskProvider<ShadowJar> addCreateImageJFatJar() {
         JavaPluginConvention convention = project.convention.getPlugin(JavaPluginConvention)
 
@@ -180,7 +180,7 @@ class InsightBasePlugin implements Plugin<Project> {
         }
     }
 
-    private Action<? extends Task> addManifest(String mainClass) {
+    private Action<? extends Task> addManifest(String mainClass, String classPathDir = "") {
 
         return new Action<Jar>() {
             @Override
