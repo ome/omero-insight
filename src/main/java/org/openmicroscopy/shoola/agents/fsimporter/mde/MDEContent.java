@@ -66,7 +66,6 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	public MDEContent(OME ome, DefaultMutableTreeNode root,ModuleController controller,ActionListener listener) {
 		super(new BorderLayout());
 		
-		System.out.println("-- create Content from file [MDEContent]");
 		this.controller = controller;
 //		controller.printObjects();
 		moduleTree =new DynamicModuleTree(initTree(ome, root),listener);
@@ -96,7 +95,6 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	 */
 	public MDEContent(DefaultMutableTreeNode root, ModuleController controller,boolean isDir,ModuleList instrumentList,ActionListener listener) {
 		super(new BorderLayout());
-		System.out.println("-- create Content from given tree [MDEContent]");
 		this.controller = controller;
 //		controller.printObjects();
 		this.fileInstrumentValues=instrumentList;
@@ -127,15 +125,12 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	 */
 	private void selectModuleAction(DefaultMutableTreeNode object) {
 		if(object!=null) {
-			System.out.println("-- select module: "+object.getUserObject().toString()+", childs: "+object.getChildCount());
-			System.out.println("CALL selectModuleAction::showModuleContent");
 			showModuleContent(object);
 		}
 	}
 	
 	
 	private void showModuleContent(DefaultMutableTreeNode object) {
-//		System.out.println("CALL showModuleContent");
 		//remove former content
 		moduleContentPanel.removeAll();
 		moduleContentPanel.add(new ModuleContentGUI(object,hardwareTables),BorderLayout.CENTER);
@@ -153,11 +148,9 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		if(selectedNode == null )
 			return;
 		try {
-			System.out.println("-- module tree selection event at "+selectedNode.getPath().toString());
-//			ModuleTreeElement object=(ModuleTreeElement) selectedNode.getUserObject();
 			selectModuleAction(selectedNode);
 		}catch(Exception ex) {
-			System.out.println("Select root node?");
+			System.out.println("-- ERROR: module tree selection event: select root node?");
 		}
 		
 	}
@@ -180,13 +173,12 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	 */
 	private DefaultMutableTreeNode initTree(OME ome,DefaultMutableTreeNode root) {
 		if(ome ==null ) {
-			System.out.println("-- ome is null - load empty standard ome tree"); 
+			// nothing to load
 			return controller.getTree();
 		}
 		
-		
 		if(root==null) {
-			System.out.println("-- init content from file: use defaultTree ");
+			// use defaultTree
 			root=controller.getTree();//new DefaultMutableTreeNode(new ModuleTreeElement(null,null));
 		}
 		for(int i=0; i<ome.sizeOfImageList() ;i++) {
@@ -216,11 +208,11 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	
 	public DefaultMutableTreeNode addContent(ModuleContent c, int index, DefaultMutableTreeNode parent) {
 		if(parent==null) {
-			System.out.println("ERROR: parent is null [MDEContent::addContent]");
+			System.out.println("-- ERROR: tree is null [MDEContent::addContent]");
 			return null;
 		}
 		if(c==null) {
-			System.out.println("ERROR: content is null [MDEContent::addContent]");
+			System.out.println("-- WARNING: content is null [MDEContent::addContent]");
 			return null;
 		}
 		List<DefaultMutableTreeNode> childs=MDEHelper.getListOfChilds(c.getType(), parent);
@@ -237,7 +229,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 			ModuleContent newC=MDEHelper.completeData(((ModuleTreeElement) node.getUserObject()).getData(), c);
 			((ModuleTreeElement)node.getUserObject()).setData(newC);
 		}else {
-			System.out.println("ERROR: Can't find child nodes of given type "+c.getType()+" at "+parent.getUserObject().toString());
+			System.out.println("-- WARNING: Can't find child nodes of given type "+c.getType()+" at "+parent.getUserObject().toString());
 		}
 		return node;
 	}
@@ -252,14 +244,15 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	private DefaultMutableTreeNode initImageContent(DefaultMutableTreeNode tree, OME ome, int i)
 	{
 		if(ome.getImage(i)==null) {
-			System.out.println("-- image content is empty");
+			System.out.println("-- WARNING: image content is empty [MDEContent::initImageContent]");
 			return tree;
 		}
 		if(tree==null) {
-			System.out.println("ERROR: no tree is given");
+			System.out.println("-- ERROR: no tree is given [MDEContent::initImageContent]");
+			return null;
 		}
 		
-		System.out.println("--Read file content index: "+i+" [MDEContent::initImageContent]");
+		System.out.println("-- Read file content index: "+i+" [MDEContent::initImageContent]");
 		List<Objective> objList=null;
 		List<Detector> detectorList=null;
 		List<LightSource> lightSourceList=null;
@@ -274,7 +267,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		//read out list of instruments
 		Instrument instruments=imgObj.getLinkedInstrument();
 		if(instruments==null) {
-			System.out.println("-- CAN'T FIND INSTRUMENTS");
+			System.out.println("-- no instruments are defined for image [MDEContent::initImageContent]");
 		}else {
 			objList=instruments.copyObjectiveList();
 			detectorList=instruments.copyDetectorList();
@@ -300,7 +293,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		}
 		
 		DefaultMutableTreeNode currentNode=null;
-		System.out.println("-- add image content to "+tree.getUserObject().toString());
+		// add image content to tree
 		currentNode =addContent(createContent(TagNames.OME_ELEM_IMAGE,(new ImageConverter()).convertData(imgObj)),i,tree);
 		
 		// load objective and objective settings annotations
@@ -353,9 +346,9 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 			
 			if(lp!=null) {
 				DefaultMutableTreeNode lpNode = addContent(controller.getContentOfType(TagNames.OME_ELEM_LIGHTPATH),0,chNode);
-				System.out.println("-- add lightPath");
+				// add LightPath
 				if(lp.sizeOfLinkedExcitationFilterList() >0) {
-					System.out.println("-- add excitation filter : "+lp.sizeOfLinkedExcitationFilterList());
+					// add excitation filter
 					createNode(TagNames.OME_ELEM_LIGHTPATH_EX,lp.copyLinkedExcitationFilterList(),filterList,lpNode);
 				}
 				Dichroic dich=lp.getLinkedDichroic();
@@ -363,7 +356,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 					addContent(createContent(TagNames.OME_ELEM_DICHROIC,(new DichroicConverter()).convertData(dich)),0,lpNode);
 				}
 				if(lp.sizeOfLinkedEmissionFilterList() >0) {
-					System.out.println("-- add emission filter : "+lp.sizeOfLinkedEmissionFilterList());
+					// add emission filter
 					createNode(TagNames.OME_ELEM_LIGHTPATH_EX,lp.copyLinkedEmissionFilterList(),filterList,lpNode);
 				}
 				
@@ -393,188 +386,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		return tree;
 	}
 	
-//	/**
-//	 * Read out file metadata
-//	 * @param tree
-//	 * @param ome
-//	 * @param i
-//	 * @return
-//	 */
-//	private DefaultMutableTreeNode initImageContent(DefaultMutableTreeNode tree, OME ome, int i)
-//	{
-//		if(ome.getImage(i)==null) {
-//			System.out.println("-- image content is empty");
-//			return tree;
-//		}
-//		DefaultMutableTreeNode template=controller.getTree();
-//		
-//		System.out.println("--Read file content [ModuleController::initImageContent]");
-//		List<Objective> objList=null;
-//		List<Detector> detectorList=null;
-//		List<LightSource> lightSourceList=null;
-//		List<Filter> filterList=null;
-//		List<Dichroic> dichList=null;
-//		List<Channel> chList=null;
-//		List<FilterSet> filtersetList=null;
-//		
-//		// convert ome annotation data to mdemodel data
-//		Image imgObj=ome.getImage(i);
-//		
-//		//read out list of instruments
-//		Instrument instruments=imgObj.getLinkedInstrument();
-//		if(instruments==null) {
-//			System.out.println("-- CAN'T FIND INSTRUMENTS");
-//		}else {
-//			objList=instruments.copyObjectiveList();
-//			detectorList=instruments.copyDetectorList();
-//			lightSourceList=instruments.copyLightSourceList();
-//			filterList=instruments.copyFilterList();
-//			dichList=instruments.copyDichroicList();
-////			filtersetList=instruments.getFilterSetList();
-//			
-//			// save instrument lists to listOfDefaultValues
-//			System.out.println("-- read out instruments to default values [MDEController]");
-//			ModuleList hardwareList=new ModuleList();
-//			hardwareList.put(TagNames.OME_ELEM_OBJECTIVE, MDEParser.parseObjectiveList(objList,controller));
-//			hardwareList.put(TagNames.OME_ELEM_DETECTOR, MDEParser.parseDetectorList(detectorList,controller));
-//			hardwareList.put(TagNames.OME_ELEM_LIGHTSOURCE, MDEParser.parseLightSourceList(lightSourceList,controller));
-//			hardwareList.put(TagNames.OME_ELEM_FILTER, MDEParser.parseFilterList(filterList,controller));
-//			hardwareList.put(TagNames.OME_ELEM_DICHROIC, MDEParser.parseDichroicList(dichList,controller));
-//			//TODO save local to this MDEContent
-//			controller.setDefaultValues(hardwareList);
-//		}
-//		
-//		String thisType = TagNames.OME_ELEM_IMAGE;
-//		ModuleContent content = controller.getContent(thisType);
-//		if(content !=null)
-//			content.setAttributes((new ImageConverter()).convertData(imgObj));
-//		
-//		ModuleTreeElement img = new ModuleTreeElement(thisType,imgObj.getName(),imgObj.getID(),content,tree);
-//		DefaultMutableTreeNode imgNode=new DefaultMutableTreeNode(img);
-//		
-//		// load objective and objective settings annotations
-//		ObjectiveSettings os = imgObj.getObjectiveSettings();
-//		String id=os==null?"":os.getID();
-//		Objective o= getElementByID(objList, id);
-//		String oName=o!=null? o.getModel():null;
-//		
-//		thisType = TagNames.OME_ELEM_OBJECTIVE;
-//		content = controller.getContent(thisType);
-//		if(content !=null)
-//			content.setAttributes((new ObjectiveConverter()).convertData(o,os));
-//		ModuleTreeElement obj = new ModuleTreeElement(thisType,oName,id,content,imgNode);
-//		
-//		
-//		imgNode.add(new DefaultMutableTreeNode(obj));
-//		
-//		thisType = TagNames.OME_ELEM_IMGENV;
-//		content = controller.getContent(thisType);
-//		if(content !=null)
-//			content.setAttributes((new ImagingEnvConverter()).convertData(null));
-//		ModuleTreeElement imgEnv = new ModuleTreeElement(thisType,"","",content,imgNode);
-//		imgNode.add(new DefaultMutableTreeNode(imgEnv));
-//		
-//		//load channel data
-//		for(ome.xml.model.Channel c: imgObj.getPixels().copyChannelList()){
-//			thisType = TagNames.OME_ELEM_CHANNEL;
-//			content = controller.getContent(thisType);
-//			if(content !=null)
-//				content.setAttributes((new ChannelConverter()).convertData(new Channel(c)));
-//			ModuleTreeElement channel = new ModuleTreeElement(thisType,c.getName(),c.getID(),content,imgNode);
-//			DefaultMutableTreeNode channelNode = new DefaultMutableTreeNode(channel);
-//			
-//			// load detector and detectorsettings annotations
-//			ome.xml.model.DetectorSettings ds = c.getDetectorSettings();
-//			String idDs=ds==null?"":ds.getID();
-//			Detector d=getElementByID(detectorList,idDs);
-//			DetectorSettings dsNew = (ds==null?null:new DetectorSettings(ds));
-//			String dName=d!=null?d.getModel():null;
-//			thisType = TagNames.OME_ELEM_DETECTOR;
-//			content = controller.getContent(thisType);
-//			if(content !=null)
-//				content.setAttributes((new DetectorConverter()).convertData(d, dsNew));
-//			ModuleTreeElement detector = new ModuleTreeElement(thisType,dName,idDs,	content,channelNode);
-//			
-//			channelNode.add(new DefaultMutableTreeNode(detector));
-//			
-//			//load lightSource and lightsourcesettings annotations
-//			LightSourceSettings ls =c.getLightSourceSettings();
-//			String idLs=ls==null?"":ls.getID();
-//			LightSource l=getElementByID(lightSourceList, idLs);
-//			String lSrcName=l!=null?l.getModel():null;
-//			thisType = TagNames.OME_ELEM_LIGHTSOURCE;
-//			content = controller.getContent(thisType);
-//			if(content !=null)
-//				content.setAttributes((new LightSourceConverter()).convertData(l, ls));
-//			ModuleTreeElement lSrc = new ModuleTreeElement(thisType,lSrcName,idLs,content,channelNode);
-//			
-//			channelNode.add(new DefaultMutableTreeNode(lSrc));
-//			
-//			LightPath lp=c.getLightPath();
-//			FilterSet fs=c.getLinkedFilterSet();
-//			
-//			if(lp!=null) {
-//				DefaultMutableTreeNode lightPathNode =new DefaultMutableTreeNode(
-//						new ModuleTreeElement(controller.getContent(TagNames.OME_ELEM_LIGHTPATH),channelNode));
-//				System.out.println("-- add lightPath");
-//				if(lp.sizeOfLinkedExcitationFilterList() >0) {
-//					System.out.println("-- add excitation filter : "+lp.sizeOfLinkedExcitationFilterList());
-//					lightPathNode.add(createNode(TagNames.OME_ELEM_LIGHTPATH_EX,lp.copyLinkedExcitationFilterList(),filterList,lightPathNode));
-//				}
-//				Dichroic dich=lp.getLinkedDichroic();
-//				if(dich!=null) {
-//					thisType = TagNames.OME_ELEM_DICHROIC;
-//					content = controller.getContent(thisType);
-//					if(content !=null)
-//						content.setAttributes((new DichroicConverter()).convertData(dich));
-//					ModuleTreeElement dichElem = new ModuleTreeElement(thisType,dich.getModel(),dich.getID(),content,lightPathNode);
-//
-//					lightPathNode.add(new DefaultMutableTreeNode(dichElem));
-//				}
-//				if(lp.sizeOfLinkedEmissionFilterList() >0) {
-//					System.out.println("-- add emission filter : "+lp.sizeOfLinkedEmissionFilterList());
-//					lightPathNode.add(createNode(TagNames.OME_ELEM_LIGHTPATH_EX,lp.copyLinkedEmissionFilterList(),filterList,lightPathNode));
-//				}
-//				channelNode.add(lightPathNode);
-//			}
-//			
-//			if(fs!=null) {
-//				//TODO container or not?
-//				thisType = TagNames.OME_ELEM_LIGHTPATH_FS;
-//				content = controller.getContent(thisType);
-//				if(content !=null)
-//					content.setAttributes((new FilterSetConverter()).convertData(fs));
-//				ModuleTreeElement fsElem = new ModuleTreeElement(thisType, fs.getModel(), fs.getID(),content,channelNode);
-//				DefaultMutableTreeNode filterSetNode =new DefaultMutableTreeNode(fsElem);
-//				
-//				List<Filter> fs_exc=fs.copyLinkedExcitationFilterList();
-//				List<Filter> fs_em=fs.copyLinkedEmissionFilterList();
-//				
-//				if(fs_exc!=null && fs_exc.size() >0) {
-//					filterSetNode.add(createNode(TagNames.OME_ELEM_LIGHTPATH_EX,fs_exc,filterList,filterSetNode));
-//				}
-//				Dichroic dich=fs.getLinkedDichroic();
-//				if(dich!=null) {
-//					thisType = TagNames.OME_ELEM_DICHROIC;
-//					content = controller.getContent(thisType);
-//					if(content !=null)
-//						content.setAttributes((new DichroicConverter()).convertData(dich));
-//					ModuleTreeElement dichElem = new ModuleTreeElement(thisType,dich.getModel(),dich.getID(),content,filterSetNode);
-//
-//					filterSetNode.add(new DefaultMutableTreeNode(dichElem));
-//				}
-//				if(fs_em!=null && fs_em.size() >0) {
-//					filterSetNode.add(createNode(TagNames.OME_ELEM_LIGHTPATH_EM,fs_em,filterList,filterSetNode));
-//				}
-//				channelNode.add(filterSetNode);
-//			}
-//			
-//			imgNode.add(channelNode);
-//		}
-//		
-//		tree.add(imgNode);
-//		return tree;
-//	}
+
 	
 	private <T extends ManufacturerSpec> T getElementByID(List<T> list,String id)
 	{
@@ -633,17 +445,14 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	
 	
 	private void createInstrumentTables(ModuleList fileInstruments) {
-		System.out.println("-- create Instrument tables");
+		
 		if(hardwareTables==null)
 			hardwareTables=new LinkedHashMap<>();
 		else
 			hardwareTables.clear();
 		
 		if(fileInstruments!=null) {
-//			fileInstruments.print("---------------------FILE INSTRUMENTS:");
-			System.out.println("-- Add file instruments");
-//			if(controller.getInstrumentsForCurrentMic()!=null)
-//				controller.getInstrumentsForCurrentMic().print("--------------CONF INSTRUMENTS:");
+			System.out.println("-- create tables with predifined objects in image container and mde configuration file");
 			for (Entry<String, List<ModuleContent>> entry : fileInstruments.entrySet()) {
 				String key = entry.getKey();
 				List<ModuleContent> hardware=new ArrayList<>();
@@ -651,11 +460,8 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 				List<ModuleContent> values = controller.getInstrumentsOfType(key); 
 				ObjectTable objTable=null;
 				if(valFile!=null) {
-//					System.out.println("-- add FILE instruments "+key+" : "+valFile.size()+" [MDEContent]");
 					hardware.addAll(valFile);
 					if(values!=null) {
-						System.out.println("-- Add define instruments");
-//						System.out.println("-- add CONF instruments "+key+" : "+values.size()+" [MDEContent]");
 						//merge fileInstruments and hardware stations
 						hardware.addAll(values);
 					}
@@ -667,14 +473,13 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 				hardwareTables.put(key,objTable );
 			}
 		}else {
-			System.out.println("-- Add define instruments");
+			System.out.println("-- create tables with predifined objects of mde configuration file ( no predefinitions from image container)");
 			ModuleList mList=controller.getInstrumentsForCurrentMic();
 			if(mList!=null) {
 				for (Entry<String, List<ModuleContent>> entry : mList.entrySet()) {
 					String key = entry.getKey();
 					List<ModuleContent> values = entry.getValue();
 					if(values!=null) {
-						System.out.println("-- add instruments "+key+" : "+values.size()+" [MDEContent]");
 						hardwareTables.put(key, new ObjectTable(values));
 					}
 				}

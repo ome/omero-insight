@@ -435,7 +435,6 @@ public class TagData
 	private JComboBox createUnitCombo() {
 		JComboBox units = new JComboBox<>();
 		if(getUnitType()!=null) {
-//			System.out.println("--Create Unit Combo for "+getUnitType());
 			String[] unitsList=TagNames.getUnitsList(getUnitType());
 
 			if(unitsList!=null) {
@@ -454,7 +453,7 @@ public class TagData
 					}
 				}
 			}else {
-				System.out.println("Unit not available :: "+getUnitType());
+				System.out.println("-- WARNING: Unit not available :: "+getUnitType()+" for tag "+getTagName());
 			}
 		}
 		return units;
@@ -519,11 +518,11 @@ public class TagData
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-//				System.out.println("-- KEY TYPED "+e.getSource().getClass().getName());
+//				MonitorAndDebug.printConsole("-- KEY TYPED "+e.getSource().getClass().getName());
 			}
 			@Override
 			public void keyReleased(KeyEvent e) {
-//				System.out.println("-- KEY RELEASED "+e.getSource().getClass().getName());
+//				MonitorAndDebug.printConsole("-- KEY RELEASED "+e.getSource().getClass().getName());
 				try {
 					saveTagValue((JComponent) e.getSource());
 				}catch(Exception ex) {
@@ -534,7 +533,7 @@ public class TagData
 			}
 			@Override
 			public void keyPressed(KeyEvent e) {
-//				System.out.println("-- KEY PRESSED "+e.getSource().getClass().getName());
+//				MonitorAndDebug.printConsole("-- KEY PRESSED "+e.getSource().getClass().getName());
 				// TODO Auto-generated method stub
 			}
 		};
@@ -668,7 +667,7 @@ public class TagData
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (actionListenerActiv){
-					System.out.println("-- ACTION PERFORMED "+e.getSource().getClass().getName());
+//					MonitorAndDebug.printConsole("-- ACTION PERFORMED "+e.getSource().getClass().getName());
 					valChanged=true;
 //					saveTagValue((JComponent) e.getSource());
 					valSaved=false;
@@ -1052,7 +1051,7 @@ public class TagData
 			if(value==null)
 				value=new String[index+1];
 			if(value.length<=index) {
-				System.out.println("ERROR add arraystring \t[TagData::setTagValue]");
+				System.out.println("-- WARNING: can't set value for "+getTagName()+" [TagData::setTagValue]");
 			}
 			value[index]=val;
 			break;
@@ -1106,8 +1105,8 @@ public class TagData
 					for(String s: DATE_FORMATS_TAGS){
 						formats=formats+s+"\n";
 					}
-					LOGGER.warn("unknown creation date format: {}", creationDate);
-					MonitorAndDebug.printConsole("unknown creation date format: "+ creationDate);
+					LOGGER.warn("[MDE] unknown creation date format: {}", creationDate);
+					System.out.println("-- WARNING: unknown creation date format: "+ creationDate);
 //					WarningDialog ld = new WarningDialog("Unknown Timestamp Format!", 
 //							"Can't parse given timestamp ["+name+": "+creationDate+"] ! Please use one of the following date formats:\n"+formats,
 //							this.getClass().getSimpleName());
@@ -1117,9 +1116,8 @@ public class TagData
 			
 			val=date;//DateTools.formatDate(((JTextField)inputField).getText(), DateTools.TIMESTAMP_FORMAT);
 		}catch(Exception e){
-			LOGGER.warn("unknown creation date format: {}", creationDate);
-			MonitorAndDebug.printConsole("unknown creation date format: "+ creationDate);
-//			LOGGER.error("Wrong string input format timestamp: "+name+": "+creationDate);
+			LOGGER.warn("[MDE] unknown creation date format: {}", creationDate);
+			System.out.println("-- WARNING: unknown creation date format: "+ creationDate);
 //			ExceptionDialog ld = new ExceptionDialog("Timestamp Format Error!", 
 //					"Wrong timestamp format at input at "+name,e,
 //					this.getClass().getSimpleName());
@@ -1142,8 +1140,8 @@ public class TagData
 	            return DATE_FORMAT_REGEXPS.get(regexp);
 	        }
 	    }
-	    LOGGER.warn("Can't parse date: "+dateString+". Unknown date format!");
-	   System.out.println("Can't parse date: "+dateString+". Unknown date format!");
+	    LOGGER.warn("[MDE] Can't parse date: "+dateString+". Unknown date format!");
+	   System.out.println("-- WARNING: Can't parse date: "+dateString+". Unknown date format!");
 	    return null; // Unknown format.
 	}
 	
@@ -1168,7 +1166,7 @@ public class TagData
 
 		} catch (ParseException | NullPointerException e1) {
 			// TODO Auto-generated catch block
-			LOGGER.error("Parse error date for format "+dateformat+"\n"+e1.toString());
+			LOGGER.error("[MDE] Parse error for date format "+dateformat+"\n"+e1.toString());
 			return null;
 		}
 	}
@@ -1193,7 +1191,7 @@ public class TagData
 				d=df.parse(s);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
-				LOGGER.error("Parse error date for format "+dateformat);
+				LOGGER.error("[MDE] Parse error for date format "+dateformat);
 				setTagInfoError(val+". Invalid Date Format!");
 				((JTextField) inputField).setText("");
 				e1.printStackTrace();
@@ -1204,7 +1202,7 @@ public class TagData
 				SimpleDateFormat f=new SimpleDateFormat(DateTools.TIMESTAMP_FORMAT);
 				((JTextField) inputField).setText( f.format(d));
 			} catch (Exception e) {
-				LOGGER.error("Parse error for timestamp");
+				LOGGER.error("[MDE] Parse error for timestamp");
 				((JTextField) inputField).setText("");
 				setTagInfoError(val+". Invalid Date Format!");
 				e.printStackTrace();
@@ -1394,7 +1392,6 @@ public class TagData
 			FocusListener flTextField=new FocusListener() {
 				@Override
 				public void focusLost(FocusEvent e) {
-					System.out.println("-- Call TextField focus listener");
 					try {
 						saveTagValue(getValuesAsArray());
 					}catch(Exception ex) {
@@ -1413,7 +1410,6 @@ public class TagData
 				}
 				@Override
 				public void keyReleased(KeyEvent e) {
-					System.out.println("-- KEY RELEASED "+e.getSource().getClass().getName());
 					try {
 						saveTagValue(getValuesAsArray());
 					}catch(Exception ex) {

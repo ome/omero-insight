@@ -101,10 +101,6 @@ public class CommonViewer extends JPanel{
 			buildGUI();
 		}else {
 			add(new JLabel("Container"));
-//			if(content!=null) {
-//				System.out.println("ERROR:: Empty tagList [CommonViewer] !!!! "+content.getType());
-//			}else
-//				System.out.println("ERROR:: Empty Content [CommonViewer] !!!!");
 		}
 	}
 	

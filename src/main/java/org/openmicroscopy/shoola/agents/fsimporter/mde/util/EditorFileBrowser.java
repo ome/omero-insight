@@ -66,9 +66,6 @@ public class EditorFileBrowser extends JTree
 				else if(f.getParent() instanceof ScreenData)
 					name=f.getParent().asScreen().getName().getValue();
 
-				LOGGER.info("BUILD FILE TREE: add "+f.getFile().getAbsolutePath()+
-						"[group: "+f.getGroup().getName()+", project: "+
-						name+"]");
 			}
 			treeModel.reload();
 		}else{
@@ -79,7 +76,6 @@ public class EditorFileBrowser extends JTree
 			String dirName=node.getFile().getName();
 			FNode dirNode=node;
 			if(node!=null && node.isLeaf()){
-				LOGGER.info("[DEBUG] node is Leaf");
 				dirName=node.getFile().getParentFile().getName();
 				dirNode=(FNode) node.getParent();
 			}
@@ -105,7 +101,6 @@ public class EditorFileBrowser extends JTree
 
             dir=new FNode(new File(f.getAbsolutePath()),data,null);
             parent.add(dir);
-            LOGGER.info("[TREE] Append Dir "+f.getAbsolutePath());
             File[] files=(new File(f.getAbsolutePath()).listFiles((java.io.FileFilter)fileFilter));
 
             if(files != null && files.length>0){
@@ -118,10 +113,9 @@ public class EditorFileBrowser extends JTree
         }else{
             try {
                 file=new FNode(new File(f.getAbsolutePath()),data,fileObj);
-                LOGGER.info("[TREE] Append File "+f.getAbsolutePath());
                 parent.add(file);
             } catch (Exception e) {
-                LOGGER.info("[TREE] Wrong import format "+f.getAbsolutePath());
+                LOGGER.info("[MDE] Wrong import format "+f.getAbsolutePath());
             }
         }
     }
@@ -137,18 +131,15 @@ public class EditorFileBrowser extends JTree
     {
         if(node==null || node.getFile()==null){
             node=(FNode)getModel().getRoot();
-            LOGGER.info("[DEBUG] select root as dir");
             ImportableFile f;
             Iterator<ImportableFile> j=files.iterator();
             node.removeAllChildren();
             while (j.hasNext()) {
                 f = j.next();
-                LOGGER.info("[DEBUG] insert only file");
                 // single file in the importQueue, only insert this and their ome file
                 addNode(node,f.getFile(),f);
             }
         }else{
-            LOGGER.info("[DEBUG] update node "+dirName);
             node.removeAllChildren();
             File[] fileList=(new File(node.getFile().getAbsolutePath())).listFiles((java.io.FileFilter)fileFilter);
 

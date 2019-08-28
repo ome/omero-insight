@@ -58,9 +58,6 @@ public class TagDataTableModel extends DefaultTableModel{
 		String type=(String) getValueAt(rowIndex, 6);
 		boolean req=(boolean) getValueAt(rowIndex, 7);
 		
-//		System.out.println("PARSE :: parent= "+this.tableName+"\tname= "+tagname+"\tval= "+value+"\tsymbol= "+unitSymbol+"\tunitClass= "+unitName+"\tvisible= "+visible+
-//				"\tdefVal= "+defVal+"\ttype= "+type+"\trequiered= "+req);
-		
 		TagData t=null;
 		if(value!=null && value.split(",").length>0) {
 			String[] valStrArray=value.split(",");
@@ -68,7 +65,6 @@ public class TagDataTableModel extends DefaultTableModel{
 			if(unitSymbol!=null && !unitSymbol.equals("")) {
 				ome.model.units.Unit[] u=new ome.model.units.Unit[valStrArray.length];
 				for(int i=0; i<valStrArray.length;i++) {
-//					System.out.println("Parse unit for "+this.tableName+"::"+tagname+" class unit: "+unitName);
 					u[i]=getUnit(valStrArray[i], unitSymbol, unitName,tagname,this.tableName);
 				}
 				t=new TagData(this.tableName,tagname, u,TagNames.getUnitClass(unitName), req, type);
@@ -77,7 +73,6 @@ public class TagDataTableModel extends DefaultTableModel{
 			}
 		}else {
 			if(unitSymbol!=null && !unitSymbol.equals("")) {
-//				System.out.println("Parse unit for "+this.tableName+"::"+tagname+" class unit: "+unitName);
 				ome.model.units.Unit u=getUnit(value,unitSymbol, unitName,tagname,this.tableName);
 				t=new TagData(this.tableName,tagname, u,TagNames.getUnitClass(unitName), req, type);
 			}else {
@@ -135,7 +130,7 @@ public class TagDataTableModel extends DefaultTableModel{
 				if(className.equals(ome.model.units.Time.class.getName()))
 					return new ome.model.units.Time(value, ome.model.enums.UnitsTime.bySymbol(unitSymbol));
 			}catch(Exception e) {
-				System.out.println("ERROR: can't parse Unit - value: "+val);
+				System.out.println("--ERROR: can't parse unit value: "+val+"[TagDataTableModel::getUnit]");
 				e.printStackTrace();
 			}
 		}

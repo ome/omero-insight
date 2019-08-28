@@ -54,23 +54,6 @@ public class ModuleContentGUI extends JPanel {
 		this.controller=ModuleController.getInstance();
 		this.hardwareTables=hardwareTables;
 		if(root!=null) {
-//			this.name=root.getUserObject().toString();
-			System.out.println("---------------------------------------------------------------------------");
-//			System.out.println("-- vizualise content: "+root.getUserObject().toString()+"------------------------");
-			PropertyChangeListener listener=new PropertyChangeListener() {
-				@Override
-				public void propertyChange(PropertyChangeEvent e) {
-					System.out.printf("-- Property change: '%s': '%s' -> '%s'%n [ModuleContent]",e.getPropertyName(),e.getOldValue(),e.getNewValue());
-					//TODO: add/remove detector, lightSource, lightPath
-//					if(e.getPropertyName().equals("numberOfChannels") && 
-//							(Integer)e.getOldValue()<(Integer)e.getNewValue())
-//						addModules();
-//					else {
-//						removeModules();
-//					}
-//					paintSubComponents(true);
-				}
-			};
 			JXTaskPaneContainer panel= new JXTaskPaneContainer();
 			panel.setBackground(UIUtilities.BACKGROUND);
 			if (panel.getLayout() instanceof VerticalLayout) {
@@ -82,12 +65,6 @@ public class ModuleContentGUI extends JPanel {
 			addContent(panel,root);
 			add(panel,BorderLayout.CENTER);
 			
-			
-			//		if(controller!=null && content!=null) {
-			//			LinkedHashMap<String, TagData> tagList = content.getList();
-			//availableElems = controller.getDefaultValues(name).addAll(controller.getModules(name))
-
-			//		}
 		}else {
 			add(new JLabel("NO Content"),BorderLayout.CENTER);
 		}
@@ -96,8 +73,7 @@ public class ModuleContentGUI extends JPanel {
 	
 	private void addContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
 		if(node.getChildCount()>0) {
-//			System.out.println("-- vizualise content: "+node.getUserObject().toString());
-//			System.out.println("\t vizualise content of childs of "+node.getUserObject().toString()+"...");
+//			MonitorAndDebug.printConsole("-- vizualise content: "+node.getUserObject().toString());
 			JXTaskPaneContainer nodeContent = new JXTaskPaneContainer();
 			nodeContent.setBackground(UIUtilities.BACKGROUND);
 			if (nodeContent.getLayout() instanceof VerticalLayout) {
@@ -109,16 +85,13 @@ public class ModuleContentGUI extends JPanel {
 			try {
 				JXTaskPane taskPane=new ContentViewer(node.getUserObject().toString(), 
 						getHardwareTable(((ModuleTreeElement) node.getUserObject()).getType()), ((ModuleTreeElement)node.getUserObject()).getData());
-				//			pane.addPropertyChangeListener(listener);
 				for(int i = 0 ; i < node.getChildCount(); i++) {
 					addContent(nodeContent,(DefaultMutableTreeNode)node.getChildAt(i));
 				}
-				//						System.out.println("\t ... vizualise content of childs of "+node.getUserObject().toString());
 				taskPane.add(nodeContent);
-				//						((JComponent) taskPane.getContentPane()).setBorder(BorderFactory.createEmptyBorder(0,1,0,0));
 				parent.add(taskPane);
 			}catch(Exception e) {
-				MonitorAndDebug.printConsole("ERROR: can't load content of "+node.getUserObject().toString());
+				System.out.println("-- ERROR: can't load content of "+node.getUserObject().toString());
 				e.printStackTrace();
 			}
 			
@@ -128,7 +101,7 @@ public class ModuleContentGUI extends JPanel {
 	}
 	
 	private void addLeafContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
-//		System.out.println("-- vizualise leaf content: "+node.getUserObject().toString());
+//		MonitorAndDebug.printConsole("-- vizualise leaf content: "+node.getUserObject().toString());
 
 		ModuleContent content=((ModuleTreeElement)node.getUserObject()).getData();
 
@@ -136,14 +109,13 @@ public class ModuleContentGUI extends JPanel {
 			try {
 				JXTaskPane taskPane=new ContentViewer(node.getUserObject().toString(), 
 						getHardwareTable(((ModuleTreeElement) node.getUserObject()).getType()), content);
-				//			pane.addPropertyChangeListener(listener);
 				parent.add(taskPane);
 			}catch(Exception e) {
-				MonitorAndDebug.printConsole("ERROR: can't load content of "+node.getUserObject().toString());
+				System.out.println("-- ERROR: can't load content of "+node.getUserObject().toString());
 				e.printStackTrace();
 			}
 		}else {
-			System.out.println("\t content is empty [addLeafContent]");
+			System.out.println("-- WARNING: content of node "+node.getUserObject().toString()+" is empty [ModuleContentGUI::addLeafContent]");
 		}
 	}
 	

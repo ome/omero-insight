@@ -81,7 +81,8 @@ public class ExperimentConverter extends DataConverter{
 		try{
 			t=ExperimentType.fromString(value);
 		}catch(EnumerationException e){
-			LOGGER.warn("ExperimentType: "+value+"is not supported");
+			LOGGER.warn("[MDE] ExperimentType: "+value+"is not supported");
+			System.out.println("-- WARNING: ExperimentType: "+value+"is not supported");
 		}
 		return t;
 	}

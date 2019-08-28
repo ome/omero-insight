@@ -38,6 +38,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleControll
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DichroicConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
+import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * TODO: define in config if tree is editable or not
@@ -85,11 +86,6 @@ public class ModuleTree extends JPanel implements ActionListener{
 			root= new DefaultMutableTreeNode(new ModuleTreeElement(null, null));//new DefaultMutableTreeNode("Modules:");
 			root.add(elem);
 		}
-//		treeModel = new DefaultTreeModel(root);
-//		treeModel.addTreeModelListener(new ModuleTreeListener());
-//		visualizeNodes(root,elem);
-		
-//		tree=new JTree(treeModel);
 		tree = new JTree(root);
 		treeModel=(DefaultTreeModel) tree.getModel();
 		treeModel.addTreeModelListener(new ModuleTreeListener());
@@ -127,22 +123,15 @@ public class ModuleTree extends JPanel implements ActionListener{
 		edit_paste.setActionCommand(POPUP_PASTE);
 		edit_paste.addActionListener(this);
 		
-//		JMenuItem edit_cut = new JMenuItem("Cut");
-//		edit_cut.setActionCommand(POPUP_CUT);
-//		edit_cut.addActionListener(this);
-		
 		JMenuItem edit_delete = new JMenuItem("Delete");
 		edit_delete.setActionCommand(POPUP_DEL);
 		edit_delete.addActionListener(l);
 		
 		edit.add(edit_copy);
 		edit.add(edit_paste);
-//		edit.add(edit_cut);
 		edit.add(edit_delete);
 		
 		insert = new JMenu("Insert Node");
-//		insert.setActionCommand(POPUP_INSERT);
-//		insert.addActionListener(this);
 		insert.addMenuListener(new MenuListener() {
 			@Override
 			public void menuSelected(MenuEvent e) {
@@ -197,17 +186,9 @@ public class ModuleTree extends JPanel implements ActionListener{
 	 */
 	private void visualizeNodes(DefaultMutableTreeNode parent, DefaultMutableTreeNode thisElem) {
 		if(thisElem!=null) {
-			System.out.println("## createNode: "+getName(thisElem));
 			if(parent==null) {
 				parent = root;
 			}
-//			List<ModuleTreeElement> childs = elem.getChilds();
-//			if(childs!=null) {
-//				for(ModuleTreeElement c: childs) {
-//					visualizeNodes(thisElem,c);
-//				}
-//			}
-			//parent.add(thisElem);
 			treeModel.insertNodeInto(thisElem, parent, parent.getChildCount());
 
 			//make sure the tree is visible in the panel on this path
@@ -226,12 +207,9 @@ public class ModuleTree extends JPanel implements ActionListener{
 			parent = root;
 		}
 		if(thisElem!=null) {
-			System.out.println("-- addNode: "+getName(thisElem) + " at "+parent.getUserObject().toString());
+//			MonitorAndDebug.printConsole("-- addNode: "+getName(thisElem) + " at "+parent.getUserObject().toString());
 			this.changeTreeStructure=true;
 			((ModuleTreeElement)thisElem.getUserObject()).setChildIndex(parent);
-			
-			System.out.println("\t => Node = "+getName(thisElem));
-//			elem.setData(controller.getContent(elem.getType()));
 			
 			//visualize node in jtree
 			treeModel.insertNodeInto(thisElem, parent, parent.getChildCount());
@@ -269,21 +247,8 @@ public class ModuleTree extends JPanel implements ActionListener{
 	 */
 	public void pasteNode(DefaultMutableTreeNode node) {
 		this.changeTreeStructure=true;
-		System.out.println("-- paste node "+getName(node));
 		DefaultMutableTreeNode cNode=insertNode(node);
-		printTree(root," ");
-//		if(cNode!=null) {
-//			// add children if available (e.g. case: paste node)
-//			List<ModuleTreeElement> childs = newNode.getChilds();
-//			if(childs!=null && !childs.isEmpty()) {
-//				System.out.println("\t add childs of "+newNode.toString()+" ...");
-//				Iterator<ModuleTreeElement> it = childs.iterator();
-//				while(it.hasNext()) {
-//					addNode(cNode,it.next());
-//				}
-//			}
-//			System.out.println("\t ....add childs of "+newNode.toString());
-//		}
+//		printTree(root," ");
 	}
 
 	public DefaultMutableTreeNode insertNode(String type) {
@@ -310,7 +275,6 @@ public class ModuleTree extends JPanel implements ActionListener{
 		this.changeTreeStructure=true;
 		if(node==null)
 			return null;
-		System.out.println("--insert node tree");
 		
 		TreePath parentPath=tree.getSelectionPath();
 		DefaultMutableTreeNode pNode = root;
@@ -319,12 +283,6 @@ public class ModuleTree extends JPanel implements ActionListener{
 		}
 		DefaultMutableTreeNode cNode= addNode(pNode,node);
 		
-//		// add this node as child to parent childlist
-//		try {
-//			((ModuleTreeElement) pNode.getUserObject()).addChild(node);
-//		}catch(Exception ex) {}
-		
-//		controller.getModuleList().print("INSERT:");
 		return cNode;
 	}
 	
@@ -389,7 +347,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 			node=root;
 		
 		try {
-			System.out.println(title+ node.getUserObject().toString());
+			MonitorAndDebug.printConsole(title+ node.getUserObject().toString());
 			for(int i = 0 ; i < node.getChildCount(); i++)
 				printTree((DefaultMutableTreeNode)node.getChildAt(i), title + "  "); 
 		}catch(Exception ex) {
@@ -424,7 +382,6 @@ public class ModuleTree extends JPanel implements ActionListener{
 		}
 		if(POPUP_INSERT_ALL.equals(cmd)) {
 			DefaultMutableTreeNode tree=controller.getTree();
-			System.out.println("-- insert "+tree.getChildCount()+" childs to tree");
 			for(int i=0; i<tree.getChildCount();i++) {
 				insertNode((DefaultMutableTreeNode)tree.getChildAt(i));
 			}
@@ -437,7 +394,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 	public static DefaultMutableTreeNode cloneTreeNode(DefaultMutableTreeNode node) {
 		DefaultMutableTreeNode cloneNode = null;
 		if(node ==null || !(node.getUserObject() instanceof ModuleTreeElement) ) {
-			System.out.println("ERROR clone node "+node.toString());
+			System.out.println("--WARNING: node is null or not a ModuleTreeElement "+node.toString()+"[ModuleTree::cloneTreeNode]");
 		}else {
 			cloneNode=new DefaultMutableTreeNode(new ModuleTreeElement((ModuleTreeElement) node.getUserObject()));
 			for(int i = 0 ; i < node.getChildCount(); i++) {
@@ -476,9 +433,5 @@ public class ModuleTree extends JPanel implements ActionListener{
 	public boolean changeTreeStructure() {
 		return changeTreeStructure;
 	}
-
-
 	
-	
-	//TODO: get tree data
 }

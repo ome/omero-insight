@@ -36,7 +36,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleControll
  * @author Kunis
  *
  */
-public class DynamicModuleTree extends JPanel implements ActionListener{
+public class DynamicModuleTree extends JPanel {
 
 	private static String ADD_NODE_CMD = "add";
 	private static String DELETE_NODE_CMD = "delete";
@@ -45,16 +45,6 @@ public class DynamicModuleTree extends JPanel implements ActionListener{
 	private ModuleTree treePanel;
 	private ModuleController controller;
 	
-	
-//	public DynamicModuleTree(OME ome,ModuleController controller) {
-//		super(new BorderLayout());
-//		this.element=controller.initContent(ome, null);
-//		this.controller=new ModuleController(controller);
-//		treePanel = new ModuleTree(element,this.controller);
-//		
-//		add(treePanel,BorderLayout.CENTER);
-//		add(generateButtonPane(),BorderLayout.SOUTH);
-//	}
 	
 	public DynamicModuleTree(DefaultMutableTreeNode elem,ActionListener listener) {
 		super(new BorderLayout());
@@ -82,21 +72,6 @@ public class DynamicModuleTree extends JPanel implements ActionListener{
 		return btnPanel;
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String cmd = e.getActionCommand();
-		//TODO: action listener should be MetaDataDialog
-//		if(RESET_TREE_CMD.equals(cmd)) {
-//			System.out.println("--Reset tree");
-//			List<String> oldTreePaths=MDEHelper.getAllLeafPaths(treePanel.getRoot(), "");
-//			treePanel.reset(controller.getTree(),controller);
-//			List<String> newTreePaths=MDEHelper.getAllLeafPaths(treePanel.getRoot(), "");
-//			System.out.println("\t deleted nodes: "+MDEHelper.getAdditionalLeafPaths(oldTreePaths, newTreePaths));
-//			System.out.println("--TODO: Reset trees of childs of dir tree");
-//			
-//			treePanel.printTree(null," ");
-//		}
-	}
 
 	public void addTreeSelectionListener(MDEContent mdeContent) {
 		treePanel.addTreeSelectionListener(mdeContent);
@@ -121,44 +96,16 @@ public class DynamicModuleTree extends JPanel implements ActionListener{
 		DefaultMutableTreeNode firstNode= (DefaultMutableTreeNode) getRootNode().getFirstChild();
 		if(firstNode !=null) {
 			getTree().getSelectionModel().setSelectionPath(new TreePath(firstNode.getPath()));
-			
-//			tree.expandPath(new TreePath(firstNode.getPath()));
-//			TreeSelectionListener[] listener=tree.getTreeSelectionListeners();
-//			if(listener!=null && listener.length>0) {
-//			for(TreeSelectionListener l:listener) {
-//				l.valueChanged(null);
-//			}
-//			}
 		}
 		return firstNode;
 	}
 	
-	
-	//see: https://stackoverflow.com/questions/23882640/how-to-set-the-title-of-a-jcombobox-when-nothing-is-selected
-//	class NodeList_CB_Renderer extends JLabel implements ListCellRenderer
-//    {
-//        private String _title;
-//
-//        public NodeList_CB_Renderer(String title){
-//            _title = title;
-//        }
-//
-//        @Override
-//        public Component getListCellRendererComponent(JList list, Object value,
-//                int index, boolean isSelected, boolean hasFocus)
-//        {
-//            if (index == -1 && value == null) setText(_title);
-//            else setText(value.toString());
-//            return this;
-//        }
-//    }
 
 	public JTree getTree() {
 		if(treePanel== null)
 			return null;
 		return treePanel.getTree();
 	}
-	
 	
 }
 

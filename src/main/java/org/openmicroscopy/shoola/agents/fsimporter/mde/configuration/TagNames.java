@@ -399,7 +399,7 @@ public class TagNames
 			case VOLTAGE:
 				units=OMEValueConverter.getNames(UnitsElectricPotential.class);
 			default:
-	//			LOGGER.warn("[HARDWARE] no unit available for tag "+name);
+				System.out.println("-- WARNING: no unit available for "+name);
 				break;
 			}
 			return units;
@@ -417,7 +417,7 @@ public class TagNames
 					uAP=UnitsPressure.fromString(unitSymbol);
 					unit=UnitsPressureEnumHandler.getBaseUnit(uAP);
 				}catch(EnumerationException e){
-					System.out.println("ERROR: Can't parse Air Pressure Unit "+unitSymbol);
+					System.out.println("-- ERROR: Can't parse Air Pressure Unit "+unitSymbol);
 				}
 				break;
 			case TEMP:
@@ -426,7 +426,7 @@ public class TagNames
 					uT=UnitsTemperature.fromString(unitSymbol);
 					unit=UnitsTemperatureEnumHandler.getBaseUnit(uT);
 				}catch (EnumerationException e) {
-					System.out.println("ERROR: Can't parse Temperature Unit "+unitSymbol);
+					System.out.println("-- ERROR: Can't parse Temperature Unit "+unitSymbol);
 				}
 				break;
 			case REPRATE:
@@ -435,7 +435,7 @@ public class TagNames
 					u = UnitsFrequency.fromString(unitSymbol);
 					unit=UnitsFrequencyEnumHandler.getBaseUnit(u);
 				} catch (EnumerationException e) {
-					System.out.println("ERROR: Can't parse Repititation Rate Unit "+unitSymbol);
+					System.out.println("-- ERROR: Can't parse Repititation Rate Unit "+unitSymbol);
 					//					e.printStackTrace();
 				}
 			
@@ -446,7 +446,7 @@ public class TagNames
 					uP = UnitsPower.fromString(unitSymbol);
 					unit=UnitsPowerEnumHandler.getBaseUnit(uP);
 				} catch (EnumerationException e) {
-					System.out.println("ERROR: Can't parse Power Unit "+unitSymbol);
+					System.out.println("-- ERROR: Can't parse Power Unit "+unitSymbol);
 				}
 				
 				break;
@@ -457,7 +457,7 @@ public class TagNames
 					uL = UnitsLength.fromString(unitSymbol);
 					unit = UnitsLengthEnumHandler.getBaseUnit(uL);
 				} catch (EnumerationException e) {
-					System.out.println("ERROR: Can't parse Wavelength Unit "+unitSymbol);
+					System.out.println("-- ERROR: Can't parse Wavelength Unit "+unitSymbol);
 				}
 				
 				break;
@@ -467,7 +467,7 @@ public class TagNames
 					uL2 = UnitsLength.fromString(unitSymbol);
 					unit = UnitsLengthEnumHandler.getBaseUnit(uL2);
 				} catch (EnumerationException e) {
-					System.out.println("ERROR: Can't parse Working Distanz Unit "+unitSymbol);
+					System.out.println("-- ERROR: Can't parse Working Distanz Unit "+unitSymbol);
 				}
 				
 				break;
@@ -477,7 +477,7 @@ public class TagNames
 					uV = UnitsElectricPotential.fromString(unitSymbol);
 					unit=UnitsElectricPotentialEnumHandler.getBaseUnit(uV);
 				} catch (EnumerationException e) {
-					System.out.println("ERROR: Can't parse Voltage Unit "+unitSymbol);
+					System.out.println("-- ERROR: Can't parse Voltage Unit "+unitSymbol);
 				}
 				
 			default:

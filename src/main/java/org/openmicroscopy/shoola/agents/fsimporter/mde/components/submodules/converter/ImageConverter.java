@@ -31,7 +31,6 @@ public class ImageConverter extends DataConverter
 	{
 		tagMap=new LinkedHashMap<String,TagData>();
 		if(image!=null){ 
-			System.out.println("-- parse image data");
 			try{
 				tagMap.put(TagNames.IMG_NAME,convertName(image.getName(),REQUIRED));
 			} catch (NullPointerException e) {

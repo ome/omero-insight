@@ -43,7 +43,6 @@ public class DetectorConverter extends DataConverter{
 
 	@Override
 	public  JComponent getLabel(String name, int index, List<ActionListener> listeners) {
-		System.out.println("-- Create ConverterLabel "+name);
 		JPanel labelPane=new JPanel();
 		labelPane.setLayout(new BoxLayout(labelPane,BoxLayout.X_AXIS));
 		labelPane.setBorder(new EmptyBorder(5, 2, 2, 2));
@@ -267,7 +266,8 @@ public class DetectorConverter extends DataConverter{
 		try{
 			m=DetectorType.fromString(c);
 		}catch(EnumerationException e){
-			LOGGER.warn("DetectorType: "+c+" is not supported");
+			LOGGER.warn("[MDE] DetectorType: "+c+" is not supported");
+			System.out.println("-- WARNING: detector type is not supported: "+c);
 			//			m=DetectorType.OTHER;
 		}
 		return m;

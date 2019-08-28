@@ -55,6 +55,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleControll
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.TagDataTableModel;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 
 /**
@@ -344,7 +345,7 @@ public class ObjectConfigurator extends JDialog implements ActionListener, ListS
 			dispose();
 			break;
 		case CMD_APPLY:
-			System.out.println("-------------- APPLY OCONF-------------");
+			MonitorAndDebug.printConsole("-------------- APPLY OCONF-------------");
 			saveCurrentTable();
 			ModuleController.getInstance().setMDEConfiguration(conf);
 			dialog.reloadView();
@@ -353,7 +354,7 @@ public class ObjectConfigurator extends JDialog implements ActionListener, ListS
 			//TODO: repaint MDECONTENT
 			break;
 		case CMD_SAVE:
-			System.out.println("-------------- SAVE OCONF-------------");
+			MonitorAndDebug.printConsole("-------------- SAVE OCONF-------------");
 			saveCurrentTable();
 			conf.writeToFile();
 			//TODO: repaint MDECONTENT
@@ -364,7 +365,7 @@ public class ObjectConfigurator extends JDialog implements ActionListener, ListS
 			txtMicName.setText("");
 			break;
 		case CMD_CHOOSE_OBJ:
-			System.out.println("-------------- ADD OBJ-------------");
+			MonitorAndDebug.printConsole("-------------- ADD OBJ-------------");
 			String obj=String.valueOf(objects.getSelectedItem());
 			if(!conf.contentExists(currentMic, obj)) {
 				tablePanel.add(new ObjectConfTable(conf.getContent(MDEConfiguration.UNIVERSAL, obj), obj,currentMic));
@@ -515,7 +516,7 @@ public class ObjectConfigurator extends JDialog implements ActionListener, ListS
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			//			System.out.println("--Edit table: "+type);
+			//			MonitorAndDebug.printConsole("--Edit table: "+type);
 			//			TableCellListener tcl = (TableCellListener)e.getSource();
 			//            MonitorAndDebug.printConsole("Row   : " + tcl.getRow());
 			//            MonitorAndDebug.printConsole("Column: " + tcl.getColumn());
@@ -906,7 +907,7 @@ public class ObjectConfigurator extends JDialog implements ActionListener, ListS
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if ((e.getModifiers() & AWTEvent.MOUSE_EVENT_MASK) != 0) {
-						System.out.println("CheckBoxComboBox action performed");
+						MonitorAndDebug.printConsole("CheckBoxComboBox action performed");
 						updateItem(getSelectedIndex());
 						keepOpen = true;
 					}
@@ -922,7 +923,7 @@ public class ObjectConfigurator extends JDialog implements ActionListener, ListS
 		}
 
 		@Override public void updateUI() {
-			System.out.println("CheckBoxComboBox update UI");
+			MonitorAndDebug.printConsole("CheckBoxComboBox update UI");
 			setRenderer(null);
 			removeActionListener(listener);
 			super.updateUI();
@@ -962,7 +963,7 @@ public class ObjectConfigurator extends JDialog implements ActionListener, ListS
 		}
 
 		@Override public void setPopupVisible(boolean v) {
-			System.out.println("CheckBoxComboBox keep open: "+keepOpen);
+			MonitorAndDebug.printConsole("CheckBoxComboBox keep open: "+keepOpen);
 			if (keepOpen) {
 				keepOpen = false;
 			} else {

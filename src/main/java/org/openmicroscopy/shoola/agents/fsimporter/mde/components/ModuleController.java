@@ -127,7 +127,7 @@ public class ModuleController {
 	
 	public ModuleTreeElement createElement(String type,DefaultMutableTreeNode parent) {
 		if(getContentOfType(type)==null) {
-			System.out.println("ERROR: no content found for type  "+type);
+			System.out.println("-- ERROR: no object content found for type  "+type+"[ModuleController::createElement]");
 		}
 		return new ModuleTreeElement(type,null,"",getContentOfType(type),parent);
 	}
@@ -139,10 +139,10 @@ public class ModuleController {
 	public DefaultMutableTreeNode getTree() {
 		if(mdeConf.getTree()==null) {
 			if(standardTree ==null) {
-				System.out.println("-- standard tree is not initialize [ModuleController]");
+				System.out.println("-- ERROR: standard tree is not initialize [ModuleController::getTree]");
 				return null;
 			}
-			System.out.println("-- return standard tree [ModuleController]");
+			System.out.println("-- load standard tree [ModuleController]");
 			return ModuleTree.cloneTreeNode(standardTree);
 		}else {
 			return ModuleTree.cloneTreeNode(mdeConf.getTree());
@@ -292,11 +292,11 @@ public class ModuleController {
 	public ModuleContent getContentOfType(String moduleType) {
 		
 		if(mdeConf==null ) {
-			System.out.println("ERROR: mdeConf is empty! [MDEController::getContent]");
+			System.out.println("-- ERROR: no configuration available! [ModuleController::getContentOfType]");
 			return null;
 		}
 		if(micName==null) {
-			System.out.println("-- No microscope is given, return content for UNIVERSAL [MDEController::getContent]");
+			System.out.println("-- No microscope is given, return object define in UNIVERSAL [MDEController::getContentOfType]");
 			return new ModuleContent(mdeConf.getContent(MDEConfiguration.UNIVERSAL, moduleType));
 		}
 		return new ModuleContent(mdeConf.getContent(micName, moduleType));
@@ -323,7 +323,6 @@ public class ModuleController {
 	
 	
 	public void initMDEConfiguration(String curMic) {
-		System.out.println("-- load MDE configuration");
 		setCurrentMicName(curMic);
 		mdeConf=new MDEConfiguration();
 		initStandardTree();
@@ -341,10 +340,8 @@ public class ModuleController {
 
 	//TODO repaint MDEContent
 	public void setMDEConfiguration(MDEConfiguration conf) {
-		System.out.println("----------- APPLY MDE configuration ------------------------");
 		mdeConf=conf;
 		mdeConf.printObjects(getCurrentMicName());
-		System.out.println("--------INSTRUMENTS------\n"+String.join(",",mdeConf.getMicNames()));
 	}
 	
 	public MDEConfiguration getMDEConfiguration() {
@@ -357,12 +354,9 @@ public class ModuleController {
 
 	public String[] getPossibleChilds(String type) {
 		ArrayList<String> list=new ArrayList<>();
-//		System.out.println("-- serach for parent: "+type);
 		HashMap<String,ModuleContent> contentList=mdeConf.getAvailableContentList(getCurrentMicName());
 		for(Entry<String, ModuleContent> entry: contentList.entrySet()) {
-//			System.out.println("-- check moduleContent for possible insert: "+entry.getKey()+" - "+Arrays.toString(entry.getValue().getParents()));
 			if(entry.getValue().hasParent(type)) {
-//				System.out.println("\t ok");
 				list.add(entry.getKey());
 			}
 		}
@@ -396,13 +390,10 @@ public class ModuleController {
 	}
 
 	public void printObjects() {
-		System.out.println("-- PRINT objects:");
+		MonitorAndDebug.printConsole("-- PRINT objects for selected category/microscope:");
 		if(mdeConf== null) {
-			System.out.println("-- MDEConfiguration is empty [ModuleController]\n TODO: load default ome objects");
 			return;
 		}
 		mdeConf.printObjects(micName);
-		
-			
 	}
 }

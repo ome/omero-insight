@@ -1,5 +1,7 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util;
 
+import org.openmicroscopy.shoola.util.MonitorAndDebug;
+
 import ome.units.unit.Unit;
 
 public class TagConfiguration 
@@ -73,7 +75,7 @@ public class TagConfiguration
 	
 	public void printf()
 	{
-		System.out.println("TAG "+name+" = "+value+" "+getUnitSymbol());
+		MonitorAndDebug.printConsole("TAG "+name+" = "+value+" "+getUnitSymbol());
 	}
 
 	public String[] getPossibleValues() {

@@ -68,12 +68,12 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleTre
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.HardwareConfigurator;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.ObjectConfigurator;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.NodeContainer;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.EditorFileBrowser;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ExceptionDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.FNode;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ImportUserData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.NodeContainer;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TemplateDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.view.Importer;
@@ -104,7 +104,7 @@ import ome.xml.model.OME;
 import org.slf4j.LoggerFactory;
 
 public class MetaDataDialog extends ClosableTabbedPaneComponent
-implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeExpansionListener, ListSelectionListener, ItemListener
+implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSelectionListener, ItemListener
 {
 
 	/** Logger for this class. */
@@ -244,8 +244,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 		}
 
 
-
-		System.out.println("Microscope conf: "+microscope);
+		System.out.println("-- Load microscope conf: "+microscope);
 		if(microscope == null || microscope.isEmpty())
 			initComponents(filters, importerAction,null);
 		else
@@ -314,9 +313,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 		}else {
 			mics.removeActionListener(this);
 			mics.removeAllItems();
-			System.out.println("rebuild mic list");
 			for(String s: controller.getMicNames()) {
-				System.out.println("\t "+s);
 				mics.addItem(s);
 			}
 			mics.addActionListener(this);
@@ -471,9 +468,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 		DefaultMutableTreeNode pTree=null;
 		if(node.getContainer()==null || node.getContainer().getTreeNode()==null) 
 		{
-			MonitorAndDebug.printConsole("-- create new container [MetaDataDialog::loadAndShowDataForSelection]");
 			//get parent tree and data 
-
 			pTree=getNextAvailableParentTree(node);
 			
 			// is selection a file or directory
@@ -497,13 +492,11 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 
 
-
-
 	private DefaultMutableTreeNode getNextAvailableParentTree(FNode node) {
 		DefaultMutableTreeNode pTree=null;
 		if(node!=null) {
-			System.out.println("--CHECK if tree available for parent node: "+node.getAbsolutePath());
 			if((FNode) node.getParent()!=null) {
+				//tree available?
 				if(((FNode) node.getParent()).getContainer()!=null) {
 					if(((FNode) node.getParent()).getContainer().getTreeNode()!=null) {
 						pTree = ((FNode) node.getParent()).getContainer().getTreeNode();
@@ -532,6 +525,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 		MonitorAndDebug.printConsole("-- Show file data \t[MetaDataDialog::loadAndShowDataForFile]");
 
 		NodeContainer current = node.getContainer();
+		System.out.println("-- Create or copy container for node "+node.getAbsolutePath());
 		NodeContainer cont = new NodeContainer(file, getImportData(), pTree, this, current, false);
 		node.setContainer(cont);
 	}
@@ -567,12 +561,12 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	private void deselectNodeAction(FNode node) {
 		if(node!=null){
 			System.out.println("+++ EVENT TREE DESELECT "+node.getAbsolutePath()+"+++\n");
-			MonitorAndDebug.printConsole("## Deselect "+node.getAbsolutePath()+" [MetaDataDialog::deselectNodeAction]");
-			LOGGER.debug("MetaDataDialog::Deselect node action for "+node.getAbsolutePath());
+			MonitorAndDebug.printConsole("-- Deselect "+node.getAbsolutePath()+" [MetaDataDialog::deselectNodeAction]");
+			LOGGER.debug("[MDE] Deselect node action for "+node.getAbsolutePath());
 			
 			// get user input
 			HashMap<String,List<TagData>> input = MDEHelper.getInput(contentTree);
-			System.out.println("-- Input of:");
+			MonitorAndDebug.printConsole("-- INPUT AT DESELECTED NODE:");
 			MDEHelper.printList(node.getAbsolutePath(), input);
 
 			// save moduletree
@@ -589,7 +583,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 			}
 			else {
 				// TODO save changes
-				System.out.println("-- TODO: Save data of current node for subnodes without own tree");
+				MonitorAndDebug.printConsole("-- TODO: Save data of current node for subnodes without own tree");
 
 			}
 			node.setMapAnnotation(input);
@@ -618,7 +612,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 							MDEHelper.insertObjects(leafPath,childTree);
 						}
 					}else {
-						System.out.println("ERROR: Node container is null");
+						System.out.println("-- WARNING: Node container is null (TODO?)");
 					}
 				}
 				if(!child.isLeaf()) {
@@ -636,11 +630,10 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 			treePanel.reset(controller.getTree(),controller);
 			List<String> newTreePaths=MDEHelper.getAllLeafPaths(treePanel.getRoot(), "");
 			List<String> deleteNodes = MDEHelper.getAdditionalLeafPaths(oldTreePaths, newTreePaths);
-			System.out.println("\t deleted nodes: "+deleteNodes);
+			System.out.println("-- deleted nodes: "+deleteNodes);
 			contentTree=treePanel.getRoot();
 			((FNode)fileTree.getLastSelectedPathComponent()).getContainer().setTreeNode(contentTree);
 			resetObjectTreeOfChilds((FNode)fileTree.getLastSelectedPathComponent(),deleteNodes);
-			//		treePanel.printTree(null," ");
 		}
 		//reload view
 		loadAndShowDataForSelection((FNode)fileTree.getLastSelectedPathComponent(), true);
@@ -664,7 +657,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 					
 					List<String> newTreePaths=MDEHelper.getAllLeafPaths(treePanel.getRoot(), "");
 					List<String> deleteNodes = MDEHelper.getAdditionalLeafPaths(oldTreePaths, newTreePaths);
-					System.out.println("\t deleted nodes: "+deleteNodes);
+					System.out.println("-- deleted nodes: "+deleteNodes);
 					contentTree=treePanel.getRoot();
 					((FNode)fileTree.getLastSelectedPathComponent()).getContainer().setTreeNode(contentTree);
 					resetObjectTreeOfChilds((FNode)fileTree.getLastSelectedPathComponent(),deleteNodes);
@@ -681,7 +674,6 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 				if(child.getContainer()!=null && child.getContainer().getTreeNode()!=null) {
 					// changes in object tree of parent dir?
 					if(deleteObjectPaths!=null && !deleteObjectPaths.isEmpty()) {
-						System.out.println("TODO delete objects in child trees correctly");
 						MDEHelper.deleteObjects(deleteObjectPaths,child.getContainer().getTreeNode());
 					}
 				}
@@ -706,7 +698,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 			}
 			data=node.getImportData();
 		}catch(Exception e){
-			LOGGER.warn("No import data available");
+			LOGGER.debug("[MDE] issue on get import data");
 			return null;
 		}
 		return data;
@@ -719,10 +711,11 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	 */
 	public void refreshFileView(List<ImportableFile> files, FileFilter fileFilter)
 	{
+		LOGGER.debug("[MDE] refresh file view");
 		this.fileFilter=fileFilter;
 		fileTree.setFileFilter(fileFilter);
 		if(files==null || files.size()==0){
-			LOGGER.info("No data select");
+			
 			// TODO: changes should be save
 			MonitorAndDebug.printConsole("# MetaDataDialog::resfreshFileView(): Filelist is null -> IMPORT ?");
 			//    	disableTreeListener=true;
@@ -734,15 +727,6 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 		disableTreeListener=false;
 	}
 
-	/**
-	 * Reacts to property fired by the table.
-	 * 
-	 * @see PropertyChangeListener#propertyChange(PropertyChangeEvent)
-	 */
-	public void propertyChange(PropertyChangeEvent evt) {
-		String name = evt.getPropertyName();
-		System.out.println("[DEBUG] MetaDataDialog notice propertyChange "+name);
-	}
 
 
 	/**
@@ -760,7 +744,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 			switch (commandId) {
 			case CMD_CLOSE:
-				LOGGER.info("[GUI-ACTION] -- close");
+				LOGGER.debug("[MDE] -- close");
 				firePropertyChange(CANCEL_SELECTION_PROPERTY,
 						Boolean.valueOf(false), Boolean.valueOf(true));
 				break;
@@ -768,12 +752,12 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 			case CHOOSE_MIC:
 				if(mics.getSelectedIndex()!=-1) {
 					String newSelection=controller.getMicNames()[mics.getSelectedIndex()];
-					System.out.println("--- LOAD "+newSelection+" HARDWARE SETTINGS ---");
+					System.out.println("-- load configuration for "+newSelection);
 					setMicroscopeName(newSelection);
 					controller.setCurrentMicName(newSelection);
 					//TODO: mapr?
 					if(fileTree!=null){
-						System.out.println("RELOAD-----------------");
+						//reload view
 						deselectNodeAction((FNode)fileTree.getLastSelectedPathComponent());
 
 						//TODO reload current view if changes
@@ -787,8 +771,8 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 				}
 				break;
 			case CMD_RESET:
-				LOGGER.info("[GUI-ACTION] -- reset");
-				MonitorAndDebug.printConsole("\n +++ EVENT RESET INPUT +++\n");
+				LOGGER.info("[MDE] -- reset");
+				System.out.println("-- EVENT RESET INPUT \n");
 
 				FNode selection=(FNode)fileTree.getLastSelectedPathComponent();
 				String file = fileTree.getSelectedFilePath(selection);
@@ -808,7 +792,6 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("--ActionPerformed: show content of "+selection.getAbsolutePath());
 				showMDE(selection.getContainer(),null);
 
 				break;
@@ -820,7 +803,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 				setTemplateName(tempFile);
 
 				if(selectedModules!=null && tempFile!=null) {
-					System.out.println("TODO: Save to tempfile: "+tempFile.getAbsolutePath());
+					MonitorAndDebug.printConsole("TODO: Save to tempfile: "+tempFile.getAbsolutePath());
 					//				MetaDataView currentView=getMetaDataView(metaPanel);
 					//				if(currentView!=null) {
 					//					try {
@@ -837,8 +820,8 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 						tfileWriter.write(template);
 						tfileWriter.flush();
 						tfileWriter.close();
-						System.out.println("Successfully Copied JSON Object to File...");
-						System.out.println("\nJSON Object:\n " + template);
+						MonitorAndDebug.printConsole("-- successfully Copied JSON Object to File...");
+						MonitorAndDebug.printConsole("\nJSON Object:\n " + template);
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
@@ -850,7 +833,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 				Boolean[] selectedModulesO=openF.getSelection();
 				tempFile= openF.getDestination();
 				setTemplateName(tempFile);
-				System.out.println("TODO: load template");
+				MonitorAndDebug.printConsole("TODO: load template");
 				//			MetaDataModel myModel=JSONModelWrapper.parseJSON(tempFile);
 				//			MetaDataView currentViewL=getMetaDataView(metaPanel);
 				//			if(currentViewL!=null) {
@@ -902,12 +885,10 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	 */
 	private void selectNodeAction(FNode selectedNode) 
 	{
-		
 		if(selectedNode!=null ){
 			System.out.println("+++ EVENT TREE SELECT "+selectedNode.getAbsolutePath()+"+++\n");
-			MonitorAndDebug.printConsole("\n# MetaDataDialog::selectNodeAction("+selectedNode.getAbsolutePath()+")");
 			//	   selectedNode.printMaps();
-			LOGGER.debug("Select node action for "+selectedNode.getAbsolutePath());
+			LOGGER.debug("[MDE] Select node action for "+selectedNode.getAbsolutePath());
 
 			resetFileDataButton.setEnabled(true);
 			loadAndShowDataForSelection(selectedNode, false);
@@ -953,7 +934,6 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	public void itemStateChanged(ItemEvent e) 
 	{
 		if(!disableItemListener) {
-			System.out.println("--ItemStateChanged");
 			FNode node=(FNode)fileTree.getLastSelectedPathComponent();
 			String file=fileTree.getSelectedFilePath(node);
 			if(node==null || file==null)
@@ -972,11 +952,10 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 					loadDataForFile(file, null, node);
 				}
 			}catch(Exception ex){
-				LOGGER.error("[DATA] CAN'T read METADATA");
+				LOGGER.error("[MDE] can't read METADATA of selection "+node.getAbsolutePath());
 				resetFileTreeAtError("Metadata Error!","Can't read given metadata of "+file,ex);
 				return;
 			}
-			System.out.println("-- show content of "+node.getAbsolutePath());
 			showMDE(node.getContainer(),pTree);
 		}
 	}
@@ -987,16 +966,17 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	 */
 	private void showMDE(NodeContainer container,DefaultMutableTreeNode pTree)
 	{
-		System.out.println("-- SHOW MDE Content");
+		System.out.println("-- load mde content for selection");
 		metaPanel.removeAll();
 		if(container==null)
 			return;
 
 		MDEContent content=null;
 		contentTree= container.getTreeNode();
-		System.out.println("\t contentTree : "+(contentTree==null?"null":"available"));
+		
 		// load node for the first time?
 		if(contentTree == null) {
+			System.out.println("-- no content tree available - create new contentTree for selection ");
 			//TODO : that should not be the case!! pTree is tree of next available parent tree else standardtree
 			// this is the case at the moment if parent of parent was only select, but not parent
 			if(pTree==null)
@@ -1016,7 +996,6 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 		contentTree=content.getRootNode();
 		fileInstrumentList=content.getInstrumentList();
 		// load user input
-		//TODO
 		metaPanel.add(content,BorderLayout.CENTER);
 		revalidate();
 		repaint();
@@ -1055,10 +1034,9 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	 */
 	public void saveChanges(String text) 
 	{
-		MonitorAndDebug.printConsole("\n+++ EVENT: IMPORT SAVE CHANGES ++++\n");
+		System.out.println("-- import: save changes");
 		deselectNodeAction((FNode)fileTree.getLastSelectedPathComponent());
 		FNode node=(FNode)fileTree.getLastSelectedPathComponent();
-		//		saveInputToModel(node, true);
 		saveMapAnnotations();
 	}
 
@@ -1073,7 +1051,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	private void saveMapAnnotationOfSubNodes(FNode node,MapAnnotationObject parentMap)
 	{
 		if(node.isLeaf()){
-			System.out.println("TODO: Check node is an image");
+			MonitorAndDebug.printConsole("TODO: Check node is an image");
 
 			MapAnnotationObject maps=node.getMapAnnotation();
 
@@ -1141,7 +1119,7 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 	 * @return description for selected microscope workstation
 	 */
 	public String getMicDesc() {
-		return "TODO: define desc";//customSettings.getMicDesc();
+		return "\t TODO: define desc";//customSettings.getMicDesc();
 	}
 
 
@@ -1168,8 +1146,8 @@ implements ActionListener, PropertyChangeListener, TreeSelectionListener, TreeEx
 
 
 			reader.setId(fName);
-			LOGGER.info("[DATA] -- use READER: "+reader.getReader().getClass().getName());
-			MonitorAndDebug.printConsole("Use Reader: "+reader.getReader().getClass().getSimpleName());
+			LOGGER.debug("[MDE] -- use READER: "+reader.getReader().getClass().getName());
+			MonitorAndDebug.printConsole("-- Use Reader: "+reader.getReader().getClass().getSimpleName());
 
 			//load original data
 			//			series = reader.getSeriesMetadata();

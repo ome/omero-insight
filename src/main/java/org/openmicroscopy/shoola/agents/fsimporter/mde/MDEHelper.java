@@ -34,7 +34,7 @@ public class MDEHelper {
 	public static void printList(String string, HashMap<String,List<TagData>> list) {
 		String result="\t## "+string+" ##\n";
 		if(list==null || list.isEmpty()) {
-			System.out.println(result+" NO INPUT");
+			MonitorAndDebug.printConsole(result);
 			return;
 		}
 		for(Map.Entry<String, List<TagData>> entry: list.entrySet()) {
@@ -43,7 +43,7 @@ public class MDEHelper {
 				result+="\t\t"+t.tagToString()+"\n";
 			}
 		}
-		System.out.println(result);
+		MonitorAndDebug.printConsole(result);
 	}
 	
 	
@@ -57,7 +57,6 @@ public class MDEHelper {
 		
 		HashMap<String,List<TagData>> result=new HashMap<>();
 		
-//		System.out.println("-- get input of "+contentTree.getUserObject().toString());
 		//root node?
 		if(((ModuleTreeElement) contentTree.getUserObject()).isContainer()) {
 			for(int i = 0 ; i < contentTree.getChildCount(); i++) {
@@ -87,7 +86,6 @@ public class MDEHelper {
 							id=((ModuleTreeElement) ((DefaultMutableTreeNode) node.getParent()).getUserObject()).getElementName()+" | "+id;
 						}
 					}
-//					System.out.println("-- Input of "+"["+id+"]");
 					List<TagData> res=((ModuleTreeElement) node.getUserObject()).getData().getInput();
 					if(res!=null && !res.isEmpty())
 						result.put(id, res);
@@ -126,7 +124,7 @@ public class MDEHelper {
 				DefaultMutableTreeNode n1=findNode((DefaultMutableTreeNode) tree1.getChildAt(i),tree2);
 				
 				if(n1==null) {
-					System.out.println("-- Node "+nodeName+" doesn't exists, INSERT at depth "+depth);
+					MonitorAndDebug.printConsole("-- Node "+nodeName+" doesn't exists, INSERT at depth "+depth);
 				}else {
 					DefaultMutableTreeNode p1=(DefaultMutableTreeNode) n1.getParent();
 					mergeTrees((DefaultMutableTreeNode) tree1.getChildAt(i),n1,depth);
@@ -164,9 +162,7 @@ public class MDEHelper {
 	public static boolean compareTrees(DefaultMutableTreeNode n1,DefaultMutableTreeNode n2) {
 		System.out.println("-- Compare Trees: "+n1.getUserObject().toString()+" -- "+n2.getUserObject().toString());
 		List<String> leafsN1=getAllLeafPaths(n1, "");
-		System.out.println("\t-----------");
 		List<String> leafsN2=getAllLeafPaths(n2, "");
-		System.out.println("\t-----------");
 		
 		if(leafsN1.containsAll(leafsN2) && leafsN1.size() == leafsN2.size()) {
 			return true;
@@ -192,12 +188,8 @@ public class MDEHelper {
 	 * @return list of paths to additional leafs in tree1
 	 */
 	public static List<String> getAdditionalLeafsInTree(DefaultMutableTreeNode tree1,DefaultMutableTreeNode tree2){
-		System.out.println("TREE Parent");
 		List<String> leafsN1=getAllLeafPaths(tree1, "");
-		System.out.println("\t-----------");
-		System.out.println("TREE Child");
 		List<String> leafsN2=getAllLeafPaths(tree2, "");
-		System.out.println("\t-----------");
 		
 		if(leafsN1.containsAll(leafsN2) && leafsN1.size() == leafsN2.size()) {
 			return null;
@@ -213,7 +205,7 @@ public class MDEHelper {
 				result.add(s);
 			}
 		}
-		System.out.println("\t Additional elements in first tree: "+result);
+		System.out.println("\t => Additional elements in first tree: "+result);
 		return result;
 	}
 	
@@ -221,7 +213,6 @@ public class MDEHelper {
 		String path = parent.equals("")?tree.getUserObject().toString(): parent+SELECTOR+tree.getUserObject().toString();
 		List<String> leafPathList=new ArrayList<>();
 		if(tree.getChildCount()==0) {
-			System.out.println("\t LEAF: "+path);
 			leafPathList.add(path);
 			return leafPathList;
 		}else {
@@ -302,37 +293,17 @@ public class MDEHelper {
 	 */
 	private static DefaultMutableTreeNode findNode(DefaultMutableTreeNode n, DefaultMutableTreeNode tree) {
 		 for (Enumeration e = tree.preorderEnumeration(); e.hasMoreElements();) {
-	            DefaultMutableTreeNode d = (DefaultMutableTreeNode) e.nextElement();
+	            DefaultMutableTreeNode d =  (DefaultMutableTreeNode)e.nextElement();
 	            if(compareNodes(n,d)) {
-	            	System.out.println("-- Search for "+n.getUserObject().toString() +" - FOUND at level "+d.getLevel()+" [MDEParser::findNode]");
+//	            	System.out.println("-- Search for "+n.getUserObject().toString() +" - FOUND at level "+d.getLevel()+" [MDEParser::findNode]");
 	            	return d;
 	            } 
 		 }
-		 System.out.println("-- Search for "+n.getUserObject().toString() +" - NOT FOUND [MDEParser::findNode]");
+//		 System.out.println("-- Search for "+n.getUserObject().toString() +" - NOT FOUND [MDEParser::findNode]");
 		 return null;
 	}
 	
-	/**
-	 * Find MDETreeElement in tree by name.
-	 * @param tree
-	 * @param name
-	 * @return
-	 */
-//	private static DefaultMutableTreeNode getNodeByName(DefaultMutableTreeNode tree, String name) {
-//		Enumeration e = tree.breadthFirstEnumeration();
-//		while(e.hasMoreElements()) {
-//			DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
-//			if(node.getUserObject().toString().equals(name)) {
-//				return node;
-//			}else {
-//				//search in subtree
-//				DefaultMutableTreeNode result=getNodeByName(node,name);
-//				if(result!=null)
-//					return result;
-//			}
-//		}
-//		return null;
-//	}
+
 	
 	/**
 	 * Find MDETreeElement direct child of tree by name.
@@ -344,11 +315,9 @@ public class MDEHelper {
 		if(tree==null)
 			return null;
 		
-		System.out.println("--looking for object node: "+name+" [MDEHelper::getChildByName]");
 		Enumeration e = tree.breadthFirstEnumeration();
 		while(e.hasMoreElements()) {
 			DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
-//			System.out.println("Compare: "+node.getUserObject().toString()+" - "+name);
 			if(((ModuleTreeElement) node.getUserObject()).getElementName().trim().equals(name.trim())) {
 				return node;
 			}
@@ -367,12 +336,6 @@ public class MDEHelper {
 			return null;
 		String[] nodeNames=path.split(SELECTOR);
 		
-//		String res="";
-//		for(String s:nodeNames) {
-//			res+=s+" -> ";
-//		}
-//		System.out.println("-- path elements "+nodeNames.length+"; paths: "+res);
-		
 		//get first parent:
 		DefaultMutableTreeNode parent = getChildByName(tree, nodeNames[0]);
 		
@@ -380,7 +343,7 @@ public class MDEHelper {
 			for(int i=1; i< nodeNames.length;i++) {
 				DefaultMutableTreeNode child = getChildByName(parent,nodeNames[i]);
 				if(child==null) {
-					System.out.println("TODO: insert new node here "+parent.getUserObject().toString());
+					MonitorAndDebug.printConsole("TODO: insert new node here "+parent.getUserObject().toString());
 					child=createNode(nodeNames[i],parent);
 				}
 				parent=child;
@@ -405,7 +368,6 @@ public class MDEHelper {
 	private static String getType(String name) {
 		String result=null;
 		result=name.substring(name.indexOf("[")+1, name.lastIndexOf("]"));
-		System.out.println("-- identify type: "+result+" [MDEHelper::getType]");
 		return result;
 	}
 
@@ -461,62 +423,6 @@ public class MDEHelper {
 		return f;
 	}
 
-	/**
-	 * Identify object c2 by id or if id is null, by fields that are set in c1.
-	 * The match should be above the given percentage.
-	 * @param c1
-	 * @param c2
-	 * @param percent
-	 * @return
-	 */
-	public static boolean isEqual(ModuleContent c1, ModuleContent c2,int percent) {
-		boolean result=false;
-		if(c1!=null && c2!=null) {
-			LinkedHashMap<String,TagData> tList1=c1.getList();
-			LinkedHashMap<String,TagData> tList2=c2.getList();
-			
-			if(tList1==null && tList2==null) {
-				result=false;
-			}
-			else{ 
-				if((tList1==null && tList2!=null) || (tList1!=null &&tList2==null) ||
-						tList1.size()!=tList2.size()) {
-					result=false;
-				}else {
-					//identify by id
-					if(tList2.containsKey(TagNames.ID) && tList1.containsKey(TagNames.ID) && tList2.get(TagNames.ID)!=null) {
-							return tList2.get(TagNames.ID).equalContent(tList1.get(TagNames.ID));
-						
-					}
-					//no id available
-					int falsePosCount=0;
-					int truePosCount=0;
-					for (Map.Entry<String, TagData> entry : tList1.entrySet()) {
-						String key=entry.getKey();
-						TagData val1=entry.getValue();
-						//TODO: value c1 has to set and equal to c2 ->truePosCount++
-						if(tList2.containsKey(key)&& val1.equalContent(tList2.get(key))) {
-							truePosCount++;
-						}else {
-							falsePosCount++;
-						}
-					}
-					if(percent == 100 && falsePosCount>0) {
-						result=false;
-					}else {
-						int truePosPercent = (100*truePosCount)/tList1.entrySet().size();
-						System.out.println("-- equal procent: "+truePosPercent);
-						if(truePosPercent<percent) {
-							result= false;
-						}else {
-							result=true;
-						}
-					}
-				}
-			}
-		}
-		return result;
-	}
 	
 	
 	/**
@@ -532,12 +438,10 @@ public class MDEHelper {
 			LinkedHashMap<String,TagData> tList2=c2.getList();
 			
 			if(tList1==null && tList2==null) {
-				System.out.println("\t\t content is empty [isEqual]");
 				return true;
 			}else{ 
 				if((tList1==null && tList2!=null) || (tList1!=null &&tList2==null) ||
 						tList1.size()!=tList2.size()) {
-					System.out.println("\t\t content has different size [isEqual]");
 					return false;
 				}else {
 					int falsePosCount=0;
@@ -549,17 +453,17 @@ public class MDEHelper {
 								if(key.equals(TagNames.ID) ) {
 									if(!entry.getValue().isEmptyValue() && !tList2.get(key).isEmptyValue() && 
 										!tList2.get(key).getTagValue().equals(entry.getValue().getTagValue())){
-//										System.out.println("\t\t "+c1.getType()+": "+key+" not equal: "+tList2.get(key).getTagValue()+" -- "+entry.getValue().getTagValue());
+//										MonitorAndDebug.printConsole("\t\t "+c1.getType()+": "+key+" not equal: "+tList2.get(key).getTagValue()+" -- "+entry.getValue().getTagValue());
 										falsePosCount++;
 									}
 								}else {
 									if(!tList2.get(key).getTagValue().equals(entry.getValue().getTagValue())){
-										//									System.out.println("\t\t "+c1.getType()+": "+key+" not equal: "+tList2.get(key).getTagValue()+" -- "+entry.getValue().getTagValue());
+										//									MonitorAndDebug.printConsole("\t\t "+c1.getType()+": "+key+" not equal: "+tList2.get(key).getTagValue()+" -- "+entry.getValue().getTagValue());
 										falsePosCount++;
 									}
 								}
 							}else {
-//								System.out.println("\t\t "+c1.getType()+": has no key: "+key);
+//								MonitorAndDebug.printConsole("\t\t "+c1.getType()+": has no key: "+key);
 								falsePosCount++;
 							}
 						}
@@ -572,7 +476,6 @@ public class MDEHelper {
 				}
 			}
 		}
-		System.out.println("\t\t------");
 		return result;
 	}
 	
@@ -586,25 +489,19 @@ public class MDEHelper {
 			DefaultMutableTreeNode node = getNodeByPath(tree, entry.getKey());
 			if(node!=null) {
 				System.out.println("-- replace data for "+entry.getKey()+" [MDEHelper::replaceData]");
-//				System.out.println("-- replace data at "+node.getUserObject().toString());
 				ModuleContent c=((ModuleTreeElement) node.getUserObject()).getData();
 				for(TagData t:entry.getValue()) {
 					c.set(t.getTagName(), new TagData(t));
 				}
 			}else {
 				//node not found -> insert new
-				System.out.println("-- CANNOT replace data for "+entry.getKey()+" [MDEHelper::replaceData]");
-				System.out.println("-- add new node data for "+entry.getKey()+" [MDEHelper::replaceData]");
+				System.out.println("-- cannot replace data for "+entry.getKey()+" [MDEHelper::replaceData]");
+				MonitorAndDebug.printConsole("-- TODO: add new node data for "+entry.getKey()+" [MDEHelper::replaceData]");
 				
 			}
 		}
 	}
 	
-	private static ModuleTreeElement getNodeObject(String key) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 	/**
 	 * Set data of newC if newC(data)!=null and newC(data)!=""
@@ -615,11 +512,9 @@ public class MDEHelper {
 	public static ModuleContent replaceData(ModuleContent currentC,ModuleContent newC) {
 		ModuleContent result = currentC;
 		if(newC==null ) {
-			System.out.println("-- given new element is null -> return current element [replaceData]");
 			return currentC;
 		}
 		if(currentC==null) {
-			System.out.println("-- current element is null -> return new element [replaceData]");
 			result=new ModuleContent(newC);
 			result.setAllDataChanged();
 			return result;
@@ -630,11 +525,9 @@ public class MDEHelper {
 			LinkedHashMap<String, TagData> l1=currentC.getList();
 			LinkedHashMap<String,TagData> l2=newC.getList();
 			if(l2==null) {
-				System.out.println("-- data of given new element are null -> return current element [replaceData]");
 				return currentC;
 			}
 			if(l1==null) {
-				System.out.println("-- data of current element are null -> return new element [replaceData]");
 				result=new ModuleContent(newC);
 				result.setAllDataChanged();
 				return result;
@@ -647,15 +540,15 @@ public class MDEHelper {
 					if(l1.containsKey(key)) {
 						valIn.dataHasChanged(true);
 						result.set(key, valIn);
-						System.out.println("\t\t replace "+currentC.getType()+":"+key+"[replaceData]");
+						MonitorAndDebug.printConsole("\t\t replace "+currentC.getType()+":"+key+"[replaceData]");
 					}else {
-						System.out.println("\t\t replace "+currentC.getType()+":"+key+": no key available [replaceData]");
+						MonitorAndDebug.printConsole("\t\t replace "+currentC.getType()+":"+key+": no key available [replaceData]");
 					}
 				}
 			}
 
 		}else {
-			System.out.println("--ERROR: Elements type not equal ("+currentC.getType()+" - "+newC.getType()+") [MDEHelper::replaceData]");
+			System.out.println("-- WARNING: Elements type not equal ("+currentC.getType()+" - "+newC.getType()+") [MDEHelper::replaceData]");
 		}
 		return result;
 	}
@@ -670,11 +563,9 @@ public class MDEHelper {
 	public static ModuleContent replaceUnchangedData(ModuleContent currentC,ModuleContent origC,ModuleContent newC) {
 		ModuleContent result = currentC;//new ModuleContent(currentC);
 		if(newC==null ) {
-			System.out.println("-- given new element is null -> return current element [MDEHelper::replaceUnchangedData]");
 			return currentC;
 		}
 		if(currentC==null) {
-			System.out.println("-- current element is null -> return new element [MDEHelper::replaceUnchangedData]");
 			result=new ModuleContent(newC);
 			result.setAllDataChanged();
 			return result;
@@ -688,18 +579,16 @@ public class MDEHelper {
 		//same type?
 		if(currentC.getType()!=null && currentC.getType().equals(newC.getType())){
 			if(origC.getType()!=null && !currentC.getType().equals(origC.getType())) {
-				System.out.println("ERROR: original and current element has different types [MDEHelper::replaceUnchangedData]]");
+				System.out.println("-- ERROR: original and current element has different types [MDEHelper::replaceUnchangedData]]");
 				return replaceData(currentC, newC);
 			}
 			LinkedHashMap<String, TagData> l1=currentC.getList();
 			LinkedHashMap<String,TagData> l2=newC.getList();
 			LinkedHashMap<String, TagData> l3=origC.getList();
 			if(l2==null) {
-				System.out.println("-- data of given new element are null -> return current element [MDEHelper::replaceUnchangedData]");
 				return currentC;
 			}
 			if(l1==null) {
-				System.out.println("-- data of current element are null -> return new element [MDEHelper::replaceUnchangedData]");
 				result=new ModuleContent(newC);
 				result.setAllDataChanged();
 				return result;
@@ -714,13 +603,12 @@ public class MDEHelper {
 							// unchanged content will be replaced by new values
 							valIn.dataHasChanged(true);
 							result.set(key, valIn);
-							System.out.println("\t replace "+key +"[MDEHelper::replaceUnchangedData]");
 						}else {
 							// content of current has still changed, don't replace this by new value
-							System.out.println("--Don't replace "+key +": "+l1.get(key).tagToString()+" != "+l3.get(key).tagToString());
+							MonitorAndDebug.printConsole("--Don't replace "+key +": "+l1.get(key).tagToString()+" != "+l3.get(key).tagToString());
 						}
 					}else {
-						System.out.println("\t\t replace "+currentC.getType()+":"+key+": no key available [MDEHelper::replaceUnchangedData]");
+						MonitorAndDebug.printConsole("\t\t replace "+currentC.getType()+":"+key+": no key available [MDEHelper::replaceUnchangedData]");
 					}
 				}
 			}
@@ -740,11 +628,9 @@ public class MDEHelper {
 	public static ModuleContent completeData(ModuleContent currentC,ModuleContent newC) {
 		ModuleContent result = new ModuleContent(currentC);
 		if(newC==null) {
-//			System.out.println("-- given new element is null -> return current element [completeData]");
 			return currentC;
 		}
 		if(currentC==null) {
-//			System.out.println("-- current element is null -> return new element [completeData]");
 			return newC;
 		}
 		//same type?
@@ -752,11 +638,9 @@ public class MDEHelper {
 			LinkedHashMap<String, TagData> l1=currentC.getList();
 			LinkedHashMap<String,TagData> l2=newC.getList();
 			if(l2==null) {
-//				System.out.println("-- data of given new element are null -> return current element [completeData]");
 				return currentC;
 			}
 			if(l1==null) {
-//				System.out.println("-- data of current element are null -> return new element [completeData]");
 				return newC;
 			}
 		
@@ -785,20 +669,17 @@ public class MDEHelper {
 				if(nodes.length>1) {
 					DefaultMutableTreeNode cNode=tree;
 					for(int depth=1; depth<nodes.length;depth++) {
-						System.out.println("\t search for "+nodes[depth]);
 						boolean found=false;
 						for(int i=0; i<cNode.getChildCount();i++) {
 							DefaultMutableTreeNode child=(DefaultMutableTreeNode) cNode.getChildAt(i);
 							if(child.getUserObject().toString().equals(nodes[depth])) {
 								cNode=child;
 								found=true;
-								System.out.println("\t --> found "+cNode.getUserObject().toString());
 								break;
 							}
 						}
 						if(!found) {
-							System.out.println("\t --> add "+nodes[depth]);
-							
+							// insert at depth
 							cNode.add(new DefaultMutableTreeNode(
 									ModuleController.getInstance().createElement(getType(nodes[depth]),cNode)));
 							break;
@@ -806,7 +687,7 @@ public class MDEHelper {
 					}
 				}
 			}else {
-				System.out.println("\t root is not equal "+nodes[0]+" -- "+tree.getUserObject().toString());
+				System.out.println("-- WARNING: root is not equal "+nodes[0]+" -- "+tree.getUserObject().toString()+"[MDEHelper::insertObjects()]");
 			}
 		}
 	}
@@ -817,7 +698,6 @@ public class MDEHelper {
 			return;
 		for(String path:nodeNames) {
 			DefaultMutableTreeNode node=getNodeByPath(tree, path);
-			System.out.println("\t --> found and delete"+node.getUserObject().toString());
 			DefaultMutableTreeNode parent=(DefaultMutableTreeNode) node.getParent();
 			parent.remove(node);
 		}

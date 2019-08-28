@@ -7,6 +7,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
+import org.openmicroscopy.shoola.util.MonitorAndDebug;
 import org.w3c.dom.Element;
 
 /**
@@ -98,13 +99,8 @@ public class ModuleTreeElement {
 	 */
 	@Override
 	public String toString() {
-//		String elementID = (id==null || id.equals("")) ? type : id+" ["+type+"]";
 		String elementID="["+type+"]" + "{"+childIndex+"}";
 		return elementID;
-//		if(name==null || name.contains("null")) {
-//			return elementID;
-//		}
-//		return name + " ["+type+"]"+ "{"+childIndex+"}";
 	}
 	
 	public String getElementName() {
@@ -117,7 +113,7 @@ public class ModuleTreeElement {
 	
 	public void printContent() {
 		if(data==null) {
-			System.out.println("-- PRINT CONTENT: no content");
+			MonitorAndDebug.printConsole("-- PRINT ModuleContent: \n\tcontent is null!");
 		}else {
 			data.print();
 		}

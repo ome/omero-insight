@@ -7,8 +7,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ImportUserData;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 /**
  * Container holds view and modelobj for selection

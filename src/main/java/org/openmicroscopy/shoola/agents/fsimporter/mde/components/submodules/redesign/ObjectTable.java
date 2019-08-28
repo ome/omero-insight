@@ -28,6 +28,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 
 /**
  * TODO: Allgemeiner fuer tagDataListen
+ * Table of predefined values for an object
  * @author Kunis
  *
  * @param <T>
@@ -78,7 +79,7 @@ public class ObjectTable extends JPanel{
 	/**
 	 * 
 	 * @param c
-	 * @return index of element that is equal with given elem
+	 * @return index of element in the table that is equal with given elem
 	 */
 	public int getElementIndex(ModuleContent elem) {
 		int idx=0;
@@ -87,17 +88,13 @@ public class ObjectTable extends JPanel{
 			return currentSelection;
 		
 		if(availableObjects!=null && elem.getList()!=null) {
-//			System.out.println("-- looking for elem index of "+elem.getType()+"["+availableObjects.size()+"]"+" [ObjectTable]");
 			for(ModuleContent c:availableObjects) {
 				if(MDEHelper.isEqual(c, elem)) {
-//					System.out.println("--getElemIndex selected element "+idx+", "+elem.getType()+" [ObjectTable::getElementIndex]");
 					return idx;
 				}
 				idx++;
 			}
 		}
-//		System.out.println("--element index not found ("+elem.getType()+")");
-		
 		return -1;
 	}
 	
@@ -138,18 +135,6 @@ public class ObjectTable extends JPanel{
 		if(selectedIndex!=-1) {
 			table.setRowSelectionInterval(selectedIndex, selectedIndex);
 		}
-//		if(originalIndex!=-1) {
-//			table.getColumn(TagNames.ID).setCellRenderer(new DefaultTableCellRenderer() {
-//				@Override
-//				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-//					 DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-//			            if (row == originalIndex) {
-//			            	renderer.setForeground(Color.red);
-//			            }
-//			          return renderer;
-//				}
-//			});
-//		}
 		addListSelectionListener(contentViewer,table);
 		JScrollPane scrollPane = new JScrollPane(table);
 		
@@ -159,8 +144,6 @@ public class ObjectTable extends JPanel{
 		
 		panel.add(pane,BorderLayout.CENTER);
 		
-//		revalidate();
-//		repaint();
 		return panel;
 	}
 	
@@ -179,8 +162,8 @@ public class ObjectTable extends JPanel{
 					}else if(lsm.isSelectedIndex(e.getLastIndex())) {
 						idx=e.getLastIndex();
 					}
+					// replace current object element with selected element in the table
 					if(idx>-1 && idx<availableObjects.size()) {
-						System.out.println("-- "+availableObjects.get(0).getType()+" replace "+currentSelection+" with table element "+idx);
 						ModuleContent c=availableObjects.get(idx);
 						ModuleContent origContent=null;
 						if(currentSelection!=-1) origContent=availableObjects.get(currentSelection);
@@ -190,53 +173,11 @@ public class ObjectTable extends JPanel{
 				}
 			}
 		};
+
 		
-//		ListSelectionListener listener=null;
-//		if(type.equals(LightSource.class)) {
-//			listener=new ListSelectionListener() {
-//				@Override
-//				public void valueChanged(ListSelectionEvent e) {
-//					System.out.println("-- ListSelectionEvent: "+e.toString());
-//					LightSourceConverter converter = new LightSourceConverter();
-//					if(e.getValueIsAdjusting() && e.getLastIndex()< availableObjects.size()) {
-//						converter.convertData(((LightSource)availableObjects.get(e.getLastIndex())), null);
-//						viewer.replaceData(converter.getTagList(),false);
-//					}
-//
-//				}
-//			};
-//		}else if( type.equals(Detector.class)) {
-//			listener=new ListSelectionListener() {
-//				@Override
-//				public void valueChanged(ListSelectionEvent e) {
-//					System.out.println("-- ListSelectionEvent: "+e.toString());
-//					DetectorConverter converter = new DetectorConverter();
-//					if(e.getValueIsAdjusting() && e.getLastIndex()< availableObjects.size()) {
-//						converter.convertData(((Detector)availableObjects.get(e.getLastIndex())), null);
-//						viewer.replaceData(converter.getTagList(),false);
-//					}
-////					System.out.println("-- Select objective: "+table.getValueAt(table.getSelectedRow(), 1).toString());
-//				}
-//			};
-//		}else if(type.equals(Objective.class)) {
-//			listener=new ListSelectionListener() {
-//				@Override
-//				public void valueChanged(ListSelectionEvent e) {
-//					System.out.println("-- ListSelectionEvent: "+e.toString());
-//					ObjectiveConverter converter = new ObjectiveConverter();
-//					if(e.getValueIsAdjusting() && e.getLastIndex()< availableObjects.size()) {
-//						converter.convertData(((Objective)availableObjects.get(e.getLastIndex())), null);
-//						viewer.replaceData(converter.getTagList(),false);
-//					}
-////					System.out.println("-- Select objective: "+table.getValueAt(table.getSelectedRow(), 1).toString());
-//				}
-//			};
-//		}
-		
-		if(table!=null)
+		if(table!=null) {
 			table.getSelectionModel().addListSelectionListener(listener);
-		
+		}
 	}
-	
 	
 }

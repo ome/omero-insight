@@ -100,7 +100,7 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 	}
 	
 	private void buildGUI() {
-		System.out.println("--BUILD GUI : HardwareConfiguration");
+		MonitorAndDebug.printConsole("--BUILD GUI : HardwareConfiguration");
 		getContentPane().setLayout(new BorderLayout(5,5));
 		setModal(true);
 		
@@ -162,7 +162,7 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 						saveCurrentTable();
 						// TODO: refresh view
 						if(tablePanel!=null) tablePanel.removeAll();
-						System.out.println("-- Load table for "+currentMic+"::"+newObj);
+						MonitorAndDebug.printConsole("-- Load table for "+currentMic+"::"+newObj);
 						getInstrumentTables(currentMic, newObj);
 						revalidate();
 						repaint();
@@ -275,13 +275,13 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 		String objName= (String) objList.getSelectedValue();
 		String micName = (String) micList.getSelectedValue();
 		int objIndex = objList.getSelectedIndex();
-		System.out.println("-- DELETE ["+micName+"::"+objName+"]: on index "+objIndex+"/"+objList.getModel().getSize());
+		MonitorAndDebug.printConsole("-- DELETE ["+micName+"::"+objName+"]: on index "+objIndex+"/"+objList.getModel().getSize());
 		// delete from objList
 		((DefaultListModel)objList.getModel()).remove(objIndex);
 		// delete from instrument list
 		conf.removeHardwareConfInstrumentForMicroscope(objName,micName);
 		ModuleList hardware = conf.getInstruments(micName);
-		System.out.println("\t\t Instruments["+micName+"]: "+hardware.keySet());
+		MonitorAndDebug.printConsole("\t\t Instruments["+micName+"]: "+hardware.keySet());
 		
 		tablePanel.removeAll();
 		tablePanel.revalidate();
@@ -295,23 +295,23 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 	 */
 	private void getInstrumentTables(String micName,String instrument) {
 		if(tablePanel==null) {
-			System.out.println("ERROR: tablePanel is not defined");
+			MonitorAndDebug.printConsole("-- ERROR: tablePanel is not defined");
 			return;
 		}
-		System.out.println("-- getInstrumentTable for: "+micName+"::"+instrument);
+		MonitorAndDebug.printConsole("-- getInstrumentTable for: "+micName+"::"+instrument);
 		ModuleList hardware = conf.getInstruments(micName);
 		if(hardware==null) {
-			System.out.println("\tMic not available: "+micName);
+			MonitorAndDebug.printConsole("\tMic not available: "+micName);
 			return;
 		}
 		List<ModuleContent> cInstrument=hardware.get(instrument);
 		if(cInstrument==null) {
 			if(instrument==null)
 				return;
-			System.out.println("\tHardware not available: "+instrument);
+			MonitorAndDebug.printConsole("\tHardware not available: "+instrument);
 			tablePanel.add(new InstrumentTable(null, instrument),BorderLayout.CENTER);
 		}else {
-			System.out.println("\tload instrument "+instrument+"["+cInstrument.size()+"] for "+micName);
+			MonitorAndDebug.printConsole("\tload instrument "+instrument+"["+cInstrument.size()+"] for "+micName);
 			tablePanel.add(new InstrumentTable(cInstrument,instrument),BorderLayout.CENTER);
 		}
 		tablePanel.revalidate();
@@ -383,7 +383,7 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 			txtMicName.setText("");
 			break;
 		case CMD_NEW_OBJ:
-			System.out.println("-- HardwareConf::Add new objectTable");
+			MonitorAndDebug.printConsole("-- HardwareConf::Add new objectTable");
 			String obj=String.valueOf(objects.getSelectedItem());
 			createNewObject(obj);
 			
@@ -417,7 +417,7 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 		if(micName.equals(MDEConfiguration.UNIVERSAL))
 			return;
 		int micIndex = micList.getSelectedIndex();
-		System.out.println("-- DELETE ["+micName+"]: on index "+micIndex+"/"+micList.getModel().getSize());
+		MonitorAndDebug.printConsole("-- DELETE ["+micName+"]: on index "+micIndex+"/"+micList.getModel().getSize());
 		if(micName==null || micName.equals("") )
 			return;
 		// delete from micList
@@ -472,7 +472,7 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 		ModuleList hardware = conf.getInstruments(mic);
 		
 		if(hardware!=null) {
-			System.out.println("\t\t Instruments["+mic+"]: "+hardware.keySet());
+			MonitorAndDebug.printConsole("\t\t Instruments["+mic+"]: "+hardware.keySet());
 			System.out.println("-- Load objects for "+mic);
 			for (Entry<String, List<ModuleContent>> entry : hardware.entrySet()) {
 				if(entry.getValue()!=null && entry.getValue().size()>0) {
@@ -623,7 +623,6 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 
 			if ("tableCellEditor".equals(e.getPropertyName()))
 			{
-//				System.out.println("Editing table");
 				if (table.isEditing())
 					processEditingStarted();
 				else
@@ -722,12 +721,10 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-//			System.out.println("--Edit table: "+type);
 			TableCellListener tcl = (TableCellListener)e.getSource();
 //            MonitorAndDebug.printConsole("Row   : " + tcl.getRow());
 //            MonitorAndDebug.printConsole("Column: " + tcl.getColumn());
-            MonitorAndDebug.printConsole("Old   : " + tcl.getOldValue());
-            MonitorAndDebug.printConsole("New   : " + tcl.getNewValue());
+            MonitorAndDebug.printConsole("EDIT Table: Old   : " + tcl.getOldValue()+", New   : " + tcl.getNewValue());
 		}
 		
 	}
@@ -775,7 +772,7 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 				
 				ModuleContent rowContent=((ModuleContentTableModel) t.getModel()).getRowData(i,controller.getContentOfType(name));
 				if(rowContent!=null) {
-//					System.out.println("--Add instrument content for "+name+" : "+rowContent.getAttributeValue(TagNames.MODEL));
+//					MonitorAndDebug.printConsole("--Add instrument content for "+name+" : "+rowContent.getAttributeValue(TagNames.MODEL));
 					result.add(rowContent);
 				}
 			}

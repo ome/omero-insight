@@ -14,6 +14,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.XMLWriter;
+import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 import ome.model.units.UnitEnum;
 
@@ -32,7 +33,6 @@ public class MDEConfiguration {
 	private HashMap<String, UnitEnum> defaultUnitMap;
 	
 	public MDEConfiguration() {
-		System.out.println("-- init NEW MDEConfiguration");
 		//copy default ome unit map
 		defaultUnitMap=new HashMap<>();
 		for(Map.Entry<String, ome.model.units.UnitEnum> entry: TagNames.omeUnitEnumsDef.entrySet()) {
@@ -53,15 +53,14 @@ public class MDEConfiguration {
 		printObjects(ModuleController.getInstance().getCurrentMicName());
 	}
 	
-	// TODO test add unit function: chancel, apply configurators
+	// TODO test add unit function: cancel, apply configurators
 	public void addDefaultUnit(String unitSymbol, String className, String tagName, String parent) {
 		if(defaultUnitMap!=null  && !defaultUnitMap.containsKey(parent+"::"+tagName)) {
-			System.out.println("-- Add default unit of type "+className+" for "+tagName+" [ModuleController]");
+//			System.out.println("-- Add default unit of type "+className+" for "+tagName+" [ModuleController]");
 			ome.model.units.UnitEnum u=TagNames.getUnitEnum(className, unitSymbol);
-			if(u!=null)
+			if(u!=null) {
 				defaultUnitMap.put(parent+"::"+tagName, u);
-			else
-				System.out.println("ERROR: add unit to default map - unitEnum is empty [ModuleController]");
+			}
 		}
 	}
 	
@@ -212,13 +211,14 @@ public class MDEConfiguration {
 
 	private void print(HashMap<String, ModuleContent> contList) {
 		if(contList==null)
-			System.out.println("\tContent List is empty");
+			MonitorAndDebug.printConsole("-- PRINT Content List: list is empty");
 		else {
 			for(Map.Entry<String, ModuleContent> entry:contList.entrySet()) {
-				if(entry.getValue()!=null && entry.getValue().getList()!=null)
-					System.out.println("\tContent "+entry.getKey()+" elements: "+entry.getValue().getList().size());
-				else
-					System.out.println("\tContent "+entry.getKey()+" elements: 0");
+				if(entry.getValue()!=null && entry.getValue().getList()!=null) {
+					entry.getValue().print();
+				}else {
+					MonitorAndDebug.printConsole("-- PRINT ModuleContent: Content "+entry.getKey()+" elements: 0");
+				}
 			}
 		}
 	}
@@ -227,12 +227,12 @@ public class MDEConfiguration {
 		if(oConfiguration!=null && !oConfiguration.isEmpty()) {
 			HashMap<String, ModuleContent> map =oConfiguration.get(micName);
 			if(map==null) {
-				System.out.println("\t does not exists");
+				System.out.println("-- WARNING: does not exists:  content of type: "+type+"::"+micName);
 				return null;
 			}
 			return map.get(type);
 		}
-		System.out.println("ERROR: no "+type+" content for "+micName);
+		System.out.println("-- ERROR: objectConfiguration is empty");
 		return null;
 	}
 	
@@ -263,7 +263,6 @@ public class MDEConfiguration {
 	}
 	
 	public void writeToFile() {
-		System.out.println("--Save to xml");
 		XMLWriter writer=new XMLWriter();
 		writer.saveToXML(hConfiguration,oConfiguration);
 	}
@@ -288,16 +287,16 @@ public class MDEConfiguration {
 	}
 
 	public void printObjects(String mic) {
-		System.out.println("------------  Objects for "+mic+" -------------");
+		MonitorAndDebug.printConsole("------------  Objects for "+mic+" -------------");
 		if(oConfiguration==null || !oConfiguration.containsKey(mic) || oConfiguration.get(mic)==null) {
-			System.out.println("-- objectConfiguration is null");
+			MonitorAndDebug.printConsole("-- objectConfiguration is null");
 			return;
 		}
 		for(Entry<String, ModuleContent> entry : oConfiguration.get(mic).entrySet()) {
 			String[] parents=entry.getValue()!=null ? entry.getValue().getParents():null;
 			if(parents!=null) {
 				String p=String.join(",", parents);
-				System.out.println("\t"+entry.getKey()+", parent: "+p+" ["+parents.length+"]");
+				MonitorAndDebug.printConsole("\t"+entry.getKey()+", parent: "+p+" ["+parents.length+"]");
 			}
 		}
 	}

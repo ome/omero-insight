@@ -268,7 +268,7 @@ public class XMLWriter {
 			e.printStackTrace();
 		}
 
-        System.out.println("Done creating XML File at "+xmlFilePath_structure);
+        System.out.println("-- Create XML File at "+xmlFilePath_structure);
         
 	}
 	/**
@@ -389,7 +389,7 @@ public class XMLWriter {
 			e.printStackTrace();
 		}
 
-        System.out.println("Done creating XML File at "+xmlFilePath_hardware);
+        System.out.println("-- Create XML File at "+xmlFilePath_hardware);
         
 	}
 	
@@ -522,7 +522,6 @@ public class XMLWriter {
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 				Document doc = dBuilder.parse(hardwareFile);
 				doc.getDocumentElement().normalize();
-				System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 				NodeList hardwareConf=doc.getElementsByTagName(HARDWARE_CONF);
 				if(hardwareConf!=null && hardwareConf.getLength()>0) {
 					this.hardwareConfiguration =elementsToHardwareConf(((Element) hardwareConf.item(0)).getElementsByTagName(MIC));
@@ -532,7 +531,7 @@ public class XMLWriter {
 					this.objectConfiguration =elementsToObjectConf(((Element) objectConf.item(0)).getElementsByTagName(MIC));
 				}
 			}else {
-				System.out.println("ERROR: can't find configuration file for MDE");
+				System.out.println("-- No configuration file available for MDE");
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -678,7 +677,7 @@ public class XMLWriter {
 				 }
 			 }
 		 }else {
-			 System.out.println("ERROR: no objects are given [XMLWriter::elementsToObjects]");
+			 System.out.println("-- WARNING: no objects configuration available in configuration file [XMLWriter::elementsToObjectConf]");
 		 }
 		return list;
 		

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * Holds content(properties==tags) of a module as list of tags
@@ -99,7 +100,6 @@ public class ModuleContent {
 		
 		for (Map.Entry<String,TagData> entry : tagList.entrySet()) {
 			if(entry.getValue().valueHasChanged()) {
-//				System.out.println("\t "+entry.getKey()+": "+entry.getValue().getTagValue());
 				result.add(entry.getValue());
 			}
 		}
@@ -141,21 +141,6 @@ public class ModuleContent {
 		return null;
 	}
 	
-//	public void specifyView(ModuleConfiguration conf) {
-//		if(conf==null)
-//			return;
-//		List<TagConfiguration> list=conf.getTagList();
-//		if(list==null)
-//			return;
-//		
-//		for(int i=0; i<list.size();i++){
-//			TagConfiguration t=list.get(i);
-//			if(t.getName()!=null){
-//				if(tagList.containsKey(t.getName()))
-//					tagList.get(t.getName()).setVisible(t.isVisible());
-//			}
-//		}
-//	}
 	
 	/**
 	 * Replace element at i with given tagdata
@@ -185,11 +170,11 @@ public class ModuleContent {
 
 	public void print() {
 		if(tagList==null) {
-			System.out.println("-- PRINT DATA: no data");
+			MonitorAndDebug.printConsole("-- PRINT ModuleContent: \n\tno tag data!");
 		}else {
 			for(TagData t:getTagList()) {
 				if(t!=null)
-					System.out.println("\t "+t.tagToString()+", visible: "+t.isVisible());
+					MonitorAndDebug.printConsole("\t "+t.tagToString()+", visible: "+t.isVisible());
 			}
 		}
 	}
@@ -221,17 +206,4 @@ public class ModuleContent {
 		}
 	}
 
-
-//	public Class[] getClasses() {
-//		if(tagList==null) {
-//			return null;
-//		}
-//		
-//		List<TagData> list=getTagList();
-//		Class[] result=new Class[list.size()];
-//		for(int i=0; i<list.size();i++) {
-//			result[i]=list.
-//		}
-//		return result;
-//	}
 }
