@@ -363,7 +363,7 @@
       <dependencies>bioformats_package.jar, loci_tools.jar</dependencies>
       <conjunction>or</conjunction>
       <directory>plugins</directory>
-      <info>https://downloads.openmicroscopy.org/latest/bio-formats5</info>
+      <info>https://downloads.openmicroscopy.org/latest/bio-formats6</info>
       <name>ImageJ</name>
     </plugin>
   </structuredEntry>
