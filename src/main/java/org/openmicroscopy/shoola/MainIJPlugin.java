@@ -36,6 +36,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.CodeSource;
@@ -263,14 +264,16 @@ implements PlugIn
         CodeSource src =
                 MainIJPlugin.class.getProtectionDomain().getCodeSource();
         File jarFile;
+        String pluginDir = "";
         if (home.length() == 0) {
             try {
                 jarFile = new File(src.getLocation().toURI().getPath());
                 JarFile jarfile = new JarFile(jarFile);
+                pluginDir = jarFile.getParentFile().getPath();
                 //read the config file from the jarFile
                 configFile = Container.CONFIG_FILE;
                 Enumeration<JarEntry> enu = jarfile.entries();
-                java.nio.file.Path dir = Files.createTempDirectory("jar-file");
+                Path dir = Files.createTempDirectory("jar-file");
                 home = dir.toString();
                 File configDir = new File(dir.toString()+File.separator+Container.CONFIG_DIR);
                 configDir.mkdir();
@@ -291,7 +294,7 @@ implements PlugIn
             } catch (Exception e) {}
         }
         try {
-            container = Container.startupInPluginMode(home, configFile, index);
+            container = Container.startupInPluginMode(home, configFile, index, pluginDir, null);
             if (save >=0) {
                 container.getRegistry().getEventBus().post(
                         new SaveEvent(LookupNames.IMAGE_J, save));
