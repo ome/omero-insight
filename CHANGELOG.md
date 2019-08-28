@@ -1,11 +1,11 @@
 5.5.4 (August 2019)
 -------------------
 
-- Fix issue preventing to use the OMERO.imagej plugin in ImageJ
-- Fix jar conflict when using OMERO.imagej plugin in newer version of Fiji
-- Fix import freeze when importing large number of images and cancelling import
-- Improve error handling when a connection failure occurred during import
-- Fix issue when doing a "Cut&Paste" action.
+- Fix issue preventing to use the OMERO.imagej plugin in ImageJ [#65](https://github.com/ome/omero-insight/pull/65)
+- Fix jar conflict when using OMERO.imagej plugin in newer version of Fiji [#72](https://github.com/ome/omero-insight/pull/72)
+- Fix import freeze when importing large number of images and cancelling import [#58](https://github.com/ome/omero-insight/pull/58)
+- Improve error handling when a connection failure occurred during import [#62](https://github.com/ome/omero-insight/pull/62)
+- Fix issue when doing a "Cut&Paste" action [#67](https://github.com/ome/omero-insight/pull/67)
 
 5.5.3 (July 2019)
 -----------------
