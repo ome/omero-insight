@@ -43,13 +43,9 @@ class DistributePlugin implements Plugin<Project> {
 
     public static final String DISTRIBUTION_NAME_IMAGEJ = "OMERO.imagej"
 
-    public static final String DISTRIBUTION_NAME_FIJI = DISTRIBUTION_NAME_IMAGEJ//"OMERO.fiji"
-
     public static final String DISTRIBUTION_IMPORTER = "importer"
 
     public static final String DISTRIBUTION_IMAGEJ = "imagej"
-
-    public static final String DISTRIBUTION_FIJI = DISTRIBUTION_IMAGEJ//"fiji"
 
     public static final String TASK_IMPORTER_START_SCRIPTS = "importerStartScripts"
 
@@ -106,7 +102,7 @@ class DistributePlugin implements Plugin<Project> {
     }
 
     private void createImporterDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
-        // Create and configure imageJ distribution
+        // Create and configure importer distribution
         distributionContainer.create(DISTRIBUTION_IMPORTER) { Distribution importer ->
             importer.baseName = DISTRIBUTION_NAME_IMPORTER
             importer.contents.with(configSpec)
@@ -125,30 +121,10 @@ class DistributePlugin implements Plugin<Project> {
         }
     }
 
-    private void createImageJPluginDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
+    private void createImageJFatJarPluginDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
         // Create and configure imageJ distribution
         distributionContainer.create(DISTRIBUTION_IMAGEJ) { Distribution imageJ ->
             imageJ.baseName = DISTRIBUTION_NAME_IMAGEJ
-            imageJ.contents.with(configSpec)
-
-            CopySpec libChildSpec = createLibSpec(null)
-
-            CopySpec mainSpec = project.copySpec()
-            mainSpec.into("")
-            mainSpec.from(project.tasks.named(InsightBasePlugin.TASK_OMERO_IMAGEJ_JAR))
-
-            CopySpec childSpec = project.copySpec()
-            childSpec.with(libChildSpec)
-            childSpec.with(mainSpec)
-
-            imageJ.contents.with(childSpec)
-        }
-    }
-
-    private void createImageJFatJarPluginDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
-        // Create and configure imageJ distribution
-        distributionContainer.create(DISTRIBUTION_FIJI) { Distribution imageJ ->
-            imageJ.baseName = DISTRIBUTION_NAME_FIJI
             imageJ.contents.with(configSpec)
 
             CopySpec mainSpec = project.copySpec()

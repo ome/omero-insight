@@ -66,7 +66,6 @@ class InsightBasePlugin implements Plugin<Project> {
 
         configureJarTask()
         addProcessConfigs()
-        //addCreateImageJJar()
         addCreateImageJFatJar()
     }
 
@@ -99,29 +98,6 @@ class InsightBasePlugin implements Plugin<Project> {
         }
 
         processConfigs
-    }
-
-    private TaskProvider<Jar> addCreateImageJJar() {
-        JavaPluginConvention javaPluginConvention =
-                project.convention.getPlugin(JavaPluginConvention)
-
-        SourceSet main =
-                javaPluginConvention.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-
-        project.tasks.register(TASK_OMERO_IMAGEJ_JAR, Jar, new Action<Jar>() {
-            @Override
-            void execute(Jar jar) {
-                // This might not be the best way to ensure a parity of names
-                Jar jarTask = project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar
-
-                jar.archiveBaseName.set(createImageJName(jarTask, "ij"))
-                jar.setDescription("Assembles a jar for use with ImageJ")
-                jar.setGroup(GROUP_BUILD)
-                jar.dependsOn(project.tasks.getByName(JavaPlugin.CLASSES_TASK_NAME))
-                jar.from(main.output)
-                jar.doFirst(addManifest(MAIN_IMAGEJ, "lib"))
-            }
-        })
     }
 
     private TaskProvider<ShadowJar> addCreateImageJFatJar() {
