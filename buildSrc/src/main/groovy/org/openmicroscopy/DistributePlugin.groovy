@@ -71,7 +71,8 @@ class DistributePlugin implements Plugin<Project> {
 
         configureMainDistribution(distributionContainer, configSpec)
         createImporterDistribution(distributionContainer, configSpec)
-        createImageJPluginDistribution(distributionContainer, configSpec)
+        //createImageJPluginDistribution(distributionContainer, configSpec)
+        createImageJFatJarPluginDistribution(distributionContainer, configSpec)
 
         // Skip tar tasks
         project.tasks.withType(Tar).configureEach {
@@ -101,7 +102,7 @@ class DistributePlugin implements Plugin<Project> {
     }
 
     private void createImporterDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
-        // Create and configure imageJ distribution
+        // Create and configure importer distribution
         distributionContainer.create(DISTRIBUTION_IMPORTER) { Distribution importer ->
             importer.baseName = DISTRIBUTION_NAME_IMPORTER
             importer.contents.with(configSpec)
@@ -120,20 +121,17 @@ class DistributePlugin implements Plugin<Project> {
         }
     }
 
-    private void createImageJPluginDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
+    private void createImageJFatJarPluginDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
         // Create and configure imageJ distribution
         distributionContainer.create(DISTRIBUTION_IMAGEJ) { Distribution imageJ ->
             imageJ.baseName = DISTRIBUTION_NAME_IMAGEJ
             imageJ.contents.with(configSpec)
 
-            CopySpec libChildSpec = createLibSpec(null)
-
             CopySpec mainSpec = project.copySpec()
             mainSpec.into("")
-            mainSpec.from(project.tasks.named(InsightBasePlugin.TASK_OMERO_IMAGEJ_JAR))
+            mainSpec.from(project.tasks.named(InsightBasePlugin.TASK_OMERO_IMAGEJ_FAT_JAR))
 
             CopySpec childSpec = project.copySpec()
-            childSpec.with(libChildSpec)
             childSpec.with(mainSpec)
 
             imageJ.contents.with(childSpec)
