@@ -24,20 +24,16 @@
 package org.openmicroscopy.shoola.env.log;
 
 
-//Java imports
 import java.io.File;
-
-//Third-party libraries
-
 
 import omero.log.Logger;
 import omero.log.LogMessage;
 
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.Environment;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.Registry;
+
 
 /** 
  * A factory for the {@link Logger}. 
@@ -47,10 +43,7 @@ import org.openmicroscopy.shoola.env.config.Registry;
  * @author  <br>Andrea Falconi &nbsp;&nbsp;&nbsp;&nbsp;
  * 				<a href="mailto:a.falconi@dundee.ac.uk">
  * 					a.falconi@dundee.ac.uk</a>
- * @version 2.2 
- * <small>
- * (<b>Internal version:</b> $Revision$ $Date$)
- * </small>
+ * @version 2.2
  * @since OME2.2
  */
 public class LoggerFactory
@@ -92,23 +85,20 @@ public class LoggerFactory
 		File home = new File(omeroDir);
 		if (!home.exists()) 
 			home.mkdir();
-		File logFile, logDir;
 
-		if (home.isDirectory()) {
+		Integer v = (Integer) reg.lookup(LookupNames.PLUGIN);
+		int value = -1;
+		if (v != null) value = v.intValue();
+
+		if (value < 0) {
+			File logFile, logDir;
+			if (!home.isDirectory()) {
+				home = new File(c.getHomeDir());
+			}
 			logDir = new File(home, logDirName);
 			logDir.mkdir();
 			if (logDir.isDirectory()) logFile = new File(logDir, logFileName);
 			else logFile = new File(home, logFileName);
-		} else {
-			logDir = new File(c.getHomeDir(), logDirName);
-			logDir.mkdir();
-			if (logDir.isDirectory()) logFile = new File(logDir, logFileName);
-			else logFile = new File(c.getHomeDir(), logFileName);
-		}
-		Integer v = (Integer) reg.lookup(LookupNames.PLUGIN);
-		int value = -1;
-		if (v != null) value = v.intValue();
-		if (value < 0) {
 		    return new LoggerImpl(relPathName, logFile.getAbsolutePath());
 		} else {
 		    return new PluginLoggerImpl(value);
