@@ -23,7 +23,7 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" && -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationDmg ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -f build/packaged/main/bundles/OMERO.insight-* ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./gradlew build ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -f build/distributions/OMERO.imagej-* ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -f build/libs/omero_ij* ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -f build/distributions/OMERO.insight-* ; fi
 
 deploy:
