@@ -64,7 +64,6 @@ import ij.ImageJ;
 import ij.plugin.BrowserLauncher;
 import ij.plugin.PlugIn;
 
-import org.apache.commons.io.FileUtils;
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.PluginInfo;
