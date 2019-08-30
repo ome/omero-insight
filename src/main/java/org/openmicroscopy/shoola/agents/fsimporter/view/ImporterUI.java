@@ -854,7 +854,9 @@ class ImporterUI extends TopWindow
 	}
 
 	public void startImport() {
-		mde.saveChanges("");
+		if (mde != null) {
+			mde.saveChanges("");
+		}
 		chooser.importFiles();
 	}
 

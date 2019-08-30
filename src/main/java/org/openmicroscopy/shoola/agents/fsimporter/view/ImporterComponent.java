@@ -349,12 +349,12 @@ class ImporterComponent
 				String microscopeName = (String) ImporterAgent.getRegistry().lookup(LookupNames.MICROSCOPE_WORKSTATION);
 
 				//MDE
-				if(metaDataChooser==null){
+				if (metaDataChooser == null && ImporterAgent.isMDEImport()) {
 					metaDataChooser = new MetaDataDialog(view,model.getSupportedFormats(),type,
-				  controller.getAction(ImporterControl.CANCEL_BUTTON),this,
-				  chooser.getImportButton(),chooser.getCancelImportButton(), microscopeName);
-				  metaDataChooser.addPropertyChangeListener(controller);
-				  view.addMDComponent(metaDataChooser);
+				    controller.getAction(ImporterControl.CANCEL_BUTTON), this,
+				    chooser.getImportButton(),chooser.getCancelImportButton(), microscopeName);
+				    metaDataChooser.addPropertyChangeListener(controller);
+				    view.addMDComponent(metaDataChooser);
 				}
 
         if (model.isMaster() || CollectionUtils.isEmpty(objects) || !reactivate)

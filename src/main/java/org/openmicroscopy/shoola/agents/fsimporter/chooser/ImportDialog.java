@@ -848,14 +848,17 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	 * @return See above.
 	 */
 	private JPanel buildToolBarRight() {
+
 		JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		bar.add(cancelImportButton);
 		bar.add(Box.createHorizontalStrut(5));
 
 		bar.add(importButton);
 		bar.add(Box.createHorizontalStrut(10));
-		bar.add(showMDEButton);
-		bar.add(Box.createHorizontalStrut(10));
+		if (ImporterAgent.isMDEImport()) {
+			bar.add(showMDEButton);
+			bar.add(Box.createHorizontalStrut(10));
+		}
 		return bar;
 	}
 
@@ -1186,7 +1189,9 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		}
 
 		// set map annotations from mde
-		object.setMapAnnotation(mapAnnotation);
+		if (ImporterAgent.isMDEImport()) {
+			object.setMapAnnotation(mapAnnotation);
+		}
 
 		object.setScanningDepth(ImporterAgent.getScanningDepth());
 		Boolean loadThumbnails = (Boolean) ImporterAgent.getRegistry()
