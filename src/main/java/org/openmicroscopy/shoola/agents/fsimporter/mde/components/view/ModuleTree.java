@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -206,19 +207,26 @@ public class ModuleTree extends JPanel implements ActionListener{
 		if(parent==null) {
 			parent = root;
 		}
+		String pType=((ModuleTreeElement) parent.getUserObject()).getType();
+		// it is alowed to insert object at this point?
 		if(thisElem!=null) {
-//			MonitorAndDebug.printConsole("-- addNode: "+getName(thisElem) + " at "+parent.getUserObject().toString());
-			this.changeTreeStructure=true;
-			((ModuleTreeElement)thisElem.getUserObject()).setChildIndex(parent);
-			
-			//visualize node in jtree
-			treeModel.insertNodeInto(thisElem, parent, parent.getChildCount());
-			
-			//make sure the tree is visible in the panel on this path
-			if(thisElem!=null && tree!=null)
-				tree.scrollPathToVisible(new TreePath(thisElem.getPath()));
-			
-			return thisElem;
+			if(((ModuleTreeElement) thisElem.getUserObject()).getData().hasParent(pType)) {
+				MonitorAndDebug.printConsole("-- addNode: "+getName(thisElem) + " at "+parent.getUserObject().toString());
+				this.changeTreeStructure=true;
+				((ModuleTreeElement)thisElem.getUserObject()).setChildIndex(parent);
+
+				//visualize node in jtree
+				treeModel.insertNodeInto(thisElem, parent, parent.getChildCount());
+				//			parent.add(thisElem);
+				//			treeModel.reload();
+				//make sure the tree is visible in the panel on this path
+				if(thisElem!=null && tree!=null)
+					tree.scrollPathToVisible(new TreePath(thisElem.getPath()));
+
+				return thisElem;
+			}else {
+				System.out.println("-- can't insert node at selected parent! Allowed parents: "+Arrays.toString(((ModuleTreeElement) thisElem.getUserObject()).getData().getParents()));
+			}
 		}
 		return null;
 		
@@ -248,7 +256,6 @@ public class ModuleTree extends JPanel implements ActionListener{
 	public void pasteNode(DefaultMutableTreeNode node) {
 		this.changeTreeStructure=true;
 		DefaultMutableTreeNode cNode=insertNode(node);
-//		printTree(root," ");
 	}
 
 	public DefaultMutableTreeNode insertNode(String type) {
@@ -369,12 +376,14 @@ public class ModuleTree extends JPanel implements ActionListener{
 				return;
 		}
 		if(POPUP_COPY.equals(cmd)) {
-			copyVal=cloneTreeNode(current);
+			copyVal=current;
 			
 		}
 		if(POPUP_PASTE.equals(cmd)) {
-			if(copyVal!=null)
-				pasteNode(copyVal);
+			if(copyVal!=null) {
+				// clone node here for multi paste operation
+				pasteNode(cloneTreeNode(copyVal));
+			}
 		}
 		
 		if(POPUP_INSERT.equals(cmd)) {

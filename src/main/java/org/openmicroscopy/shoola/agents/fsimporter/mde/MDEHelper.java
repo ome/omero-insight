@@ -48,7 +48,7 @@ public class MDEHelper {
 	
 	
 	/**
-	 * Get input from given tree
+	 * Get input from given tree and generate key for key-value annotation.
 	 * @param contentTree
 	 */
 	public static HashMap<String,List<TagData>> getInput(DefaultMutableTreeNode contentTree) {
@@ -66,33 +66,33 @@ public class MDEHelper {
 			}
 		}else {
 			Enumeration e = contentTree.breadthFirstEnumeration();
+			// input of subtree
 			while(e.hasMoreElements()) {
-				DefaultMutableTreeNode node =
-						(DefaultMutableTreeNode)e.nextElement();
+				DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
+				// search for node with input and generate key backward, skip container nodes
 				if(!(((ModuleTreeElement) node.getUserObject()).isContainer())) {
-					String id=node.getUserObject().toString();
-					
-					if(node.getParent()!=null) {
-						if(((ModuleTreeElement) ((DefaultMutableTreeNode) node.getParent()).getUserObject()).isContainer()) {
-							DefaultMutableTreeNode p=(DefaultMutableTreeNode) node.getParent();
-							while(p!=null && ((ModuleTreeElement) p.getUserObject()).isContainer()) {
-								id= ((ModuleTreeElement) p.getUserObject()).getElementName()+SELECTOR+id;
-								p=(DefaultMutableTreeNode) p.getParent();
-							}
-							if(p!=null)
-								id= ((ModuleTreeElement) p.getUserObject()).getElementName()+SELECTOR+id;
-							
-						}else {
-							id=((ModuleTreeElement) ((DefaultMutableTreeNode) node.getParent()).getUserObject()).getElementName()+" | "+id;
-						}
-					}
 					List<TagData> res=((ModuleTreeElement) node.getUserObject()).getData().getInput();
-					if(res!=null && !res.isEmpty())
+					if(res!=null && !res.isEmpty()) {
+						String id= generateTreePathForKey(node);
 						result.put(id, res);
+//						MonitorAndDebug.printConsole("\t SAVE id = "+id);
+					}
+				}else {
+					MonitorAndDebug.printConsole("-- subtree object node is container: "+node.getUserObject().toString());
 				}
 			}
 		}
 		return result;
+	}
+	
+	private static String generateTreePathForKey(DefaultMutableTreeNode node) {
+		String res = ((ModuleTreeElement) node.getUserObject()).getElementName();
+		while(node.getParent()!=null) {
+			res = ((ModuleTreeElement) ((DefaultMutableTreeNode) node.getParent()).getUserObject()).getElementName()+SELECTOR+res;
+			node = (DefaultMutableTreeNode) node.getParent();
+		}
+		return res;
+		
 	}
 	
 	public static void resetInput(DefaultMutableTreeNode contentTree) {
@@ -312,8 +312,10 @@ public class MDEHelper {
 	 * @return
 	 */
 	private static DefaultMutableTreeNode getChildByName(DefaultMutableTreeNode tree, String name) {
-		if(tree==null)
+		if(tree==null) {
+			System.out.println("-- can't find given node, tree is null! [MDEHelper::getChildByName]");
 			return null;
+		}
 		
 		Enumeration e = tree.breadthFirstEnumeration();
 		while(e.hasMoreElements()) {
@@ -599,7 +601,7 @@ public class MDEHelper {
 				TagData valIn=new TagData(entry.getValue());
 				if(valIn!=null && valIn.getTagValue()!=null && !valIn.getTagValue().equals("")) {
 					if(l1.containsKey(key)) {
-						if( l1.get(key).equals(l3.get(key))) {
+						if( l1.get(key).equalContent(l3.get(key))) {
 							// unchanged content will be replaced by new values
 							valIn.dataHasChanged(true);
 							result.set(key, valIn);
@@ -705,6 +707,47 @@ public class MDEHelper {
 	}
 
 
+	/**
+	 * Merge list l1 and l2. Overwrite same values in l1 with value in l2.
+	 * If one of the list is null or empty return a clone of the other list.
+	 * @param l1
+	 * @param l2
+	 * @return
+	 */
+	public static List<TagData> mergeTagDataList(List<TagData> l1, List<TagData> l2){
+		if(l1==null && l2==null)
+			return null;
+		if(l1==null)
+			return cloneTagList(l2);
+		if(l2==null)
+			return cloneTagList(l1);
+	
+		List<TagData> res=new ArrayList<>();
+		res=cloneTagList(l2);
+		for(TagData t1: l1) {
+			boolean found=false;
+			for(TagData t2:l2) {
+				if(t1.getTagName().equals(t2.getTagName())) {
+					found=true;
+					break;
+				}
+			}
+			if(!found) {
+				res.add(new TagData(t1));
+			}
+		}
+	
+		return res;
+	}
+	
+
+	private static List<TagData> cloneTagList(List<TagData> l) {
+		List<TagData> res=new ArrayList<>();
+		for(TagData t:l) {
+			res.add(new TagData(t));
+}
+		return res;
+	}
 	
 	
 	

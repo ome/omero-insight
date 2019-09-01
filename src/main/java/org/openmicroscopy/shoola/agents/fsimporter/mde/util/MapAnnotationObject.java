@@ -123,7 +123,7 @@ public class MapAnnotationObject {
 		List<MapAnnotationData> list=o.getMapAnnotationList();
 		int index=0;
 		for(MapAnnotationData m:list){
-			MonitorAndDebug.printConsole("Series_"+index++);
+			MonitorAndDebug.printConsole("\t Series_"+index++);
 			printMapAnnotation(m);
 		}
 	}

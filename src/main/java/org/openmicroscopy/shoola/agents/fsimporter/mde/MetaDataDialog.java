@@ -464,12 +464,17 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		if(node==null || (file=fileTree.getSelectedFilePath(node))==null)
 			return;
 
-		MonitorAndDebug.printConsole("[TREE] -- Node: "+node.toString()+" ##############################################");
 		DefaultMutableTreeNode pTree=null;
+		HashMap<String,List<TagData>> input=null;
 		if(node.getContainer()==null || node.getContainer().getTreeNode()==null) 
 		{
 			//get parent tree and data 
-			pTree=getNextAvailableParentTree(node);
+			FNode pNode=getNextParentWithAvailableTree(node);
+			if(pNode!=null && pNode.getContainer()!=null) {
+				MonitorAndDebug.printConsole("-- use tree and input of "+pNode.getAbsolutePath());
+				pTree=pNode.getContainer().getTreeNode();
+				input=pNode.getInput();
+			}
 			
 			// is selection a file or directory
 			try {
@@ -484,7 +489,8 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				return;
 			}
 		}
-		System.out.println("-- show content of "+node.getAbsolutePath());
+		System.out.println("-- load content for "+node.getAbsolutePath());
+		node.setMapAnnotation(input);
 		showMDE(node.getContainer(),pTree);
 	}
 
@@ -492,23 +498,22 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 
 
-	private DefaultMutableTreeNode getNextAvailableParentTree(FNode node) {
-		DefaultMutableTreeNode pTree=null;
+	private FNode getNextParentWithAvailableTree(FNode node) {
+		FNode pNode=null;
 		if(node!=null) {
 			if((FNode) node.getParent()!=null) {
 				//tree available?
 				if(((FNode) node.getParent()).getContainer()!=null) {
 					if(((FNode) node.getParent()).getContainer().getTreeNode()!=null) {
-						pTree = ((FNode) node.getParent()).getContainer().getTreeNode();
-						System.out.println("-- Load object tree of "+node.getAbsolutePath());
+						pNode = (FNode) node.getParent();
 					}
 				}
 			}
-			if(pTree==null) {
-				pTree=getNextAvailableParentTree((FNode) node.getParent());
+			if(pNode==null) {
+				pNode=getNextParentWithAvailableTree((FNode) node.getParent());
 			}
 		}
-		return pTree;
+		return pNode;
 	}
 
 
@@ -566,32 +571,48 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 			
 			// get user input
 			HashMap<String,List<TagData>> input = MDEHelper.getInput(contentTree);
-			MonitorAndDebug.printConsole("-- INPUT AT DESELECTED NODE:");
-			MDEHelper.printList(node.getAbsolutePath(), input);
+			MDEHelper.printList("-- input in current content", input);
+			
+			if(node.getContainer()!=null) {
+				// save moduletree
+				System.out.println("-- save contentTree of "+node.getAbsolutePath());
+				node.getContainer().setTreeNode(contentTree);
+				node.getContainer().setInstruments(fileInstrumentList);
+			}else {
+				try {
+				//create container
+				System.out.println("-- create new contentTree of "+node.getAbsolutePath());
+				NodeContainer cont=new NodeContainer(node.getAbsolutePath(), getImportData(), contentTree, this, null, !node.isLeaf());
+				cont.setInstruments(fileInstrumentList);
+				node.setContainer(cont);
+				}catch(Exception e) {
+					System.out.println("-- ERROR: create new NodeContainer for saving content");
+					e.printStackTrace();
+				}
+			}
 
-			// save moduletree
-			System.out.println("-- save contentTree of "+node.getAbsolutePath());
-			node.getContainer().setTreeNode(contentTree);
-			node.getContainer().setInstruments(fileInstrumentList);
-
-			//override childs with content
+			//override childs object with new content
 			if(!node.isLeaf()) {
 				saveInputToChilds(node,input);
-				//Reset valhasChanged;
-				System.out.println("-- reset input for "+node.getAbsolutePath());
-				MDEHelper.resetInput(contentTree);
 			}
-			else {
-				// TODO save changes
-				MonitorAndDebug.printConsole("-- TODO: Save data of current node for subnodes without own tree");
-
-			}
+			
+			//Reset valhasChanged;
+			System.out.println("-- reset input for "+node.getAbsolutePath());
+			MDEHelper.resetInput(contentTree);
+			
 			node.setMapAnnotation(input);
+			MonitorAndDebug.printConsole("-- MAPAnnotation AT DESELECTED NODE:");
+			MDEHelper.printList(node.getAbsolutePath(), node.getInput());
+			
 			lastNode=node;
 		}
 	}
 
-
+	/**
+	 * Update childs with existing tree.
+	 * @param node
+	 * @param input map
+	 */
 	private void saveInputToChilds(FNode node, HashMap<String, List<TagData>> input) {
 		if(node !=null) {
 			for(int i=0; i<node.getChildCount();i++){
@@ -601,10 +622,11 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 					DefaultMutableTreeNode childTree=child.getContainer().getTreeNode();
 					//update object input
 					if(input!=null && !input.isEmpty()) {
-						System.out.println("--update child "+node.getAbsolutePath());
-						MDEHelper.replaceData(child.getContainer().getTreeNode(), input);
+						System.out.println("-- update child: "+child.getAbsolutePath());
+						MDEHelper.replaceData(childTree, input);
+						child.setMapAnnotation(input);
 					}
-					//update object tree
+					// update object tree
 					// changes in object tree of parent dir?
 					if(node.getContainer()!=null) {
 						List<String> leafPath=MDEHelper.getAdditionalLeafsInTree(node.getContainer().getTreeNode(), childTree);
@@ -612,7 +634,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 							MDEHelper.insertObjects(leafPath,childTree);
 						}
 					}else {
-						System.out.println("-- WARNING: Node container is null (TODO?)");
+						System.out.println("-- don't update child (no container): "+child.getAbsolutePath());
 					}
 				}
 				if(!child.isLeaf()) {
@@ -1036,7 +1058,6 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	{
 		System.out.println("-- import: save changes");
 		deselectNodeAction((FNode)fileTree.getLastSelectedPathComponent());
-		FNode node=(FNode)fileTree.getLastSelectedPathComponent();
 		saveMapAnnotations();
 	}
 
@@ -1044,45 +1065,40 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		DefaultTreeModel treeModel=(DefaultTreeModel)fileTree.getModel();
 		FNode root =(FNode)treeModel.getRoot();
 
-		// walk trough tree
-		saveMapAnnotationOfSubNodes(root, null);
+		// walk trough file tree
+		saveMapAnnotationForLeafs(root, null);
 	}
 
-	private void saveMapAnnotationOfSubNodes(FNode node,MapAnnotationObject parentMap)
+	private void saveMapAnnotationForLeafs(FNode node,MapAnnotationObject parentMap)
 	{
-		if(node.isLeaf()){
-			MonitorAndDebug.printConsole("TODO: Check node is an image");
-
+		MonitorAndDebug.printConsole("-- save map annotation: "+node.getAbsolutePath());
 			MapAnnotationObject maps=node.getMapAnnotation();
-
-
-			// no view exists and no changes input for node
+		// no view exists and no changes input for this node -> use parent maps
 			if(maps==null && parentMap!=null){
-				MonitorAndDebug.printConsole("\t"+node.getAbsolutePath()+"\t use parent mapAnnotation");
+			MonitorAndDebug.printConsole("\t => use parent mapAnnotation");
 				maps=new MapAnnotationObject(parentMap);
 			}
+		
+		if(node.isLeaf()){
+			MonitorAndDebug.printConsole("-- LEAF NODE MAP");
 			if(maps!=null){
 				maps.setFileName(node.getAbsolutePath());
+				// add mapannotation with key file name to ImportDialog mapAnnotation object -> element of ImportableObject
 				firePropertyChange(ImportDialog.ADD_MAP_ANNOTATION,null,maps);
-				MonitorAndDebug.printConsole("\t"+maps.getMapAnnotationList());
+				maps.printObject();
 			}else{
-				MonitorAndDebug.printConsole("\t"+node.getAbsolutePath()+"\t mapAnnotation is null");
+				MonitorAndDebug.printConsole("\t mapAnnotation is null");
 			}
 		}else{
+			// current node is not a leaf:
+			// check: if current node has map -> save child of this map with this map or with her own,
+			// else save childs with parentmap of current node
 			Enumeration children =node.children();
 			while(children.hasMoreElements()){
-				FNode subNode=(FNode)children.nextElement();
-				MapAnnotationObject maps=subNode.getMapAnnotation();
-
-				// no view exists and no changes input for node
-				if(maps==null && parentMap!=null){
-					MonitorAndDebug.printConsole("\t"+subNode.getAbsolutePath()+"\t use parent mapAnnotation");
-					maps=new MapAnnotationObject(parentMap);
+				saveMapAnnotationForLeafs((FNode)children.nextElement(), maps);
 				}
-				saveMapAnnotationOfSubNodes(subNode, maps);
 			}
 		}
-	}
 
 
 	/** PREFERENCE SETTINGS */

@@ -3,6 +3,7 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.util;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -99,11 +100,24 @@ public class FNode extends DefaultMutableTreeNode
 	/**
 	 * A node can have a mapannotation (inherit from parent) but not a view.
 	 * If a node has a view, mapAnnotation of parent will be automated loaded to the view at creation time.
+	 * If input is still stored, overwrite same field with new input.
 	 * @param map
 	 */
 	public void setMapAnnotation(HashMap<String,List<TagData>> input)
 	{
-		this.input=input;
+		if(input==null) {
+			MonitorAndDebug.printConsole("-- given input is empty");
+			return;
+	}
+		if(this.input==null) {
+			this.input=new HashMap<>();
+		}
+		System.out.println("-- merge input");
+		for(Map.Entry<String, List<TagData>> entry:input.entrySet()) {
+			List<TagData> list1 = entry.getValue();
+			List<TagData> list2 = this.input.get(entry.getKey());
+			this.input.put(entry.getKey(), MDEHelper.mergeTagDataList(list2, list1));
+		}
 	}
 	
 	/**TODO
@@ -138,6 +152,9 @@ public class FNode extends DefaultMutableTreeNode
 	}
 	public NodeContainer getContainer() {
 		return container;
+	}
+	public HashMap<String, List<TagData>> getInput() {
+		return input;
 	}
 	
 	

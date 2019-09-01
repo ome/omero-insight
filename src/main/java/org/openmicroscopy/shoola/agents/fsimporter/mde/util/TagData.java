@@ -365,17 +365,7 @@ public class TagData
 		setTagUnit(unitSymbol);
 	}
 
-	/**
-	 * Compare this tagdata to specified tagdata.
-	 * @param t The tagdata to compares this {@code TagData} against.
-	 * @return {@code true} if t!=null and elements name, unit and value are equal or both null or empty strings.
-	 */
-	public boolean equals(TagData t) {
-		if(t!=null  && t.tagToString().equals(tagToString())) {
-			return true;
-		}
-		return false;
-	}
+	
 	
 	/**
 	 * Compare this tagdata to specified tagdata.
