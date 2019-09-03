@@ -40,7 +40,6 @@ import org.openmicroscopy.shoola.env.Agent;
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.Environment;
 import org.openmicroscopy.shoola.env.LookupNames;
-import org.openmicroscopy.shoola.env.cache.CacheServiceFactory;
 import org.openmicroscopy.shoola.env.config.AgentInfo;
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.config.RegistryFactory;
@@ -792,7 +791,6 @@ public class DataServicesFactory
 		}
 		shutdown(null);
 		if (exit) {
-			CacheServiceFactory.shutdown(container);
 			container.exit();
 		}
 		singleton = null;

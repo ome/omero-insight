@@ -34,7 +34,6 @@ import junit.framework.TestCase;
 //Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.init.AgentsInit;
-import org.openmicroscopy.shoola.env.init.CacheInit;
 import org.openmicroscopy.shoola.env.init.ContainerConfigInit;
 import org.openmicroscopy.shoola.env.init.DataServicesInit;
 import org.openmicroscopy.shoola.env.init.FakeAgentsInit;
@@ -97,7 +96,6 @@ public class TestTaskBarStartup
                                         NullContainerConfigInit.class);
         FakeInitializer.replaceInitTask(SplashScreenInit.class,
                                         NullSplashScreenInit.class);
-        FakeInitializer.replaceInitTask(CacheInit.class, FakeCacheInit.class);
         
         //All FakeXXXInit classes will use, by default, Null objects to
         //replace services.  It is possible to modify this default behavior
