@@ -1,3 +1,8 @@
+5.5.7 (September 2019)
+----------------------
+
+- Cast ByteBuffer to Byte for JDK8 support [#77](https://github.com/ome/omero-insight/pull/77)
+
 5.5.5 (August 2019)
 -------------------
 
