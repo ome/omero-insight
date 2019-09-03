@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -3531,7 +3532,7 @@ class OMEROGateway
 				store.write(buf, pos, rlen);
 				pos += rlen;
 				bbuf = ByteBuffer.wrap(buf);
-				bbuf.limit(rlen);
+				((Buffer) bbuf).limit(rlen);
 				hasher.putBytes(bbuf);
 			}
 			stream.close();
