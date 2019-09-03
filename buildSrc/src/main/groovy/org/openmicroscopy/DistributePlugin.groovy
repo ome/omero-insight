@@ -71,7 +71,7 @@ class DistributePlugin implements Plugin<Project> {
 
         configureMainDistribution(distributionContainer, configSpec)
         createImporterDistribution(distributionContainer, configSpec)
-        createImageJFatJarPluginDistribution(distributionContainer, configSpec)
+        createImageJFatJarPluginDistribution(distributionContainer)
 
         // Skip tar tasks
         project.tasks.withType(Tar).configureEach {
@@ -120,12 +120,11 @@ class DistributePlugin implements Plugin<Project> {
         }
     }
 
-    private void createImageJFatJarPluginDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
+    private void createImageJFatJarPluginDistribution(DistributionContainer distributionContainer) {
         // Create and configure imageJ distribution
 
         distributionContainer.create(DISTRIBUTION_IMAGEJ) { Distribution imageJ ->
             imageJ.baseName = DISTRIBUTION_NAME_IMAGEJ
-            imageJ.contents.with(configSpec)
 
             CopySpec mainSpec = project.copySpec()
             mainSpec.into("")
