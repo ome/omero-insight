@@ -188,9 +188,6 @@ public class ScreenLogin
 	/** The selected connection speed. */
 	private int					speedIndex;
 	
-	/** The port value. */
-	private int					selectedPort = -1;
-	
 	/** Indicates to show or hide the connection speed option. */
 	private boolean				connectionSpeed;
 	
@@ -294,7 +291,7 @@ public class ScreenLogin
 		LoginCredentials lc;
 		if (groupsBox == null) {
 			lc = new LoginCredentials(usr, psw, s, speedIndex, 
-					selectedPort, encrypted);
+					-1, encrypted);
 		} else {
 			long id = -1L;
 			if (hasGroupOption() && groupsBox.isVisible()) 
@@ -302,7 +299,7 @@ public class ScreenLogin
 				id = getGroupId(groupNames.get(groupsBox.getSelectedIndex()));
 			
 			lc = new LoginCredentials(usr, psw, s, speedIndex, 
-					selectedPort, id, encrypted);
+					-1, id, encrypted);
 		}
 		setUserName(usr);
 		setEncrypted();
@@ -533,51 +530,11 @@ public class ScreenLogin
 		pass.setName("password field");
 		pass.setToolTipText("Enter your password.");
 		pass.setColumns(TEXT_COLUMN);
-		Map<String, String> servers = editor.getServers();
+		List<String> servers = editor.getServers();
 		if (CommonsLangUtils.isNotBlank(hostName)) {
 			serverName = hostName;
-			//if user did point to another server
-			if (servers != null && servers.size() > 0) {
-				int n = servers.size()-1;
-				Iterator<String> i = servers.keySet().iterator();
-				int k = 0;
-				String value;
-				while (i.hasNext()) {
-					serverName = i.next();
-					if (k == n) {
-						value = servers.get(serverName);
-						if (value != null && value.length() > 0) {
-							try {
-								selectedPort = Integer.parseInt(value);
-							} catch (Exception e) {}
-						}
-					}
-					k++;
-				}
-			} else {
-				editor.removeLastRow();
+			if (servers.isEmpty()) {
 				editor.addRow(hostName);
-			}
-		} else {
-			if (servers == null || servers.size() == 0) 
-				serverName = hostName;
-			else {
-				int n = servers.size()-1;
-				Iterator<String> i = servers.keySet().iterator();
-				int k = 0;
-				String value;
-				while (i.hasNext()) {
-					serverName = i.next();
-					if (k == n) {
-						value = servers.get(serverName);
-						if (value != null && value.length() > 0) {
-							try {
-								selectedPort = Integer.parseInt(value);
-							} catch (Exception e) {}
-						}
-					}
-					k++;
-				}
 			}
 		}
 		if (serverName.length() == 0) serverName = DEFAULT_SERVER;
@@ -840,13 +797,6 @@ public class ScreenLogin
 				s = configureServerName;
 			else s = DEFAULT_SERVER;
 		}
-		String[] values = s.split(ServerEditor.SERVER_PORT_SEPARATOR, 0);
-		s = values[0];
-		if (values.length == 2 && values[1].length() > 0) {
-			try {
-				selectedPort = Integer.parseInt(values[1]);
-			} catch (Exception e) {}
-		}
 		serverText.setText(s);
 		serverTextPane.validate();
 		serverTextPane.repaint();
@@ -990,29 +940,30 @@ public class ScreenLogin
         for (index = 0; index < l.length; index++) {
         	group = l[index].trim();
         	if (group.length() > 0) {
-        		values = group.split(ServerEditor.SERVER_PORT_SEPARATOR, 0);
-        		if (values.length == 2) {
-        			name = values[1];
-        			try {
-						id = Long.parseLong(values[0]);
-						groups.put(id, name);
-					} catch (Exception e) {
-						//ignore: not possible to read the group
-					}
-        		} else if (values.length == 4) {
-        			userName = values[0];
-        			serverName = values[1];
-        			name = values[3];
-        			if (userName.equals(selectedName) &&
-        					serverName.equals(selectedServer)) {
-        				try {
-    						id = Long.parseLong(values[2]);
-    						groups.put(id, name);
-    					} catch (Exception e) {
-    						//ignore: not possible to read the group
-    					}
-        			}
-        		}
+				System.out.println("WTF "+group);
+//        		values = group.split(ServerEditor.SERVER_PORT_SEPARATOR, 0);
+//        		if (values.length == 2) {
+//        			name = values[1];
+//        			try {
+//						id = Long.parseLong(values[0]);
+//						groups.put(id, name);
+//					} catch (Exception e) {
+//						//ignore: not possible to read the group
+//					}
+//        		} else if (values.length == 4) {
+//        			userName = values[0];
+//        			serverName = values[1];
+//        			name = values[3];
+//        			if (userName.equals(selectedName) &&
+//        					serverName.equals(selectedServer)) {
+//        				try {
+//    						id = Long.parseLong(values[2]);
+//    						groups.put(id, name);
+//    					} catch (Exception e) {
+//    						//ignore: not possible to read the group
+//    					}
+//        			}
+//        		}
         	}
         }	
 		return groups;
@@ -1051,14 +1002,13 @@ public class ScreenLogin
 	{
 		super(title);
 		setName("login window");
-		selectedPort = -1;
 		Dimension d;
 		if (logo != null)
 			d = new Dimension(logo.getIconWidth(), logo.getIconHeight());
 		else d = DEFAULT_SIZE;
 		setSize(d);
 		setPreferredSize(d);
-		editor = new ServerEditor();
+		editor = new ServerEditor(hostName);
 		editor.addPropertyChangeListener(ServerEditor.REMOVE_PROPERTY, this);
 		speedIndex = retrieveConnectionSpeed();
 		initialize(getUserName(), hostName);
@@ -1357,11 +1307,11 @@ public class ScreenLogin
         configureServerName = hostName;
         if (CommonsLangUtils.isNotBlank(hostName)) {
             if (configurable) {
-                Map<String, String> servers = editor.getServers();
+                List<String> servers = editor.getServers();
                 if (servers == null || servers.size() == 0) 
                     editor.addRow(hostName);
                 else {
-                    Iterator<String> i = servers.keySet().iterator();
+                    Iterator<String> i = servers.iterator();
                     String value;
                     boolean exist = false;
                     while (i.hasNext()) {
@@ -1376,7 +1326,6 @@ public class ScreenLogin
             } else {
                 serverName = hostName;
                 originalServerName = serverName;
-				selectedPort = port;
                 setNewServer(originalServerName);
             }
         }

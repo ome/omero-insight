@@ -150,7 +150,6 @@ class ServerDialog
 	/** Closes and disposes. */
 	private void close()
 	{
-		if (editor != null) editor.stopEdition();
 		setVisible(false);
 		dispose();
 	}
@@ -325,14 +324,12 @@ class ServerDialog
 				factor = LoginCredentials.LOW;
 		}
 		if (editor != null) {
-			int original = editor.getOriginalRow();
-			if (original == -1)
-				finishButton.setEnabled(true);
-			else {
-				if (editor.isOriginal(server))
-					finishButton.setEnabled(originalIndexSpeed != factor);
-				else finishButton.setEnabled(true);
+			if (editor.isOriginalSelected()) {
+				finishButton.setEnabled(factor > -1 &&
+						originalIndexSpeed != factor);
 			}
+			else
+				finishButton.setEnabled(true);
 		} else finishButton.setEnabled(originalIndexSpeed != factor);
 	}
 	
@@ -342,15 +339,11 @@ class ServerDialog
 		//Check list of servers and remove empty from list
 		String server = null;
 		if (editor != null) {
-			editor.stopEdition();
 			server = editor.getSelectedServer();
-			editor.onApply();
 		}
 		if (server != null && server.length() > 0) {
-			String port = editor.getSelectedPort();
-			editor.handleServers(server, editor.getSelectedPort());
-			String value = server+ServerEditor.SERVER_PORT_SEPARATOR+port;
-			firePropertyChange(SERVER_PROPERTY, null, value);
+			editor.handleServers(server);
+			firePropertyChange(SERVER_PROPERTY, null, server);
 		}
 		if (buttonsGroup != null) {
 			Enumeration en = buttonsGroup.getElements();
@@ -440,22 +433,18 @@ class ServerDialog
 	{
 		String name = evt.getPropertyName();
 		if (ServerEditor.EDIT_PROPERTY.equals(name)) {
-			Boolean value = (Boolean) evt.getNewValue();
-			if (editor.isEditing()) finishButton.setEnabled(value);
-			else {
-				if (originalIndexSpeed == -1) {
-					setControlEnabled(originalIndexSpeed);
-				} 
-				if (buttonsGroup != null) {
-					Enumeration en = buttonsGroup.getElements();
-					JRadioButton button;
-					int index;
-					while (en.hasMoreElements()) {
-						button = (JRadioButton) en.nextElement();
-						if (button.isSelected()) {
-							index = Integer.parseInt(button.getActionCommand());
-							setControlEnabled(index);
-						}
+			if (originalIndexSpeed == -1) {
+				setControlEnabled(originalIndexSpeed);
+			}
+			if (buttonsGroup != null) {
+				Enumeration en = buttonsGroup.getElements();
+				JRadioButton button;
+				int index;
+				while (en.hasMoreElements()) {
+					button = (JRadioButton) en.nextElement();
+					if (button.isSelected()) {
+						index = Integer.parseInt(button.getActionCommand());
+						setControlEnabled(index);
 					}
 				}
 			}
