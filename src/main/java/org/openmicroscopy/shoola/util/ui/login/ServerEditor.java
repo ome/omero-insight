@@ -168,7 +168,18 @@ public class ServerEditor
 	 */
 	private void initComponents(List<String> servers)
 	{
-		this.servers = new DefaultListModel();
+		this.servers = new DefaultListModel() {
+			@Override
+			public void insertElementAt(Object var1, int var2) {
+				if (!contains(var1))
+					super.insertElementAt(var1, var2);
+			}
+			@Override
+			public void addElement(Object var1) {
+				if (!contains(var1))
+					super.addElement(var1);
+			}
+		};
 		servers.stream().forEach(s -> this.servers.addElement(s));
 		this.table = new JList<>(this.servers);
 		this.table.addListSelectionListener(new ListSelectionListener() {
@@ -225,6 +236,7 @@ public class ServerEditor
 				if (edited != null) {
 					ServerEditor.this.servers.remove(row);
 					ServerEditor.this.servers.add(row, edited);
+					ServerEditor.this.table.setSelectedValue(edited, true);
 				}
 			}
 		});
@@ -401,7 +413,7 @@ public class ServerEditor
 	}
 
 	boolean isOriginalSelected() {
-		return getSelectedServer().equals(activeServer);
+		return getSelectedServer() == null ? false : getSelectedServer().equals(activeServer);
 	}
 
 	void addRow(String server) {
