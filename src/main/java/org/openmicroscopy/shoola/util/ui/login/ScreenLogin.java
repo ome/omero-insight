@@ -66,7 +66,6 @@ import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import omero.gateway.LoginCredentials;
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
@@ -195,21 +194,7 @@ public class ScreenLogin
 	
 	/** The default foreground color. */
 	private Color				defaultForeground;
-	
-	/** The groups the user is a member of. */
-	private JComboBox			groupsBox;
-	
-	//private JButton				groupsBox;
-	
-	/** The component displaying the login text. */
-	private JTextPane 			pleaseLogIn;
-	
-	/** The groups the user is member of. */
-	private Map<Long, String>	groups;
-	
-	/** The name read from the system property if previously set. */
-	private String				originalName;
-	
+
 	/** The name read from the system property if previously set. */
 	private String				originalServerName;
 	
@@ -218,9 +203,6 @@ public class ScreenLogin
 	
 	/** The component displaying the controls. */
 	private JPanel 				mainPanel;
-
-	/** The possible groups. */
-	private String[]			groupValues;
 
 	/** 
 	 * Button indicating that the transfer of data is secured or not
@@ -248,9 +230,6 @@ public class ScreenLogin
 	
 	/** The listener to encrypt the data transfer.*/
 	private ActionListener encryptionListener;
-	
-    /** Flag indicating to modify the host.*/
-    private boolean hostConfigurable;
     
     /** The default server name from the configuration file.*/
     private String configureServerName;
@@ -290,20 +269,8 @@ public class ScreenLogin
 		if (usr != null) usr = usr.trim();
 		if (s != null) s = s.trim();
 		setControlsEnabled(false);
-		UserCredentials lc;
-		if (groupsBox == null) {
-			lc = new UserCredentials(usr, psw, s, speedIndex);
-			lc.setEncrypted(encrypted);
-		} else {
-			long id = -1L;
-			if (hasGroupOption() && groupsBox.isVisible()) 
-				//id = getGroupId(groupsBox.getText());
-				id = getGroupId(groupNames.get(groupsBox.getSelectedIndex()));
-			
-			lc = new UserCredentials(usr, psw, s, speedIndex);
-			lc.setEncrypted(encrypted);
-			lc.setGroup(id);
-		}
+		UserCredentials lc= new UserCredentials(usr, psw, s, speedIndex);
+		lc.setEncrypted(encrypted);
 		setUserName(usr);
 		setEncrypted();
 		setControlsEnabled(false);
@@ -312,37 +279,6 @@ public class ScreenLogin
 		firePropertyChange(LOGIN_PROPERTY, null, lc);
 	}
 
-	/**
-	 * Returns the identifier of the group corresponding to the passed value.
-	 * 
-	 * @param value The name of the
-	 * @return
-	 */
-	private Long getGroupId(String value)
-	{
-		Entry<Long, String> entry;
-		Iterator<Entry<Long, String>> i = groups.entrySet().iterator();
-		while (i.hasNext()) {
-			entry = i.next();
-			if (entry.getValue().equals(value))
-				return entry.getKey();
-		}
-		return -1L;
-	}
-	
-	/** 
-	 * Returns <code>true</code> if the group option can be displayed if
-	 * available, <code>false</code> otherwise.
-	 * 
-	 * @return See above.
-	 */
-	private boolean hasGroupOption()
-	{
-		String usr = user.getText().trim();
-		String s = serverText.getText().trim();
-		return (usr.equals(originalName) && s.equals(originalServerName));
-	}
-	
 	/** 
 	 * Brings up the server dialog to select an existing server or enter
 	 * a new server address.
@@ -457,51 +393,6 @@ public class ScreenLogin
 		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 	}
 	
-	/** Initializes the groups.*/
-	private void initializeGroups()
-	{
-		groups = getGroups();
-		if (groups != null && groups.size() > 1) {
-			groupNames = new HashMap<Integer, String>();
-			groupValues = new String[groups.size()];
-			Entry<Long, String> entry;
-			Iterator<Entry<Long, String>> i = groups.entrySet().iterator();
-			int index = 0;
-			while (i.hasNext()) {
-				entry = i.next();
-				groupValues[index] =  entry.getValue();
-				index++;
-			}
-			String selectedGroup = groupValues[groupValues.length-1];
-			
-			//Review the groups
-			Arrays.sort(groupValues, new StringComparator());
-			String[] sorted = new String[groupValues.length];
-			String v;
-			String value;
-			for (int j = 0; j < groupValues.length; j++) {
-				v = groupValues[j];
-				value = v;
-				if (v.length() > MAX_CHAR) {
-					value = v.substring(0, MAX_CHAR)+"...";
-				}
-				groupNames.put(j, v);
-				sorted[j] = value;
-				if (selectedGroup.equals(v)) {
-					selectedGroup = value;
-				}
-			}
-			
-			
-			
-			groupsBox = new JComboBox(sorted);
-			groupsBox.setSelectedItem(selectedGroup);
-		} else {
-			if (groupNames != null) groupNames.clear();
-			groupsBox = null;
-		}
-	}
-	
 	/** 
 	 * Creates and initializes the components
 	 * 
@@ -521,8 +412,7 @@ public class ScreenLogin
 		progressBar.setVisible(false);
 		progressBar.setStringPainted(false);
 		progressBar.setFont(newFont);
-		
-		originalName = userName;
+
 		user = new JTextField();
 		user.setName("username field");
 		user.setText(userName);
@@ -548,8 +438,7 @@ public class ScreenLogin
 		serverTextPane = UIUtilities.buildComponentPanelRight(serverText, 
 				false);
 		serverTextPane.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-		
-		initializeGroups();
+
 		ref = new ArrayList<JComponent>();
 		login = new JButton("Login");
 		login.setName("login button");
@@ -599,19 +488,13 @@ public class ScreenLogin
 
 	/** 
 	 * Layouts the groups or login options.
-	 * 
-	 * @param group Pass <code>true</code> to display the groups options if 
-	 * 				available, <code>false</code> otherwise.
 	 */
-	private void layout(boolean group)
+	private void layoutMainPanel()
 	{
 		if (mainPanel == null) return;
 		if (ref == null) return;
 		Iterator<JComponent> i = ref.iterator();
 		boolean visible = false;
-		if (group) {
-			if (groups != null && groupsBox != null) visible = true;
-		}
 		while (i.hasNext()) {
 			i.next().setVisible(visible);
 		}
@@ -798,8 +681,7 @@ public class ScreenLogin
 		serverText.setText(s);
 		serverTextPane.validate();
 		serverTextPane.repaint();
-		initializeGroups();
-		layout(groupsBox != null);
+		layoutMainPanel();
 		enableControls();
 	}
 
@@ -835,7 +717,7 @@ public class ScreenLogin
 		} else {
 			login.setForeground(FOREGROUND_COLOR);
 		}
-		layout(hasGroupOption());
+		layoutMainPanel();
 	}
 	
 	/**
@@ -910,61 +792,6 @@ public class ScreenLogin
 		if (encrypted) value = "true";
 		Preferences prefs = Preferences.userNodeForPackage(ScreenLogin.class);
 		prefs.put(OMERO_TRANSFER_ENCRYPTED, value);
-	}
-	
-	/**
-	 * Returns the possible groups.
-	 * 
-	 * @return See above.
-	 */
-	private Map<Long, String> getGroups()
-	{
-		Map<Long, String> groups = new LinkedHashMap<Long, String>();
-		Preferences prefs = Preferences.userNodeForPackage(ScreenLogin.class);
-		String list = prefs.get(OMERO_USER_GROUP, null);
-		if (list == null || list.length() == 0)  return groups;
-		String[] l = list.split(ServerEditor.SERVER_NAME_SEPARATOR, 0);
-        
-        if (l == null) return groups;
-        int index;
-        String group;
-        String name;
-        long id;
-        String[] values;
-        String userName;
-        String serverName;
-        String selectedName = user.getText();
-        String selectedServer = serverText.getText();
-        for (index = 0; index < l.length; index++) {
-        	group = l[index].trim();
-        	if (group.length() > 0) {
-				System.out.println("WTF "+group);
-//        		values = group.split(ServerEditor.SERVER_PORT_SEPARATOR, 0);
-//        		if (values.length == 2) {
-//        			name = values[1];
-//        			try {
-//						id = Long.parseLong(values[0]);
-//						groups.put(id, name);
-//					} catch (Exception e) {
-//						//ignore: not possible to read the group
-//					}
-//        		} else if (values.length == 4) {
-//        			userName = values[0];
-//        			serverName = values[1];
-//        			name = values[3];
-//        			if (userName.equals(selectedName) &&
-//        					serverName.equals(selectedServer)) {
-//        				try {
-//    						id = Long.parseLong(values[2]);
-//    						groups.put(id, name);
-//    					} catch (Exception e) {
-//    						//ignore: not possible to read the group
-//    					}
-//        			}
-//        		}
-        	}
-        }	
-		return groups;
 	}
 	
 	/** 
@@ -1110,7 +937,6 @@ public class ScreenLogin
 		//login.requestFocus();
 		configButton.setEnabled(b);
 		encryptedButton.setEnabled(b);
-		if (groupsBox != null) groupsBox.setEnabled(b);
 		if (b) {
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			setButtonDefault(login);
@@ -1295,12 +1121,9 @@ public class ScreenLogin
      * @param hostName The hostname.
      * @param configurable Pass <code>true</code> to allow to change the 
      * host name, <code>false</code> otherwise.
-     * @param port The selected port.
      */
-    public void setHostNameConfiguration(String hostName, boolean configurable,
-            int port)
+    public void setHostNameConfiguration(String hostName, boolean configurable)
     {
-        hostConfigurable = configurable;
         configureServerName = hostName;
         if (CommonsLangUtils.isNotBlank(hostName)) {
             if (configurable) {
@@ -1326,18 +1149,6 @@ public class ScreenLogin
                 setNewServer(originalServerName);
             }
         }
-    }
-
-    /**
-     * Indicates if the user can modify or not the host name from the UI.
-     * 
-     * @param hostName The hostname.
-     * @param configurable Pass <code>true</code> to allow to change the 
-     * host name, <code>false</code> otherwise.
-     */
-    public void setHostNameConfiguration(String hostName, boolean configurable)
-    {
-        setHostNameConfiguration(hostName, configurable, -1);
     }
 
 	/**

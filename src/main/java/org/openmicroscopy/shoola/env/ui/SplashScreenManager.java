@@ -173,7 +173,7 @@ class SplashScreenManager
     			 serverAvailable);
     	view.setEncryptionConfiguration(info.isEncrypted(),
     			info.isEncryptedConfigurable());
-    	view.setHostNameConfiguration(host, configurable, -1);
+    	view.setHostNameConfiguration(host, configurable);
 		view.showConnectionSpeed(true);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension d = view.getPreferredSize();
