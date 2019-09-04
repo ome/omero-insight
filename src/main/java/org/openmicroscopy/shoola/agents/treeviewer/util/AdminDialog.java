@@ -209,9 +209,9 @@ implements ActionListener, PropertyChangeListener
                 while (i.hasNext()) {
                     entry = i.next();
                     uc = (UserCredentials) entry.getValue();
-                    b = isExistingObject(uc.getUserName(), false);
+                    b = isExistingObject(uc.getUser().getUsername(), false);
                     if (!b) {
-                        password = uc.getPassword();
+                        password = uc.getUser().getPassword();
                         if (password == null || password.length() == 0) {
                             text = new StringBuffer();
                             text.append("No Password set for the new User.");
@@ -229,7 +229,7 @@ implements ActionListener, PropertyChangeListener
             while (i.hasNext()) {
                 entry = i.next();
                 uc = (UserCredentials) entry.getValue();
-                b = isExistingObject(uc.getUserName(), false);
+                b = isExistingObject(uc.getUser().getUsername(), false);
                 if (b) {
                     notifyUser(false);
                     return;

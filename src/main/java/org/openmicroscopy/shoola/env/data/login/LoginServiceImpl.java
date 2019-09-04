@@ -147,7 +147,7 @@ public class LoginServiceImpl
             if (factory.isConnected() && connAttempt) {
                 //Log success.
                 LogMessage msg = new LogMessage();
-                msg.println("Logged onto OMERO at: "+uc.getHostName());
+                msg.println("Logged onto OMERO at: "+uc.getServer().getHostname());
                 msg.println(uc);
                 Logger logger = container.getRegistry().getLogger();
                 logger.info(this, msg);
@@ -158,7 +158,7 @@ public class LoginServiceImpl
                 timer.cancel();
                 //Log success.
                 LogMessage msg = new LogMessage();
-                msg.println("Cannot connect OMERO at: "+uc.getHostName());
+                msg.println("Cannot connect OMERO at: "+uc.getServer().getHostname());
                 msg.println(uc);
                 Logger logger = container.getRegistry().getLogger();
                 logger.info(this, msg);
@@ -166,7 +166,7 @@ public class LoginServiceImpl
             }
             timer.cancel();
             LogMessage msg = new LogMessage();
-            msg.println("Cannot connect OMERO at: "+uc.getHostName());
+            msg.println("Cannot connect OMERO at: "+uc.getServer().getHostname());
             msg.println(uc);
             Logger logger = container.getRegistry().getLogger();
             logger.info(this, msg);
@@ -197,7 +197,7 @@ public class LoginServiceImpl
             msg.println("Failed to log onto OMERO.");
             msg.println("Reason: "+exception.getMessage());
             if (uc != null) {
-                msg.println("OMERO address: "+uc.getHostName());
+                msg.println("OMERO address: "+uc.getServer().getHostname());
                 msg.println(uc);
             }
             msg.print(exception);
@@ -269,7 +269,7 @@ public class LoginServiceImpl
     public int login(UserCredentials uc)
     {
         if (uc == null) return NOT_CONNECTED;
-        String name = uc.getUserName();
+        String name = uc.getUser().getUsername();
         if (CommonsLangUtils.isBlank(name)) return NOT_CONNECTED;
 
         state = ATTEMPTING_LOGIN;

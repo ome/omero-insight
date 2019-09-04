@@ -66,6 +66,8 @@ import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import omero.gateway.LoginCredentials;
+import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
 import org.openmicroscopy.shoola.util.StringComparator;
@@ -288,18 +290,19 @@ public class ScreenLogin
 		if (usr != null) usr = usr.trim();
 		if (s != null) s = s.trim();
 		setControlsEnabled(false);
-		LoginCredentials lc;
+		UserCredentials lc;
 		if (groupsBox == null) {
-			lc = new LoginCredentials(usr, psw, s, speedIndex, 
-					-1, encrypted);
+			lc = new UserCredentials(usr, psw, s, speedIndex);
+			lc.setEncrypted(encrypted);
 		} else {
 			long id = -1L;
 			if (hasGroupOption() && groupsBox.isVisible()) 
 				//id = getGroupId(groupsBox.getText());
 				id = getGroupId(groupNames.get(groupsBox.getSelectedIndex()));
 			
-			lc = new LoginCredentials(usr, psw, s, speedIndex, 
-					-1, id, encrypted);
+			lc = new UserCredentials(usr, psw, s, speedIndex);
+			lc.setEncrypted(encrypted);
+			lc.setGroup(id);
 		}
 		setUserName(usr);
 		setEncrypted();
@@ -503,9 +506,8 @@ public class ScreenLogin
 	 * Creates and initializes the components
 	 * 
 	 * @param userName The name of the user.
-	 * @param hostName The default hostName.
 	 */
-	private void initialize(String userName, String hostName)
+	private void initialize(String userName)
 	{
 	    helpButton = new JButton(IconManager.getInstance().getIcon(IconManager.HELP));
 	    helpButton.setBorder(null);
@@ -531,15 +533,11 @@ public class ScreenLogin
 		pass.setToolTipText("Enter your password.");
 		pass.setColumns(TEXT_COLUMN);
 		List<String> servers = editor.getServers();
-		if (CommonsLangUtils.isNotBlank(hostName)) {
-			serverName = hostName;
-			if (servers.isEmpty()) {
-				editor.addRow(hostName);
-			}
-		}
-		if (serverName.length() == 0) serverName = DEFAULT_SERVER;
-		if (!DEFAULT_SERVER.equals(serverName))
-			originalServerName = serverName;
+		if (!servers.isEmpty())
+			serverName = servers.get(servers.size()-1);
+		else
+			serverName = DEFAULT_SERVER;
+		originalServerName = serverName;
 		connectionSpeedText = new JLabel(getConnectionSpeed());
 		connectionSpeedText.setForeground(TEXT_COLOR);
 		connectionSpeedText.setBorder(
@@ -778,9 +776,9 @@ public class ScreenLogin
 	private String getConnectionSpeed()
 	{
 		switch (speedIndex) {
-			case LoginCredentials.HIGH: return " [High]";
-			case LoginCredentials.MEDIUM: return " [Medium]";
-			case LoginCredentials.LOW: return " [Low]";
+			case UserCredentials.HIGH: return " [High]";
+			case UserCredentials.MEDIUM: return " [Medium]";
+			case UserCredentials.LOW: return " [Low]";
 		}
 		return null;
 	}
@@ -862,7 +860,7 @@ public class ScreenLogin
 		Preferences prefs = Preferences.userNodeForPackage(ScreenLogin.class);
 		String s = prefs.get(OMERO_CONNECTION_SPEED, null);
 		if (s == null || s.trim().length() == 0)
-			return LoginCredentials.HIGH;
+			return UserCredentials.HIGH;
 		return Integer.parseInt(s);
 	}
 	
@@ -993,12 +991,11 @@ public class ScreenLogin
 	 * @param logo The frame's background logo. Mustn't be <code>null</code>.
 	 * @param frameIcon The image icon for the window.
 	 * @param version The version of the software.
-	 * @param hostName The default host name.
 	 * @param serverAvailable Pass <code>true</code> if the client needs to 
 	 * connect to a server, <code>false</code> otherwise.
 	 */
 	public ScreenLogin(String title, Icon logo, Image frameIcon, String version,
-			String hostName, boolean serverAvailable)
+			boolean serverAvailable)
 	{
 		super(title);
 		setName("login window");
@@ -1008,10 +1005,10 @@ public class ScreenLogin
 		else d = DEFAULT_SIZE;
 		setSize(d);
 		setPreferredSize(d);
-		editor = new ServerEditor(hostName);
+		editor = new ServerEditor();
 		editor.addPropertyChangeListener(ServerEditor.REMOVE_PROPERTY, this);
 		speedIndex = retrieveConnectionSpeed();
-		initialize(getUserName(), hostName);
+		initialize(getUserName());
 		initListeners();
 		buildGUI(logo, version, serverAvailable);
 		encrypt();
@@ -1043,7 +1040,7 @@ public class ScreenLogin
 	 */
 	public ScreenLogin(String title, Icon logo, Image frameIcon, String version)
 	{
-		this(title, logo, frameIcon, version, null, true);
+		this(title, logo, frameIcon, version, true);
 	}
 
 	/**

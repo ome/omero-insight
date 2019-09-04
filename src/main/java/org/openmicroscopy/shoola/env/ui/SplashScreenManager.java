@@ -44,7 +44,6 @@ import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.image.geom.Factory;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
-import org.openmicroscopy.shoola.util.ui.login.LoginCredentials;
 import org.openmicroscopy.shoola.util.ui.login.ScreenLogin;
 import org.openmicroscopy.shoola.util.ui.login.ScreenLogo;
 
@@ -103,26 +102,21 @@ class SplashScreenManager
 	 * The credentials stored if the login button is pressed before the
 	 * end of the initialization sequence.
 	 */
-	private LoginCredentials lc;
+	private UserCredentials lc;
 	
 	/**
 	 * Attempts to log onto <code>OMERO</code>.
 	 * 
 	 * @param lc The user's credentials.
 	 */
-	private void login(LoginCredentials lc)
+	private void login(UserCredentials lc)
 	{
 		if (doneTasks != totalTasks) {
 			this.lc = lc;
 			return;
 		}
 		try {
-			UserCredentials uc = new UserCredentials(lc.getUserName(), 
-					lc.getPassword(), lc.getHostName(), lc.getSpeedLevel());
-			uc.setPort(lc.getPort());
-			uc.setEncrypted(lc.isEncrypted());
-			uc.setGroup(lc.getGroup());
-			userCredentials.set(uc);
+			userCredentials.set(lc);
 			this.lc = null;
 		} catch (Exception e) {
 			UserNotifier un = UIFactory.makeUserNotifier(container);
@@ -176,7 +170,7 @@ class SplashScreenManager
 
         boolean serverAvailable = connectToServer();
     	view = new ScreenLogin(Container.TITLE, splashscreen, img, clientVersion,
-    			host, serverAvailable);
+    			 serverAvailable);
     	view.setEncryptionConfiguration(info.isEncrypted(),
     			info.isEncryptedConfigurable());
     	view.setHostNameConfiguration(host, configurable, -1);
@@ -366,7 +360,7 @@ class SplashScreenManager
 	{
 		String name = evt.getPropertyName();
 		if (ScreenLogin.LOGIN_PROPERTY.equals(name)) {
-			LoginCredentials lc = (LoginCredentials) evt.getNewValue();
+			UserCredentials lc = (UserCredentials) evt.getNewValue();
 			this.lc = lc;
 			if (userCredentials != null  && lc != null) login(lc);
 		} else if (ScreenLogin.QUIT_PROPERTY.equals(name)) {

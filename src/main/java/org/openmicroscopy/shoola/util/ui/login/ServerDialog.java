@@ -51,6 +51,8 @@ import javax.swing.WindowConstants;
 //Third-party libraries
 
 //Application-internal dependencies
+import omero.gateway.LoginCredentials;
+import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.ui.IconManager;
 import org.openmicroscopy.shoola.util.ui.TitlePanel;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
@@ -278,20 +280,20 @@ class ServerDialog
 		button.setText("High (LAN)");
 		button.setActionCommand(""+HIGH_SPEED);
 		button.addActionListener(this);
-		button.setSelected(index == LoginCredentials.HIGH);
+		button.setSelected(index == UserCredentials.HIGH);
 		buttonsGroup.add(button);
 		p.add(button);
 		button = new JRadioButton();
 		button.setText("Medium (Broadband)");
 		button.setActionCommand(""+MEDIUM_SPEED);
-		button.setSelected(index == LoginCredentials.MEDIUM);
+		button.setSelected(index == UserCredentials.MEDIUM);
 		button.addActionListener(this);
 		buttonsGroup.add(button);
 		p.add(button);
 		button = new JRadioButton();
 		button.setText("Low (Dial-up)");
 		button.setActionCommand(""+LOW_SPEED);
-		button.setSelected(index == LoginCredentials.LOW);
+		button.setSelected(index == UserCredentials.LOW);
 		button.addActionListener(this);
 		buttonsGroup.add(button);
 		p.add(button);
@@ -315,13 +317,13 @@ class ServerDialog
 		int factor = -1;
 		switch (index) {
 			case HIGH_SPEED:
-				factor = LoginCredentials.HIGH;
+				factor = UserCredentials.HIGH;
 				break;
 			case MEDIUM_SPEED:
-				factor = LoginCredentials.MEDIUM;
+				factor = UserCredentials.MEDIUM;
 				break;
 			case LOW_SPEED:
-				factor = LoginCredentials.LOW;
+				factor = UserCredentials.LOW;
 		}
 		if (editor != null) {
 			if (editor.isOriginalSelected()) {
@@ -356,15 +358,15 @@ class ServerDialog
 					switch (index) {
 						case HIGH_SPEED:
 							firePropertyChange(CONNECTION_SPEED_PROPERTY, null, 
-									Integer.valueOf(LoginCredentials.HIGH));
+									Integer.valueOf(UserCredentials.HIGH));
 							break;
 						case MEDIUM_SPEED:
 							firePropertyChange(CONNECTION_SPEED_PROPERTY, null, 
-									Integer.valueOf(LoginCredentials.MEDIUM));
+									Integer.valueOf(UserCredentials.MEDIUM));
 							break;
 						case LOW_SPEED:
 							firePropertyChange(CONNECTION_SPEED_PROPERTY, null, 
-									Integer.valueOf(LoginCredentials.LOW));
+									Integer.valueOf(UserCredentials.LOW));
 					}
 				}
 			}

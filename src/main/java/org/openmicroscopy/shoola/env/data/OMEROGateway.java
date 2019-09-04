@@ -1419,7 +1419,7 @@ class OMEROGateway
 	 * @return
 	 * @throws DSOutOfServiceException
 	 */
-	ExperimenterData connect(LoginCredentials c) throws DSOutOfServiceException {
+	ExperimenterData connect(UserCredentials c) throws DSOutOfServiceException {
 	    return gw.connect(c);
 	}
 
@@ -6432,7 +6432,7 @@ class OMEROGateway
 				exp = (Experimenter) ModelMapper.createIObject(
 						(DataObject) entry.getKey());
 				uc = (UserCredentials) entry.getValue();
-				value = lookupExperimenter(ctx, uc.getUserName());
+				value = lookupExperimenter(ctx, uc.getUser().getUsername());
 				if (value == null) {
 					if (uc.isAdministrator()) {
 						l.add(userGroup);
@@ -6442,9 +6442,9 @@ class OMEROGateway
 						g = l.get(0);
 						systemGroup = true;
 					}
-					exp.setOmeName(omero.rtypes.rstring(uc.getUserName()));
+					exp.setOmeName(omero.rtypes.rstring(uc.getUser().getUsername()));
 					exp.setLdap(omero.rtypes.rbool(false));
-					password = uc.getPassword();
+					password = uc.getUser().getPassword();
 					if (password != null && password.length() > 0) {
 						id = svc.createExperimenterWithPassword(exp,
 								omero.rtypes.rstring(password), g, l);
@@ -6518,7 +6518,7 @@ class OMEROGateway
 				entry = (Entry) i.next();
 				uc = (UserCredentials) entry.getValue();
 				//Check if the experimenter already exist
-				value = lookupExperimenter(ctx, uc.getUserName());
+				value = lookupExperimenter(ctx, uc.getUser().getUsername());
 				if (value != null) {
 					exp = value;
 					expData = new ExperimenterData(exp);
@@ -6533,9 +6533,9 @@ class OMEROGateway
 						l.add(userGroup);
 						l.add(systemGroup);
 					} else l.add(userGroup);
-					exp.setOmeName(omero.rtypes.rstring(uc.getUserName()));
+					exp.setOmeName(omero.rtypes.rstring(uc.getUser().getUsername()));
 					exp.setLdap(omero.rtypes.rbool(false));
-					password = uc.getPassword();
+					password = uc.getUser().getPassword();
 					if (password != null && password.length() > 0) {
 						id = svc.createExperimenterWithPassword(exp,
 								omero.rtypes.rstring(password), g, l);

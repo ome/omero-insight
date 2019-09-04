@@ -479,13 +479,9 @@ public class DataServicesFactory
         if (CommonsLangUtils.isBlank(name)) {
             name = LookupNames.MASTER_INSIGHT;
         }
-		LoginCredentials cred = new LoginCredentials(uc.getUserName(), uc.getPassword(),
-                uc.getHostName(), uc.getPort());
-        cred.setApplicationName(name);
-        cred.setCheckNetwork(true);
-        cred.setCompression(determineCompression(uc.getSpeedLevel()));
-        cred.setEncryption(uc.isEncrypted());
-        ExperimenterData exp = omeroGateway.connect(cred);
+        uc.setApplicationName(name);
+        uc.setCheckNetwork(true);
+        ExperimenterData exp = omeroGateway.connect(uc);
 
 		//check client server version
 		compatible = true;
@@ -494,7 +490,7 @@ public class DataServicesFactory
     	String clientVersion = "";
     	if (v != null && v instanceof String)
     		clientVersion = (String) v;
-    	if (uc.getUserName().equals(omeroGateway.getSessionId(exp))) {
+    	if (uc.getUser().getUsername().equals(omeroGateway.getSessionId(exp))) {
     	    container.getRegistry().bind(LookupNames.SESSION_KEY, Boolean.TRUE);
     	}
         //Check if client and server are compatible.

@@ -203,7 +203,7 @@ public class ServerEditor
 		removeButton.setEnabled(!this.servers.isEmpty());
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String add = JOptionPane.showInputDialog(null, "Add server", "",
+				String add = JOptionPane.showInputDialog(null, "", "Add new server",
 						JOptionPane.PLAIN_MESSAGE);
 				if (add != null) {
 					ServerEditor.this.servers.addElement(add);
@@ -220,8 +220,8 @@ public class ServerEditor
 			public void actionPerformed(ActionEvent e) 
 			{ 
 				int row = table.getSelectedIndex();
-				String edited = JOptionPane.showInputDialog(null, "Edit server", table.getSelectedValue(),
-						JOptionPane.PLAIN_MESSAGE);
+				String edited = (String) JOptionPane.showInputDialog(null, "", "Edit server", JOptionPane.PLAIN_MESSAGE,
+						null, null, (String) table.getSelectedValue());
 				if (edited != null) {
 					ServerEditor.this.servers.remove(row);
 					ServerEditor.this.servers.add(row, edited);
@@ -439,7 +439,7 @@ public class ServerEditor
         String[] l = servers.split(SERVER_NAME_SEPARATOR, 0);
 
         if (l == null)
-        	return null;
+        	return new ArrayList<>();
 		return Stream.of(l).collect(Collectors.toList());
 	}
 	
@@ -451,36 +451,29 @@ public class ServerEditor
 	 */
 	void handleServers(String serverName)
 	{
+		serverName = serverName == null ? "" : serverName.trim();
+
+		Preferences prefs = Preferences.userNodeForPackage(ServerEditor.class);
+
 		List<String> l = new ArrayList<>();
 		Stream.of(this.servers.toArray()).forEach(s -> l.add((String)s));
 
-		Preferences prefs = Preferences.userNodeForPackage(ServerEditor.class);
-		List<String> servers = new ArrayList<>(l.size());
-		Iterator<String> i = l.iterator();
-		String name;
-		while (i.hasNext()) {
-			name = i.next();
-			if (!name.equals(serverName))
-				servers.add(name);
+		if (l.isEmpty()) {
+			prefs.put(OMERO_SERVER, "");
+			return;
 		}
-		if (serverName != null && serverName.length() > 0)
-			servers.add(serverName);
-		i = servers.iterator();
-		int n = servers.size()-1;
-		int index = 0;
-		String list = "";
+
 		StringBuffer buffer = new StringBuffer();
-		while (i.hasNext()) {
-			String k = i.next();
-			if (k.trim().length() > 0) {
-				buffer.append(k);
-				if (index != n)
-					buffer.append(SERVER_NAME_SEPARATOR);
+		for (String s : l) {
+			s = s.trim();
+			if (!s.equals(serverName)) {
+				buffer.append(s);
+				buffer.append(SERVER_NAME_SEPARATOR);
 			}
-			index++;
 		}
-		list = buffer.toString();
-		if (list.length() != 0) prefs.put(OMERO_SERVER, list);
+		if (serverName.length()>0)
+			buffer.append(serverName);
+		prefs.put(OMERO_SERVER, buffer.toString());
 	}
 
 	/**
