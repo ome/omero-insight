@@ -37,9 +37,6 @@ import omero.gateway.cache.CacheService;
  * @author Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
  * <a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
  * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $Date: $)
- * </small>
  * @since 3.0-Beta3
  */
 public class CacheServiceFactory
@@ -64,19 +61,17 @@ public class CacheServiceFactory
 		Registry reg = container.getRegistry();
 		Boolean isCachingOn = (Boolean) reg.lookup(LookupNames.CACHE_ON);
 		if (isCachingOn == null || !isCachingOn.booleanValue()) return makeNoOpCache();
-		
+
 		//Ok we have to cache, so try and read the config file.
-		InputStream config = loadConfig(
-			container.getConfigFileRelative(CACHE_CONFIG_FILE));
-		if (config == null)	return makeNoOpCache();
-		
-		//We have a config file, set up ehcache.
-		CacheService cache = new CacheServiceImpl(config,
-				container.getRegistry().getLogger());
-		try {
-			config.close();
+		try (InputStream config = loadConfig(
+				container.getConfigFileRelative(CACHE_CONFIG_FILE)))
+		{
+			if (config == null)	return makeNoOpCache();
+			//We have a config file, set up ehcache.
+			return new CacheServiceImpl(config, container.getRegistry().getLogger());
+
 		} catch (Exception e) {}
-		return cache;
+		return makeNoOpCache();
 	}
 	
 	/**
@@ -91,7 +86,7 @@ public class CacheServiceFactory
 		//create services just once.
 		if (container == null)	return;
 		Registry reg = container.getRegistry();
-		((CacheServiceImpl) reg.getCacheService()).shutDown();
+		reg.getCacheService().shutDown();
 	}
 	
 	/**

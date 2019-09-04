@@ -112,7 +112,7 @@ public final class Container
 		AbnormalExitHandler.configure();
 		Initializer initManager = null;
 		try {
-			singleton = new Container(home, configFile);
+			singleton = new Container(home, configFile, null);
 			initManager = new Initializer(singleton);
 			initManager.configure();
 			initManager.doInit();
@@ -176,7 +176,10 @@ public final class Container
 	
 	/** Absolute path to the installation directory. */
 	private String		homeDir;
-	
+
+	/** Absolute path to the plugin directory. */
+	private String		pluginDir;
+
 	/** The container's registry. */
 	private Registry	registry;
 	
@@ -194,10 +197,11 @@ public final class Container
 	 * @param home	Path to the installation directory.  If <code>null</code> or
 	 * 				empty, then the user directory is assumed.
 	 * @param configFile The configuration file.
+	 * @param pluginDir location of the plugins. Only to be set in plugin mode
 	 * @throws StartupException	If <code>home</code> can't be resolved to a
 	 * 			valid and existing directory. 				
 	 */
-	private Container(String home, String configFile)
+	private Container(String home, String configFile, String pluginDir)
 		throws StartupException
 	{
 	    if (CommonsLangUtils.isBlank(configFile) || !FilenameUtils.isExtension(configFile, "xml")) {
@@ -214,6 +218,7 @@ public final class Container
 		//translation is system dependent. 
 		f = f.getAbsoluteFile();
 		homeDir = f.getAbsolutePath();
+		this.pluginDir = pluginDir;
 		//Make sure that what we've got is a directory. 
 		if (!f.exists() || !f.isDirectory())
 			throw new StartupException("Can't locate home dir: "+homeDir);
@@ -221,7 +226,14 @@ public final class Container
 		agentsPool = new HashSet<Agent>();
 		registry = RegistryFactory.makeNew();
 	}
-	 
+
+	/**
+	 * Returns the absolute path to the plugin directory.
+	 *
+	 * @return	See above.
+	 */
+	public String getPluginDir() { return pluginDir; }
+
 	/**
 	 * Returns the absolute path to the installation directory.
 	 * 
@@ -382,8 +394,36 @@ public final class Container
             } catch (Exception e) {}
 		}
 	}
-	
-    
+
+	/**
+	 * Entry point to launch the container and bring up the whole client
+	 * in the same thread as the caller's.
+	 *
+	 * <p>The absolute path to the installation directory is obtained from
+	 * <code>home</code>.  If this parameter doesn't specify an absolute path,
+	 * then it'll be translated into an absolute path.  Translation is system
+	 * dependent &#151; in many cases, the path is resolved against the user
+	 * directory (typically the directory in which the JVM was invoked).</p>
+	 * <p>This method rolls back all executed tasks and terminates the program
+	 * if an error occurs during the initialization procedure.</p>
+	 *
+	 * @param home  Path to the installation directory.  If <code>null<code> or
+	 *              empty, then the user directory is assumed.
+	 * @param configFile The configuration file.
+	 * @param plugin Pass positive value. See {@link LookupNames} for supported
+	 * plug-in. Those plug-in will have an UI entry.
+	 * @param pluginDir  Path to the plugin directory. Used in plugin mode only.
+	 * @return A reference to the newly created singleton Container.
+	 * @throws Throws a startup exception if the application cannot be used as
+	 * a plugin due to missing dependencies.
+	 */
+	public static Container startupInPluginMode(String home, String configFile,
+												String pluginDir, int plugin)
+			throws StartupException
+	{
+		return startupInPluginMode(home, configFile, plugin, pluginDir, null);
+	}
+
 	/**
      * Entry point to launch the container and bring up the whole client
      * in the same thread as the caller's.
@@ -409,9 +449,39 @@ public final class Container
     		int plugin)
     throws StartupException
     {
-    	return startupInPluginMode(home, configFile, plugin, null);
+    	return startupInPluginMode(home, configFile, plugin, null, null);
     }
-    
+
+	/**
+	 * Entry point to launch the container and bring up the whole client
+	 * in the same thread as the caller's.
+	 *
+	 * <p>The absolute path to the installation directory is obtained from
+	 * <code>home</code>.  If this parameter doesn't specify an absolute path,
+	 * then it'll be translated into an absolute path.  Translation is system
+	 * dependent &#151; in many cases, the path is resolved against the user
+	 * directory (typically the directory in which the JVM was invoked).</p>
+	 * <p>This method rolls back all executed tasks and terminates the program
+	 * if an error occurs during the initialization procedure.</p>
+	 *
+	 * @param home  Path to the installation directory.  If <code>null<code> or
+	 *              empty, then the user directory is assumed.
+	 * @param configFile The configuration file.
+	 * @param plugin Pass positive value. See {@link LookupNames} for supported
+	 * plug-in. Those plug-in will have an UI entry.
+	 * @param listener Listens to <code>ConnectedEvent</code>.
+	 * @return A reference to the newly created singleton Container.
+	 * @throws Throws a startup exception if the application cannot be used as
+	 * a plugin due to missing dependencies.
+	 */
+	public static Container startupInPluginMode(String home, String configFile,
+												int plugin, AgentEventListener listener)
+			throws StartupException
+	{
+
+		return startupInPluginMode(home, configFile, plugin, null, listener);
+	}
+
 	/**
      * Entry point to launch the container and bring up the whole client
      * in the same thread as the caller's.
@@ -435,7 +505,7 @@ public final class Container
      * a plugin due to missing dependencies.
      */
     public static Container startupInPluginMode(String home, String configFile,
-    		int plugin, AgentEventListener listener)
+    		int plugin, String pluginDir, AgentEventListener listener)
     	throws StartupException
     {
         if (Container.getInstance() != null) {
@@ -472,7 +542,7 @@ public final class Container
         //Initialize services as usual though.
         Initializer initManager = null;
         try {
-            singleton = new Container(home, configFile);
+            singleton = new Container(home, configFile, pluginDir);
             singleton.registry.bind(LookupNames.PLUGIN, plugin);
 			
             initManager = new Initializer(singleton);
@@ -530,7 +600,7 @@ public final class Container
         //Initialize services as usual though.
         Initializer initManager = null;
         try {
-            singleton = new Container(home, configFile);
+            singleton = new Container(home, configFile, null);
             if (plugin >= 0)
            		singleton.registry.bind(LookupNames.PLUGIN, plugin);
             singleton.registry.bind(LookupNames.HEADLESS,
@@ -616,7 +686,7 @@ public final class Container
         //with exceptions instead.  Initialize services as usual though.
         Initializer initManager = null;
         try {
-            singleton = new Container(home, CONFIG_FILE);
+            singleton = new Container(home, CONFIG_FILE, null);
             initManager = new Initializer(singleton);
             initManager.configure();
             initManager.doInit();

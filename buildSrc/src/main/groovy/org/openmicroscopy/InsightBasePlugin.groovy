@@ -126,6 +126,7 @@ class InsightBasePlugin implements Plugin<Project> {
                 shadow.exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA',
                         'META-INF/*.RSA', 'module-info.class')
                 shadow.from(main.output)
+                shadow.from("src/config")
                 shadow.doFirst(addShadowConfigToClassPath())
             }
         })
