@@ -97,11 +97,11 @@ import org.openmicroscopy.shoola.util.ui.ClosableTabbedPaneComponent;
 import org.openmicroscopy.shoola.util.ui.NumericalTextField;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import org.openmicroscopy.shoola.util.ui.filechooser.GenericFileChooser;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
 
 import omero.gateway.model.DataObject;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.GroupData;
+import omero.gateway.model.MapAnnotationData;
 import omero.gateway.model.ProjectData;
 import omero.gateway.model.ScreenData;
 import omero.gateway.model.TagAnnotationData;
@@ -340,7 +340,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	private Map<JButton, TagAnnotationData> tagsMap;
 
 	/** Map hosting mapAnnotations from mde for files*/
-	private Map<String,MapAnnotationObject> mapAnnotation;
+	private Map<String,List<MapAnnotationData>> mapAnnotation;
 
 	/** The action listener used to handle tag selection. */
 	private ActionListener tagSelectionListener;
@@ -665,7 +665,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		numberOfFolders.setColumns(3);
 		numberOfFolders.addPropertyChangeListener(this);
 		tagsMap = new LinkedHashMap<JButton, TagAnnotationData>();
-		mapAnnotation=new LinkedHashMap<String,MapAnnotationObject>();
+		mapAnnotation=new LinkedHashMap<String,List<MapAnnotationData>>();
 
 		IconManager icons = IconManager.getInstance();
 
@@ -1810,7 +1810,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		return chooser!=null ? chooser.getFileFilter() : null;
 	}
 
-	public void setMapAnnotation(String fileName, MapAnnotationObject map)
+	public void setMapAnnotation(String fileName, List<MapAnnotationData> map)
 	{
 		mapAnnotation.put(fileName, map);
 	}

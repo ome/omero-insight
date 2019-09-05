@@ -41,7 +41,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import omero.gateway.SecurityContext;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 import org.openmicroscopy.shoola.util.filter.file.TIFFFilter;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
@@ -200,7 +199,7 @@ public class ImportableObject
 	private Collection<TagAnnotationData> tags;
 
 	/** The map annotation to each file for import*/
-	private Map<String,MapAnnotationObject> mapAnnots;
+	private Map<String,List<MapAnnotationData>> mapAnnots;
 
 	/** The array containing pixels size.*/
 	private double[] pixelsSize;
@@ -280,7 +279,7 @@ public class ImportableObject
 		newObjects = new ArrayList<DataObject>();
 		projectDatasetMap = new HashMap<Long, List<DatasetData>>();
 		skipChoices = new HashMap<>();
-		mapAnnots=new HashMap<String,MapAnnotationObject>();
+		mapAnnots=new HashMap<String,List<MapAnnotationData>>();
 	}
 
     /**
@@ -350,18 +349,12 @@ public class ImportableObject
 	 * @param fileName
 	 * @param annot
 	 */
-	public void setMapAnnotation(Map<String,MapAnnotationObject> maps)
+	public void setMapAnnotation(Map<String,List<MapAnnotationData>> maps)
 	{
 		this.mapAnnots=maps;
 	}
 
-	public void printMapAnnotationList()
-	{
-		if(mapAnnots!=null){
-			MapAnnotationObject.printMapAnnotations(mapAnnots);
-		}else
-			System.out.println("MAP-ANNOTATION_LIST : 0");
-	}
+	
 
 	/**
 	 * Sets the depth used scanning a folder.
@@ -491,11 +484,11 @@ public class ImportableObject
 	 */
 	public Collection<TagAnnotationData> getTags() { return tags; }
 
-	public MapAnnotationObject getMapAnnotation(String fileName){
+	public List<MapAnnotationData> getMapAnnotation(String fileName){
 			return mapAnnots.get(fileName);
 	}
 
-	public Map<String,MapAnnotationObject> getMap(){return mapAnnots;	}
+	public Map<String,List<MapAnnotationData>> getMap(){return mapAnnots;	}
 
 
 	/**

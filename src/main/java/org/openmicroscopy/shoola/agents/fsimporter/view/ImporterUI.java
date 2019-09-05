@@ -870,7 +870,7 @@ class ImporterUI extends TopWindow
 			return;
 		}
 
-		chooser.setMapAnnotation(o.getFileName(), o);
+		chooser.setMapAnnotation(o.getFileName(), o.getMapAnnotationList());
 	}
 
 	public void deleteMapAnnotations() {

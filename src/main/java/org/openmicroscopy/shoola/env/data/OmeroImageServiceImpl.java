@@ -79,7 +79,6 @@ import omero.sys.Parameters;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
@@ -235,7 +234,7 @@ class OmeroImageServiceImpl
 			if (close) gateway.closeImport(ctx, userName);
 			return Boolean.valueOf(false);
 		}
-		Map<String,MapAnnotationObject> map=new HashMap<>();
+		Map<String,List<MapAnnotationData>> map=new HashMap<>();
 		map.putAll(object.getMap());
 
 		Entry<File, Status> entry;
@@ -1039,7 +1038,7 @@ class OmeroImageServiceImpl
 		if (importable == null || importable.getFile() == null)
 			throw new IllegalArgumentException("No images to import.");
 		Status status = importable.getStatus();
-    Map<String,MapAnnotationObject> map=new HashMap<>();
+    Map<String,List<MapAnnotationData>> map=new HashMap<>();
     map.putAll(object.getMap());
 		SecurityContext ctx = new SecurityContext(importable.getGroup().getId());
 		//If import as.
@@ -1444,15 +1443,15 @@ class OmeroImageServiceImpl
 		return Boolean.valueOf(true);
 	}
 
-  private List<Annotation> addMetaDataAnnotations(Map<String,MapAnnotationObject> map, List<Annotation> customAnnotationList, File file)
+  private List<Annotation> addMetaDataAnnotations(Map<String,List<MapAnnotationData>> map, List<Annotation> customAnnotationList, File file)
   	{
   //		System.out.println("# OmeroImageServiceImpl::addMetaDataAnnotations()...");
   		List<Annotation> result=null;
-  		MapAnnotationObject maps=map.get(file.getAbsolutePath());
+  		List<MapAnnotationData> maps=map.get(file.getAbsolutePath());
   		// for seriesData and single file
   		if(maps!=null){
   			result=new ArrayList<Annotation>(customAnnotationList);
-  			for(MapAnnotationData m:maps.getMapAnnotationList()){
+  			for(MapAnnotationData m:maps){
   				result.add((Annotation) m.asIObject());
   			}
   		}else
