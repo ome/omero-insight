@@ -31,7 +31,7 @@ Default:
 ```
     <Microscope Name="Universal">
 ```
-hold all available object specifications. Predefined are most of objects specified in the ome schema (https://www.openmicroscopy.org/Schemas/Documentation/Generated/OME-2016-06/ome.html).
+hold all available object specifications. Predefined are most of objects specified in the [ome schema](https://www.openmicroscopy.org/Schemas/Documentation/Generated/OME-2016-06/ome.html).
 
 You can add a child
 ```
