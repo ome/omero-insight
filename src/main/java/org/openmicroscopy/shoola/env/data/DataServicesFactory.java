@@ -721,7 +721,6 @@ public class DataServicesFactory
         try {
             if (omeroGateway != null)
                 omeroGateway.logout();
-            DataServicesFactory.registry.getCacheService().clearAllCaches();
             PixelsServicesFactory.shutDownRenderingControls(container
                     .getRegistry());
         } catch (Exception e) {

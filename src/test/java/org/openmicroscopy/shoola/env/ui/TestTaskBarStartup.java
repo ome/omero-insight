@@ -37,7 +37,6 @@ import org.openmicroscopy.shoola.env.init.AgentsInit;
 import org.openmicroscopy.shoola.env.init.ContainerConfigInit;
 import org.openmicroscopy.shoola.env.init.DataServicesInit;
 import org.openmicroscopy.shoola.env.init.FakeAgentsInit;
-import org.openmicroscopy.shoola.env.init.FakeCacheInit;
 import org.openmicroscopy.shoola.env.init.FakeDataServicesInit;
 import org.openmicroscopy.shoola.env.init.FakeInitializer;
 import org.openmicroscopy.shoola.env.init.FakeLoggerInit;

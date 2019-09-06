@@ -55,8 +55,6 @@ import omero.romio.ReverseIntensityMapContext;
 
 import org.openmicroscopy.shoola.env.LookupNames;
 
-import omero.gateway.cache.CacheService;
-
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.ConnectionExceptionHandler;
 import org.openmicroscopy.shoola.env.data.model.ProjectionParam;
@@ -182,7 +180,7 @@ class RenderingControlProxy
     /**
      * Maps the color channel Red to {@link #RED_INDEX}, Blue to 
      * {@link #BLUE_INDEX}, Green to {@link #GREEN_INDEX} and
-     * non primary colors map to {@link #NON_PRIMARY_COLOUR}.
+     * non primary colors map to {@link #NON_PRIMARY_INDEX}.
      * 
      * @param channel
      * @return see above.
@@ -261,24 +259,6 @@ class RenderingControlProxy
 		e.printStackTrace(pw);
 		return sw.toString();
 	}
-
-    /**
-     * Retrieves from the cache the buffered image representing the specified
-     * plane definition. Note that only the images corresponding to an XY-plane
-     * are cached.
-     * 
-     * @param pd The specified {@link PlaneDef plane definition}.
-     * @return The corresponding bufferedImage.
-     */
-    private Object getFromCache(PlaneDef pd)
-    {
-        // We only cache XY images.
-    	if (pd.slice == omero.romio.XY.value && cacheID >= 0) {
-    		int index = pd.z+getPixelsDimensionsZ()*pd.t;
-    		return context.getCacheService().getElement(cacheID, index);
-    	}
-        return null;
-    }
     
     /**
      * Caches the specified image if it corresponds to an XYPlane.
@@ -299,64 +279,7 @@ class RenderingControlProxy
         	}
         }
     }
-    
-    /** Clears the cache. */
-    private void invalidateCache()
-    {
-    	if (isBigImage()) return;
-    	if (cacheID >= 0) context.getCacheService().clearCache(cacheID);
-    }
-    
-    /** Clears the cache and releases memory. */
-    private void eraseCache()
-    {
-    	if (isBigImage()) return;
-    	invalidateCache();
-    	if (cacheID >=0)
-    		context.getCacheService().removeCache(cacheID);
-    }
-    
-    /**
-     * Initializes the cache for the specified plane.
-     * 
-     * @param pDef The plane of reference.
-     */
-    private void initializeCache(PlaneDef pDef)
-    {
-    	if (isBigImage()) return;
-    	//if (xyCache != null) return;
-    	if (cacheID >= 0) return;
-    	/*
-    	if (pDef.getSlice() == PlaneDef.XY && xyCache == null) {
-    		//    		Okay, let's see if we can activate the xyCache.
-            //In order to 
-            //do that, the dimensions of the pixels array and the 
-            //xyImgSize have to be available. 
-            //This happens if at least one XY plane has been rendered.
-            //Note that doing remote calls upfront to eagerly 
-            //instantiate the xyCache is in most cases a total waste:
-            //the client is  likely to call getPixelsDims() before an
-            //image is ever  rendered and until an XY plane is 
-            //not requested it's pointless to have a cache.
-            xyCache = CachingService.createXYCache(pixs.getId(), length,
-            				getPixelsDimensionsZ(), getPixelsDimensionsT());
-    	}
-    	*/
-    	if (pDef.slice == omero.romio.XY.value) {
-    		try {
-    			cacheID = context.getCacheService().createCache(
-    					CacheService.IN_MEMORY, cacheSize/imageSize);
-			} catch (Exception e) {
-				//log the error for example if the cache manager could not
-				//be initialized.
-				LogMessage msg = new LogMessage();
-				msg.print("Initialize cache");
-				msg.print(e);
-				context.getLogger().error(this, msg);
-			}
-    	}
-    }
-  
+
     /**
      * Checks if the passed bit resolution is supported.
      * 
@@ -535,7 +458,6 @@ class RenderingControlProxy
     	try {
     		servant.setRGBA(index, rgba[0], rgba[1], rgba[2], rgba[3]);
     		rndDef.getChannel(index).setRGBA(rgba[0], rgba[1], rgba[2], rgba[3]);
-    		invalidateCache();
 		} catch (Exception e) {
 			handleException(e, ERROR+"color for: "+index+".");
 		}
@@ -583,14 +505,11 @@ class RenderingControlProxy
 	private BufferedImage renderUncompressed(PlaneDef pDef)
 		throws RenderingServiceException, DSOutOfServiceException
 	{
-		//See if the requested image is in cache.
-        BufferedImage img = (BufferedImage) getFromCache(pDef);
-        //if (img != null) return img;
+        BufferedImage img = null;
         try {
         	int[] buf = servant.renderAsPackedInt(pDef);
             Point p = getSize(pDef);
             imageSize = 3*buf.length;
-            initializeCache(pDef);
             img = Factory.createImage(buf, 32, p.x, p.y);
             cache(pDef, img);
 		} catch (Throwable e) {
@@ -718,11 +637,10 @@ class RenderingControlProxy
 	 * 					  pass the compression used.
 	 * @param rndDefs Local copy of the rendering settings used to
 	 * speed-up the client.
-	 * @param cacheSize The desired size of the cache.
      */
     RenderingControlProxy(Registry context, SecurityContext ctx,
     		RenderingEnginePrx re, Pixels pixels, List<ChannelData> m,
-    		int compression, List<RndProxyDef> rndDefs, int cacheSize)
+    		int compression, List<RndProxyDef> rndDefs)
     {
         if (re == null)
             throw new NullPointerException("No rendering engine.");
@@ -847,7 +765,6 @@ class RenderingControlProxy
 		} catch (Exception e) {
 		    log("Error while closing the rendering engine "+e);
 		}
-    	invalidateCache();
     	this.servant = servant;
     	shutDown = false;
     	lastAction = System.currentTimeMillis();
@@ -949,8 +866,6 @@ class RenderingControlProxy
     {
     	if (shutDown) return shutDown;
     	try {
-    		if (!keepCache && cacheID >= 0)
-    			context.getCacheService().removeCache(cacheID);
     		Iterator<RenderingControl> j = slaves.iterator();
 			while (j.hasNext())
 				((RenderingControlProxy) j.next()).shutDown();
@@ -963,18 +878,6 @@ class RenderingControlProxy
     
     /** Shuts down the service. */
     void shutDown() { shutDown(false); }
-    
-	/**
-	 * Resets the size of the cache.
-	 * 
-	 * @param size The size, in bytes, of the cache.
-	 */
-	void setCacheSize(int size)
-	{
-		if (imageSize == 0) imageSize = 1;
-		if (cacheID >= 0)
-			context.getCacheService().setCacheEntries(cacheID, size/imageSize);
-	}
 	
     /** 
      * Implemented as specified by {@link RenderingControl}.
@@ -992,7 +895,6 @@ class RenderingControlProxy
                 if (model.getValue().getValue().equals(value)) {
                     servant.setModel(model);
                     rndDef.setColorModel(value);
-                    invalidateCache();
                 }
             }
             Iterator<RenderingControl> j = slaves.iterator();
@@ -1077,7 +979,6 @@ class RenderingControlProxy
     		checkBitResolution(bitResolution);
             servant.setQuantumStrategy(bitResolution);
             rndDef.setBitResolution(bitResolution);
-            invalidateCache();
             Iterator<RenderingControl> j = slaves.iterator();
 			while (j.hasNext())
 				j.next().setQuantumStrategy(bitResolution);
@@ -1100,7 +1001,6 @@ class RenderingControlProxy
             Iterator<RenderingControl> i = slaves.iterator();
             while (i.hasNext())
                 i.next().setCodomainInterval(start, end);
-            invalidateCache();
 		} catch (Exception e) {
 			handleException(e, ERROR+"codomain interval.");
 		}
@@ -1126,7 +1026,6 @@ class RenderingControlProxy
                                                 noiseReduction);
                     rndDef.getChannel(index).setQuantization(value, coefficient,
                                                 noiseReduction);
-                    invalidateCache();
                 }
             }
             Iterator<RenderingControl> j = slaves.iterator();
@@ -1185,7 +1084,6 @@ class RenderingControlProxy
             Iterator<RenderingControl> i = slaves.iterator();
     		while (i.hasNext())
     			i.next().setChannelWindow(index, start, end);
-            invalidateCache();
 		} catch (Exception e) {
 			handleException(e, ERROR+"input channel for: "+index+".");
 		}  
@@ -1226,7 +1124,6 @@ class RenderingControlProxy
     						c.getAlpha());
     		rndDef.getChannel(index).setRGBA(c.getRed(), c.getGreen(), c.getBlue(),
     						c.getAlpha());
-    		invalidateCache();
     		Iterator<RenderingControl> j = slaves.iterator();
 			while (j.hasNext())
 				j.next().setRGBA(index, c);
@@ -1261,7 +1158,6 @@ class RenderingControlProxy
             Iterator<RenderingControl> i = slaves.iterator();
     		while (i.hasNext())
     			i.next().setActive(index, active);
-            invalidateCache();
 		} catch (Exception e) {
 			handleException(e, ERROR+"active channel for: "+index+".");
 		}
@@ -1292,7 +1188,6 @@ class RenderingControlProxy
         try {
             omero.romio.ReverseIntensityMapContext c = new omero.romio.ReverseIntensityMapContext();
             servant.addCodomainMapToChannel(c, index);
-            invalidateCache();
         } catch (Exception e) {
             handleException(e, ERROR+"cannot set the map context.");
         }
@@ -1325,7 +1220,6 @@ class RenderingControlProxy
         try {
             omero.romio.ReverseIntensityMapContext c = new omero.romio.ReverseIntensityMapContext();
             servant.removeCodomainMapFromChannel(c, index);
-            invalidateCache();
         } catch (Exception e) {
             handleException(e, ERROR+"cannot set the map context.");
         }
@@ -1333,7 +1227,7 @@ class RenderingControlProxy
 
     /** 
      * Implemented as specified by {@link RenderingControl}.
-     * @see RenderingControl#getCodomainMaps()
+     * @see RenderingControl#getCodomainMaps(int)
      */
     public List<CodomainMapContext> getCodomainMaps(int index)
             throws RenderingServiceException, DSOutOfServiceException
@@ -1346,7 +1240,6 @@ class RenderingControlProxy
             while (i.hasNext()) {
                 l.add((CodomainMapContext) i.next());
             }
-            invalidateCache();
         } catch (Exception e) {
             handleException(e, ERROR+"cannot set the map context.");
         }
@@ -1398,7 +1291,6 @@ class RenderingControlProxy
     		Iterator<RenderingControl> i = slaves.iterator();
     		while (i.hasNext())
 				i.next().resetDefaults();
-    		invalidateCache();
     		initialize();
 		} catch (Throwable e) {
 			handleException(e, ERROR+"default settings.");
@@ -1707,7 +1599,6 @@ class RenderingControlProxy
 			Iterator<RenderingControl> i = slaves.iterator();
 			while (i.hasNext())
 				i.next().setCompression(compression);
-			eraseCache();
 		} catch (Exception e) {}
 	}
 
@@ -1756,8 +1647,6 @@ class RenderingControlProxy
     			servant.setChannelWindow(i, m.getGlobalMin(),
     					m.getGlobalMax());
     		}
-
-    		invalidateCache();
     		initialize();
     		Iterator<RenderingControl> i = slaves.iterator();
 			while (i.hasNext())
@@ -1940,7 +1829,7 @@ class RenderingControlProxy
 
 	/** 
 	 * Implemented as specified by {@link RenderingControl}.
-	 * @see RenderingControl#isActiveImageRGB(List)
+	 * @see RenderingControl#isMappedImageRGB(List)
 	 */
 	public boolean isMappedImageRGB(List channels)
 	{
@@ -1970,7 +1859,6 @@ class RenderingControlProxy
 	{
 		if (tableID < 0) return;
 		try {
-			invalidateCache();
 			//servant.setOverlays(omero.rtypes.rlong(tableID), 
 			//		pixs.getImage().getId(), overlays);
 		} catch (Exception e) {
@@ -2193,7 +2081,6 @@ class RenderingControlProxy
             Iterator<RenderingControl> i = slaves.iterator();
             while (i.hasNext())
                 i.next().setReverseIntensity(index, revInt);
-            invalidateCache();
             ChannelBindingsProxy channel = rndDef.getChannel(index);
             if (channel != null)
                 channel.setReverseIntensity(revInt);
@@ -2217,7 +2104,6 @@ class RenderingControlProxy
             Iterator<RenderingControl> i = slaves.iterator();
             while (i.hasNext())
                 i.next().setLookupTable(index, lut);
-            invalidateCache();
             ChannelBindingsProxy channel = rndDef.getChannel(index);
             if (channel != null)
                 channel.setLookupTable(lut);
