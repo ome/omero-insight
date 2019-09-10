@@ -259,26 +259,6 @@ class RenderingControlProxy
 		e.printStackTrace(pw);
 		return sw.toString();
 	}
-    
-    /**
-     * Caches the specified image if it corresponds to an XYPlane.
-     * 
-     * @param pd The plane definition.
-     * @param object The buffered image to cache or the bytes array.
-     */
-    private void cache(PlaneDef pd, Object object)
-    {
-    	if (isBigImage()) return;
-        if (pd.slice == omero.romio.XY.value) {
-            //We only cache XY images.
-            //if (xyCache != null) xyCache.add(pd, object);
-        	if (cacheID >= 0) {
-        		int index = pd.z+getPixelsDimensionsZ()*pd.t;
-        		//context.getCacheService().addElement(cacheID,
-        			//	Integer.valueOf(index), object);
-        	}
-        }
-    }
 
     /**
      * Checks if the passed bit resolution is supported.
@@ -511,7 +491,6 @@ class RenderingControlProxy
             Point p = getSize(pDef);
             imageSize = 3*buf.length;
             img = Factory.createImage(buf, 32, p.x, p.y);
-            cache(pDef, img);
 		} catch (Throwable e) {
 			if (e instanceof LockTimeout && retry < MAX_RETRY) { //retry
 				retry++;
