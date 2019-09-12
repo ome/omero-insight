@@ -433,4 +433,7 @@ public class LookupNames
     /** Lookup name for the flag indicating if the offline import is on/off.*/
     public static final String OFFLINE_IMPORT_ENABLED = "omero.client.import.offline.enabled";
 
+    /** Lookup name for the flag indicating if the mde import is on/off.*/
+    public static final String MDE_IMPORT_ENABLED = "omero.client.import.mde.enabled";
+
 }
