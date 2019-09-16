@@ -2159,9 +2159,9 @@ class ImViewerModel
 		if (endZ < startZ) endZ = ref.getEndZ();
 		state = ImViewer.PROJECTING;
 		StringBuffer buf = new StringBuffer();
-		buf.append("Original Image:"+getImageName());
+		buf.append("Image's name:"+getImageName());
 		buf.append("\n");
-		buf.append("Original Image ID:"+getImageID());
+		buf.append("Image:"+getImageID());
 		buf.append("\n");
 		buf.append("Projection type:"+typeName);
 		buf.append("\n");
