@@ -71,22 +71,22 @@ public class OMEWikiConstants
 	/** Regular expression defining Dataset [Dataset: 30]. */
 	//static final String DATASETREGEX = "\\[(Dataset|dataset):[ ]*"+NUMBERREGEX+"[ ]*\\]";
 
-	static final String DATASETREGEX =  "(Dataset|dataset)\\s?(ID|id|\\s?):\\s?("+NUMBERREGEX+")";
+	static final String DATASETREGEX =  "(Dataset|dataset)\\s?(ID|id)?:\\s?("+NUMBERREGEX+")";
 	
 	/** Regular expression defining Project [Project: 30]. */
 	//static final String PROJECTREGEX = "\\[(Project|project):[ ]*"+NUMBERREGEX+"[ ]*\\]";
 	
-	static final String PROJECTREGEX =  "(Project|project)\\s?(ID|id|\\s?):\\s?("+NUMBERREGEX+")";
+	static final String PROJECTREGEX =  "(Project|project)\\s?(ID|id)?:\\s?("+NUMBERREGEX+")";
 	
 	/** Regex expression defining Image [Image: 30]. */
 	//static final String IMAGEREGEX = "\\[(Image|image):[ ]*"+NUMBERREGEX+"[ ]*\\]";
 	
-	static final String IMAGEREGEX =  "(Image|image|Image's)\\s?(ID|id|\\s?):\\s?("+NUMBERREGEX+")";
+	static final String IMAGEREGEX =  "(Image|image|Image's)\\s?(ID|id)?:\\s?("+NUMBERREGEX+")";
 	
 	/** Regex expression defining Protocol [Protocol: id 30]. */
 	//static final String PROTOCOLREGEX = "\\[(Protocol|Protocol):[ ]*"+NUMBERREGEX+"[ ]*\\]";
 
-	static final String PROTOCOLREGEX =  "(Protocol|protocol)\\s?(ID|id|\\s?):\\s?("+NUMBERREGEX+")";
+	static final String PROTOCOLREGEX =  "(Protocol|protocol)\\s?(ID|id)?:\\s?("+NUMBERREGEX+")";
 	
 	/** Regular expression expression defining Wiki Heading. */
 	static final String HEADINGREGEX = "(^[=]{3}[ ]+"+SENTENCEREGEX+"[ ]+[=]{3}[ ]*$|^[=]{2}[ ]+"+SENTENCEREGEX+"[ ]+[=]{2}[ ]*$|^[=]{1}[ ]+"+SENTENCEREGEX+"[ ]+[=]{1}[ ]*$)";
