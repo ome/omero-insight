@@ -214,7 +214,7 @@ public class ServerEditor
 		removeButton.setEnabled(!this.servers.isEmpty());
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String add = JOptionPane.showInputDialog(null, "", "Add new server",
+				String add = JOptionPane.showInputDialog(ServerEditor.this, "", "Add new server",
 						JOptionPane.PLAIN_MESSAGE);
 				if (add != null) {
 					ServerEditor.this.servers.addElement(add);
@@ -231,7 +231,7 @@ public class ServerEditor
 			public void actionPerformed(ActionEvent e) 
 			{ 
 				int row = table.getSelectedIndex();
-				String edited = (String) JOptionPane.showInputDialog(null, "", "Edit server", JOptionPane.PLAIN_MESSAGE,
+				String edited = (String) JOptionPane.showInputDialog(ServerEditor.this, "", "Edit server", JOptionPane.PLAIN_MESSAGE,
 						null, null, (String) table.getSelectedValue());
 				if (edited != null) {
 					ServerEditor.this.servers.remove(row);
