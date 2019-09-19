@@ -113,12 +113,6 @@ public class LookupNames
     /** Field to access the <code>Version</code> information. */
     public static final String VERSION = "Version";
 
-    /** 
-     * Field to check if the server version is 5.4.8 or later.
-     * */
-    @Deprecated
-    public static final String SERVER_5_4_8_OR_LATER = "5.4.8 or later";
-    
     /** Maximum plane width for non pyramid images **/
     public static final String MAX_PLANE_WIDTH = "/services/Thumbnailing/non_pyramid_max_plane_width";
     
@@ -136,9 +130,6 @@ public class LookupNames
 
     /** Field to access the <code>Splash screen manager</code>. */
     public static final String SPLASH_SCREEN_MANAGER = "SplashScreenManager";
-
-    /** Field to access the <code>Splash screen</code> information. */
-    public static final String SPLASH_SCREEN_LOGIN = "SplashScreenLogin";
 
     /** Field to access the <code>Help on line</code> information. */
     public static final String HELP_ON_LINE = "HelpOnLine";
@@ -171,9 +162,6 @@ public class LookupNames
 
     /** Field to access the users contained in the group. */
     public static final String USERS_DETAILS = "/users/details";
-
-    /** Field to access the LDAP user information. */
-    public static final String USER_AUTHENTICATION = "/user/authentication";
 
     /** Field indicating if the user is an administrator. */
     public static final String USER_ADMINISTRATOR = "/users/administrator";
@@ -230,12 +218,6 @@ public class LookupNames
      */
     public static final String USER_HOME_OMERO = "/user/home/omero";
 
-    /**
-     * Field to access the location of the <code>OMERO folder</code>
-     * on the user's machine.
-     */
-    public static final String USER_HOME_OMERO_FILES = "/user/home/omero/files";
-
     /** Field to access the <code>Log on</code> information. */
     public static final String LOG_ON = "/services/LOG/on";
 
@@ -268,6 +250,12 @@ public class LookupNames
     public static final String THUMBNAIL_FETCH_MEDIUM_SPEED =
             "/services/Thumbnailing/fetchMediumSpeed";
 
+<<<<<<< HEAD
+=======
+    /** Field to access the <code>Cache on</code> information. */
+    public static final String CACHE_ON = "/services/CACHE/on";
+
+>>>>>>> Remove unused code
     /**
      * Field to access the number of rendering engine to start for big images.
      */
@@ -278,11 +266,6 @@ public class LookupNames
      * is shut down. The value is in milliseconds.
      */
     public static final String RE_TIMEOUT = "/services/RE/timeout";
-
-    public static final String RE_STACK_BUF_SZ = "/services/RE/stackBufSz";
-    public static final String RE_STACK_BLOCK_SZ = "/services/RE/stackBlockSz";
-
-    public static final String RE_MAX_PRE_FETCH = "/services/RE/maxPreFetch";
 
     public static final String CMD_PROCESSOR = "/services/CmdProcessor";
 
@@ -303,11 +286,6 @@ public class LookupNames
 
     /** Field to access the <code>Log service</code> information. */
     public static final String LOGIN = "/services/Login";
-
-    /**
-     * Field to access the <code>Log service configuration</code> information.
-     */
-    public static final String LOGIN_CFG = "/services/Login/config";
 
     /**
      * Field to access the maximum number of tries in order to connect to the 
@@ -350,31 +328,21 @@ public class LookupNames
     /** Field to access the file keeping track of the various ROIs files. */
     public static final String	ROI_MAIN_FILE = "/roi/mainFileName";
 
-    //For blitz
-    /** The value to replace in the FS configuration file. */
-    public static final String FS_HOSTNAME = "/services/FS/defaultDirectory";
-
-    /** The value to replace in the FS configuration file. */
-    public static final String FS_DEFAUL_DIR = "/services/FS/defaultDirectory";
-
     /** Field to access the <code>Binary Available</code> information. */
     public static final String	BINARY_AVAILABLE =
             "/services/SERVER/BinaryAvailable";
-
-    /** Field to access <code>RAPID</code> information. */
-    public static final String	RAPID = "/services/SERVER/RAPID";
 
     /** Field to access the <code>Entry Point</code> information. */
     public static final String ENTRY_POINT = "/application/entryPoint";
 
     /** Field to access the <code>Entry Point</code> information. */
-    public static final String ENTRY_POINT_HIERARCHY =
+    static final String ENTRY_POINT_HIERARCHY =
             "/application/entryPointHierarchy";
 
-    /** 
+    /**
      * Field indicating that the application is ran head-less.
      */
-    public static final String HEADLESS = "Headless";
+    static final String HEADLESS = "Headless";
     
     /** Lookup name of the orphaned images folder */
     public static final String ORPHANED_IMAGE_NAME = "omero.client.ui.tree.orphans.name";
