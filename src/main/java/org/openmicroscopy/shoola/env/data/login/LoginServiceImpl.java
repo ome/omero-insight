@@ -35,6 +35,7 @@ import Glacier2.PermissionDeniedException;
 import Ice.ConnectionRefusedException;
 import Ice.DNSException;
 
+import org.openmicroscopy.shoola.env.ui.SplashScreenManager;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
 import omero.SecurityViolation;
@@ -308,7 +309,6 @@ public class LoginServiceImpl
      */
     public void notifyLoginFailure()
     {
-        JFrame f = container.getRegistry().getTaskBar().getFrame();
         String text = "";
         switch (failureIndex) {
         case LoginService.DNS_INDEX:
@@ -351,8 +351,9 @@ public class LoginServiceImpl
             text = "Please check your user name\nand/or password " +
                     "or try again later.";
         }
+        SplashScreenManager splash = (SplashScreenManager) container.getRegistry().lookup(LookupNames.SPLASH_SCREEN_MANAGER);
         NotificationDialog dialog = new NotificationDialog(
-                f, "Login Failure", "Failed to log onto OMERO.\n"+text,
+                splash.getFrame(), "Login Failure", "Failed to log onto OMERO.\n"+text,
                 IconManager.getDefaultErrorIcon());
         dialog.pack();  
         UIUtilities.centerAndShow(dialog);

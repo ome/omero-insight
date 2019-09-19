@@ -134,6 +134,9 @@ public class LookupNames
     /** Field to access the <code>Splash screen</code> information. */
     public static final String SPLASH_SCREEN_LOGO = "SplashScreenLogo";
 
+    /** Field to access the <code>Splash screen manager</code>. */
+    public static final String SPLASH_SCREEN_MANAGER = "SplashScreenManager";
+
     /** Field to access the <code>Splash screen</code> information. */
     public static final String SPLASH_SCREEN_LOGIN = "SplashScreenLogin";
 
@@ -227,7 +230,7 @@ public class LookupNames
      */
     public static final String USER_HOME_OMERO = "/user/home/omero";
 
-    /** 
+    /**
      * Field to access the location of the <code>OMERO folder</code>
      * on the user's machine.
      */
@@ -265,7 +268,7 @@ public class LookupNames
     public static final String THUMBNAIL_FETCH_MEDIUM_SPEED =
             "/services/Thumbnailing/fetchMediumSpeed";
 
-    /** 
+    /**
      * Field to access the number of rendering engine to start for big images.
      */
     public static final String RE_WORKER = "/services/RE/worker";

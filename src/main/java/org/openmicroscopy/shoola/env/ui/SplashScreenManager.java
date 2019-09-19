@@ -35,8 +35,6 @@ import java.beans.PropertyChangeListener;
 import javax.swing.Icon;
 import javax.swing.JFrame;
 
-
-import org.openmicroscopy.shoola.Main;
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.OMEROInfo;
@@ -74,7 +72,7 @@ import org.openmicroscopy.shoola.util.ui.login.ScreenLogo;
  * @since OME2.2
  */
 
-class SplashScreenManager
+public class SplashScreenManager
 	implements PropertyChangeListener, WindowFocusListener, WindowStateListener
 {
 	
@@ -222,6 +220,7 @@ class SplashScreenManager
 		container = c;
 		this.component = component;
 		Registry reg = c.getRegistry();
+		reg.bind(LookupNames.SPLASH_SCREEN_MANAGER, this);
 		String n = (String) reg.lookup(LookupNames.SPLASH_SCREEN_LOGO);
 		
 		String f = container.getConfigFileRelative(null);
@@ -409,5 +408,12 @@ class SplashScreenManager
 	 * @see WindowFocusListener#windowGainedFocus(WindowEvent)
 	 */
 	public void windowGainedFocus(WindowEvent e) {}
-	
+
+	/**
+	 * Get the splashscreen's JFrame
+	 * @return See above.
+	 */
+	public JFrame getFrame() {
+		return this.view;
+	}
 }
