@@ -379,7 +379,7 @@ public class PixelsServicesFactory
 			e = i.next();
 			proxy = (RenderingControlProxy) e.getValue();
 			if (!proxy.isProxyActive(timeout)) {
-				if (!proxy.shutDown(true))
+				if (!proxy.shutDown())
 					logger.info(singleton,
 							"Rendering Engine shut down: PixelsID "+e.getKey());
 			}

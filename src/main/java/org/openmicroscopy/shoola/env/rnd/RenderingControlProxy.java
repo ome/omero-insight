@@ -123,9 +123,6 @@ class RenderingControlProxy
     /** Reference to service to render pixels set. */
     private RenderingEnginePrx servant;
 
-    /** The id of the cache associated to this proxy. */
-    private int cacheID;
-    
     /** The channel metadata. */
     private ChannelData[] metadata;
     
@@ -137,9 +134,6 @@ class RenderingControlProxy
     
     /** Helper reference to the registry. */
     private Registry context;
-    
-    /** The size of the cache. */
-    private int cacheSize;
     
     /** The size of the image. */
     private int imageSize;
@@ -635,7 +629,6 @@ class RenderingControlProxy
         selectedResolutionLevel = -1;
         lastAction = System.currentTimeMillis();
         shutDown = false;
-        this.cacheSize = cacheSize;
         this.context = context;
         servant = re;
         pixs = pixels;
@@ -644,7 +637,6 @@ class RenderingControlProxy
         try {
         	families = servant.getAvailableFamilies();
             models = servant.getAvailableModels();
-            cacheID = -1;
             imageSize = 1;
             this.compression = compression;
             metadata = new ChannelData[m.size()];
@@ -836,12 +828,9 @@ class RenderingControlProxy
     /** 
      * Shuts down the service. Returns <code>true</code> if the proxy
      * was already shut down, <code>false</code> otherwise.
-     * 
-     * @param keepCache Pass <code>true</code> to keep the cache,
-     *                  <code>false</code> otherwise.
      * @return See above.
      */
-    boolean shutDown(boolean keepCache)
+    boolean shutDown()
     {
     	if (shutDown) return shutDown;
     	try {
@@ -854,9 +843,6 @@ class RenderingControlProxy
     	shutDown = true;
     	return false;
     }
-    
-    /** Shuts down the service. */
-    void shutDown() { shutDown(false); }
 	
     /** 
      * Implemented as specified by {@link RenderingControl}.
