@@ -111,16 +111,6 @@ public class ServerEditor
     
     /** The minimum port value. */
     static final int			MAX_PORT = 64000;
-    
-    /** Example of a new server. */
-    private static final String	EXAMPLE = "e.g. test.openmicroscopy.org " +
-    										"or 134.20.12.33";
-    
-    /** The note. */
-    private static final String NOTE = "You should not have to modify the port.";
-    
-    /** The header of the table. */
-    private static final String HEADER = "Server Address and Port";
 
     /** The property name for the host to connect to <i>OMERO</i>. */
     private static final String	OMERO_SERVER = "omeroServer";
@@ -214,12 +204,20 @@ public class ServerEditor
 		removeButton.setEnabled(!this.servers.isEmpty());
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String add = JOptionPane.showInputDialog(ServerEditor.this, "", "Add new server",
+				String add = JOptionPane.showInputDialog(ServerEditor.this,
+						"Enter hostname or IP address (:port as needed)\n(e.g. test.openmicroscopy.org or 192.168.0.1:1234",
+						"Add new server",
 						JOptionPane.PLAIN_MESSAGE);
 				if (add != null) {
-					ServerEditor.this.servers.addElement(add);
-					ServerEditor.this.table.setSelectedValue(add, true);
-					removeButton.setEnabled(true);
+					add = add.trim();
+					if (add.toLowerCase().startsWith("http://") ||
+							add.toLowerCase().startsWith("https://"))
+						add = add.substring(add.indexOf('/') + 2, add.length());
+					if (add.length() > 0) {
+						ServerEditor.this.servers.addElement(add);
+						ServerEditor.this.table.setSelectedValue(add, true);
+						removeButton.setEnabled(true);
+					}
 				}
 			}
 		});
@@ -254,32 +252,15 @@ public class ServerEditor
 		c.insets = new Insets(0, 2, 2, 0);
 		c.gridx = 0;
 		c.gridy = 0;
-		c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
-        c.fill = GridBagConstraints.NONE;      //reset to default
-        c.weightx = 0.0;  
-		JLabel label = UIUtilities.setTextFont(HEADER);
-        labels.add(label, c);  
-        label = new JLabel(EXAMPLE);
-        label.setFont(FONT);
-        c.gridy++;// = 1;
-        c.gridwidth = GridBagConstraints.REMAINDER;     //end row
-        //c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = GridBagConstraints.REMAINDER;
         c.weightx = 1.0;
-        labels.add(label, c); 
-        label = new JLabel(NOTE);
-        label.setFont(FONT);
-        c.gridy++;// = 1;
-        c.gridwidth = GridBagConstraints.REMAINDER;     //end row
-        //c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1.0;
-        labels.add(label, c); 
         if (activeServer != null) {
         	c.gridx = 0;
     		c.gridy++;
     		c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
             c.fill = GridBagConstraints.NONE;      //reset to default
             c.weightx = 0.0;  
-    		label = UIUtilities.setTextFont("Connected to ");
+    		JLabel label = UIUtilities.setTextFont("Connected to ");
             labels.add(label, c);  
             c.gridwidth = GridBagConstraints.REMAINDER;     //end row
             //c.fill = GridBagConstraints.HORIZONTAL;
