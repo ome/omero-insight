@@ -249,13 +249,7 @@ public class LookupNames
      */
     public static final String THUMBNAIL_FETCH_MEDIUM_SPEED =
             "/services/Thumbnailing/fetchMediumSpeed";
-
-<<<<<<< HEAD
-=======
-    /** Field to access the <code>Cache on</code> information. */
-    public static final String CACHE_ON = "/services/CACHE/on";
-
->>>>>>> Remove unused code
+    
     /**
      * Field to access the number of rendering engine to start for big images.
      */
@@ -336,13 +330,13 @@ public class LookupNames
     public static final String ENTRY_POINT = "/application/entryPoint";
 
     /** Field to access the <code>Entry Point</code> information. */
-    static final String ENTRY_POINT_HIERARCHY =
+    public static final String ENTRY_POINT_HIERARCHY =
             "/application/entryPointHierarchy";
 
     /**
      * Field indicating that the application is ran head-less.
      */
-    static final String HEADLESS = "Headless";
+    public static final String HEADLESS = "Headless";
     
     /** Lookup name of the orphaned images folder */
     public static final String ORPHANED_IMAGE_NAME = "omero.client.ui.tree.orphans.name";
