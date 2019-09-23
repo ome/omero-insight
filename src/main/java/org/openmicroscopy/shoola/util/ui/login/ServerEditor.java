@@ -67,6 +67,7 @@ import javax.swing.table.TableCellEditor;
 //Third-party libraries
 
 //Application-internal dependencies
+import omero.constants.GLACIER2PORT;
 import org.openmicroscopy.shoola.util.ui.IconManager;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import org.openmicroscopy.shoola.util.ui.border.PartialLineBorder;
@@ -105,18 +106,24 @@ public class ServerEditor
 
     /** Separator used when storing various servers. */
     static final String			SERVER_NAME_SEPARATOR = ",";
-    
-    /** The minimum port value. */
-    static final int			MIN_PORT = 0;
-    
-    /** The minimum port value. */
-    static final int			MAX_PORT = 64000;
+
+    /** The default port **/
+    static final int			DEFAULT_PORT = GLACIER2PORT.value;
+
+	/** Example of a new server. */
+	private static final String	EXAMPLE = "<html>e.g. my.server.name <i>(default case)</i><br>" +
+			"my.server.name:port <i>(for non-default ports)</i><br>" +
+			"127.0.0.1:1234 <i>(if you have an IP address)</i><br>" +
+			"wss://my.server.name <i>(connecting via websocket)</i><br><br></html>";
+
+	/** The header of the table. */
+	private static final String HEADER = "Server Address";
 
     /** The property name for the host to connect to <i>OMERO</i>. */
     private static final String	OMERO_SERVER = "omeroServer";
     
 	/** Font for progress bar label. */
-	private static final Font	FONT = new Font("SansSerif", Font.ITALIC, 10);
+	private static final Font	FONT = new Font("SansSerif", Font.PLAIN, 10);
 
 	/** Button to remove server from the list. */
 	private JButton			removeButton;
@@ -205,11 +212,12 @@ public class ServerEditor
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String add = JOptionPane.showInputDialog(ServerEditor.this,
-						"Enter hostname or IP address (:port as needed)\n(e.g. test.openmicroscopy.org or 192.168.0.1:1234",
+						"Enter server address:",
 						"Add new server",
 						JOptionPane.PLAIN_MESSAGE);
 				if (add != null) {
 					add = add.trim();
+					add = add.replace(":"+DEFAULT_PORT, "");
 					if (add.toLowerCase().startsWith("http://") ||
 							add.toLowerCase().startsWith("https://"))
 						add = add.substring(add.indexOf('/') + 2, add.length());
@@ -232,6 +240,7 @@ public class ServerEditor
 				String edited = (String) JOptionPane.showInputDialog(ServerEditor.this, "", "Edit server", JOptionPane.PLAIN_MESSAGE,
 						null, null, (String) table.getSelectedValue());
 				if (edited != null) {
+					edited = edited.replace(":"+DEFAULT_PORT, "");
 					ServerEditor.this.servers.remove(row);
 					ServerEditor.this.servers.add(row, edited);
 					ServerEditor.this.table.setSelectedValue(edited, true);
@@ -244,28 +253,37 @@ public class ServerEditor
 	/** Builds and lays out the UI. */
 	private void buildGUI()
 	{
-        JPanel labels = new JPanel();
-        labels.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
+		JPanel labels = new JPanel();
+		labels.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.WEST;
 		c.insets = new Insets(0, 2, 2, 0);
 		c.gridx = 0;
 		c.gridy = 0;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        c.weightx = 1.0;
-        if (activeServer != null) {
-        	c.gridx = 0;
-    		c.gridy++;
-    		c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
-            c.fill = GridBagConstraints.NONE;      //reset to default
-            c.weightx = 0.0;  
-    		JLabel label = UIUtilities.setTextFont("Connected to ");
-            labels.add(label, c);  
-            c.gridwidth = GridBagConstraints.REMAINDER;     //end row
-            //c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
+		c.fill = GridBagConstraints.NONE;      //reset to default
+		c.weightx = 0.0;
+		JLabel label = UIUtilities.setTextFont(HEADER);
+		labels.add(label, c);
+		label = new JLabel(EXAMPLE);
+		label.setFont(FONT);
+		c.gridy++;// = 1;
+		c.gridwidth = GridBagConstraints.REMAINDER;     //end row
+		//c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1.0;
+		labels.add(label, c);
+		if (activeServer != null) {
+			c.gridx = 0;
+			c.gridy++;
+			c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
+			c.fill = GridBagConstraints.NONE;      //reset to default
+			c.weightx = 0.0;
+			label = UIUtilities.setTextFont("Connecting to ");
+			labels.add(label, c);
+			c.gridwidth = GridBagConstraints.REMAINDER;     //end row
+			//c.fill = GridBagConstraints.HORIZONTAL;
             c.weightx = 1.0;
-            c.gridx = 1;
             label = new JLabel(activeServer);
             labels.add(label, c); 
         }
@@ -401,23 +419,6 @@ public class ServerEditor
 		this.servers.addElement(server);
 		this.table.setSelectedValue(server, true);
 	}
-
-	/**
-	 * Extracts the server name if an URL has
-	 * been entered.
-	 * @param s The provided 'server name'
-	 * @return The host name
-	 */
-	private String checkServerName(String s) {
-		s = s.trim();
-		s = s.replaceAll("/+$", "");
-		try {
-			URL url = new URL(s);
-			return url.getHost();
-		} catch (MalformedURLException e) {
-			return s;
-		}
-	}
 	
 	/**
 	 * Returns the list of existing servers.
@@ -430,7 +431,8 @@ public class ServerEditor
         String servers = prefs.get(OMERO_SERVER, null);
         if (servers == null || servers.length() == 0)  return null;
         String[] l = servers.split(SERVER_NAME_SEPARATOR, 0);
-
+		for (int i=0; i<l.length; i++)
+			l[i] = l[i].replace(":"+DEFAULT_PORT, "");
         if (l == null)
         	return new ArrayList<>();
 		return Stream.of(l).collect(Collectors.toList());
@@ -445,6 +447,8 @@ public class ServerEditor
 	void handleServers(String serverName)
 	{
 		serverName = serverName == null ? "" : serverName.trim();
+		if (!serverName.matches(".+:[0-9]+$"))
+			serverName += ":"+DEFAULT_PORT;
 
 		Preferences prefs = Preferences.userNodeForPackage(ServerEditor.class);
 
@@ -459,6 +463,8 @@ public class ServerEditor
 		StringBuffer buffer = new StringBuffer();
 		for (String s : l) {
 			s = s.trim();
+			if (!s.matches(".+:[0-9]+$"))
+				s += ":"+DEFAULT_PORT;
 			if (!s.equals(serverName)) {
 				buffer.append(s);
 				buffer.append(SERVER_NAME_SEPARATOR);
@@ -466,6 +472,8 @@ public class ServerEditor
 		}
 		if (serverName.length()>0)
 			buffer.append(serverName);
+
+		System.out.println("Save servers: "+buffer.toString());
 		prefs.put(OMERO_SERVER, buffer.toString());
 	}
 
