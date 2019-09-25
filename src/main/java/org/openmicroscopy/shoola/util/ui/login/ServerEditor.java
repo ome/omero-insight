@@ -111,19 +111,21 @@ public class ServerEditor
     static final int			DEFAULT_PORT = GLACIER2PORT.value;
 
 	/** Example of a new server. */
-	private static final String	EXAMPLE = "<html>e.g. my.server.name <i>(default case)</i><br>" +
-			"my.server.name:port <i>(for non-default ports)</i><br>" +
-			"127.0.0.1:1234 <i>(if you have an IP address)</i><br>" +
-			"wss://my.server.name <i>(connecting via websocket)</i><br><br></html>";
+	private static final String	EXAMPLE = "<html>" +
+            "<i>my.server.name</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(default case)<br>" +
+			"<i>my.server.name:port</i>&nbsp;&nbsp;(for non-default ports)<br>" +
+			"<i>127.0.0.1:1234</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(if you have an IP address)<br>" +
+			"<i>wss://my.server.name</i>&nbsp;(connecting via websocket)<br><br>" +
+            "</html>";
 
 	/** The header of the table. */
-	private static final String HEADER = "Server Address";
+	private static final String HEADER = "Server Address Examples";
 
     /** The property name for the host to connect to <i>OMERO</i>. */
     private static final String	OMERO_SERVER = "omeroServer";
     
 	/** Font for progress bar label. */
-	private static final Font	FONT = new Font("SansSerif", Font.PLAIN, 10);
+	private static final Font	FONT = new Font("Monospaced", Font.PLAIN, 10);
 
 	/** Button to remove server from the list. */
 	private JButton			removeButton;
