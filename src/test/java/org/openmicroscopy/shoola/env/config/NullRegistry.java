@@ -29,7 +29,6 @@ package org.openmicroscopy.shoola.env.config;
 //Third-party libraries
 
 //Application-internal dependencies
-import omero.gateway.cache.CacheService;
 import org.openmicroscopy.shoola.env.data.AdminService;
 import org.openmicroscopy.shoola.env.data.OmeroDataService;
 import org.openmicroscopy.shoola.env.data.OmeroImageService;
@@ -72,7 +71,6 @@ public class NullRegistry
     public OmeroImageService getImageService() { return null; }
     public OmeroMetadataService getMetadataService() { return null; }
     public AdminService getAdminService() { return null; }
-	public CacheService getCacheService() { return null; }
 	public String lookupRemote(String name) { return null; }
     public Gateway getGateway() { return null;}
     

@@ -21,7 +21,6 @@
   <logger name="ome.client" level="WARN"/>
   <logger name="org.apache" level="WARN"/>
   <logger name="org.springframework" level="WARN"/>
-  <logger name="net.sf.ehcache" level="ERROR"/>
   <logger name="loci" level="INFO"/>
   <logger name="ome.system" level="WARN"/>
   <root level="debug">

@@ -23,7 +23,6 @@
 
 package org.openmicroscopy.shoola.env.config;
 
-import omero.gateway.cache.CacheService;
 import org.openmicroscopy.shoola.env.data.AdminService;
 import org.openmicroscopy.shoola.env.data.OmeroDataService;
 import org.openmicroscopy.shoola.env.data.OmeroImageService;
@@ -188,18 +187,7 @@ public class RegistryFactory
     {
         ((RegistryImpl) reg).setOS(os);
     }
-	
-    /**
-	 * Adds the {@link CacheService} instance to the specified {@link Registry}.
-	 * 
-	 * @param cache	The {@link CacheService} instance.
-	 * @param reg		The {@link Registry}.
-	 */
-	public static void linkCacheService(CacheService cache, Registry reg)
-	{
-		((RegistryImpl) reg).setCacheService(cache);
-	}
-	
+
 	public static void linkGateway(Gateway gw, Registry reg)
     {
         ((RegistryImpl) reg).setGateway(gw);

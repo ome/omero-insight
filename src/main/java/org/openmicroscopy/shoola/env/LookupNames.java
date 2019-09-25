@@ -265,12 +265,6 @@ public class LookupNames
     public static final String THUMBNAIL_FETCH_MEDIUM_SPEED =
             "/services/Thumbnailing/fetchMediumSpeed";
 
-    /** Field to access the <code>Cache on</code> information. */
-    public static final String CACHE_ON = "/services/CACHE/on";
-
-    /** Field to access the <code>Size</code> of the cache. */
-    public static final String RE_CACHE_SZ = "/services/RE/cacheSz";
-
     /** 
      * Field to access the number of rendering engine to start for big images.
      */

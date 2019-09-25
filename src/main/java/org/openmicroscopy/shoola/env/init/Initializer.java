@@ -86,7 +86,6 @@ public class Initializer
         initList.add(ContainerConfigInit.class);
         initList.add(SplashScreenInit.class);
         initList.add(LoggerInit.class);
-        initList.add(CacheInit.class);
         initList.add(EventBusInit.class);
         initList.add(CmdProcessorInit.class);
         initList.add(DataServicesInit.class);
