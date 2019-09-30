@@ -66,6 +66,14 @@ class OfflineImportRequestBuilder {
             exp = svc.getUserDetails();
         }
         data.experimenterEmail = exp.getEmail();
+        //Handle the case when email is not set.
+        //Without an email the request is rejected but it does not prevent
+        //the import to go ahead. It will only not notify users when the
+        //the import is done. The email setup is not a requirement for
+        //omero-ms-queue
+        if (exp.getEmail() == null || exp.getEmail().trim().isEmpty()) {
+            data.experimenterEmail = "x@y";
+        }
         data.omeroHost = svc.getServerName();
         if (svc.getPort() > 0) {
             data.omeroPort = "" + svc.getPort();
