@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) <2018-2019> University of Dundee & Open Microscopy Environment.
+ * All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.components.view;
 
 import java.awt.BorderLayout;
@@ -36,7 +54,7 @@ import javax.swing.plaf.FontUIResource;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagConfiguration;
+//import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
@@ -49,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * Viewer for mdecontent with:
  * title,tags
  * 
- * @author Susanne Kunis
+ * @author Susanne Kunis <susannekunis at gmail dot com>
  * 
  *
  */
@@ -121,23 +139,23 @@ public class CommonViewer extends JPanel{
 	}
 	
 	
-	/**
-	 * Init given tags and mark it as visible.(Predefinition of gui and values). 
-	 * @param list
-	 */
-	private void initTags(List<TagConfiguration> list) 
-	{
-		if(list==null || content ==null)
-			return;
-		LinkedHashMap<String, TagData> tagList=content.getList();
-		for(int i=0; i<list.size();i++){
-			TagConfiguration t=list.get(i);
-			if(t.getName()!=null){
-				if(tagList.containsKey(t.getName()))
-					tagList.get(t.getName()).setVisible(t.isVisible());
-			}
-		}
-	}
+//	/**
+//	 * Init given tags and mark it as visible.(Predefinition of gui and values). 
+//	 * @param list
+//	 */
+//	private void initTags(List<TagConfiguration> list) 
+//	{
+//		if(list==null || content ==null)
+//			return;
+//		LinkedHashMap<String, TagData> tagList=content.getList();
+//		for(int i=0; i<list.size();i++){
+//			TagConfiguration t=list.get(i);
+//			if(t.getName()!=null){
+//				if(tagList.containsKey(t.getName()))
+//					tagList.get(t.getName()).setVisible(t.isVisible());
+//			}
+//		}
+//	}
 	
 	
 	/**

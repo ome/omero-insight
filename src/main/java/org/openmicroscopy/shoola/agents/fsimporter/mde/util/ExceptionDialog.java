@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) <2016> University of Dundee & Open Microscopy Environment.
+ * All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -12,7 +30,6 @@ import java.io.StringWriter;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -20,9 +37,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.Logger;
  
 /**
  * 
@@ -32,13 +46,10 @@ import ch.qos.logback.classic.Logger;
  * 
  * see: http://blue-walrus.com/2015/01/swing-error-dialog-with-exception-displayer/
  * and  http://stackoverflow.com/questions/6498421/error-dialog-with-scrollable-area-to-display-big-multiline-message
- * @author Oliver Watkins (c), Susanne Kunis
+ * @author Oliver Watkins (c), Susanne Kunis<susannekunis at gmail dot com>
  */
 public class ExceptionDialog extends JDialog {
  
-	private static final org.slf4j.Logger LOGGER =
-			LoggerFactory.getLogger(ExceptionDialog.class);
-	
 	private int dialogWidth = 600;
 	private int dialogHeight = 200;
  
@@ -64,8 +75,6 @@ public class ExceptionDialog extends JDialog {
 	public ExceptionDialog(String errorLabelText, String errorDescription,
 			Throwable e,String clazz) 
 	{
-		
-		LOGGER.error("["+clazz+"] "+errorDescription+" \n"+e);
 		setSize(dialogWidth, dialogHeight);
 		setLocation(100, 100);
 		setModal(true);

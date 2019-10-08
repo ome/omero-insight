@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) <2019> University of Dundee & Open Microscopy Environment.
+ * All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.configuration;
 
 import java.io.File;
@@ -17,8 +35,10 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.con
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 import ome.model.units.UnitEnum;
-
-
+/**
+ * holds MDE configuration parse from xml file or use standard implement OME configuration. 
+ *@author Susanne Kunis<susannekunis at gmail dot com>
+ */
 public class MDEConfiguration {
 	/* microscope hardware configuration list - which objects values are available.
 	 *  e.g.: <LatticeLightSheet,[<Objective,[o1,o2,o3]>,<Detector,[d1,d2,d3]>,...]> */

@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) <2019> University of Dundee & Open Microscopy Environment.
+ * All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.components.view;
 
 import java.awt.BorderLayout;
@@ -26,14 +44,17 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 
 /**
+ * Panel to visualize object tree.
+ * 
  * You can add and remove elements. Kind of available Elements has to declare in a JSON or RDF file like:
  * Module: name:
- * 		   List of Tags:
- *         List of default values:
- * OME elements has to named by OME:<OMEName>. See also list of available tags for OME elements        
- * You can create your MDE specification by specification of the ModuleTree in the GUI and than-> export specification
+ * 		   List of TagData:
+ *         List of predefined values for this module:
+ *         parents:
+ * OME elements has to named by OME:<OMEName>. See also list of available tags for OME elements.        
+ * TODO: You can create your MDE specification by specification of the ModuleTree in the GUI and than-> export specification
  * 
- * @author Kunis
+ * @author Susanne Kunis<susannekunis at gmail dot com>
  *
  */
 public class DynamicModuleTree extends JPanel {

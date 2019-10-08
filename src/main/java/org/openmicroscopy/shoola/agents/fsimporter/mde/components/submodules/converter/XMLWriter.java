@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) <2019> University of Dundee & Open Microscopy Environment.
+ * All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter;
 
 import java.io.File;
@@ -34,11 +52,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
+ * Write/read MDE config file.
+ * TODO: revise comment
  * OBJECTS: are available metadata groups with attributes. All available objects are define under Microscope name= UNIVERSAL. 
  * You can specify which objects are available for different microscopes and which attributes are visible, etc.
  * INSTRUMENTS: are available defined hardware specification for a certain microscope. For example you can define which Detector, Filter etc. are 
  * available for a microscope.
- * @author Kunis
+ * 
+ * @author Susanne Kunis<susannekunis at gmail dot com>
  *
  */
 public class XMLWriter {
