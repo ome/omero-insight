@@ -59,7 +59,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
 import org.openmicroscopy.shoola.util.ui.ScrollablePanel;
-import org.slf4j.LoggerFactory;
 
 
 
@@ -72,8 +71,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class CommonViewer extends JPanel{
-//	private static final org.slf4j.Logger LOGGER =
-//			LoggerFactory.getLogger(CommonViewer.class);
 	
 	/** list of key-values */
 	private ModuleContent content;

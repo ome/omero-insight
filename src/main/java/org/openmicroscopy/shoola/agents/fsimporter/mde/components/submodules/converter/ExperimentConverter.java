@@ -25,6 +25,7 @@ import ome.xml.model.Experimenter;
 import ome.xml.model.enums.EnumerationException;
 import ome.xml.model.enums.ExperimentType;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
@@ -104,7 +105,7 @@ public class ExperimentConverter extends DataConverter{
 		try{
 			t=ExperimentType.fromString(value);
 		}catch(EnumerationException e){
-			LOGGER.warn("[MDE] ExperimentType: "+value+"is not supported");
+			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] ExperimentType: "+value+"is not supported");
 			System.out.println("-- WARNING: ExperimentType: "+value+"is not supported");
 		}
 		return t;

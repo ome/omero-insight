@@ -279,21 +279,21 @@ public class DetectorConverter extends DataConverter{
 	 * Parser
 	 * --------------------------------------------------------*/
 
-	private static DetectorType parseDetectorType(String c) 
-	{
-		if(c==null || c.equals(""))
-			return null;
-
-		DetectorType m=null;
-		try{
-			m=DetectorType.fromString(c);
-		}catch(EnumerationException e){
-			LOGGER.warn("[MDE] DetectorType: "+c+" is not supported");
-			System.out.println("-- WARNING: detector type is not supported: "+c);
-			//			m=DetectorType.OTHER;
-		}
-		return m;
-	}
+//	private static DetectorType parseDetectorType(String c) 
+//	{
+//		if(c==null || c.equals(""))
+//			return null;
+//
+//		DetectorType m=null;
+//		try{
+//			m=DetectorType.fromString(c);
+//		}catch(EnumerationException e){
+//			LOGGER.warn("[MDE] DetectorType: "+c+" is not supported");
+//			System.out.println("-- WARNING: detector type is not supported: "+c);
+//			//			m=DetectorType.OTHER;
+//		}
+//		return m;
+//	}
 	private static ElectricPotential parseElectricPotential(String c, Unit unit) throws Exception
 	{
 		if(c==null || c.equals(""))

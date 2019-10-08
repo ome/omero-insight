@@ -30,7 +30,6 @@ import javax.swing.event.DocumentListener;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.DocumentListenerForDouble;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.DocumentListenerForPercentFraction;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO: better as interface instead of abstract
@@ -39,7 +38,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class DataConverter {
-	protected static final org.slf4j.Logger LOGGER =LoggerFactory.getLogger(DataConverter.class);
 	
 	public static final boolean REQUIRED=true;
 	public static final boolean OPTIONAL =false;

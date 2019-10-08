@@ -83,11 +83,11 @@ import ome.model.units.Unit;
 import ome.xml.model.Experimenter;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.OMEValueConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -100,10 +100,6 @@ import org.slf4j.LoggerFactory;
 public class TagData 
 {
 	/** Logger for this class. */
-//	private static Logger LOGGER = Logger.getLogger(UOSMetadataLogger.class.getName());
-	private static final org.slf4j.Logger LOGGER =
-    	    LoggerFactory.getLogger(TagData.class);
-
 	Color fillInfo=new Color(240,240,240);//Color.LIGHT_GRAY;
 //	Color noInfo=new Color(217,229,220);//green;
 	Color noInfo=Color.white;
@@ -1115,7 +1111,7 @@ public class TagData
 					for(String s: DATE_FORMATS_TAGS){
 						formats=formats+s+"\n";
 					}
-					LOGGER.warn("[MDE] unknown creation date format: {}", creationDate);
+					ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] unknown creation date format: "+ creationDate);
 					System.out.println("-- WARNING: unknown creation date format: "+ creationDate);
 //					WarningDialog ld = new WarningDialog("Unknown Timestamp Format!", 
 //							"Can't parse given timestamp ["+name+": "+creationDate+"] ! Please use one of the following date formats:\n"+formats,
@@ -1126,7 +1122,7 @@ public class TagData
 			
 			val=date;//DateTools.formatDate(((JTextField)inputField).getText(), DateTools.TIMESTAMP_FORMAT);
 		}catch(Exception e){
-			LOGGER.warn("[MDE] unknown creation date format: {}", creationDate);
+			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] unknown creation date format: "+ creationDate);
 			System.out.println("-- WARNING: unknown creation date format: "+ creationDate);
 //			ExceptionDialog ld = new ExceptionDialog("Timestamp Format Error!", 
 //					"Wrong timestamp format at input at "+name,e,
@@ -1136,24 +1132,6 @@ public class TagData
 		return val;
 	}
 	
-	//http://stackoverflow.com/questions/3389348/parse-any-date-in-java
-	/**
-	 * Determine SimpleDateFormat pattern matching with the given date string. Returns null if
-	 * format is unknown. You can simply extend DateUtil with more formats if needed.
-	 * @param dateString The date string to determine the SimpleDateFormat pattern for.
-	 * @return The matching SimpleDateFormat pattern, or null if format is unknown.
-	 * @see SimpleDateFormat
-	 */
-	public static String determineDateFormat(String dateString) {
-	    for (String regexp : DATE_FORMAT_REGEXPS.keySet()) {
-	        if (dateString.toLowerCase().matches(regexp)) {
-	            return DATE_FORMAT_REGEXPS.get(regexp);
-	        }
-	    }
-	    LOGGER.warn("[MDE] Can't parse date: "+dateString+". Unknown date format!");
-	   System.out.println("-- WARNING: Can't parse date: "+dateString+". Unknown date format!");
-	    return null; // Unknown format.
-	}
 	
 
 	private String parseDate(String val) throws Exception
@@ -1176,7 +1154,7 @@ public class TagData
 
 		} catch (ParseException | NullPointerException e1) {
 			// TODO Auto-generated catch block
-			LOGGER.error("[MDE] Parse error for date format "+dateformat+"\n"+e1.toString());
+			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Parse error for date format "+dateformat+"\n"+e1.toString());
 			return null;
 		}
 	}
@@ -1201,7 +1179,7 @@ public class TagData
 				d=df.parse(s);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
-				LOGGER.error("[MDE] Parse error for date format "+dateformat);
+				ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Parse error for date format "+dateformat);
 				setTagInfoError(val+". Invalid Date Format!");
 				((JTextField) inputField).setText("");
 				e1.printStackTrace();
@@ -1212,7 +1190,7 @@ public class TagData
 				SimpleDateFormat f=new SimpleDateFormat(DateTools.TIMESTAMP_FORMAT);
 				((JTextField) inputField).setText( f.format(d));
 			} catch (Exception e) {
-				LOGGER.error("[MDE] Parse error for timestamp");
+				ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Parse error for timestamp");
 				((JTextField) inputField).setText("");
 				setTagInfoError(val+". Invalid Date Format!");
 				e.printStackTrace();

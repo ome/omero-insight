@@ -33,10 +33,10 @@ import javax.swing.tree.TreeSelectionModel;
 import omero.gateway.model.ProjectData;
 import omero.gateway.model.ScreenData;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
 import org.openmicroscopy.shoola.env.data.model.FileObject;
 import org.openmicroscopy.shoola.env.data.model.ImportableFile;
-import org.slf4j.LoggerFactory;
 
 /** 
  * File browser of MDE.
@@ -45,10 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 public class EditorFileBrowser extends JTree 
 {
-	/** Logger for this class. */
-    private static final org.slf4j.Logger LOGGER =
-               LoggerFactory.getLogger(EditorFileBrowser.class);
-    
     private FileFilter fileFilter;
     
 	public EditorFileBrowser(FNode rootNode)
@@ -138,7 +134,8 @@ public class EditorFileBrowser extends JTree
                 file=new FNode(new File(f.getAbsolutePath()),data,fileObj);
                 parent.add(file);
             } catch (Exception e) {
-                LOGGER.info("[MDE] Wrong import format "+f.getAbsolutePath());
+            	ImporterAgent.getRegistry().getLogger().warn(this,
+                        "[MDE]  Wrong import format \"+f.getAbsolutePath()!");
             }
         }
     }

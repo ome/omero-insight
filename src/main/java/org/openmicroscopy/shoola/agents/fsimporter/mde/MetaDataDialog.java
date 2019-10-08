@@ -76,6 +76,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.actions.ImporterAction;
 import org.openmicroscopy.shoola.agents.fsimporter.chooser.ImportDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
@@ -120,7 +121,6 @@ import loci.formats.services.OMEXMLService;
 import ome.xml.meta.IMetadata;
 import ome.xml.model.OME;
 
-import org.slf4j.LoggerFactory;
 
 /**
  * Main entry point MDE.
@@ -130,11 +130,6 @@ import org.slf4j.LoggerFactory;
 public class MetaDataDialog extends ClosableTabbedPaneComponent
 implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSelectionListener, ItemListener
 {
-
-	/** Logger for this class. */
-	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MetaDataDialog.class);
-
-
 	/** The property name for the microscope who is used in metadataeditor of <i>OMERO</i>. */
 	private static final String  	OMERO_MICROSCOPE = "omeroMicroscope";
 	/** The property name for the template who is used in metadataeditor of <i>OMERO</i>. */
@@ -591,7 +586,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		if(node!=null){
 			System.out.println("+++ EVENT TREE DESELECT "+node.getAbsolutePath()+"+++\n");
 			MonitorAndDebug.printConsole("-- Deselect "+node.getAbsolutePath()+" [MetaDataDialog::deselectNodeAction]");
-			LOGGER.debug("[MDE] Deselect node action for "+node.getAbsolutePath());
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Deselect node action for "+node.getAbsolutePath());
 			
 			// get user input
 			HashMap<String,List<TagData>> input = MDEHelper.getInput(contentTree);
@@ -744,7 +739,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 			}
 			data=node.getImportData();
 		}catch(Exception e){
-			LOGGER.debug("[MDE] issue on get import data");
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] issue on get import data");
 			return null;
 		}
 		return data;
@@ -757,7 +752,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	 */
 	public void refreshFileView(List<ImportableFile> files, FileFilter fileFilter)
 	{
-		LOGGER.debug("[MDE] refresh file view");
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] refresh file view");
 		this.fileFilter=fileFilter;
 		fileTree.setFileFilter(fileFilter);
 		if(files==null || files.size()==0){
@@ -790,7 +785,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 			switch (commandId) {
 			case CMD_CLOSE:
-				LOGGER.debug("[MDE] -- close");
+				ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] -- close");
 				firePropertyChange(CANCEL_SELECTION_PROPERTY,
 						Boolean.valueOf(false), Boolean.valueOf(true));
 				break;
@@ -817,7 +812,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				}
 				break;
 			case CMD_RESET:
-				LOGGER.info("[MDE] -- reset");
+				ImporterAgent.getRegistry().getLogger().info(this,"[MDE] -- reset");
 				System.out.println("-- EVENT RESET INPUT \n");
 
 				FNode selection=(FNode)fileTree.getLastSelectedPathComponent();
@@ -934,7 +929,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		if(selectedNode!=null ){
 			System.out.println("+++ EVENT TREE SELECT "+selectedNode.getAbsolutePath()+"+++\n");
 			//	   selectedNode.printMaps();
-			LOGGER.debug("[MDE] Select node action for "+selectedNode.getAbsolutePath());
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Select node action for "+selectedNode.getAbsolutePath());
 
 			resetFileDataButton.setEnabled(true);
 			loadAndShowDataForSelection(selectedNode, false);
@@ -998,7 +993,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 					loadDataForFile(file, null, node);
 				}
 			}catch(Exception ex){
-				LOGGER.error("[MDE] can't read METADATA of selection "+node.getAbsolutePath());
+				ImporterAgent.getRegistry().getLogger().error(this,"[MDE] can't read METADATA of selection "+node.getAbsolutePath());
 				resetFileTreeAtError("Metadata Error!","Can't read given metadata of "+file,ex);
 				return;
 			}
@@ -1186,7 +1181,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 
 			reader.setId(fName);
-			LOGGER.debug("[MDE] -- use READER: "+reader.getReader().getClass().getName());
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] -- use READER: "+reader.getReader().getClass().getName());
 			MonitorAndDebug.printConsole("-- Use Reader: "+reader.getReader().getClass().getSimpleName());
 
 			//load original data
