@@ -82,6 +82,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.actions.ImporterAction;
 import org.openmicroscopy.shoola.agents.fsimporter.chooser.ImportDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
@@ -673,17 +674,24 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		if(treePanel!=null) {
 			// reload MDEContent to recover image container contains
 			// first save user input
-			HashMap<String,List<TagData>> minput=((FNode)fileTree.getLastSelectedPathComponent()).getInput();
+			FNode node=((FNode)fileTree.getLastSelectedPathComponent());
+			HashMap<String,List<TagData>> minput=node.getInput();
 			HashMap<String,List<TagData>> cinput = MDEHelper.getInput(treePanel.getRoot());
-			for(Entry<String, List<TagData>> entry:minput.entrySet()) {
-				cinput.put(entry.getKey(),MDEHelper.cloneTagList(entry.getValue()));
+			
+			if(minput!=null) {
+				if(cinput==null) {
+					cinput = new HashMap<>();
+				}
+				for(Entry<String, List<TagData>> entry:minput.entrySet()) {
+					cinput.put(entry.getKey(),MDEHelper.cloneTagList(entry.getValue()));
+				}
 			}
-			((FNode)fileTree.getLastSelectedPathComponent()).reset();
+			node.reset();
 			//reload content
-			selectNodeAction((FNode) fileTree.getLastSelectedPathComponent());
+			selectNodeAction(node);
 			// set input again
 			ModuleTree newTree=getCurrentModuleTree();
-//			newTree.printTree(newTree.getRoot(), "New Tree after Reset");
+			//			newTree.printTree(newTree.getRoot(), "New Tree after Reset");
 			MDEHelper.addData(newTree.getRoot(), cinput);
 		}
 	}
@@ -830,6 +838,9 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 						//save input
 						deselectNodeAction((FNode)fileTree.getLastSelectedPathComponent());
 						
+						//update objects with objectConf of selected setup
+						updateObjectConf((FNode)fileTree.getLastSelectedPathComponent());
+						
 						//TODO reload current view if changes
 						loadAndShowDataForSelection((FNode)fileTree.getLastSelectedPathComponent(), true);
 					}
@@ -838,7 +849,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 					//String newTitle=customSettings.getMicName()+(customSettings.getMicDesc()!=null?(": "+customSettings.getMicDesc()): "");
 					String newTitle=controller.getCurrentMicName();
 					firePropertyChange(ImportDialog.REFRESH_TITLE,null,newTitle);
-
+					
 				}
 				break;
 			case CMD_RESET:
@@ -918,6 +929,28 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 			}
 		}
 	}
+
+	
+	/**
+	 * Update current object tree with objec configuration for selected setup.
+	 * @param fnode
+	 */
+	private void updateObjectConf(FNode fnode) {
+		if(fnode==null)
+			return;
+		if(fnode.getContainer()!=null) {
+			DefaultMutableTreeNode treeNode=fnode.getContainer().getTreeNode();
+			Enumeration e = treeNode.breadthFirstEnumeration();
+			while(e.hasMoreElements()) {
+				DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
+				ModuleContent content = controller.getContentOfType(((ModuleTreeElement) node.getUserObject()).getType());
+				if(content!=null)
+					((ModuleTreeElement) node.getUserObject()).setProperties(content.getProperties());
+			}
+			
+		}
+	}
+
 
 	@Override
 	public void valueChanged(TreeSelectionEvent e) 

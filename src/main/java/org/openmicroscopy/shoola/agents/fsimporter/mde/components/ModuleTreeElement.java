@@ -82,6 +82,12 @@ public class ModuleTreeElement {
 			this.name=data.getAttributeValue(TagNames.MODEL);
 		}
 	}
+	
+	public void setProperties(ModuleConfiguration conf) {
+		if(data!=null)
+			data.setProperties(conf);
+	}
+	
 	public String getName() {
 		return name;
 	}
