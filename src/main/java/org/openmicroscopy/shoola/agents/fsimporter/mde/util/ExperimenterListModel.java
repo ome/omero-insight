@@ -113,9 +113,9 @@ public class ExperimenterListModel extends DefaultListModel<String>
 	
 	public void setList(List<Experimenter> list)
 	{
-		if(list!=null)
-			for(int i=0; i<list.size();i++)
-				MonitorAndDebug.printConsole("ExpModel::setList "+list.get(i).getLastName());
+//		if(list!=null)
+//			for(int i=0; i<list.size();i++)
+//				MonitorAndDebug.printConsole(this,"ExpModel::setList "+list.get(i).getLastName());
 		exp=list;
 	}
 

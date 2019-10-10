@@ -20,6 +20,7 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.components.view;
 
 import javax.swing.table.DefaultTableModel;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
@@ -88,7 +89,11 @@ public class TagDataTableModel extends DefaultTableModel{
 			if(unitSymbol!=null && !unitSymbol.equals("")) {
 				ome.model.units.Unit[] u=new ome.model.units.Unit[valStrArray.length];
 				for(int i=0; i<valStrArray.length;i++) {
-					u[i]=getUnit(valStrArray[i], unitSymbol, unitName,tagname,this.tableName);
+					try {
+						u[i]=getUnit(valStrArray[i], unitSymbol, unitName,tagname,this.tableName);
+					} catch (Exception e) {
+						ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] Configurator: can't parse unit for "+tagname);
+					}
 				}
 				t=new TagData(this.tableName,tagname, u,TagNames.getUnitClass(unitName), req, type);
 			}else {
@@ -96,7 +101,12 @@ public class TagDataTableModel extends DefaultTableModel{
 			}
 		}else {
 			if(unitSymbol!=null && !unitSymbol.equals("")) {
-				ome.model.units.Unit u=getUnit(value,unitSymbol, unitName,tagname,this.tableName);
+				ome.model.units.Unit u=null;
+				try {
+					u = getUnit(value,unitSymbol, unitName,tagname,this.tableName);
+				} catch (Exception e) {
+					ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] Configurator: can't parse unit for "+tagname);
+				}
 				t=new TagData(this.tableName,tagname, u,TagNames.getUnitClass(unitName), req, type);
 			}else {
 				t=new TagData(this.tableName,tagname,value,req,type);
@@ -130,12 +140,12 @@ public class TagDataTableModel extends DefaultTableModel{
 	
 	
 	//TODO: move to class TagNames
-	public ome.model.units.Unit getUnit(String val,String unitSymbol,String className,String tagName,String parent){
+	public ome.model.units.Unit getUnit(String val,String unitSymbol,String className,String tagName,String parent) throws Exception{
 		// can't create unit obj because no val is given -> put to default unit map
 		if(val==null || val.equals("")) {
 			conf.addDefaultUnit(unitSymbol,className,tagName,parent);
 		}else {
-			try {
+			
 
 				double value=Double.parseDouble(val);
 				if(className.equals(ome.model.units.ElectricPotential.class.getName()))
@@ -152,10 +162,7 @@ public class TagDataTableModel extends DefaultTableModel{
 					return new ome.model.units.Temperature(value, ome.model.enums.UnitsTemperature.bySymbol(unitSymbol));
 				if(className.equals(ome.model.units.Time.class.getName()))
 					return new ome.model.units.Time(value, ome.model.enums.UnitsTime.bySymbol(unitSymbol));
-			}catch(Exception e) {
-				System.out.println("--ERROR: can't parse unit value: "+val+"[TagDataTableModel::getUnit]");
-				e.printStackTrace();
-			}
+			
 		}
 		return null;
 			

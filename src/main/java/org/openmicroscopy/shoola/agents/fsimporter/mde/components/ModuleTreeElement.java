@@ -131,7 +131,7 @@ public class ModuleTreeElement {
 	
 	public void printContent() {
 		if(data==null) {
-			MonitorAndDebug.printConsole("-- PRINT ModuleContent: \n\tcontent is null!");
+			MonitorAndDebug.printConsole(this,"-- PRINT ModuleContent: \n\tcontent is null!");
 		}else {
 			data.print();
 		}

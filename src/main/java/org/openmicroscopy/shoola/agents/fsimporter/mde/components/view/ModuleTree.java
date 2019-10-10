@@ -18,6 +18,9 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.components.view;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,17 +48,21 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DichroicConverter;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
@@ -69,35 +76,35 @@ public class ModuleTree extends JPanel implements ActionListener{
 
 	private static String POPUP_COPY = "copy";
 	private static String POPUP_PASTE = "paste";
-//	private static String POPUP_CUT = "cut";
+	//	private static String POPUP_CUT = "cut";
 	public static final String POPUP_DEL = "delete";
 	private static String POPUP_INSERT ="insert";
 	private static String POPUP_INSERT_ALL ="insertAll";
-	
+
 	private JMenu insert;
-	
+
 	private JTree tree;
-	private DefaultTreeModel treeModel;
 	private DefaultMutableTreeNode root;
+	private DefaultMutableTreeNode original;
 	private ModuleController controller;
-	
+
 	private DefaultMutableTreeNode copyVal;
 	private JPopupMenu popup;
-	
+
 	private boolean changeTreeStructure;
-	
-	
+
+
 	public ModuleTree(DefaultMutableTreeNode elem, ActionListener l) {
 		super(new GridLayout(1,0));
 		this.controller=ModuleController.getInstance();
 		this.changeTreeStructure=false;
 		buildContextMenu(l);
 		buildTree(elem);
-//		selectFirstNode();
-		
+		//		selectFirstNode();
+
 	}
-	
-	
+
+
 	private void buildTree(DefaultMutableTreeNode elem)
 	{
 		if(((ModuleTreeElement) elem.getUserObject()).getType().equals(TagNames.OME_ROOT)) {
@@ -106,51 +113,95 @@ public class ModuleTree extends JPanel implements ActionListener{
 			root= new DefaultMutableTreeNode(new ModuleTreeElement(null, null));//new DefaultMutableTreeNode("Modules:");
 			root.add(elem);
 		}
-		tree = new JTree(root);
-		treeModel=(DefaultTreeModel) tree.getModel();
-		treeModel.addTreeModelListener(new ModuleTreeListener());
 		
+		tree = new JTree(root);
+		
+		DefaultTreeModel treeModel=(DefaultTreeModel) tree.getModel();
+//		filterTree(root);
+		
+		treeModel.addTreeModelListener(new ModuleTreeListener());
 		tree.setEditable(false);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
+				if (e.isPopupTrigger()&& ((JComponent) e.getSource()).isEnabled()) {
 					popup.show((JComponent) e.getSource(), e.getX(), e.getY());
 				}
 			}
 		});
+		
+		tree.setCellRenderer(new DefaultTreeCellRenderer() {
+			private boolean is_selected;
+			
+		      public Component getTreeCellRendererComponent(JTree tree,
+		          Object value, boolean sel, boolean expanded, boolean leaf,
+		          int row, boolean hasFocus) {
+		        super.getTreeCellRendererComponent(tree, value, sel, expanded,
+		            leaf, row, hasFocus);
+		        String type = ((ModuleTreeElement) ((DefaultMutableTreeNode)value).getUserObject()).getType();
+		        is_selected = false;
+		        
+		        if (!((DefaultMutableTreeNode)value).isRoot() && !controller.configurationExists(type)) {
+		          this.setEnabled(false);
+		          this.setDisabledIcon(this.getClosedIcon()); // I used the standard      
+		          if(sel)
+		              is_selected = true;
+		        }
+		        return this;
+		      }
+		      public void paintComponent(Graphics g) {
+		          g.setColor(Color.white);
+		          int offset = 0;
+		          if (is_selected) {
+		              g.drawRect(offset, 0, getWidth() - 1 - offset, getHeight() - 1);
+		              g.fillRect(offset, 0, getWidth() - 1 - offset, getHeight() - 1);
+		          }
+		          super.paintComponent(g);
+		      }
+		});
 		JScrollPane treeView=new JScrollPane(tree);
 		add(treeView);
-		
+
 	}
-	
+
+	private void filterTree(DefaultMutableTreeNode cTree) {
+		Enumeration e = cTree.breadthFirstEnumeration();
+		while(e.hasMoreElements()) {
+			DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
+			if(!controller.configurationExists((((ModuleTreeElement) node.getUserObject()).getType())) && !node.isRoot()) {
+				removeNodeFromParent(node);
+			}
+		}
+	}
+
+
 	private void buildContextMenu(ActionListener l)
 	{
 		popup = new JPopupMenu();
-//		JMenu view = new JMenu("View");
-//		JMenuItem view_browse = new JMenuItem("Browse");
-//		JMenuItem view_compare = new JMenuItem("Compare");
-//		view.add(view_browse);
-//		view.add(view_compare);
-		
+		//		JMenu view = new JMenu("View");
+		//		JMenuItem view_browse = new JMenuItem("Browse");
+		//		JMenuItem view_compare = new JMenuItem("Compare");
+		//		view.add(view_browse);
+		//		view.add(view_compare);
+
 		JMenu edit = new JMenu("Edit");
-		
+
 		JMenuItem edit_copy = new JMenuItem("Copy");
 		edit_copy.setActionCommand(POPUP_COPY);
 		edit_copy.addActionListener(this);
-		
+
 		JMenuItem edit_paste = new JMenuItem("Paste");
 		edit_paste.setActionCommand(POPUP_PASTE);
 		edit_paste.addActionListener(this);
-		
+
 		JMenuItem edit_delete = new JMenuItem("Delete");
 		edit_delete.setActionCommand(POPUP_DEL);
 		edit_delete.addActionListener(l);
-		
+
 		edit.add(edit_copy);
 		edit.add(edit_paste);
 		edit.add(edit_delete);
-		
+
 		insert = new JMenu("Insert Node");
 		insert.addMenuListener(new MenuListener() {
 			@Override
@@ -166,14 +217,17 @@ public class ModuleTree extends JPanel implements ActionListener{
 			public void menuCanceled(MenuEvent e) {	}
 		});
 		popup.add(insert);
-//		popup.add(view);
+		//		popup.add(view);
 		popup.add(edit);
-		
-		
+
+
 	}
 
-	
-	
+
+	/**
+	 * Add right hand menu to tree.
+	 * @param current
+	 */
 	protected void addMenuItems(DefaultMutableTreeNode current) {
 		if(current == null) {
 			current=(DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
@@ -204,19 +258,19 @@ public class ModuleTree extends JPanel implements ActionListener{
 	 * @param parent
 	 * @param elem
 	 */
-	private void visualizeNodes(DefaultMutableTreeNode parent, DefaultMutableTreeNode thisElem) {
-		if(thisElem!=null) {
-			if(parent==null) {
-				parent = root;
-			}
-			treeModel.insertNodeInto(thisElem, parent, parent.getChildCount());
+//	private void visualizeNodes(DefaultMutableTreeNode parent, DefaultMutableTreeNode thisElem) {
+//		if(thisElem!=null) {
+//			if(parent==null) {
+//				parent = root;
+//			}
+//			treeModel.insertNodeInto(thisElem, parent, parent.getChildCount());
+//
+//			//make sure the tree is visible in the panel on this path
+//			if(thisElem!=null && tree!=null)
+//				tree.scrollPathToVisible(new TreePath(thisElem.getPath()));
+//		}
+//	}
 
-			//make sure the tree is visible in the panel on this path
-			if(thisElem!=null && tree!=null)
-				tree.scrollPathToVisible(new TreePath(thisElem.getPath()));
-		}
-	}
-	
 	private String getName(DefaultMutableTreeNode thisElem) {
 		return thisElem.getUserObject().toString();
 	}
@@ -224,34 +278,37 @@ public class ModuleTree extends JPanel implements ActionListener{
 	private DefaultMutableTreeNode addNode(DefaultMutableTreeNode parent,DefaultMutableTreeNode thisElem)
 	{
 		if(parent==null) {
-			parent = root;
+			parent = getRoot();
 		}
 		String pType=((ModuleTreeElement) parent.getUserObject()).getType();
-		// it is alowed to insert object at this point?
+		// it is allowed to insert object at this point?
 		if(thisElem!=null) {
-			if(((ModuleTreeElement) thisElem.getUserObject()).getData().hasParent(pType)) {
-				MonitorAndDebug.printConsole("-- addNode: "+getName(thisElem) + " at "+parent.getUserObject().toString());
-				this.changeTreeStructure=true;
-				((ModuleTreeElement)thisElem.getUserObject()).setChildIndex(parent);
+			if( pType.equals(TagNames.OME_ROOT) || controller.configurationExists(pType)) {
+				if( ((ModuleTreeElement) thisElem.getUserObject()).getData().hasParent(pType)) {
+					ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] addNode: "+getName(thisElem) + " at "+parent.getUserObject().toString());
+					this.changeTreeStructure=true;
+					((ModuleTreeElement)thisElem.getUserObject()).setChildIndex(parent);
 
-				//visualize node in jtree
-				treeModel.insertNodeInto(thisElem, parent, parent.getChildCount());
-				//			parent.add(thisElem);
-				//			treeModel.reload();
-				//make sure the tree is visible in the panel on this path
-				if(thisElem!=null && tree!=null)
-					tree.scrollPathToVisible(new TreePath(thisElem.getPath()));
+					//visualize node in jtree
+					((DefaultTreeModel)tree.getModel()).insertNodeInto(thisElem, parent, parent.getChildCount());
+					//			parent.add(thisElem);
+					//			treeModel.reload();
+					//make sure the tree is visible in the panel on this path
+					if(thisElem!=null && tree!=null)
+						tree.scrollPathToVisible(new TreePath(thisElem.getPath()));
 
-				return thisElem;
+					return thisElem;
+				}else {
+					ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't insert node at selected parent! Allowed parents: "+Arrays.toString(((ModuleTreeElement) thisElem.getUserObject()).getData().getParents()));
+				}
 			}else {
-				System.out.println("-- can't insert node at selected parent! Allowed parents: "+Arrays.toString(((ModuleTreeElement) thisElem.getUserObject()).getData().getParents()));
+				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't insert node, content not configurated for selected mic");
 			}
 		}
 		return null;
-		
+
 	}
 
-	//TODO: doesn't work clean
 	public void reset(DefaultMutableTreeNode elem,ModuleController controller)
 	{
 		this.controller=controller;
@@ -262,12 +319,14 @@ public class ModuleTree extends JPanel implements ActionListener{
 		repaint();
 	}
 
-	
-	
+
+
 	public void removeNodeFromParent(DefaultMutableTreeNode current) {
-		treeModel.removeNodeFromParent(current);
+		if(tree==null)
+			return;
+		((DefaultTreeModel)tree.getModel()).removeNodeFromParent(current);
 	}
-	
+
 	/**
 	 * Paste node and it's childs. Update indizes of ModuleTreeElements
 	 * @param node
@@ -280,7 +339,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 	public DefaultMutableTreeNode insertNode(String type) {
 		this.changeTreeStructure=true;
 		TreePath parentPath=tree.getSelectionPath();
-		DefaultMutableTreeNode parent=root;
+		DefaultMutableTreeNode parent=getRoot();
 		if(parentPath!=null) {
 			parent=(DefaultMutableTreeNode)parentPath.getLastPathComponent();
 		}
@@ -293,6 +352,8 @@ public class ModuleTree extends JPanel implements ActionListener{
 		}
 		return addNode(parent,new DefaultMutableTreeNode(choice));
 	}
+	
+	
 	/**
 	 * Insert node to moduleList.
 	 * @param node
@@ -301,21 +362,19 @@ public class ModuleTree extends JPanel implements ActionListener{
 		this.changeTreeStructure=true;
 		if(node==null)
 			return null;
-		
+
 		TreePath parentPath=tree.getSelectionPath();
-		DefaultMutableTreeNode pNode = root;
+		DefaultMutableTreeNode pNode = getRoot();
 		if(parentPath!=null) {
 			pNode=(DefaultMutableTreeNode) parentPath.getLastPathComponent();
 		}
 		DefaultMutableTreeNode cNode= addNode(pNode,node);
-		
+
 		return cNode;
 	}
-	
-	
-	
-	
-	
+
+
+
 	/*
 	 * This code is based on an example provided by Richard Stanford, 
 	 * a tutorial reader.
@@ -340,40 +399,36 @@ public class ModuleTree extends JPanel implements ActionListener{
 		}
 
 		@Override
-		public void treeNodesInserted(TreeModelEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void treeNodesInserted(TreeModelEvent e) {}
 
 		@Override
-		public void treeNodesRemoved(TreeModelEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void treeNodesRemoved(TreeModelEvent e) {}
 
 		@Override
-		public void treeStructureChanged(TreeModelEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void treeStructureChanged(TreeModelEvent e) {}
 	}
 
 	public void addTreeSelectionListener(MDEContent mdeContent) {
+		if(tree==null)
+			return;
 		tree.addTreeSelectionListener(mdeContent);
-		
 	}
-	
+
 
 	public DefaultMutableTreeNode getLastSelectedPathComponent() {
+		if(tree==null)
+			return null;
 		return (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
 	}
-	
-	public void printTree(DefaultMutableTreeNode node, String title) {
-		if(node == null)
-			node=root;
-		
+
+	public static void printTree(DefaultMutableTreeNode node, String title) {
+		if(node == null) {
+			MonitorAndDebug.printConsole(null,title+" EMPTY");
+			return;
+		}
+
 		try {
-			MonitorAndDebug.printConsole(title+ node.getUserObject().toString());
+			MonitorAndDebug.printConsole(null,title+ node.getUserObject().toString());
 			for(int i = 0 ; i < node.getChildCount(); i++)
 				printTree((DefaultMutableTreeNode)node.getChildAt(i), title + "  "); 
 		}catch(Exception ex) {
@@ -382,7 +437,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 		}
 	}
 
-	
+
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -396,7 +451,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 		}
 		if(POPUP_COPY.equals(cmd)) {
 			copyVal=current;
-			
+
 		}
 		if(POPUP_PASTE.equals(cmd)) {
 			if(copyVal!=null) {
@@ -404,7 +459,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 				pasteNode(cloneTreeNode(copyVal));
 			}
 		}
-		
+
 		if(POPUP_INSERT.equals(cmd)) {
 			insertNode(((JMenuItem) e.getSource()).getText());
 		}
@@ -414,52 +469,65 @@ public class ModuleTree extends JPanel implements ActionListener{
 				insertNode((DefaultMutableTreeNode)tree.getChildAt(i));
 			}
 		}
-		
+
 	}
 
 
-	
+	/**
+	 * return a clone of given tree.
+	 * @param node
+	 * @return tree node as {@link DefaultMutableTreeNode} or null.
+	 */
 	public static DefaultMutableTreeNode cloneTreeNode(DefaultMutableTreeNode node) {
-		DefaultMutableTreeNode cloneNode = null;
 		if(node ==null || !(node.getUserObject() instanceof ModuleTreeElement) ) {
-			System.out.println("--WARNING: node is null or not a ModuleTreeElement "+node.toString()+"[ModuleTree::cloneTreeNode]");
-		}else {
-			cloneNode=new DefaultMutableTreeNode(new ModuleTreeElement((ModuleTreeElement) node.getUserObject()));
-			for(int i = 0 ; i < node.getChildCount(); i++) {
-				DefaultMutableTreeNode child=cloneTreeNode((DefaultMutableTreeNode) node.getChildAt(i));
-				if(child!=null)
-					cloneNode.add(child);
-			}
+			return null;
+		}
+		
+		DefaultMutableTreeNode cloneNode=new DefaultMutableTreeNode(new ModuleTreeElement((ModuleTreeElement) node.getUserObject()));
+		for(int i = 0 ; i < node.getChildCount(); i++) {
+			DefaultMutableTreeNode child=cloneTreeNode((DefaultMutableTreeNode) node.getChildAt(i));
+			if(child!=null)
+				cloneNode.add(child);
 		}
 		return cloneNode;
 	}
 
-	/**
-	 * Returns a copy of JTree without data
-	 * @param root
-	 * @return
-	 */
-	public static DefaultMutableTreeNode getEmptyStructurTree(DefaultMutableTreeNode node) {
-		DefaultMutableTreeNode newTree = new DefaultMutableTreeNode(new ModuleTreeElement((ModuleTreeElement) node.getUserObject()));
-		for(int i = 0 ; i < node.getChildCount(); i++) {
-			newTree.add(getEmptyStructurTree((DefaultMutableTreeNode) node.getChildAt(i)));
-		}
-		return null;
-	}
-	
-	
+//	/**
+//	 * Returns a copy of JTree without data
+//	 * @param root
+//	 * @return
+//	 */
+//	public static DefaultMutableTreeNode getEmptyStructurTree(DefaultMutableTreeNode node) {
+//		DefaultMutableTreeNode newTree = new DefaultMutableTreeNode(new ModuleTreeElement((ModuleTreeElement) node.getUserObject()));
+//		for(int i = 0 ; i < node.getChildCount(); i++) {
+//			newTree.add(getEmptyStructurTree((DefaultMutableTreeNode) node.getChildAt(i)));
+//		}
+//		return null;
+//	}
+
+
 	public DefaultMutableTreeNode getRoot()
 	{
-		return root;
+		if(tree==null)
+			return null;
+		return (DefaultMutableTreeNode) tree.getModel().getRoot();//return root;
 	}
-	
+
 	public JTree getTree()
 	{
 		return tree;
 	}
-	
+
 	public boolean changeTreeStructure() {
 		return changeTreeStructure;
 	}
 	
+	/**
+	 * Set status of tree structure.
+	 * @param val
+	 */
+	public void setChangeTreeStructure(boolean val) {
+		changeTreeStructure=val;
+	}
+
 }

@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JTable;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEParser;
 
 import ome.model.units.UnitEnum;
@@ -62,6 +63,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.con
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 
+
 /**
  * Singleton class
  * Holds definition of available modules, standard ome tree and hardware specific module data.
@@ -71,9 +73,6 @@ import org.openmicroscopy.shoola.util.MonitorAndDebug;
 public class ModuleController {
 
 	private static ModuleController self=new ModuleController();
-	
-	/* standard ome tree */
-	private DefaultMutableTreeNode standardTree;
 	
 //	private LinkedHashMap<String, ObjectTable> hardwareTables;
 
@@ -89,63 +88,11 @@ public class ModuleController {
 		return self;
 	}
 	
-	/**
-	 * Create standard ome tree
-	 */
-	private void initStandardTree() {
-		
-		standardTree = new DefaultMutableTreeNode(new ModuleTreeElement(null, null));
-		ModuleTreeElement img = createElement(TagNames.OME_ELEM_IMAGE,standardTree);
-//		img.printContent();
-		DefaultMutableTreeNode image= new DefaultMutableTreeNode(img);
-		standardTree.add(image);
-		
-		ModuleTreeElement exp=createElement(TagNames.OME_ELEM_EXPERIMENT, standardTree);
-		DefaultMutableTreeNode experiment = new DefaultMutableTreeNode(exp);
-		standardTree.add(experiment);
-		
-		ModuleTreeElement obj = createElement(TagNames.OME_ELEM_OBJECTIVE,image);
-		image.add(new DefaultMutableTreeNode(obj));
-		
-		ModuleTreeElement imgEnv=createElement(TagNames.OME_ELEM_IMGENV,image);
-		image.add(new DefaultMutableTreeNode(imgEnv));
-		
-		ModuleTreeElement channel = createElement(TagNames.OME_ELEM_CHANNEL,image);
-		DefaultMutableTreeNode ch = new DefaultMutableTreeNode(channel);
-		image.add(ch);
-		
-		ModuleTreeElement detector = createElement(TagNames.OME_ELEM_DETECTOR,ch);
-		ch.add(new DefaultMutableTreeNode(detector));
-		
-		ModuleTreeElement lightSrc = createElement(TagNames.OME_ELEM_LIGHTSOURCE,ch);
-		DefaultMutableTreeNode lightSrcNode = new DefaultMutableTreeNode(lightSrc);
-		ch.add(lightSrcNode); 
-		
-		ModuleTreeElement laser = createElement(TagNames.OME_ELEM_LASER,lightSrcNode);
-		lightSrcNode.add(new DefaultMutableTreeNode(laser));
-		
-		ModuleTreeElement lp = createElement(TagNames.OME_ELEM_LIGHTPATH,ch);
-		DefaultMutableTreeNode lpNode = new DefaultMutableTreeNode(lp);
-		ch.add(lpNode);
-		
-		ModuleTreeElement lpEx = createElement(TagNames.OME_ELEM_LIGHTPATH_EX,lpNode);
-		DefaultMutableTreeNode lpExNode = new DefaultMutableTreeNode(lpEx);
-		lpNode.add(lpExNode);
-		ModuleTreeElement dich = createElement(TagNames.OME_ELEM_DICHROIC,lpNode);
-		lpNode.add(new DefaultMutableTreeNode(dich));
-		ModuleTreeElement lpEm = createElement(TagNames.OME_ELEM_LIGHTPATH_EM,lpNode);
-		DefaultMutableTreeNode lpEmNode = new DefaultMutableTreeNode(lpEm);
-		lpNode.add(lpEmNode);
-		ModuleTreeElement filterEx = createElement(TagNames.OME_ELEM_FILTER,lpExNode);
-		lpExNode.add(new DefaultMutableTreeNode(filterEx));
-		ModuleTreeElement filterEm = createElement(TagNames.OME_ELEM_FILTER,lpEmNode);
-		lpEmNode.add(new DefaultMutableTreeNode(filterEm));
-		
-	}
+	
 	
 	public ModuleTreeElement createElement(String type,DefaultMutableTreeNode parent) {
 		if(getContentOfType(type)==null) {
-			System.out.println("-- ERROR: no object content found for type  "+type+"[ModuleController::createElement]");
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] no object content found for type  "+type+"[ModuleController::createElement]");
 		}
 		return new ModuleTreeElement(type,null,"",getContentOfType(type),parent);
 	}
@@ -155,21 +102,15 @@ public class ModuleController {
 	 * @return
 	 */
 	public DefaultMutableTreeNode getTree() {
-		if(mdeConf.getTree()==null) {
-			if(standardTree ==null) {
-				System.out.println("-- ERROR: standard tree is not initialize [ModuleController::getTree]");
-				return null;
-			}
-			System.out.println("-- load standard tree [ModuleController]");
-			return ModuleTree.cloneTreeNode(standardTree);
-		}else {
-			return ModuleTree.cloneTreeNode(mdeConf.getTree());
-		}
+		
+		return ModuleTree.cloneTreeNode(mdeConf.getTree(micName));
 	}
 	
 	public HashMap<String,ModuleContent> getAvailableContent(){
-		if(mdeConf==null)
+		if(mdeConf==null) {
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] mdeConf not available");
 			return initDefaultOMEObjects();
+		}
 		return mdeConf.getAvailableContentList(getCurrentMicName());
 	}
 
@@ -178,7 +119,7 @@ public class ModuleController {
 	 * @return
 	 */
 	public HashMap<String,ModuleContent> initDefaultOMEObjects() {
-		System.out.println("-- init DEFAULT content [ModuleController]");
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] init DEFAULT content [ModuleController]");
 		HashMap<String,ModuleContent> defaultContent = new HashMap();
 		
 		String thisType =TagNames.OME_ELEM_IMAGE;
@@ -275,14 +216,14 @@ public class ModuleController {
 	
 	public ModuleList getInstrumentsForCurrentMic() {
 		if(mdeConf!=null)
-			return mdeConf.getInstruments(micName);
+			return mdeConf.getPredefinitions(micName);
 		return null;
 	}
 	
 
 	public ModuleList getInstrumentsForMic(String micName) {
 		if(mdeConf!=null)
-			return mdeConf.getInstruments(micName);
+			return mdeConf.getPredefinitions(micName);
 		return null;
 		
 	}
@@ -293,7 +234,7 @@ public class ModuleController {
 	 */
 	public List<ModuleContent> getInstrumentsOfType(String instrumentType) {
 		if(mdeConf!=null) {
-			ModuleList val=mdeConf.getInstruments(micName);
+			ModuleList val=mdeConf.getPredefinitions(micName);
 			if(val!=null) {
 				return val.get(instrumentType);
 			}
@@ -310,14 +251,14 @@ public class ModuleController {
 	public ModuleContent getContentOfType(String moduleType) {
 		
 		if(mdeConf==null ) {
-			System.out.println("-- ERROR: no configuration available! [ModuleController::getContentOfType]");
+			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] no configuration available!");
 			return null;
 		}
 		if(micName==null) {
-			System.out.println("-- No microscope is given, return object define in UNIVERSAL [MDEController::getContentOfType]");
-			return new ModuleContent(mdeConf.getContent(MDEConfiguration.UNIVERSAL, moduleType));
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] No microscope is given, return object define in UNIVERSAL [MDEController::getContentOfType]");
+			return mdeConf.getContent(MDEConfiguration.UNIVERSAL, moduleType);
 		}
-		return new ModuleContent(mdeConf.getContent(micName, moduleType));
+		return mdeConf.getContent(micName, moduleType);
 	}
 	
 	//TODO docu
@@ -343,7 +284,6 @@ public class ModuleController {
 	public void initMDEConfiguration(String curMic) {
 		setCurrentMicName(curMic);
 		mdeConf=new MDEConfiguration();
-		initStandardTree();
 	}
 	
 	
@@ -356,13 +296,15 @@ public class ModuleController {
 		return clone;
 	}
 
-	//TODO repaint MDEContent
 	public void setMDEConfiguration(MDEConfiguration conf) {
 		mdeConf=conf;
-		mdeConf.printObjects(getCurrentMicName());
+//		mdeConf.printObjects(getCurrentMicName());
 	}
 	
 	public MDEConfiguration getMDEConfiguration() {
+		if(mdeConf==null) {
+			initMDEConfiguration(getCurrentMicName());
+		}
 		return mdeConf;
 	}
 	
@@ -372,10 +314,14 @@ public class ModuleController {
 
 	public String[] getPossibleChilds(String type) {
 		ArrayList<String> list=new ArrayList<>();
-		HashMap<String,ModuleContent> contentList=mdeConf.getAvailableContentList(getCurrentMicName());
-		for(Entry<String, ModuleContent> entry: contentList.entrySet()) {
-			if(entry.getValue().hasParent(type)) {
-				list.add(entry.getKey());
+		if(mdeConf!=null) {
+			HashMap<String,ModuleContent> contentList=mdeConf.getAvailableContentList(getCurrentMicName());
+			if(contentList!=null) {
+				for(Entry<String, ModuleContent> entry: contentList.entrySet()) {
+					if(entry.getValue().hasParent(type)) {
+						list.add(entry.getKey());
+					}
+				}
 			}
 		}
 		return list.toArray(new String[list.size()]);
@@ -385,11 +331,22 @@ public class ModuleController {
 		return micName;
 	}
 
+	/**
+	 * @return list of  [UNIVERSAL, defined microscopes...].
+	 */
 	public String[] getMicNames() {
-		if(mdeConf==null)
-			return new String[] {mdeConf.UNIVERSAL};
-
-		return mdeConf.getMicNames();
+		if(mdeConf!=null) {
+			String[] micNames = mdeConf.getMicNames();
+			if(micNames!=null) {
+				String[] list=new String[micNames.length+1];
+				list[0]=mdeConf.UNIVERSAL;
+				for(int i=0; i<micNames.length;i++) {
+					list[i+1]=micNames[i];
+				}
+				return list;
+			}
+		}
+		return new String[]{mdeConf.UNIVERSAL};
 	}
 	/**
 	 * 
@@ -408,10 +365,17 @@ public class ModuleController {
 	}
 
 	public void printObjects() {
-		MonitorAndDebug.printConsole("-- PRINT objects for selected category/microscope:");
+		MonitorAndDebug.printConsole(this,"-- PRINT objects for selected category/microscope:");
 		if(mdeConf== null) {
 			return;
 		}
 		mdeConf.printObjects(micName);
+	}
+
+	public boolean configurationExists(String type) {
+		if(mdeConf!=null) {
+			return mdeConf.configurationExists(getCurrentMicName(), type);
+		}
+		return false;
 	}
 }

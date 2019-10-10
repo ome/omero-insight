@@ -106,7 +106,6 @@ public class ExperimentConverter extends DataConverter{
 			t=ExperimentType.fromString(value);
 		}catch(EnumerationException e){
 			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] ExperimentType: "+value+"is not supported");
-			System.out.println("-- WARNING: ExperimentType: "+value+"is not supported");
 		}
 		return t;
 	}

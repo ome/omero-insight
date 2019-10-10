@@ -73,6 +73,7 @@ public class NodeContainer
 		return rootNode;
 	}
 	
+	
 	public void setTreeNode(DefaultMutableTreeNode treeNode) {
 		rootNode=treeNode;
 	}
@@ -85,45 +86,6 @@ public class NodeContainer
 	public void setInstruments(ModuleList list) {
 		this.instrumentList=list;
 	}
-
-
-	
-
-
-	//TODO
-//	public void setParentData(MetaDataModel parentData)
-//	{
-//		MonitorAndDebug.printConsole("-- Add parent data for "+(isDir?"directory":"file")+" \t[NodeContainer::generateModel]");
-//		// set parent data single view
-//		if(parentData!=null) {
-//			try {
-//				if(isDir || !(modelManager.fileDataLoaded() )) {
-//					MonitorAndDebug.printConsole("# Load parent data \t[NodeContainer::generateModel]");
-//					boolean load=modelManager.addData(0,parentData, true);
-//					modelManager.setParentLoaded(load);
-//				}else {
-//					if(modelManager.getFileObject().getSeriesCount()<2) {
-//						MonitorAndDebug.printConsole("# Load parent data \t[NodeContainer::generateModel]");
-//						boolean load=modelManager.addData(0,parentData, true);
-//						modelManager.setParentLoaded(load);
-//					}
-//					else {//series
-//						for(int j=0; j<modelManager.getFileObject().getSeriesCount();j++) {
-//							MonitorAndDebug.printConsole("# Load parent data: "+j+"\t[NodeContainer::generateModel]");
-//							boolean load=modelManager.addData(j,parentData, true);
-//							modelManager.setParentLoaded(modelManager.parentDataLoaded()||load);
-//						}
-//					}
-//				}
-//				
-//				
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//				return;
-//			}
-//		}
-//	}
 
 	
 }

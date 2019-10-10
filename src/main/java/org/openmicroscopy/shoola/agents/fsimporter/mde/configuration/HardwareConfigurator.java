@@ -23,7 +23,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +37,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -43,6 +47,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -63,10 +68,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.CommonViewer;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleContentTableModel;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
@@ -76,14 +84,15 @@ import org.openmicroscopy.shoola.util.MonitorAndDebug;
  * @author Susanne Kunis<susannekunis at gmail dot com>
  *
  */
-public class HardwareConfigurator extends JDialog implements ActionListener{
+public class HardwareConfigurator extends JFrame implements ActionListener{
 	public static final String CMD_APPLY = "apply";
 	public static final String CMD_CANCEL = "cancel";
 	public static final String CMD_SAVE = "save";
 	public static final String CMD_NEW_MIC = "create new microsocope";
 	public static final String CMD_DEL_MIC = "delete selected microsocope";
-	public static final String CMD_NEW_OBJ = "add new object";
-	public static final String CMD_DEL_OBJ ="delete selected object";
+	private static final String CMD_EDIT_LAYOUT = "edit layout";
+	
+	private ListSelectionListener objSelectListener = null;
 	
 	final int WIDTH=1000;
 	final int HEIGHT=600;
@@ -91,20 +100,25 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 	private DefaultListModel<String> listModelMic;
 	private JList micList;
 	private DefaultListModel<String> listModelObj;
-	private JList objList;
 	
 	private JTextField txtMicName;
-	private JPanel tablePanel;
+	private JPanel predefinitionsObject_Panel;
+	private JPanel layoutObject_Panel;
 	private MDEConfiguration conf;
 	private String currentMic;
 	private String[] availableMics;
 	private JComboBox<String> objects;
 	private MetaDataDialog dialog;
+	private JPanel listPaneObj;
 	
-	public HardwareConfigurator(JFrame parent,MetaDataDialog dialog) {
-		super(parent,"Hardware Configurator");
+	private boolean deleteMic;
+	
+	public HardwareConfigurator(MetaDataDialog dialog) {
+		super("Hardware Configurator");
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.dialog=dialog;
 		this.controller=ModuleController.getInstance();
+		deleteMic=false;
 		// work on a copy
 		this.conf=new MDEConfiguration(controller.getMDEConfiguration());
 		this.currentMic=controller.getCurrentMicName();
@@ -119,17 +133,34 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 	}
 	
 	private void buildGUI() {
-		MonitorAndDebug.printConsole("--BUILD GUI : HardwareConfiguration");
+		MonitorAndDebug.printConsole(this,"--BUILD GUI : HardwareConfiguration");
 		getContentPane().setLayout(new BorderLayout(5,5));
-		setModal(true);
 		
 		loadMicroscopeList();
+		
+		objSelectListener=new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting() == false) {
+					JList source = (JList)e.getSource();
+					String newObj=(String) source.getSelectedValue();
+					if(!deleteMic) saveCurrentValues();
+					// TODO: refresh view
+					if(predefinitionsObject_Panel!=null) predefinitionsObject_Panel.removeAll();
+					if(layoutObject_Panel!=null) layoutObject_Panel.removeAll();
+					getPredefinitions(currentMic, newObj);
+					getLayout(currentMic,newObj);
+					revalidate();
+					repaint();
+				}
+			}
+		};
         
         JPanel listPaneMic=createMicPanel();
-        JPanel listPaneObj=createObjPanel();
+        listPaneObj=new JPanel();
+        createObjPanel();
         
         JPanel listPane=new JPanel(new GridLayout(0,2));
-//        listPane.setPreferredSize(new Dimension(WIDTH,HEIGHT));
         listPane.add(listPaneMic);
         listPane.add(listPaneObj);
         
@@ -151,100 +182,54 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
         btnSave.addActionListener(this);
         btnPanel.add(btnSave);
        
-        tablePanel=new JPanel(new BorderLayout());
-//        tablePanel.setPreferredSize(new Dimension(300,500));
-//		getInstrumentTables(currentMic,(String) objList.getSelectedValue()); 
-		JScrollPane scrollView = new JScrollPane(tablePanel);
+        predefinitionsObject_Panel=new JPanel(new BorderLayout());
+		JScrollPane scrollView = new JScrollPane(predefinitionsObject_Panel);
+		
+		layoutObject_Panel=new JPanel(new BorderLayout());
+		JScrollPane scrollViewLayout=new JScrollPane(layoutObject_Panel);
+		
+		JPanel valueViewPanel= new JPanel(new BorderLayout());
+		valueViewPanel.add(scrollView,BorderLayout.NORTH);
+		valueViewPanel.add(scrollViewLayout,BorderLayout.CENTER);
 		
 		JPanel main=new JPanel(new BorderLayout());
 		main.setPreferredSize(new Dimension(WIDTH,HEIGHT));
 		main.add(listPane,BorderLayout.NORTH);
-		main.add(scrollView,BorderLayout.CENTER);
+		main.add(valueViewPanel,BorderLayout.CENTER);
 		main.add(btnPanel,BorderLayout.SOUTH);
 		
 		getContentPane().add(main,BorderLayout.CENTER);
-		pack();
-		
 	}
 	
-	private JPanel createObjPanel() {
+	private void createObjPanel() {
 		loadObjectList(currentMic);
-		objList=new JList<String>(listModelObj);
-		objList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-		objList.addListSelectionListener(new ListSelectionListener() {
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting() == false) {
-					if (objList.getSelectedIndex() != -1) {
-						String newObj=(String) objList.getSelectedValue();
-						saveCurrentTable();
-						// TODO: refresh view
-						if(tablePanel!=null) tablePanel.removeAll();
-						MonitorAndDebug.printConsole("-- Load table for "+currentMic+"::"+newObj);
-						getInstrumentTables(currentMic, newObj);
-						revalidate();
-						repaint();
-					} 
-				}
-			}
-		});
-		
-		if(!listModelObj.isEmpty()) 
-			objList.setSelectedIndex(0);
-		objList.setVisibleRowCount(10);
-
-		JScrollPane listScrollPane = new JScrollPane(objList);
-		JPanel pane=new JPanel(new BorderLayout());
-		pane.setBorder(new TitledBorder(BorderFactory.createLineBorder(Color.black), "Objects"));
-		pane.add(listScrollPane,BorderLayout.CENTER);
-
-		JButton btnNewObj = new JButton("Add");
-		btnNewObj.setActionCommand(CMD_NEW_OBJ);
-		btnNewObj.addActionListener(this);
-		
-		 JButton btnDelObj = new JButton("Delete");
-		 btnDelObj.setActionCommand(CMD_DEL_OBJ);
-		 btnDelObj.addActionListener(this);
-		 
-		 JPanel btnPanelObj=new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		 btnPanelObj.add(btnNewObj);
-		 btnPanelObj.add(btnDelObj);
-
-        String[] items=conf.getNameOfObjects();//controller.getDefaultContentsName();
-        objects=new JComboBox<String>(items);
-
-		JPanel newObjPane=new JPanel(new BorderLayout());
-		newObjPane.add(objects,BorderLayout.CENTER);
-		newObjPane.add(btnPanelObj,BorderLayout.EAST);
-
-		pane.add(newObjPane,BorderLayout.SOUTH);
-		return pane;
+		listPaneObj.removeAll();
+		listPaneObj.add(new ObjectList_Panel(currentMic, listModelObj, objSelectListener, conf));
+		listPaneObj.revalidate();
+		listPaneObj.repaint();
 	}
+	
 
 	private JPanel createMicPanel() {
 		// list right side
 		micList=new JList(listModelMic);
 		micList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		micList.setSelectedIndex(controller.getMicIndex(currentMic));
+		if(currentMic!=MDEConfiguration.UNIVERSAL)
+			micList.setSelectedIndex(controller.getMicIndex(currentMic));
 		micList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting() == false) {
 					if (micList.getSelectedIndex() != -1) {
-						String newSelection=availableMics[micList.getSelectedIndex()];
+						String newSelection=(String) micList.getSelectedValue();//availableMics[micList.getSelectedIndex()];
 						// save input
-						saveCurrentTable();
+						if(!deleteMic) saveCurrentValues();
 						currentMic=newSelection;
 						// remove table for preview selection
-						if(tablePanel!=null) tablePanel.removeAll();
+						if(predefinitionsObject_Panel!=null) predefinitionsObject_Panel.removeAll();
 						// load new objects
-						loadObjectList(newSelection);
-						// show table for first object
-						if(!listModelObj.isEmpty()) 
-							objList.setSelectedIndex(0);
-						objList.revalidate();
-						objList.repaint();
+						createObjPanel();
+						
 						revalidate();
 						repaint();
 					} 
@@ -260,7 +245,7 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 		pane.setBorder(new TitledBorder(BorderFactory.createLineBorder(Color.black), "Microscope"));
 		pane.add(listScrollPane,BorderLayout.CENTER);
         
-        JButton btnNewMic = new JButton("Add");
+        JButton btnNewMic = new JButton("New");
 //        btnNewMic.setBounds(300, 240, 80, 20);
         btnNewMic.setActionCommand(CMD_NEW_MIC);
         btnNewMic.addActionListener(this);
@@ -289,53 +274,41 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 		return pane;
 	}
 
-	
-	private void deleteObject() {
-		String objName= (String) objList.getSelectedValue();
-		String micName = (String) micList.getSelectedValue();
-		int objIndex = objList.getSelectedIndex();
-		MonitorAndDebug.printConsole("-- DELETE ["+micName+"::"+objName+"]: on index "+objIndex+"/"+objList.getModel().getSize());
-		// delete from objList
-		((DefaultListModel)objList.getModel()).remove(objIndex);
-		// delete from instrument list
-		conf.removeHardwareConfInstrumentForMicroscope(objName,micName);
-		ModuleList hardware = conf.getInstruments(micName);
-		MonitorAndDebug.printConsole("\t\t Instruments["+micName+"]: "+hardware.keySet());
-		
-		tablePanel.removeAll();
-		tablePanel.revalidate();
-		tablePanel.repaint();
-		
-		
-	}
 	/**
-	 * Load hardware specification for selected micrsocope micName.
+	 * Load hardware specification for selected microscope micName.
 	 * @param micName
 	 */
-	private void getInstrumentTables(String micName,String instrument) {
-		if(tablePanel==null) {
-			MonitorAndDebug.printConsole("-- ERROR: tablePanel is not defined");
+	private void getPredefinitions(String micName,String instrument) {
+		if(predefinitionsObject_Panel==null || instrument==null) {
 			return;
 		}
-		MonitorAndDebug.printConsole("-- getInstrumentTable for: "+micName+"::"+instrument);
-		ModuleList hardware = conf.getInstruments(micName);
+		System.out.println("-- getPredefinition for: "+micName+"::"+instrument);
+		ModuleList hardware = conf.getPredefinitions(micName);
 		if(hardware==null) {
-			MonitorAndDebug.printConsole("\tMic not available: "+micName);
+			predefinitionsObject_Panel.add(new InstrumentTable(null, instrument),BorderLayout.CENTER);
+			MonitorAndDebug.printConsole(this,"--no predefinitions for selected mic "+micName+" and object "+instrument);
 			return;
 		}
 		List<ModuleContent> cInstrument=hardware.get(instrument);
 		if(cInstrument==null) {
-			if(instrument==null)
-				return;
-			MonitorAndDebug.printConsole("\tHardware not available: "+instrument);
-			tablePanel.add(new InstrumentTable(null, instrument),BorderLayout.CENTER);
+			predefinitionsObject_Panel.add(new InstrumentTable(null, instrument),BorderLayout.CENTER);
 		}else {
-			MonitorAndDebug.printConsole("\tload instrument "+instrument+"["+cInstrument.size()+"] for "+micName);
-			tablePanel.add(new InstrumentTable(cInstrument,instrument),BorderLayout.CENTER);
+			MonitorAndDebug.printConsole(this,"\tload instrument "+instrument+"["+cInstrument.size()+"] for "+micName);
+			predefinitionsObject_Panel.add(new InstrumentTable(cInstrument,instrument),BorderLayout.CENTER);
 		}
-		tablePanel.revalidate();
-		tablePanel.repaint();
+		predefinitionsObject_Panel.revalidate();
+		predefinitionsObject_Panel.repaint();
+	}
+	
+	private void getLayout(String micName, String objName) {
+		if(layoutObject_Panel==null || objName==null)
+			return;
 		
+		System.out.println("-- getLayout for: "+micName+"::"+objName);
+		ModuleContent content = conf.getContent(micName, objName);
+		layoutObject_Panel.add(new ObjLayoutConf_Panel(content,this));
+		layoutObject_Panel.revalidate();
+		layoutObject_Panel.repaint();
 	}
 
 	/**
@@ -382,7 +355,7 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 			dispose();
 			break;
 		case CMD_APPLY:
-			saveCurrentTable();
+			saveCurrentValues();
 			controller.setMDEConfiguration(conf);
 			dialog.reloadView();
 			setVisible(false);
@@ -391,42 +364,29 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 			firePropertyChange(MetaDataDialog.REFRESH_MIC_CONTENT, false, true);
 			break;
 		case CMD_SAVE:
-			saveCurrentTable();
+			saveCurrentValues();
 			conf.writeToFile();
 			//TODO: repaint MDECONTENT
 			break;
 		case CMD_NEW_MIC:
-			saveCurrentTable();
+			saveCurrentValues();
 			createNewMicroscope(txtMicName.getText());
 			// delete textfield value
 			txtMicName.setText("");
 			break;
-		case CMD_NEW_OBJ:
-			MonitorAndDebug.printConsole("-- HardwareConf::Add new objectTable");
-			String obj=String.valueOf(objects.getSelectedItem());
-			createNewObject(obj);
-			
-			break;
+
 			
 		case CMD_DEL_MIC:
+			System.out.println("Start delete mic...");
+			// to disable selectionListener
+			deleteMic=true;
 			deleteMicroscope();
-			break;
-		case CMD_DEL_OBJ:
-			deleteObject();
+			deleteMic=false;
+			System.out.println("...End delete mic");
 			break;
 		}
 	}
 
-	private void createNewObject(String obj) {
-		String micName = (String) micList.getSelectedValue();
-		conf.setInstrumentForMicroscope(micName, obj, null);
-		listModelObj.addElement(obj);
-		objList.setSelectedIndex(listModelObj.getSize()-1);
-		objList.revalidate();
-		objList.repaint();
-		revalidate();
-		repaint();
-	}
 
 	/**
 	 * Delete selected microscope in micList.
@@ -436,14 +396,14 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 		if(micName.equals(MDEConfiguration.UNIVERSAL))
 			return;
 		int micIndex = micList.getSelectedIndex();
-		MonitorAndDebug.printConsole("-- DELETE ["+micName+"]: on index "+micIndex+"/"+micList.getModel().getSize());
+		MonitorAndDebug.printConsole(this,"-- DELETE ["+micName+"]: on index "+micIndex+"/"+micList.getModel().getSize());
 		if(micName==null || micName.equals("") )
 			return;
 		// delete from micList
 		((DefaultListModel)micList.getModel()).remove(micIndex);
 		
 		// delete in conf
-		conf.removeHardwareConfForMicroscope(micName);
+		conf.removeAllPredefsForMicroscope(micName);
 		micList.setSelectedIndex(0);
 		
 	}
@@ -451,12 +411,11 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 	private void createNewMicroscope(String micName) {
 		if(micName==null || micName.equals(""))
 			return;
-		conf.addInstrumentsForMicroscope(micName, new ModuleList());
+		System.out.println("--create new category: "+micName);
+		conf.initPredefinitionsForMicroscope(micName, new ModuleList());
 		//reload list
 		loadMicroscopeList();
-//		listModel.addElement(micName);
 		micList.setSelectedIndex(listModelMic.getSize());
-//		availableMics=conf.getMicNames();
 		revalidate();
 		repaint();
 	}
@@ -465,9 +424,9 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 		if(listModelMic==null)
 			listModelMic=new DefaultListModel<>();
 		listModelMic.clear();
-		String[] names = conf.getMicNames();
-		if(names !=null) {
-			for(String s:names) {
+		availableMics=conf.getMicNames();
+		if(availableMics !=null) {
+			for(String s:availableMics) {
 				listModelMic.addElement(s);
 			}
 		}
@@ -475,71 +434,54 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 			micList.revalidate();
 			micList.repaint();
 		}
-		availableMics=names;
-		System.out.println("-- Load available mic list: ");
+		System.out.println("-- MDEConfigurator: Load available mic list: ");
 		System.out.println("\t"+Arrays.toString(availableMics));
 	}
 	
 	
-	
+	/**
+	 * Load list ob object configuration, despite container
+	 * @param mic
+	 */
 	private void loadObjectList(String mic) {
 		if(listModelObj==null) {
 			listModelObj=new DefaultListModel<>();
 		}
 		listModelObj.clear();
 		
-		ModuleList hardware = conf.getInstruments(mic);
+		HashMap<String, ModuleConfiguration> currentObjConf = conf.getConfiguratedObjects(mic);
 		
-		if(hardware!=null) {
-			MonitorAndDebug.printConsole("\t\t Instruments["+mic+"]: "+hardware.keySet());
+		if(currentObjConf!=null) {
 			System.out.println("-- Load objects for "+mic);
-			for (Entry<String, List<ModuleContent>> entry : hardware.entrySet()) {
-				if(entry.getValue()!=null && entry.getValue().size()>0) {
+			for (Entry<String, ModuleConfiguration> entry : currentObjConf.entrySet()) {
+				if(entry.getValue()!=null && !conf.isContainer(entry.getKey())) {
 					listModelObj.addElement(entry.getKey());
-					System.out.println("\t list object : "+entry.getKey()+"["+entry.getValue().size()+"]");
 				}
 			}
-			if(objList!=null) {
-				objList.revalidate();
-				objList.repaint();
-			}
-			
 		}
 	}
 	
 	
 	//TODO
-	private void saveCurrentTable() {
-		if(tablePanel!=null && tablePanel.getComponentCount()>0) {
-			for(Component c:tablePanel.getComponents()) {
+	private void saveCurrentValues() {
+		if(predefinitionsObject_Panel!=null && predefinitionsObject_Panel.getComponentCount()>0) {
+			for(Component c:predefinitionsObject_Panel.getComponents()) {
 				if(c instanceof InstrumentTable) {
-					System.out.println("-- Save instrument definition : "+currentMic+" : "+((InstrumentTable) c).getInstrumentName());
+					System.out.println("-- Save predefinitions for : "+currentMic+" : "+((InstrumentTable) c).getInstrumentName());
 					List<ModuleContent> list = ((InstrumentTable) c).getContent();
-					conf.setInstrumentForMicroscope(currentMic, ((InstrumentTable) c).getInstrumentName(), ((InstrumentTable) c).getContent());
+					conf.setPredefinitionsForMicroscope(currentMic, ((InstrumentTable) c).getInstrumentName(), ((InstrumentTable) c).getContent());
+				}
+			}
+		}
+		if(layoutObject_Panel!=null && layoutObject_Panel.getComponentCount()>0) {
+			for(Component c:layoutObject_Panel.getComponents()) {
+				if(c instanceof ObjLayoutConf_Panel) {
+					conf.setConfiguration(currentMic, ((ObjLayoutConf_Panel) c).getType(),((ObjLayoutConf_Panel) c).getConfiguration());
 				}
 			}
 		}
 	}
 
-	// show tables for current selected microscope, save content of last selection
-//	@Override
-//	public void valueChanged(ListSelectionEvent e) {
-//		System.out.println("List selection for: "+e.getSource());
-//		if (e.getValueIsAdjusting() == false) {
-//			if (micList.getSelectedIndex() != -1) {
-//				String newSelection=availableMics[micList.getSelectedIndex()];
-//				saveCurrentTable();
-//				// TODO: refresh view
-//				tablePanel.removeAll();
-//				getInstrumentsTables(newSelection);
-//				tablePanel.revalidate();
-//				tablePanel.repaint();
-//				revalidate();
-//				repaint();
-//
-//			} 
-//		}		
-//	}
 	
 	/*
 	 *  This class listens for changes made to the data in the table via the
@@ -741,9 +683,9 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			TableCellListener tcl = (TableCellListener)e.getSource();
-//            MonitorAndDebug.printConsole("Row   : " + tcl.getRow());
-//            MonitorAndDebug.printConsole("Column: " + tcl.getColumn());
-            MonitorAndDebug.printConsole("EDIT Table: Old   : " + tcl.getOldValue()+", New   : " + tcl.getNewValue());
+//            MonitorAndDebug.printConsole(this,"Row   : " + tcl.getRow());
+//            MonitorAndDebug.printConsole(this,"Column: " + tcl.getColumn());
+            MonitorAndDebug.printConsole(this,"EDIT Table: Old   : " + tcl.getOldValue()+", New   : " + tcl.getNewValue());
 		}
 		
 	}
@@ -791,15 +733,15 @@ public class HardwareConfigurator extends JDialog implements ActionListener{
 				
 				ModuleContent rowContent=((ModuleContentTableModel) t.getModel()).getRowData(i,controller.getContentOfType(name));
 				if(rowContent!=null) {
-//					MonitorAndDebug.printConsole("--Add instrument content for "+name+" : "+rowContent.getAttributeValue(TagNames.MODEL));
+//					MonitorAndDebug.printConsole(this,"--Add instrument content for "+name+" : "+rowContent.getAttributeValue(TagNames.MODEL));
 					result.add(rowContent);
 				}
 			}
 			
 			return result;
 		}
-		
 	}
+	
 	
 	
 }

@@ -20,6 +20,7 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.configuration;
 
 import java.util.HashMap;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.OMEValueConverter;
 
 import com.google.common.collect.ObjectArrays;
@@ -71,7 +72,7 @@ public class TagNames
 {
 	public static final String PREFIX_SETTINGS="User::";
 	
-	public static final String OME_ROOT="OME-Model:";
+	public static final String OME_ROOT="OME-Model";
 	public static final String OME_ELEM_DETECTOR="OME:Detector";
 	public static final String OME_ELEM_IMAGE="OME:Image";
 	public static final String OME_ELEM_EXPERIMENT="OME:Experiment";
@@ -293,32 +294,6 @@ public class TagNames
 	public static final ome.model.enums.UnitsLength STAGE_POS_Z_UNIT=ome.model.enums.UnitsLength.REFERENCEFRAME;
 
 	
-	// TODO xml schema parser, Annotation as child
-//	public static String[] getHasChilds(String type) {
-//		switch(type) {
-//		case OME_ELEM_IMAGE: return new String[] {OME_ELEM_IMGENV,OME_ELEM_CHANNEL,OME_ELEM_OBJECTIVE};
-//		case OME_ELEM_IMGENV: return null;
-//		case OME_ELEM_CHANNEL: return new String[] {OME_ELEM_DETECTOR,OME_ELEM_LIGHTPATH,OME_ELEM_LIGHTSOURCE};
-//		case OME_ELEM_OBJECTIVE:return null;
-//		case OME_ELEM_DETECTOR:return null;
-//		case OME_ELEM_FILTER:return null;
-//		case OME_ELEM_LIGHTSOURCE:return new String[] {OME_ELEM_LASER,OME_ELEM_ARC,OME_ELEM_FILAMENT,OME_ELEM_LED,OME_ELEM_GENERICEXCITATIONSOURCE};
-//		case OME_ELEM_DICHROIC:return null;
-//		case OME_ELEM_LASER:return null;
-//		case OME_ELEM_ARC:return null;
-//		case OME_ELEM_FILAMENT:return null;
-//		case OME_ELEM_LED:return null;
-//		case OME_ELEM_GENERICEXCITATIONSOURCE:return null;
-//		case OME_ELEM_LIGHTPATH_FS: return new String[] {OME_ELEM_FILTER,OME_ELEM_DICHROIC};
-//		case OME_ELEM_LIGHTPATH:return new String[] {OME_ELEM_LIGHTPATH_EM,OME_ELEM_DICHROIC,OME_ELEM_LIGHTPATH_EX,OME_ELEM_LIGHTPATH_FS};
-//		case OME_ELEM_LIGHTPATH_EM:return new String[] {OME_ELEM_FILTER};
-//		case OME_ELEM_LIGHTPATH_EX:return new String[] {OME_ELEM_FILTER};
-//		default:
-//			return null;
-//		}
-//	}
-	
-	//TODO: lookup table in MDEConfiguration
 	public static String[] getParents(String type) {
 		switch(type) {
 		case OME_ELEM_IMAGE: return new String[] {OME_ROOT};
@@ -422,95 +397,12 @@ public class TagNames
 			case VOLTAGE:
 				units=OMEValueConverter.getNames(UnitsElectricPotential.class);
 			default:
-				System.out.println("-- WARNING: no unit available for "+name);
+//				ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] no unit available for "+name);
 				break;
 			}
 			return units;
 		}
 
-	public static Unit parseUnit(String unitSymbol, String name) 
-	{
-		Unit unit=null;
-		
-		if(unitSymbol!=null && !unitSymbol.equals("") ){
-			switch (name) {
-			case AIRPRESS:
-				UnitsPressure uAP;
-				try{
-					uAP=UnitsPressure.fromString(unitSymbol);
-					unit=UnitsPressureEnumHandler.getBaseUnit(uAP);
-				}catch(EnumerationException e){
-					System.out.println("-- ERROR: Can't parse Air Pressure Unit "+unitSymbol);
-				}
-				break;
-			case TEMP:
-				UnitsTemperature uT;
-				try{
-					uT=UnitsTemperature.fromString(unitSymbol);
-					unit=UnitsTemperatureEnumHandler.getBaseUnit(uT);
-				}catch (EnumerationException e) {
-					System.out.println("-- ERROR: Can't parse Temperature Unit "+unitSymbol);
-				}
-				break;
-			case REPRATE:
-				UnitsFrequency u;
-				try {
-					u = UnitsFrequency.fromString(unitSymbol);
-					unit=UnitsFrequencyEnumHandler.getBaseUnit(u);
-				} catch (EnumerationException e) {
-					System.out.println("-- ERROR: Can't parse Repititation Rate Unit "+unitSymbol);
-					//					e.printStackTrace();
-				}
-			
-				break;
-			case POWER:
-				UnitsPower uP;
-				try {
-					uP = UnitsPower.fromString(unitSymbol);
-					unit=UnitsPowerEnumHandler.getBaseUnit(uP);
-				} catch (EnumerationException e) {
-					System.out.println("-- ERROR: Can't parse Power Unit "+unitSymbol);
-				}
-				
-				break;
-			case SET_WAVELENGTH:
-			case WAVELENGTH:
-				UnitsLength uL;
-				try {
-					uL = UnitsLength.fromString(unitSymbol);
-					unit = UnitsLengthEnumHandler.getBaseUnit(uL);
-				} catch (EnumerationException e) {
-					System.out.println("-- ERROR: Can't parse Wavelength Unit "+unitSymbol);
-				}
-				
-				break;
-			case WORKDIST:
-				UnitsLength uL2;
-				try {
-					uL2 = UnitsLength.fromString(unitSymbol);
-					unit = UnitsLengthEnumHandler.getBaseUnit(uL2);
-				} catch (EnumerationException e) {
-					System.out.println("-- ERROR: Can't parse Working Distanz Unit "+unitSymbol);
-				}
-				
-				break;
-			case VOLTAGE:
-				UnitsElectricPotential uV;
-				try {
-					uV = UnitsElectricPotential.fromString(unitSymbol);
-					unit=UnitsElectricPotentialEnumHandler.getBaseUnit(uV);
-				} catch (EnumerationException e) {
-					System.out.println("-- ERROR: Can't parse Voltage Unit "+unitSymbol);
-				}
-				
-			default:
-				break;
-			}
-				
-			
-		}
-		return unit;
-	}
 
 	public static Object[] getUnitList(String name) 
 	{
@@ -654,7 +546,6 @@ public class TagNames
 		}else if(ome.model.enums.UnitsTime.bySymbol(unitSymbol)!=null) {
 			return new ome.model.units.Time(0, ome.model.enums.UnitsTime.bySymbol(unitSymbol));
 		}
-		System.out.println("ERROR: cannot parse "+unitSymbol);
 		return null;
 	}
 	public static Class getUnitClassFromSymbol(String unitSymbol) {
@@ -698,7 +589,6 @@ public class TagNames
 		if(className.equals(ome.model.units.Time.class.getName()))
 			return ome.model.enums.UnitsTime.bySymbol(symbol);
 		
-		System.out.println("ERROR: Can't create UnitEnum: "+className+" : "+symbol);
 		return null;
 	}
 	public static String[] getUnitsList(String className) {

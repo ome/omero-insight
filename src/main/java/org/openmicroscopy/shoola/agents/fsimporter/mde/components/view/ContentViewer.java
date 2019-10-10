@@ -98,10 +98,8 @@ public class ContentViewer extends JXTaskPane{
 		content=MDEHelper.replaceUnchangedData(content, origC, newC);
 		title=newC.getAttributeValue(TagNames.MODEL)!=null?newC.getAttributeValue(TagNames.MODEL):"";
 		
-//		MonitorAndDebug.printConsole("--input at "+content.getType()+", change elems:"+(content.getInput()!=null? content.getInput().size():"null"));
 		mainPanel.remove(tagPane);
 		tagPane=new CommonViewer(content);
-//		MonitorAndDebug.printConsole("-- new elem: "+newContent.getList().get(TagNames.ID).getTagValue());
 		mainPanel.add(tagPane,tagLayout);
 		tagPane.revalidate();
 		tagPane.repaint();

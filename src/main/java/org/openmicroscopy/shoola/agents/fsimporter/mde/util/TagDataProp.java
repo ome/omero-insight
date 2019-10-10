@@ -34,11 +34,19 @@ public class TagDataProp {
 		this.unitSymbol=unitSymbol;
 	}
 
+	public TagDataProp(TagDataProp orig) {
+		if(orig==null)
+			return;
+		this.name=orig.name;
+		this.visible=orig.visible;
+		this.unitSymbol=orig.unitSymbol;
+	}
+
 	public String getName() {
 		return name;
 	}
 
-	public Boolean getVisible() {
+	public Boolean isVisible() {
 		return visible;
 	}
 

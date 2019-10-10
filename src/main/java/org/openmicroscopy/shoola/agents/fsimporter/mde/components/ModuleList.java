@@ -63,8 +63,12 @@ public class ModuleList extends HashMap<String, List<ModuleContent>> {
 		super();
 	}
 	
+	public void remove(String type) {
+		this.remove(type);
+	}
+	
 	public void print(String header) {
-		MonitorAndDebug.printConsole(header);
+		MonitorAndDebug.printConsole(this,header);
 		String result="{\n";
 		for(Map.Entry<String,List<ModuleContent>> entry: this.entrySet()) {
 			if(entry.getValue()!=null) {
@@ -77,7 +81,7 @@ public class ModuleList extends HashMap<String, List<ModuleContent>> {
 				result+=entry.getKey()+": null Elements \n";
 			}
 		}
-		MonitorAndDebug.printConsole(result+"\n}");
+		MonitorAndDebug.printConsole(this,result+"\n}");
 	}
 	
 }

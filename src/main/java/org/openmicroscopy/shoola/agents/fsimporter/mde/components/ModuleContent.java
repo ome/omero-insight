@@ -22,12 +22,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
- * Holds content(properties==tags) of a module as list of tags
+ * Holds content(properties==tags) of a module as list of TagData.
  * @author Susanne Kunis<susannekunis at gmail dot com>
  *
  */
@@ -129,15 +131,15 @@ public class ModuleContent {
 	}
 	
 	public void setAttributes(LinkedHashMap<String, TagData> list) {
-		setProperties(list);
+		takeOverProperties(list);
 		tagList=list;
 	}
 	
 	/**
-	 * set properties like visible, unit in given list according the setting in tagList
+	 * set properties like visible, unit in given list according the setting in current tagList
 	 * @param list data for object
 	 */
-	private void setProperties(LinkedHashMap<String, TagData> list) {
+	private void takeOverProperties(LinkedHashMap<String, TagData> list) {
 		if(tagList==null)
 			return;
 		for(Map.Entry<String, TagData> entry : tagList.entrySet()) {
@@ -157,6 +159,12 @@ public class ModuleContent {
 		if(tagList!=null)
 			return new ArrayList<TagData>(tagList.values());
 		return null;
+	}
+	
+	public TagData getTag(String tagName) {
+		if(tagList==null || !tagList.containsKey(tagName))
+			return null;
+		return tagList.get(tagName);
 	}
 	
 	
@@ -188,11 +196,11 @@ public class ModuleContent {
 
 	public void print() {
 		if(tagList==null) {
-			MonitorAndDebug.printConsole("-- PRINT ModuleContent: \n\tno tag data!");
+			MonitorAndDebug.printConsole(this,"-- PRINT ModuleContent: \n\tno tag data!");
 		}else {
 			for(TagData t:getTagList()) {
 				if(t!=null)
-					MonitorAndDebug.printConsole("\t "+t.tagToString()+", visible: "+t.isVisible());
+					t.print();
 			}
 		}
 	}
@@ -222,6 +230,39 @@ public class ModuleContent {
 		for (Map.Entry<String,TagData> entry : tagList.entrySet()) {
 			entry.getValue().dataHasChanged(true);
 		}
+	}
+
+
+	public ModuleConfiguration getProperties() {
+		if(tagList==null)
+			return null;
+		ModuleConfiguration conf = new ModuleConfiguration();
+		for (Map.Entry<String,TagData> entry : tagList.entrySet()) {
+			TagData t= entry.getValue();
+			if(t!=null)
+				conf.put(entry.getKey(), new TagDataProp(t.getProperties()));
+		}
+		return conf;
+	}
+
+
+	public void setProperties(ModuleConfiguration conf) {
+		if(tagList==null)
+			return;
+		
+		for(Entry<String, TagData> entry: tagList.entrySet()) {
+			TagDataProp p=conf.getConfigurationFor(entry.getKey());
+			if(p!=null) {
+				entry.getValue().setProperties(p);
+			}
+		}
+	}
+
+
+	public Boolean isContainer() {
+		if(tagList==null || tagList.isEmpty())
+			return true;
+		return false;
 	}
 
 }

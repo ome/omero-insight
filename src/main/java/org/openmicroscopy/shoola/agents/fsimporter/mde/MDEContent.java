@@ -38,6 +38,7 @@ import javax.swing.tree.TreePath;
 
 import ome.xml.model.*;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
@@ -79,6 +80,9 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	private ModuleList fileInstrumentValues;
 	private LinkedHashMap<String, ObjectTable> hardwareTables;
 	
+	// copy of initial file object tree
+	private DefaultMutableTreeNode fileObjectTree;
+	
 	
 	/**
 	 * Build  module tree from given file
@@ -106,6 +110,10 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		selectModuleAction(moduleTree.selectFirstNode());
 		
 		moduleTree.addTreeSelectionListener(this);
+		
+		// save file tree for reset action of object tree
+		fileObjectTree = ModuleTree.cloneTreeNode(getRootNode());
+		
 		revalidate();
 		repaint();
 	}
@@ -167,14 +175,18 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	public void valueChanged(TreeSelectionEvent e) {
 		
 		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) moduleTree.getLastSelectedPathComponent();
-		if(selectedNode == null )
+		if(selectedNode == null || !controller.configurationExists(((ModuleTreeElement)selectedNode.getUserObject()).getType()))
 			return;
 		try {
 			selectModuleAction(selectedNode);
 		}catch(Exception ex) {
-			System.out.println("-- ERROR: module tree selection event: select root node?");
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] module tree selection event: select root node?");
 		}
 		
+	}
+	
+	public DefaultMutableTreeNode getInitialFileObjectRootNode() {
+		return fileObjectTree;
 	}
 	
 	public DefaultMutableTreeNode getRootNode() {
@@ -230,19 +242,18 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	
 	public DefaultMutableTreeNode addContent(ModuleContent c, int index, DefaultMutableTreeNode parent) {
 		if(parent==null) {
-			System.out.println("-- ERROR: tree is null [MDEContent::addContent]");
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Can't add content. Tree is null [MDEContent::addContent]");
 			return null;
 		}
 		if(c==null) {
-			System.out.println("-- WARNING: content is null [MDEContent::addContent]");
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Can't add content - is null [MDEContent::addContent]");
 			return null;
 		}
 		List<DefaultMutableTreeNode> childs=MDEHelper.getListOfChilds(c.getType(), parent);
 		DefaultMutableTreeNode node=null;
 		if(childs!=null && !childs.isEmpty()) {
-//			System.out.println("-- addContent of type "+c.getType()+",childlist : "+childs.size()+", index: "+index);
 			if(childs.size()<=index) { 
-				System.out.println("--insert new subtree of type : "+c.getType());
+				ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] insert new subtree of type : "+c.getType());
 				DefaultMutableTreeNode newChild=controller.cloneTreeStructure(childs.get(0), parent);
 				parent.add(newChild);
 				childs.add(index, newChild);
@@ -251,7 +262,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 			ModuleContent newC=MDEHelper.completeData(((ModuleTreeElement) node.getUserObject()).getData(), c);
 			((ModuleTreeElement)node.getUserObject()).setData(newC);
 		}else {
-			System.out.println("-- WARNING: Can't find child nodes of given type "+c.getType()+" at "+parent.getUserObject().toString());
+			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] Can't add content! No child nodes of given type "+c.getType()+" at "+parent.getUserObject().toString());
 		}
 		return node;
 	}
@@ -266,15 +277,15 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	private DefaultMutableTreeNode initImageContent(DefaultMutableTreeNode tree, OME ome, int i)
 	{
 		if(ome.getImage(i)==null) {
-			System.out.println("-- WARNING: image content is empty [MDEContent::initImageContent]");
+			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] image content is empty");
 			return tree;
 		}
 		if(tree==null) {
-			System.out.println("-- ERROR: no tree is given [MDEContent::initImageContent]");
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] No tree is given to init image content");
 			return null;
 		}
 		
-		System.out.println("-- Read file content index: "+i+" [MDEContent::initImageContent]");
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Read file content index: "+i);
 		List<Objective> objList=null;
 		List<Detector> detectorList=null;
 		List<LightSource> lightSourceList=null;
@@ -289,7 +300,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		//read out list of instruments
 		Instrument instruments=imgObj.getLinkedInstrument();
 		if(instruments==null) {
-			System.out.println("-- no instruments are defined for image [MDEContent::initImageContent]");
+			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] no instruments are defined for image");
 		}else {
 			objList=instruments.copyObjectiveList();
 			detectorList=instruments.copyDetectorList();
@@ -343,7 +354,6 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 			addContent(createContent(TagNames.OME_ELEM_DETECTOR,(new DetectorConverter()).convertData(d, dsNew)),0,chNode);
 			
 			//load lightSource and lightsourcesettings annotations
-			//TODO load LAser, Arc or something else
 			LightSourceSettings ls =c.getLightSourceSettings();
 			String idLs=ls==null?"":ls.getID();
 			LightSource l=getElementByID(lightSourceList, idLs);
@@ -474,7 +484,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 			hardwareTables.clear();
 		
 		if(fileInstruments!=null) {
-			System.out.println("-- create tables with predifined objects in image container and mde configuration file");
+			// create tables with predefined objects in image container and mde config file
 			for (Entry<String, List<ModuleContent>> entry : fileInstruments.entrySet()) {
 				String key = entry.getKey();
 				List<ModuleContent> hardware=new ArrayList<>();
@@ -495,7 +505,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 				hardwareTables.put(key,objTable );
 			}
 		}else {
-			System.out.println("-- create tables with predifined objects of mde configuration file ( no predefinitions from image container)");
+			// create tables with predefined objects of mde config file
 			ModuleList mList=controller.getInstrumentsForCurrentMic();
 			if(mList!=null) {
 				for (Entry<String, List<ModuleContent>> entry : mList.entrySet()) {

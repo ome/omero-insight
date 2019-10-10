@@ -82,7 +82,6 @@ public class ExperimenterBox extends Box implements KeyListener
 //		            JList list = (JList)e.getSource();
 //		            int row = list.locationToIndex(e.getPoint());
 //		            list.setSelectedIndex(row);
-//		            MonitorAndDebug.printConsole("[DEBUG] select "+row);
 //		        }
 				if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2){
 					JList list = (JList)e.getSource();
@@ -112,7 +111,7 @@ public class ExperimenterBox extends Box implements KeyListener
 		ExperimenterListModel m =(ExperimenterListModel) list.getModel();
 			m.addElement(e);
 			list.setModel(m);
-			MonitorAndDebug.printConsole("ExpBox::addExpElem");
+//			MonitorAndDebug.printConsole("ExpBox::addExpElem");
 	}
 	
 	public void addExperimenterList(List<Experimenter> newList)
@@ -120,7 +119,7 @@ public class ExperimenterBox extends Box implements KeyListener
 		if(newList==null)
 			return;
 		
-		MonitorAndDebug.printConsole("ExpBox::addExpList...");
+//		MonitorAndDebug.printConsole(this,"ExpBox::addExpList...");
 		((ExperimenterListModel)list.getModel()).setList(newList);
 	}
 	

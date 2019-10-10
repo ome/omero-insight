@@ -222,8 +222,8 @@ public class TagData
 	//copy constructor
 	public TagData(TagData orig)
 	{
-//		unit=orig.unit;//TODO clone array
-		unitSymbol=orig.unitSymbol;
+		if(orig.unitSymbol!=null) unitSymbol=orig.unitSymbol.clone();
+		unitClass=orig.unitClass;
 		if(orig.value!=null) value=orig.value.clone();
 		status=orig.status;
 		prop=orig.prop;
@@ -354,21 +354,25 @@ public class TagData
 		this.name=name;
 		this.value=val;
 		
+		valSaved=true;
+		valChanged=false;
+		
+		if(unit==null) {
+			getDefaultUnit();
+		}
+//		else {
+//			setTagUnit(unit[0]);
+//		}
 		this.unitClass=unitClass;
 		this.unitSymbol=unit;
 		
 		this.defaultValue=defaultVal;
 		this.parent=parent;
-		valSaved=true;
-		valChanged=false;
+		
 		tagInfo="";
 		setTagProp(prop);
-		visible=true;
+		setVisible(true);
 		status=EMPTY;
-		
-		if(unit==null) {
-			getDefaultUnit();
-		}
 		
 		fieldBorder=normalBorder;
 		backgroundColor=noInfo;
@@ -384,7 +388,7 @@ public class TagData
 	
 	
 	/**
-	 * Compare this tagdata to specified tagdata.
+	 * Compare given tagdata with each other.
 	 * @param t The tagdata to compare this {@code TagData} against.
 	 * @return {@code true} if t!=null and elements name, unit and value are equal and not null or empty (except unit)
 	 */
@@ -404,7 +408,9 @@ public class TagData
 		return result;
 	}
 	
-	
+	public void print() {
+		MonitorAndDebug.printConsole(this,"TAG: "+parent+"::"+getTagName()+"\t PROP: u = "+getTagUnitString()+", visible = "+isVisible());
+	}
 
 	
 	public JPanel getTagLabelAndUnit() {
@@ -438,6 +444,10 @@ public class TagData
 		return labelPane;
 	}
 	
+	public JComboBox getUnitCombo() {
+		return createUnitCombo();
+	}
+	
 	private JComboBox createUnitCombo() {
 		JComboBox units = new JComboBox<>();
 		if(getUnitType()!=null) {
@@ -459,7 +469,7 @@ public class TagData
 					}
 				}
 			}else {
-				System.out.println("-- WARNING: Unit not available :: "+getUnitType()+" for tag "+getTagName());
+				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] Unit not available :: "+getUnitType()+" for tag "+getTagName());
 			}
 		}
 		return units;
@@ -467,6 +477,9 @@ public class TagData
 	
 	
 	private void repaintInputField() {
+		if(inputField==null)
+			return;
+		
 		switch (type) {
 		case ARRAYFIELDS:
 			setValArrayField((JArray) inputField);
@@ -501,8 +514,6 @@ public class TagData
 	
 	public JComponent getInputField()
 	{
-//		MonitorAndDebug.printConsole("-- Create tagField: "+name+","+listToString(value)+","+unit+","+type+","+status+","+visible);
-		
 		// save tagdata if focus of inputfield lost
 		FocusListener listener=new FocusListener() {
 			@Override
@@ -515,8 +526,6 @@ public class TagData
 			}
 			@Override
 			public void focusGained(FocusEvent e) {
-				// TODO Auto-generated method stub
-
 			}
 		};
 		
@@ -524,11 +533,9 @@ public class TagData
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-//				MonitorAndDebug.printConsole("-- KEY TYPED "+e.getSource().getClass().getName());
 			}
 			@Override
 			public void keyReleased(KeyEvent e) {
-//				MonitorAndDebug.printConsole("-- KEY RELEASED "+e.getSource().getClass().getName());
 				try {
 					saveTagValue((JComponent) e.getSource());
 				}catch(Exception ex) {
@@ -539,8 +546,6 @@ public class TagData
 			}
 			@Override
 			public void keyPressed(KeyEvent e) {
-//				MonitorAndDebug.printConsole("-- KEY PRESSED "+e.getSource().getClass().getName());
-				// TODO Auto-generated method stub
 			}
 		};
 		
@@ -673,9 +678,7 @@ public class TagData
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (actionListenerActiv){
-//					MonitorAndDebug.printConsole("-- ACTION PERFORMED "+e.getSource().getClass().getName());
 					valChanged=true;
-//					saveTagValue((JComponent) e.getSource());
 					valSaved=false;
 
 					if(fieldBorder.equals(errorBorder)){
@@ -821,7 +824,8 @@ public class TagData
 	
 	/**
 	 * Get tag value as string, separated by comma.
-	 * @return tag values as string: {@code value1,value2,value3,...}
+	 * @return tag values as string: {@code value1,value2,value3,...} if value is NULL return NULL,
+	 * if values are empty return empty string.
 	 */
 	public String getTagValue()
 	{
@@ -901,13 +905,10 @@ public class TagData
 			default:
 				break;
 			}
-//			MonitorAndDebug.printConsole("-- CHECK tagdata "+name+" = ["+listToString(val)+"] \t old: ["+listToString(value)+"]");
 			if(val!=null && value!=null) {
 				if(!arrayToString(value).equals(arrayToString(val)) ) {
-					
 					dataHasChanged(true);
 					value=val;
-//					MonitorAndDebug.printConsole("-- SAVE tagdata "+name+" = "+listToString(value));
 				}
 			}
 	}
@@ -929,6 +930,12 @@ public class TagData
 		return res;
 	}
 	
+	/**
+	 * Convert given array to String: val1,val2,.... If given array is null return null.
+	 * If given array is empty returns empty string.
+	 * @param list to convert
+	 * @return String of values, Null if value array is null, Empty string if given value array is empty.
+	 */
 	private String arrayToString(String[] list)
 	{
 		String res=null;
@@ -988,14 +995,31 @@ public class TagData
 	 * @param unitsymbol
 	 */
 	public void setTagUnit(String unitsymbol) {
-		if(unitsymbol==null || unitsymbol.equals("") || getTagValue().trim().equals(""))
+		
+		if(unitsymbol==null || unitsymbol.equals("")) {
 			return;
+		}
+		// no conversion necessary
+		if(getTagValue()==null ) {
+			unitSymbol=new String[] {unitsymbol};
+			unitClass = TagNames.getUnit(unitsymbol).getClass();
+			return;
+		}else if(getTagValue().trim().equals("")){
+			for(int i=0; i<unitSymbol.length;i++)
+				unitSymbol[i]=unitsymbol;
+			unitClass = TagNames.getUnit(unitsymbol).getClass();
+			return;
+		}
+
 		Unit[] newVal=null;
-	
 		// conversion necessary?
 		if(value!= null &&  unitSymbol!=null && unitSymbol[0]!=null &&
 				unitSymbol[0]!=null && 	!unitsymbol.equals(unitSymbol[0])) {
-			newVal=OMEValueConverter.convert(value,unitSymbol[0],unitsymbol);
+			try {
+				newVal=OMEValueConverter.convert(value,unitSymbol[0],unitsymbol);
+			}catch(Exception e) {
+				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] Can't parse unit for "+getTagName());
+			}
 			if(newVal!=null) {
 				setTagData(newVal);
 				return;
@@ -1057,7 +1081,7 @@ public class TagData
 			if(value==null)
 				value=new String[index+1];
 			if(value.length<=index) {
-				System.out.println("-- WARNING: can't set value for "+getTagName()+" [TagData::setTagValue]");
+				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't set value for "+getTagName()+" [TagData::setTagValue]");
 			}
 			value[index]=val;
 			break;
@@ -1112,7 +1136,6 @@ public class TagData
 						formats=formats+s+"\n";
 					}
 					ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] unknown creation date format: "+ creationDate);
-					System.out.println("-- WARNING: unknown creation date format: "+ creationDate);
 //					WarningDialog ld = new WarningDialog("Unknown Timestamp Format!", 
 //							"Can't parse given timestamp ["+name+": "+creationDate+"] ! Please use one of the following date formats:\n"+formats,
 //							this.getClass().getSimpleName());
@@ -1123,7 +1146,6 @@ public class TagData
 			val=date;//DateTools.formatDate(((JTextField)inputField).getText(), DateTools.TIMESTAMP_FORMAT);
 		}catch(Exception e){
 			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] unknown creation date format: "+ creationDate);
-			System.out.println("-- WARNING: unknown creation date format: "+ creationDate);
 //			ExceptionDialog ld = new ExceptionDialog("Timestamp Format Error!", 
 //					"Wrong timestamp format at input at "+name,e,
 //					this.getClass().getSimpleName());
@@ -1200,7 +1222,6 @@ public class TagData
 				
 	}
 
-	//TODO value==String[]
 	private void setValArrayField(JArray field) 
 	{
 		if(value==null){
@@ -1239,7 +1260,7 @@ public class TagData
 	}
 
 	private void setValTextField(JComponent inputField) {
-		((JTextField) inputField).setText(value[0]==null?"":value[0]);
+		((JTextField) inputField).setText((value==null || value[0]==null)?"":value[0]);
 	}
 
 
@@ -1251,9 +1272,15 @@ public class TagData
 	private void setTagStatus(int status) {
 		this.status = status;
 	}
+	
+	/**
+	 * TODO: test before start import
+	 * @return if TagData value is required for import
+	 */
 	public boolean getTagProp() {
 		return prop;
 	}
+	
 	public void setTagProp(boolean prop) {
 		this.prop = prop;
 	}
@@ -1352,7 +1379,6 @@ public class TagData
 
 		@Override
 		public void setBackground(Color bg) {
-			// TODO Auto-generated method stub
 			super.setBackground(bg);
 			if(area!=null)
 				area.setBackground(bg);
@@ -1499,10 +1525,13 @@ public class TagData
 	}
 
 	public void setProperties(TagDataProp prop) {
-		setVisible(prop.getVisible());
+		setVisible(prop.isVisible());
 		setTagUnit(prop.getUnitSymbol());
 	}
 
+	public TagDataProp getProperties() {
+		return new TagDataProp(getTagName(),getTagUnitString(),isVisible());
+	}
 	
 
 

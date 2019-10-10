@@ -114,9 +114,10 @@ public class CommonViewer extends JPanel{
 		if(content!=null && content.getTagList()!=null) {
 			layoutComponents();
 			buildGUI();
-		}else {
-			add(new JLabel("Container"));
 		}
+//		else {
+//			add(new JLabel("Container"));
+//		}
 	}
 	
 	public LinkedHashMap<String, TagData> getTagList()

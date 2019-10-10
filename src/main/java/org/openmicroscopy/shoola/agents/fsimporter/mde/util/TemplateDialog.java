@@ -230,7 +230,6 @@ public class TemplateDialog extends JDialog implements ActionListener{
 		}else if(e.getSource()==experimentCB) {
 			moduleList[EXPERIMENT_INDEX]=experimentCB.isSelected();
 		}else if(e.getSource()==destPath_btn) {
-			MonitorAndDebug.printConsole("Browse");
 			JFileChooser fcSave =new JFileChooser();
 			if(tempFile!=null)
 				fcSave.setCurrentDirectory(new File(tempFile.getParent()));
@@ -261,9 +260,9 @@ public class TemplateDialog extends JDialog implements ActionListener{
 	public Boolean[] getSelection()
 	{
 		if(moduleList!=null) {
-			MonitorAndDebug.printConsole("Size module selection: "+moduleList.length);
+			MonitorAndDebug.printConsole(this,"Size module selection: "+moduleList.length);
 			for(int i=0; i<moduleList.length; i++) {
-				MonitorAndDebug.printConsole("module "+i+" : "+moduleList[i]);
+				MonitorAndDebug.printConsole(this,"module "+i+" : "+moduleList[i]);
 			}
 		}
 		return moduleList;

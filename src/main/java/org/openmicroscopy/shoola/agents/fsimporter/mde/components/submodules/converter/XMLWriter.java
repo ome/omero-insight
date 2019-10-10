@@ -37,6 +37,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
@@ -67,107 +69,161 @@ public class XMLWriter {
 	public static final String xmlFilePath_hardware = "C:\\Users\\Kunis.MB-Bordetella\\omero\\mdeConfiguration.xml";
 	public static final String xmlFilePath_structure = "C:\\Users\\Kunis.MB-Bordetella\\omero\\mdeConfig_structure.xml";
 	
-	final String CONF = "MDEConfiguration";
+	final String MDE_CONFIGURATION = "MDEConfiguration";
+	final String MDE_PREDEFINITIONS="MDEPredefinitions";
+	private final String MDE_OBJECTS="MDEObjects";
+
+	// microscope/setup/group classification
+	final String ELEM_SETUP_PRE="SetupPre";
+	final String ELEM_SETUP_CONF="SetupConf";
+	
+	final String ELEM_DEFINITION="Definitions";
+	final String ELEM_CONFIGURATION="Configurations";
+	
+	final String ELEM_OBJECT_PRE="ObjectPre";
+	final String ELEM_OBJECT_DEF="ObjectDef";
+	final String ELEM_OBJECT_CONF="ObjectConf";
+	
+	final String ELEM_PARENTS="Parents";
+	final String ELEM_TAGDATA="TagData";
+	final String ELEM_TAGDATAPROP="TagDataProp";
 	
 	final String ATTR_ID="ID";
 	final String ATTR_NAME="Name";
-	final String HARDWARE_CONF="MDEHardwareConfiguration";
-	final String MIC="Microscope";
-	final String INSTRUMENT="Instrument";
-	final String PARENTS="Parents";
-	final String TAGDATA="TagData";
-	final String TAGDATAPROP="TagDataProp";
-	final String ATTR_TAGDATA_DEF="DefaultValues";
-	final String ATTR_TAGDATA_VAL="Value";
-	final String ATTR_TAGDATA_VIS="Visible";
-	final String ATTR_TAGDATA_UNIT="Unit";
+	final String ATTR_DEFAULT_VAL="DefaultValues";
+	final String ATTR_VALUE="Value";
+	final String ATTR_VISIBLE="Visible";
+	final String ATTR_UNIT="Unit";
 	final String ATTR_TYPE="Type";
-	private final String MDE_OBJECTS="MDEObjects";
-	private final String MDE_OBJECT="Object";
+	
 	private final String ATTR_VALUES="Values";
 	private LinkedHashMap<String, ModuleList> hardwareConfiguration;
-	private LinkedHashMap<String, HashMap<String,ModuleContent>> objectConfiguration;
+//	private LinkedHashMap<String, HashMap<String,ModuleContent>> objectConfiguration;
+	
+	/** available object definitions*/
+	HashMap<String,ModuleContent> objectDefinition;
+	/** object configuration for different microscopes ([micName,[objectName,ModuleConfiguration]]*/
+	LinkedHashMap<String,HashMap<String,ModuleConfiguration>> objectConfiguration;
 	
 	
 	
 	/**
-	 * Save objects to file with following element structure:
+	 * Save configuration of objects for different microscopes to file with following element structure:
 	 * <pre>{@code
-	 * 	   <Microscope Name=UNIVERSAL>  // content UNIVERSAL are all available objects with all available attributes
-	 * 		<Object Type="">
-	 * 			<TagData ...>
-	 * 			<TagData ...>
-	 * 				....
-	 * 			<Parent Values=[]>  // string list: p1,p2,p3,...
-	 * 		</Object>
-	 * 		....
-	 * 	   </Microscope>
-	 * 	   <Microscope Name="">
-	 * 	   		<TagDataProp ...>
-	 * 			<TagDataProp ...>
+	 * 	   <Configuration>
+	 * 	   	<SetupConf Name="">
+	 * 			<ObjectConf Type="">
+	 * 	   			<TagDataProp ...>
+	 * 				<TagDataProp ...>
 	 * 			....	
-	 * 	   </Microscope>
+	 * 			</ObjectConf>
+	 * 	   	</SetupConf>
+	 * 		....
+	 *     </Configuration>
 	 * }</pre>
 	 * 
 	 * @param conf
 	 */
-	private Element microscopeObjectsToXml(String micName,HashMap<String, ModuleContent> conf,Document doc) {
-		if(conf==null)
-			return null;
-
-		Element result = doc.createElement(MIC);
-		result.setAttribute(ATTR_NAME, micName);
-		boolean fullData=micName.equals(MDEConfiguration.UNIVERSAL);
-		for (Entry<String, ModuleContent> entry : conf.entrySet()) {
-			Element child=createObjectElement(entry.getKey(),entry.getValue(),fullData,doc);
-			if(child!=null)
-				result.appendChild(child);
+	private Element configurationToXML(LinkedHashMap<String, HashMap<String, ModuleConfiguration>> oConf,Document doc) {
+		Element configElem=doc.createElement(ELEM_CONFIGURATION);
+		if(oConf==null)
+			return configElem;
+		
+		for (Entry<String, HashMap<String, ModuleConfiguration>> entry : oConf.entrySet()) {
+			
+			HashMap<String,ModuleConfiguration> micConf=entry.getValue();
+			if(micConf!=null) {
+				Element micElem = doc.createElement(ELEM_SETUP_CONF);
+				micElem.setAttribute(ATTR_NAME, entry.getKey());
+				for (Entry<String, ModuleConfiguration> object : micConf.entrySet()) {
+					Element objElem=objectConfToXML(object.getKey(),object.getValue(),doc);
+					if(objElem!=null)
+						micElem.appendChild(objElem);
+				}
+				if(micElem!=null)
+					configElem.appendChild(micElem);
+			}
 		}
-		return result;
+		return configElem;
+	}
+	/**
+	 * Save definition of objects to file:
+	 * <pre>{@code
+	 * 	   <Definition>  // content UNIVERSAL are all available objects with all available attributes
+	 * 		<ObjectDef Type="">
+	 * 			<TagData ...>
+	 * 			<TagData ...>
+	 * 				....
+	 * 			<Parent Values=[]>  // string list: p1,p2,p3,...
+	 * 		</ObjectDef>
+	 * 		....
+	 * 	   </Definition>
+	 * }</pre>
+	 * @param oDef
+	 * @param doc
+	 * @return
+	 */
+	private Node definitionToXML(HashMap<String, ModuleContent> oDef, Document doc) {
+		Element defElem=doc.createElement(ELEM_DEFINITION);
+		if(oDef==null)
+			return defElem;
+		for (Entry<String, ModuleContent> object : oDef.entrySet()) {
+			Element objElem=objectDefToXML(object.getKey(),object.getValue(),doc);
+			if(objElem!=null)
+				defElem.appendChild(objElem);
+		}
+		return defElem;
+	}
+	
+	private Element mde_objectsToXml(LinkedHashMap<String, HashMap<String, ModuleConfiguration>> oConf,
+			HashMap<String,ModuleContent> oDef, Document doc) {
+		
+		Element mdeObjects = doc.createElement(MDE_OBJECTS);
+		mdeObjects.appendChild(definitionToXML(oDef,doc));
+		mdeObjects.appendChild(configurationToXML(oConf, doc));
+		
+		return mdeObjects;
 	}
 	
 	
+	
+
+
+	
+
 	/**
 	 * {@link ModuleContent} -> xmlElement: builds the element
 	 * <pre>{@code
-	 *	<Object Type="">
+	 *	<ObjectDef Type="">
 	 * 		<TagData ...>
 	 * 		<TagData ...>
 	 * 			....
 	 * 		<Parent Values=[]>  // string list: p1,p2,p3,...
-	 * 	</Object>
+	 * 	</ObjectDef>
 	 * }</pre>
 	 * @param type
 	 * @param content
 	 * @param doc
 	 * @return
 	 */
-	private Element createObjectElement(String type,ModuleContent content, boolean fullData,Document doc) {
+	private Element objectDefToXML(String type,ModuleContent content,Document doc) {
 		if(content==null)
 			return null;
 
-		Element result = doc.createElement(MDE_OBJECT);
+		Element result = doc.createElement(ELEM_OBJECT_DEF);
 		result.setAttribute(ATTR_TYPE, type);
 
 		List<TagData> list= content.getTagList();
 		if(list == null)
 			return result;
-		//add tagData
-		if(fullData) {
-			for(int i=0;i<list.size();i++) {
-				Element child = createTagDataElement(list.get(i), doc);
-				if(child!=null)
-					result.appendChild(child);
-			}
-		}else {
-			for(int i=0;i<list.size();i++) {
-				Element child = createTagDataPropElement(list.get(i), doc);
-				if(child!=null)
-					result.appendChild(child);
-			}
+
+		for(int i=0;i<list.size();i++) {
+			Element child = createTagDataElement(list.get(i), doc);
+			if(child!=null)
+				result.appendChild(child);
 		}
 		
-		Element parents = doc.createElement(PARENTS);
+		Element parents = doc.createElement(ELEM_PARENTS);
 		String parentVal=content.getParents()!=null? String.join(",",content.getParents()):"";
 		parents.setAttribute(ATTR_VALUES,parentVal );
 
@@ -175,35 +231,94 @@ public class XMLWriter {
 		
 		return result;
 	}
-	
+	/**
+	 * {@link ModuleContent} -> xmlElement: builds the element
+	 * <pre>{@code
+	 *	<ObjectConf Type="">  //MDE_OBJECT
+	 * 		<TagDataProp ...>
+	 * 		<TagDataProp ...>
+	 * 	</ObjectConf>
+	 * }</pre>
+	 * @param type
+	 * @param content
+	 * @param doc
+	 * @return
+	 */
+	private Element objectConfToXML(String type, ModuleConfiguration conf, Document doc) {
+		if(conf==null)
+			return null;
+
+		Element result = doc.createElement(ELEM_OBJECT_CONF);
+		result.setAttribute(ATTR_TYPE, type);
+
+		List<TagDataProp> list= conf.getTagPropList();
+		if(list == null)
+			return result;
+
+		for(int i=0;i<list.size();i++) {
+			Element child = createTagDataPropElement(list.get(i), doc);
+			if(child!=null)
+				result.appendChild(child);
+		}
+
+		return result;
+	}
 	
 	
 	
 	/**
 	 * Parse elements like
 	 * <pre>{@code
-	 *	<Object Type="">
+	 *	<ObjectDef Type="">
 	 * 		<TagData ...>
 	 * 		<TagData ...>
 	 * 			....
 	 * 		<Parent Values=[]>  // string list: p1,p2,p3,...
-	 * 	</Object>
+	 * 	</ObjectDef>
 	 * }</pre>
 	 * @param universal all available objects
 	 * @param nodeList
 	 * @return
 	 */
-	private HashMap<String, ModuleContent> elementsToObjectList(HashMap<String,ModuleContent> universal,NodeList nodeList){
+	private HashMap<String, ModuleContent> elementsToObjectDefList(HashMap<String,ModuleContent> universal,NodeList nodeList){
 		if(nodeList==null)
 			return null;
 		HashMap<String, ModuleContent> list=new HashMap<>();
 		for(int i=0; i<nodeList.getLength();i++) {
 			Node n=nodeList.item(i);
-			if(n.getNodeName().equals(MDE_OBJECT) && n.getNodeType()==Node.ELEMENT_NODE) {
+			if(n.getNodeName().equals(ELEM_OBJECT_DEF) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String type=eElement.getAttribute(ATTR_TYPE);
+				ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] XML: parse ObjectDef: "+type);
 				ModuleContent defContent= universal!=null?universal.get(type):null;
 				list.put(type, elementToModuleContent(defContent,eElement,type));
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * Parse elements like
+	 * <pre>{@code
+	 *	<ObjectConf Type="">
+	 * 		<TagDataProp ...>
+	 * 		<TagDataProp ...>
+	 * 			....
+	 * 	</ObjectConf>
+	 * }</pre>
+	 * @param nodeList
+	 * @return
+	 */
+	private HashMap<String, ModuleConfiguration> elementsToObjectConfList(NodeList nodeList){
+		if(nodeList==null)
+			return null;
+		HashMap<String, ModuleConfiguration> list=new HashMap<>();
+		for(int i=0; i<nodeList.getLength();i++) {
+			Node n=nodeList.item(i);
+			if(n.getNodeName().equals(ELEM_OBJECT_CONF) && n.getNodeType()==Node.ELEMENT_NODE) {
+				Element eElement=(Element)n;
+				String type=eElement.getAttribute(ATTR_TYPE);
+				list.put(type, elementsToTagDataPropList(eElement.getElementsByTagName(ELEM_TAGDATAPROP)));
 			}
 		}
 		return list;
@@ -217,173 +332,72 @@ public class XMLWriter {
 	 */
 	private ModuleContent elementToModuleContent(ModuleContent universal,Element eElement,String type) {
 		String parents="";
-		if(eElement.getElementsByTagName(PARENTS)!=null && eElement.getElementsByTagName(PARENTS).getLength()>0)
-			parents=((Element) eElement.getElementsByTagName(PARENTS).item(0)).getAttribute(ATTR_VALUES);
-		if(universal==null) {
-			return new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(TAGDATA),type), type,  parents.split(","));
-		}else {
-			return mergeProperties(elementsToTagDataPropList(eElement.getElementsByTagName(TAGDATAPROP)),universal);
+		if(eElement.getElementsByTagName(ELEM_PARENTS)!=null && eElement.getElementsByTagName(ELEM_PARENTS).getLength()>0) {
+			parents=((Element) eElement.getElementsByTagName(ELEM_PARENTS).item(0)).getAttribute(ATTR_VALUES);
 		}
-	}
-	
-	private ModuleContent mergeProperties(LinkedHashMap<String, TagDataProp> propList,
-			ModuleContent universal) {
-		if(universal==null)
-			return null;
-		ModuleContent result= new ModuleContent(universal);
-		LinkedHashMap<String, TagData> list=result.getList();
-		for(Map.Entry<String, TagDataProp> entry:propList.entrySet()) {
-			if(list.containsKey(entry.getKey())) {
-				list.get(entry.getKey()).setProperties(entry.getValue());
-			}
-		}
-		return result;
+		return new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type), type,  parents.split(","));
 	}
 
-
-	
-	//-------------------------------------------------------------------------------------
-	//					Structure
-	//-------------------------------------------------------------------------------------
-	
-	
-	//see: https://examples.javacodegeeks.com/core-java/xml/parsers/documentbuilderfactory/create-xml-file-in-java-using-dom-parser-example/
-	public void saveToXML(DefaultMutableTreeNode tree,String rootName) {
-		try {
-			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-
-			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-
-			Document document = documentBuilder.newDocument();
-
-			// root element
-			Element root = document.createElement(rootName);
-			document.appendChild(root);
-
-
-			// create the xml file
-			//transform the DOM Object to an XML File
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer;
-
-			transformer = transformerFactory.newTransformer();
-
-			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = new StreamResult(new File(xmlFilePath_structure));
-
-			// If you use
-			// StreamResult result = new StreamResult(System.out);
-			// the output will be pushed to the standard output ...
-			// You can use that for debugging 
-
-
-			transformer.transform(domSource, streamResult);
-		} catch (TransformerConfigurationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-        System.out.println("-- Create XML File at "+xmlFilePath_structure);
-        
-	}
-	/**
-	 * Builds structure node {@link ModuleTreeElement}.
-	 * <pre>{@code
-	 * <type ATTR_ID="" Name="">
-	 * 		<Parents Val=<>>
-	 * 		<TagData...>
-	 *		.... 			
-	 * </type>
-	 * }</pre>
-	 * @param elem
-	 */
-	private Element elementToXml(ModuleTreeElement elem, Document doc) {
-		if(elem==null)
-			return null;
-		
-		Element result = doc.createElement(elem.getType());
-		Attr attr = doc.createAttribute(ATTR_ID);
-		attr.setValue(elem.getIndex());
-		attr = doc.createAttribute(ATTR_NAME);
-		attr.setValue(elem.getName());
-		
-		
-		List<TagData> list= elem.getData()!=null ? elem.getData().getTagList():null;
-		if(list == null)
-			return result;
-		//add tagData
-		for(int i=0;i<list.size();i++) {
-			Element child = createTagDataElement(list.get(i), doc);
-			if(child!=null)
-				result.appendChild(child);
-		}
-		return result;
-	}
-	
-	
 	
 	//---------------------------------------------------------------------------------
 	//				HardwareConfiguration and ObjectConfiguration save to file
 	//---------------------------------------------------------------------------------
 	/**
-	 * save Hardwareconfiguration and ObjectConfiguration to file with following element structure:
+	 * save Predefinitions and ObjectDefinition and ~Configuration to file with following element structure:
 	 * <pre>{@code
 	 * <xml>
-	 * 	<MDEHardwareConfiguration>
-	 * 		<Microscope Name=<>>
-	 * 			<Instrument Type=<> ATTR_ID=<>>
+	 * 	<MDEPredefinition>
+	 * 		<SetupPre Name=<>>
+	 * 			<ObjectPre Type=<> ATTR_ID=<>>
 	 * 				<TagData ...>
 	 * 				<TagData ...>
 	 * 				....
-	 * 			</Instrument>
-	 * 		</Microscope>
-	 * 	</MDEHardwareConfiguration>
+	 * 			</ObjectPre>
+	 * 		</SetupPre>
+	 * 	</MDEPredefinition>
 	 *  <MDEObjects>
-	 *  	<Microscope Name =""> // Name=Universal -> all available objects
-	 *  		<Object Type="">
+	 *  	<Definition>
+	 *  		<ObjectDef Type="">
 	 *  			<TagData ...>
 	 *  			...
 	 *  			<Parent Val=""> //val:=p1,p2,..
-	 *  		</Object>
-	 *  	</Microscope>
+	 *  		</ObjectDef>
+	 *  	</Definition>
+	 *  	<Configuration>
+	 *  		<SetupConf Name =""> 
+	 *  			<ObjectConf Type="">
+	 *  				<TagDataProp ...>
+	 *  				...
+	 *  			</ObjectConf>
+	 *  		</SetupConf>
+	 *  	</Configuration>
 	 *  </MDEObjects>
 	 * </xml>
 	 * }</pre>
 	 * @param conf
 	 */
-	public void saveToXML(LinkedHashMap<String, ModuleList> hconf, LinkedHashMap<String,HashMap<String,ModuleContent>> oConf) {
+	public void saveToXML(LinkedHashMap<String, ModuleList> hconf, HashMap<String,ModuleContent> oDef,
+			LinkedHashMap<String,HashMap<String,ModuleConfiguration>> oConf) {
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 			Document document = documentBuilder.newDocument();
 
 			// root element
-			Element root = document.createElement(CONF);
+			Element root = document.createElement(MDE_CONFIGURATION);
 			document.appendChild(root);
 			
-			Element hardwareConf = document.createElement(HARDWARE_CONF);
+			Element hardwareConf = document.createElement(MDE_PREDEFINITIONS);
 			root.appendChild(hardwareConf);
 			
 			for (Entry<String, ModuleList> entry : hconf.entrySet()) {
-				Element child=microscopeInstrumentsToXml(entry.getKey(), entry.getValue(), document);
+				Element child=setupPreToXML(entry.getKey(), entry.getValue(), document);
 				if(child!=null)
 					hardwareConf.appendChild(child);
 			}
 			
-			Element objectConf = document.createElement(MDE_OBJECTS);
-			root.appendChild(objectConf);
-			
-			for (Entry<String, HashMap<String, ModuleContent>> entry : oConf.entrySet()) {
-				Element child=microscopeObjectsToXml(entry.getKey(), entry.getValue(),document);
-				if(child!=null)
-					objectConf.appendChild(child);
-			}
+			Element objElem=mde_objectsToXml(oConf,oDef,document);
+			root.appendChild(objElem);
 
 			// create the xml file
 			//transform the DOM Object to an XML File
@@ -400,44 +414,50 @@ public class XMLWriter {
 			// You can use that for debugging 
 			transformer.transform(domSource, streamResult);
 		} catch (TransformerConfigurationException e1) {
-			// TODO Auto-generated catch block
+			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Cannot parse mde configuration file");
 			e1.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
+			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Cannot parse mde configuration file");
 			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
+			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Cannot parse mde configuration file");
 			e.printStackTrace();
 		}
 
-        System.out.println("-- Create XML File at "+xmlFilePath_hardware);
+		ImporterAgent.getRegistry().getLogger().info(this,"[MDE] Create XML File at "+xmlFilePath_hardware);
         
 	}
 	
+	
+
+
+
+
+
 	//TOD=: Desc for mic?
 	/**
 	 * Builds the element
 	 * <pre>{@code
-	 * <Microsocope Name=<>>
-	 * 	....<Instrument>
-	 * </Microsocope>
+	 * <SetupPre Name=<>>
+	 * 	....<ObjectPre>
+	 * </SetupPre>
 	 * }</pre>
 	 * @param micName
 	 * @param list
 	 * @param doc
 	 * @return
 	 */
-	private Element microscopeInstrumentsToXml(String micName,ModuleList list, Document doc) {
+	private Element setupPreToXML(String micName,ModuleList list, Document doc) {
 		if(list==null)
 			return null;
 
-		Element result = doc.createElement(MIC);
+		Element result = doc.createElement(ELEM_SETUP_PRE);
 		result.setAttribute(ATTR_NAME, micName);
 
 		for (Entry<String, List<ModuleContent>> entry : list.entrySet()) {
 			if(entry.getValue()!=null) {
 				for(ModuleContent c:entry.getValue()) {
-					Element child=createInstrumentElement(c, doc);
+					Element child=objectPreToXML(c, doc);
 					if(child!=null)
 						result.appendChild(child);
 				}
@@ -450,19 +470,19 @@ public class XMLWriter {
 	/**
 	 * Builds the tag for a certain instrument from {@link ModuleContent} object
 	 * <pre>{@code 
-	 * <Instrument Type="" ATTR_ID="" >
+	 * <ObjectPre Type="" ATTR_ID="" >
 	 * 		<TagData...>
 	 * 			
-	 * </Instrument>
+	 * </ObjectPre>
 	 * }</pre>
 	 * @param c    {@link ModuleContent} object holds instrument values
 	 * @param doc
 	 */
-	private Element createInstrumentElement(ModuleContent c, Document doc) {
+	private Element objectPreToXML(ModuleContent c, Document doc) {
 		if(c==null)
 			return null;
 		
-		Element result = doc.createElement(INSTRUMENT);
+		Element result = doc.createElement(ELEM_OBJECT_PRE);
 		result.setAttribute(ATTR_ID, c.getAttributeValue(TagNames.ID));//TODO necessary?
 		result.setAttribute(ATTR_TYPE, c.getType());
 		
@@ -493,14 +513,14 @@ public class XMLWriter {
 		if(t==null)
 			return null;
 		
-		Element result=doc.createElement(TAGDATA);
+		Element result=doc.createElement(ELEM_TAGDATA);
 		
 		result.setAttribute(ATTR_NAME, t.getTagName());
 		result.setAttribute(ATTR_TYPE, String.valueOf(t.getTagType()));
-		result.setAttribute(ATTR_TAGDATA_VIS,String.valueOf( t.isVisible()));
-		result.setAttribute(ATTR_TAGDATA_VAL, t.getTagValue());
-		result.setAttribute(ATTR_TAGDATA_UNIT, t.getTagUnitString());
-		result.setAttribute(ATTR_TAGDATA_DEF, t.getDefaultValuesAsString());
+		result.setAttribute(ATTR_VISIBLE,String.valueOf( t.isVisible()));
+		result.setAttribute(ATTR_VALUE, t.getTagValue());
+		result.setAttribute(ATTR_UNIT, t.getTagUnitString());
+		result.setAttribute(ATTR_DEFAULT_VAL, t.getDefaultValuesAsString());
 		
 		
 //		attr=doc.createAttribute("Required");
@@ -518,15 +538,15 @@ public class XMLWriter {
 	 * @param doc
 	 * @return
 	 */
-	private Element createTagDataPropElement(TagData t,Document doc) {
+	private Element createTagDataPropElement(TagDataProp t,Document doc) {
 		if(t==null)
 			return null;
 		
-		Element result=doc.createElement(TAGDATAPROP);
+		Element result=doc.createElement(ELEM_TAGDATAPROP);
 		
-		result.setAttribute(ATTR_NAME, t.getTagName());
-		result.setAttribute(ATTR_TAGDATA_VIS,String.valueOf( t.isVisible()));
-		result.setAttribute(ATTR_TAGDATA_UNIT, t.getTagUnitString());
+		result.setAttribute(ATTR_NAME, t.getName());
+		result.setAttribute(ATTR_VISIBLE,String.valueOf( t.isVisible()));
+		result.setAttribute(ATTR_UNIT, t.getUnitSymbol());
 		
 		
 //		attr=doc.createAttribute("Required");
@@ -543,16 +563,31 @@ public class XMLWriter {
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 				Document doc = dBuilder.parse(hardwareFile);
 				doc.getDocumentElement().normalize();
-				NodeList hardwareConf=doc.getElementsByTagName(HARDWARE_CONF);
+				NodeList hardwareConf=doc.getElementsByTagName(MDE_PREDEFINITIONS);
 				if(hardwareConf!=null && hardwareConf.getLength()>0) {
-					this.hardwareConfiguration =elementsToHardwareConf(((Element) hardwareConf.item(0)).getElementsByTagName(MIC));
+					this.hardwareConfiguration =elementsToHardwareConf(((Element) hardwareConf.item(0)).getElementsByTagName(ELEM_SETUP_PRE));
+				}else {
+					ImporterAgent.getRegistry().getLogger().info(this,"[MDE] no setup predefinitions defined in mde configuration file");
 				}
-				NodeList objectConf=doc.getElementsByTagName(MDE_OBJECTS);
-				if(objectConf!=null && objectConf.getLength()>0) {
-					this.objectConfiguration =elementsToObjectConf(((Element) objectConf.item(0)).getElementsByTagName(MIC));
+				NodeList mdeObjects=doc.getElementsByTagName(MDE_OBJECTS);
+				if(mdeObjects!=null && mdeObjects.getLength()>0) {
+					// get object definition element
+					NodeList objDef=((Element) mdeObjects.item(0)).getElementsByTagName(ELEM_DEFINITION);
+					if(objDef!=null && objDef.getLength()>0) {
+						this.objectDefinition = elementsToObjectDefList(null,((Element) objDef.item(0)).getElementsByTagName(ELEM_OBJECT_DEF));
+					}else {
+						ImporterAgent.getRegistry().getLogger().info(this,"[MDE] no object definitions defined in mde configuration file");
+					}
+					// get object configurations
+					NodeList objConf=((Element) mdeObjects.item(0)).getElementsByTagName(ELEM_CONFIGURATION);
+					if(objConf!=null && objConf.getLength()>0) {
+						this.objectConfiguration =elementsToObjectConf(((Element) objConf.item(0)).getElementsByTagName(ELEM_SETUP_CONF));
+					}else {
+						ImporterAgent.getRegistry().getLogger().info(this,"[MDE] no setup configurations defined in mde configuration file");
+					}
+				}else {
+					ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] No configuration file available for MDE");
 				}
-			}else {
-				System.out.println("-- No configuration file available for MDE");
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -568,17 +603,17 @@ public class XMLWriter {
 	 * @param nodeList list of elements TagDataProp
 	 * @return
 	 */
-	private LinkedHashMap<String,TagDataProp> elementsToTagDataPropList(NodeList nodeList){
+	private ModuleConfiguration elementsToTagDataPropList(NodeList nodeList){
 		if(nodeList==null)
 			return null;
-		LinkedHashMap<String,TagDataProp> list = new LinkedHashMap<>();
+		ModuleConfiguration list=new ModuleConfiguration();
 		for(int i=0; i<nodeList.getLength();i++) {
 			Node n=nodeList.item(i);
-			if(n.getNodeName().equals(TAGDATAPROP) && n.getNodeType()==Node.ELEMENT_NODE) {
+			if(n.getNodeName().equals(ELEM_TAGDATAPROP) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String tagName=eElement.getAttribute(ATTR_NAME);
-				String tagUnit=eElement.getAttribute(ATTR_TAGDATA_UNIT);
-				String tagVis=eElement.getAttribute(ATTR_TAGDATA_VIS);
+				String tagUnit=eElement.getAttribute(ATTR_UNIT);
+				String tagVis=eElement.getAttribute(ATTR_VISIBLE);
 				TagDataProp t= new TagDataProp(tagName, tagUnit,Boolean.parseBoolean(tagVis));
  				list.put(tagName,t);
 			}
@@ -602,13 +637,13 @@ public class XMLWriter {
 		LinkedHashMap<String,TagData> list = new LinkedHashMap<>();
 		for(int i=0; i<nodeList.getLength();i++) {
 			Node n=nodeList.item(i);
-			if(n.getNodeName().equals(TAGDATA) && n.getNodeType()==Node.ELEMENT_NODE) {
+			if(n.getNodeName().equals(ELEM_TAGDATA) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String tagName=eElement.getAttribute(ATTR_NAME);
-				String tagVal=eElement.getAttribute(ATTR_TAGDATA_VAL);
-				String tagUnit=eElement.getAttribute(ATTR_TAGDATA_UNIT);
-				String tagVis=eElement.getAttribute(ATTR_TAGDATA_VIS);
-				String defaultVal = eElement.getAttribute(ATTR_TAGDATA_DEF);
+				String tagVal=eElement.getAttribute(ATTR_VALUE);
+				String tagUnit=eElement.getAttribute(ATTR_UNIT);
+				String tagVis=eElement.getAttribute(ATTR_VISIBLE);
+				String defaultVal = eElement.getAttribute(ATTR_DEFAULT_VAL);
 				String tagType=eElement.getAttribute(ATTR_TYPE);
 				
 				TagData t= new TagData(parent,tagName, tagVal, tagUnit,false, tagType, defaultVal.split(","));
@@ -623,10 +658,10 @@ public class XMLWriter {
 	/**
 	 * Parse list of instruments to {@link ModuleList} .For instrument elements :
 	 * <pre>{@code 
-	 * <Instrument Type="" ATTR_ID="" >
+	 * <ObjectPre Type="" ATTR_ID="" >
 	 * 		<TagData...>
 	 * 			
-	 * </type>
+	 * </ObjectPre>
 	 * }</pre>
 	 */
 	private ModuleList elementsToModuleList(NodeList nodeList){
@@ -635,10 +670,10 @@ public class XMLWriter {
 		ModuleList list=new ModuleList();
 		for(int i=0; i<nodeList.getLength();i++) {
 			Node n=nodeList.item(i);
-			if(n.getNodeName().equals(INSTRUMENT) && n.getNodeType()==Node.ELEMENT_NODE) {
+			if(n.getNodeName().equals(ELEM_OBJECT_PRE) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String type=eElement.getAttribute(ATTR_TYPE);
-				ModuleContent c=new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(TAGDATA),type), type, null);
+				ModuleContent c=new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type), type, null);
 				List<ModuleContent> cList=list.get(type);
 				if(cList==null) {
 					cList = new ArrayList<>();
@@ -656,64 +691,47 @@ public class XMLWriter {
 		LinkedHashMap<String,ModuleList> list=new LinkedHashMap<>();
 		for(int i=0; i<nodeList.getLength();i++) {
 			Node n=nodeList.item(i);
-			if(n.getNodeName().equals(MIC) && n.getNodeType()==Node.ELEMENT_NODE) {
+			if(n.getNodeName().equals(ELEM_SETUP_PRE) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String name=eElement.getAttribute(ATTR_NAME);
-				list.put(name, elementsToModuleList(eElement.getElementsByTagName(INSTRUMENT)));
+				list.put(name, elementsToModuleList(eElement.getElementsByTagName(ELEM_OBJECT_PRE)));
 			}
 		}
 		return list;
 	}
 	
-	private LinkedHashMap<String, HashMap<String,ModuleContent>> elementsToObjectConf(NodeList nodeList){
+	private LinkedHashMap<String, HashMap<String, ModuleConfiguration>> elementsToObjectConf(NodeList nodeList){
 		if(nodeList==null)
 			return null;
-		 LinkedHashMap<String, HashMap<String,ModuleContent>> list= new LinkedHashMap<>();
-		 
-		 // get UNIVERSAL object list
-		 int universalIdx=-1;
-		 for(int i=0; i<nodeList.getLength();i++) {
-			 Node n=nodeList.item(i);
-			 if(n.getNodeName().equals(MIC) && n.getNodeType()==Node.ELEMENT_NODE) {
-				 Element eElement =(Element)n;
-				 String name= eElement.getAttribute(ATTR_NAME);
-				 if(name.equals(MDEConfiguration.UNIVERSAL)) {
-					 list.put(name, elementsToObjectList(null,eElement.getElementsByTagName(MDE_OBJECT)));
-				 }
-				 universalIdx=i;
-				 break;
-			 }
-		 }
-		 HashMap<String,ModuleContent> uni;
-		 if((uni=list.get(MDEConfiguration.UNIVERSAL)) !=null) {
-			 for(int i=0; i<nodeList.getLength();i++) {
-				 if(i!=universalIdx) {
-					 Node n=nodeList.item(i);
-					 //TODO: first get UNIVERSAL object list, after that add prop for different mics to this content
-					 if(n.getNodeName().equals(MIC) && n.getNodeType()==Node.ELEMENT_NODE) {
-						 Element eElement =(Element)n;
-						 String name= eElement.getAttribute(ATTR_NAME);
-						 list.put(name, elementsToObjectList(uni,eElement.getElementsByTagName(MDE_OBJECT)));
-					 }
-				 }
-			 }
-		 }else {
-			 System.out.println("-- WARNING: no objects configuration available in configuration file [XMLWriter::elementsToObjectConf]");
+		LinkedHashMap<String, HashMap<String,ModuleConfiguration>> list= new LinkedHashMap<>();
+
+		for(int i=0; i<nodeList.getLength();i++) {
+			Node n=nodeList.item(i);
+			if(n.getNodeName().equals(ELEM_SETUP_CONF) && n.getNodeType()==Node.ELEMENT_NODE) {
+				Element eElement =(Element)n;
+				String micname= eElement.getAttribute(ATTR_NAME);
+				ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] XML: parse SetupConf for "+micname);
+				list.put(micname, elementsToObjectConfList(eElement.getElementsByTagName(ELEM_OBJECT_CONF)));
+			}
 		 }
 		return list;
 		
 	}
+	
 
 
 	public LinkedHashMap<String, ModuleList> getHardwareConfiguration() {
-		// TODO Auto-generated method stub
 		return hardwareConfiguration;
 	}
 
 
-	public LinkedHashMap<String, HashMap<String, ModuleContent>> getObjectConfiguration() {
-		// TODO Auto-generated method stub
+	public LinkedHashMap<String, HashMap<String, ModuleConfiguration>> getObjectConfiguration() {
 		return objectConfiguration;
+	}
+
+
+	public HashMap<String, ModuleContent> getObjectDefinition() {
+		return objectDefinition;
 	}
 	
 	

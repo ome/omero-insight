@@ -109,9 +109,9 @@ public class MapAnnotationObject {
 		fileName=name;
 	}
 
-	public MapAnnotationData getMapAnnotation(int i) {
-		return mapAnnotation.get(i);
-	}
+//	public MapAnnotationData getMapAnnotation(int i) {
+//		return mapAnnotation.get(i);
+//	}
 	
 	public List<MapAnnotationData> getMapAnnotationList() {
 		return mapAnnotation;
@@ -121,32 +121,34 @@ public class MapAnnotationObject {
 	{
 		if(map==null)
 			return;
-		MonitorAndDebug.printConsole("\t PRINT MAPANNOTATIONS: ");
+		MonitorAndDebug.printConsole(null,"\t PRINT MAPANNOTATIONS: ");
 		
 		List<NamedValue> values=(List<NamedValue>) map.getContent();
 		for(NamedValue val:values){
-			MonitorAndDebug.printConsole("\t\t"+ val.name+": "+val.value);
+			MonitorAndDebug.printConsole(null,"\t\t"+ val.name+": "+val.value);
 		}
 	}
 	
 	static public void printMapAnnotations(Map<String,MapAnnotationObject> map)
 	{
+		System.out.println("******* MAP ************");
 		for (Iterator i = map.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry next = (Map.Entry)i.next();
-			MonitorAndDebug.printConsole("\t PRINT MAPANNOTATION OBJECT - : "+next.getKey());
+			MonitorAndDebug.printConsole(null,"\t PRINT MAPANNOTATION OBJECT - : "+next.getKey());
 			printObject((MapAnnotationObject) next.getValue());
 		}
+		System.out.println("******* END MAP************");
 	}
 	
 	static public void printObject(MapAnnotationObject o)
 	{
 		if(o==null)
 			return;
-		MonitorAndDebug.printConsole("\t file : "+o.getFileName());
+		MonitorAndDebug.printConsole(null,"\t file : "+o.getFileName());
 		List<MapAnnotationData> list=o.getMapAnnotationList();
 		int index=0;
 		for(MapAnnotationData m:list){
-			MonitorAndDebug.printConsole("\t Series_"+index++);
+			MonitorAndDebug.printConsole(null,"\t Series_"+index++);
 			printMapAnnotation(m);
 		}
 	}

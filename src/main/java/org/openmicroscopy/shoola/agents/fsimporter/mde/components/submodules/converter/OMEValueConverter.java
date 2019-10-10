@@ -79,7 +79,6 @@ public class OMEValueConverter {
 	 * @return 
 	 */
 	public static String[] getUnitSymbols(Class<? extends Enum<?>> e) {
-//		MonitorAndDebug.printConsole("Enums: "+Arrays.toString(e.getEnumConstants()));
 		ome.model.units.UnitEnum[] enums=(UnitEnum[]) e.getEnumConstants();
 		String[] symbols=new String[enums.length];
 		for(int i=0; i<enums.length; i++ ) {
@@ -118,12 +117,7 @@ public class OMEValueConverter {
 			return null;
 		PositiveInteger result=null;
 		Integer t=Integer.parseInt(c);
-		//		if(t!=null && t>0){
-		//			MonitorAndDebug.printConsole("\t...parseToPositiveInt() "+t);
 		result=new PositiveInteger(t);
-		//		}else{
-		//			MonitorAndDebug.printConsole("ERROR: parseToPositiveInt() "+c);
-		//		}
 		return result;
 	}
 
@@ -288,7 +282,7 @@ public class OMEValueConverter {
 	}
 
 
-	public static ome.model.units.Unit[] convert(String[] value, String unitSymbol, String targetUnit) {
+	public static ome.model.units.Unit[] convert(String[] value, String unitSymbol, String targetUnit) throws Exception {
 		if(value==null || value.length==0 || unitSymbol==null) {
 			return null;
 		}
@@ -297,92 +291,86 @@ public class OMEValueConverter {
 
 		Class unitClass=TagNames.getUnitClassFromSymbol(unitSymbol);
 
-		if(unitClass!=null) {
-			try {
-				if(unitClass.equals(ome.model.units.ElectricPotential.class.getName())) {
-					for(int i=0; i<value.length;i++) {
-						if(value[i]!=null && !value[i].isEmpty()) {
-							omero.model.ElectricPotential tOld=new omero.model.ElectricPotentialI(Double.parseDouble(value[i]),ome.model.enums.UnitsElectricPotential.bySymbol(unitSymbol));
-							omero.model.ElectricPotential tNew= new omero.model.ElectricPotentialI(tOld,
-									omero.model.enums.UnitsElectricPotential.valueOf(ome.model.enums.UnitsElectricPotential.bySymbol(targetUnit).toString())); 
-							result[i]= new ome.model.units.ElectricPotential(tNew.getValue(),ome.model.enums.UnitsElectricPotential.bySymbol(tNew.getSymbol()));
-							counter++;
-						}
-					}
+
+		if(unitClass.equals(ome.model.units.ElectricPotential.class.getName())) {
+			for(int i=0; i<value.length;i++) {
+				if(value[i]!=null && !value[i].isEmpty()) {
+					omero.model.ElectricPotential tOld=new omero.model.ElectricPotentialI(Double.parseDouble(value[i]),ome.model.enums.UnitsElectricPotential.bySymbol(unitSymbol));
+					omero.model.ElectricPotential tNew= new omero.model.ElectricPotentialI(tOld,
+							omero.model.enums.UnitsElectricPotential.valueOf(ome.model.enums.UnitsElectricPotential.bySymbol(targetUnit).toString())); 
+					result[i]= new ome.model.units.ElectricPotential(tNew.getValue(),ome.model.enums.UnitsElectricPotential.bySymbol(tNew.getSymbol()));
+					counter++;
 				}
-				if(unitClass.equals(ome.model.units.Power.class.getName())) {
-					for(int i=0; i<value.length;i++) {
-						if(value[i]!=null && !value[i].isEmpty()) {
-							omero.model.Power tOld=new omero.model.PowerI(Double.parseDouble(value[i]),ome.model.enums.UnitsPower.bySymbol(unitSymbol));
-							omero.model.Power tNew= new omero.model.PowerI(tOld,
-									omero.model.enums.UnitsPower.valueOf(ome.model.enums.UnitsPower.bySymbol(targetUnit).toString())); 
-							result[i]= new ome.model.units.Power(tNew.getValue(),ome.model.enums.UnitsPower.bySymbol(tNew.getSymbol()));
-							counter++;
-						}
-					}			
-				}
-				if(unitClass.equals(ome.model.units.Frequency.class.getName())) {
-					for(int i=0; i<value.length;i++) {
-						if(value[i]!=null && !value[i].isEmpty()) {
-							omero.model.Frequency tOld=new omero.model.FrequencyI(Double.parseDouble(value[i]),ome.model.enums.UnitsFrequency.bySymbol(unitSymbol));
-							omero.model.Frequency tNew= new omero.model.FrequencyI(tOld,
-									omero.model.enums.UnitsFrequency.valueOf(ome.model.enums.UnitsFrequency.bySymbol(targetUnit).toString())); 
-							result[i]= new ome.model.units.Frequency(tNew.getValue(),ome.model.enums.UnitsFrequency.bySymbol(tNew.getSymbol()));
-							counter++;
-						}
-					}
-				}
-				if(unitClass.equals(ome.model.units.Pressure.class.getName())) {
-					for(int i=0; i<value.length;i++) {
-						if(value[i]!=null && !value[i].isEmpty()) {
-							omero.model.Pressure tOld=new omero.model.PressureI(Double.parseDouble(value[i]),ome.model.enums.UnitsPressure.bySymbol(unitSymbol));
-							omero.model.Pressure tNew= new omero.model.PressureI(tOld,
-									omero.model.enums.UnitsPressure.valueOf(ome.model.enums.UnitsPressure.bySymbol(targetUnit).toString())); 
-							result[i]= new ome.model.units.Pressure(tNew.getValue(),ome.model.enums.UnitsPressure.bySymbol(tNew.getSymbol()));
-							counter++;
-						}
-					}
-				}
-				if(unitClass.equals(ome.model.units.Length.class.getName())) {
-					for(int i=0; i<value.length;i++) {
-						if(value[i]!=null && !value[i].isEmpty()) {
-							omero.model.Length tOld=new omero.model.LengthI(Double.parseDouble(value[i]),ome.model.enums.UnitsLength.bySymbol(unitSymbol));
-							omero.model.Length tNew= new omero.model.LengthI(tOld,
-									omero.model.enums.UnitsLength.valueOf(ome.model.enums.UnitsLength.bySymbol(targetUnit).toString())); 
-							result[i]= new ome.model.units.Length(tNew.getValue(),ome.model.enums.UnitsLength.bySymbol(tNew.getSymbol()));
-							counter++;
-						}
-					}
-				}
-				if(unitClass.equals(ome.model.units.Temperature.class.getName())) {
-					for(int i=0; i<value.length;i++) {
-						if(value[i]!=null && !value[i].isEmpty()) {
-							omero.model.Temperature tOld=new omero.model.TemperatureI(Double.parseDouble(value[i]),ome.model.enums.UnitsTemperature.bySymbol(unitSymbol));
-							omero.model.Temperature tNew= new omero.model.TemperatureI(tOld,
-									omero.model.enums.UnitsTemperature.valueOf(ome.model.enums.UnitsTemperature.bySymbol(targetUnit).toString())); 
-							result[i]= new ome.model.units.Temperature(tNew.getValue(),ome.model.enums.UnitsTemperature.bySymbol(tNew.getSymbol()));
-							counter++;
-						}
-					}
-				}
-				if(unitClass.equals(ome.model.units.Time.class.getName())) {
-					for(int i=0; i<value.length;i++) {
-						if(value[i]!=null && !value[i].isEmpty()) {
-							omero.model.Time tOld=new omero.model.TimeI(Double.parseDouble(value[i]),UnitsTime.bySymbol(unitSymbol));
-							omero.model.Time tNew= new omero.model.TimeI(tOld,
-									omero.model.enums.UnitsTime.valueOf(ome.model.enums.UnitsTime.bySymbol(targetUnit).toString())); 
-							result[i]= new ome.model.units.Time(tNew.getValue(),UnitsTime.bySymbol(tNew.getSymbol()));
-							counter++;
-						}
-					}
-				}
-			}catch(Exception e) {
-				System.out.println("-- ERROR: can't parse unit for data convertion");
-				e.printStackTrace();
 			}
-		}else {
-			System.out.println("-- ERROR: can't parse unit for data convertion");
 		}
+		if(unitClass.equals(ome.model.units.Power.class.getName())) {
+			for(int i=0; i<value.length;i++) {
+				if(value[i]!=null && !value[i].isEmpty()) {
+					omero.model.Power tOld=new omero.model.PowerI(Double.parseDouble(value[i]),ome.model.enums.UnitsPower.bySymbol(unitSymbol));
+					omero.model.Power tNew= new omero.model.PowerI(tOld,
+							omero.model.enums.UnitsPower.valueOf(ome.model.enums.UnitsPower.bySymbol(targetUnit).toString())); 
+					result[i]= new ome.model.units.Power(tNew.getValue(),ome.model.enums.UnitsPower.bySymbol(tNew.getSymbol()));
+					counter++;
+				}
+			}			
+		}
+		if(unitClass.equals(ome.model.units.Frequency.class.getName())) {
+			for(int i=0; i<value.length;i++) {
+				if(value[i]!=null && !value[i].isEmpty()) {
+					omero.model.Frequency tOld=new omero.model.FrequencyI(Double.parseDouble(value[i]),ome.model.enums.UnitsFrequency.bySymbol(unitSymbol));
+					omero.model.Frequency tNew= new omero.model.FrequencyI(tOld,
+							omero.model.enums.UnitsFrequency.valueOf(ome.model.enums.UnitsFrequency.bySymbol(targetUnit).toString())); 
+					result[i]= new ome.model.units.Frequency(tNew.getValue(),ome.model.enums.UnitsFrequency.bySymbol(tNew.getSymbol()));
+					counter++;
+				}
+			}
+		}
+		if(unitClass.equals(ome.model.units.Pressure.class.getName())) {
+			for(int i=0; i<value.length;i++) {
+				if(value[i]!=null && !value[i].isEmpty()) {
+					omero.model.Pressure tOld=new omero.model.PressureI(Double.parseDouble(value[i]),ome.model.enums.UnitsPressure.bySymbol(unitSymbol));
+					omero.model.Pressure tNew= new omero.model.PressureI(tOld,
+							omero.model.enums.UnitsPressure.valueOf(ome.model.enums.UnitsPressure.bySymbol(targetUnit).toString())); 
+					result[i]= new ome.model.units.Pressure(tNew.getValue(),ome.model.enums.UnitsPressure.bySymbol(tNew.getSymbol()));
+					counter++;
+				}
+			}
+		}
+		if(unitClass.equals(ome.model.units.Length.class.getName())) {
+			for(int i=0; i<value.length;i++) {
+				if(value[i]!=null && !value[i].isEmpty()) {
+					omero.model.Length tOld=new omero.model.LengthI(Double.parseDouble(value[i]),ome.model.enums.UnitsLength.bySymbol(unitSymbol));
+					omero.model.Length tNew= new omero.model.LengthI(tOld,
+							omero.model.enums.UnitsLength.valueOf(ome.model.enums.UnitsLength.bySymbol(targetUnit).toString())); 
+					result[i]= new ome.model.units.Length(tNew.getValue(),ome.model.enums.UnitsLength.bySymbol(tNew.getSymbol()));
+					counter++;
+				}
+			}
+		}
+		if(unitClass.equals(ome.model.units.Temperature.class.getName())) {
+			for(int i=0; i<value.length;i++) {
+				if(value[i]!=null && !value[i].isEmpty()) {
+					omero.model.Temperature tOld=new omero.model.TemperatureI(Double.parseDouble(value[i]),ome.model.enums.UnitsTemperature.bySymbol(unitSymbol));
+					omero.model.Temperature tNew= new omero.model.TemperatureI(tOld,
+							omero.model.enums.UnitsTemperature.valueOf(ome.model.enums.UnitsTemperature.bySymbol(targetUnit).toString())); 
+					result[i]= new ome.model.units.Temperature(tNew.getValue(),ome.model.enums.UnitsTemperature.bySymbol(tNew.getSymbol()));
+					counter++;
+				}
+			}
+		}
+		if(unitClass.equals(ome.model.units.Time.class.getName())) {
+			for(int i=0; i<value.length;i++) {
+				if(value[i]!=null && !value[i].isEmpty()) {
+					omero.model.Time tOld=new omero.model.TimeI(Double.parseDouble(value[i]),UnitsTime.bySymbol(unitSymbol));
+					omero.model.Time tNew= new omero.model.TimeI(tOld,
+							omero.model.enums.UnitsTime.valueOf(ome.model.enums.UnitsTime.bySymbol(targetUnit).toString())); 
+					result[i]= new ome.model.units.Time(tNew.getValue(),UnitsTime.bySymbol(tNew.getSymbol()));
+					counter++;
+				}
+			}
+		}
+			
+				
 		if(counter>0)
 			return result;
 		return null;

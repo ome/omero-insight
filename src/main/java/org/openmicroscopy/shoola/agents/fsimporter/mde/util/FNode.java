@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.env.data.model.ImportableFile;
 import org.openmicroscopy.shoola.util.MonitorAndDebug;
@@ -39,7 +40,6 @@ public class FNode extends DefaultMutableTreeNode
 	private ImportUserData importData;
 	private ImportableFile iFile;
 	
-	private Boolean saved;
 	private HashMap<String,List<TagData>> input;
 	private NodeContainer container;
 	
@@ -47,14 +47,12 @@ public class FNode extends DefaultMutableTreeNode
 		this.importData=null;
 		iFile=null;
 		setUserObject(file);
-		saved=false;
 	}
 	public FNode(Object object)
 	{
 		this.importData=null;
 		iFile=null;
 		setUserObject(object);
-		saved=false;
 	}
 	
 	public FNode(File file,ImportUserData importData,ImportableFile iFile ){
@@ -128,14 +126,14 @@ public class FNode extends DefaultMutableTreeNode
 	 */
 	public void setMapAnnotation(HashMap<String,List<TagData>> input)
 	{
-		if(input==null) {
-			MonitorAndDebug.printConsole("-- given input is empty");
+		if(input==null || input.isEmpty()) {
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] given input is empty");
 			return;
 	}
 		if(this.input==null) {
 			this.input=new HashMap<>();
 		}
-		System.out.println("-- merge input");
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] merge input");
 		for(Map.Entry<String, List<TagData>> entry:input.entrySet()) {
 			List<TagData> list1 = entry.getValue();
 			List<TagData> list2 = this.input.get(entry.getKey());
@@ -143,7 +141,7 @@ public class FNode extends DefaultMutableTreeNode
 		}
 	}
 	
-	/**TODO
+	/**
 	 * A node can have a mapannotation (inherit from parent) but not a view.
 	 * If a node has a view, mapAnnotation of parent will be automated loaded to the view at creation time.
 	 * @param map
@@ -151,10 +149,10 @@ public class FNode extends DefaultMutableTreeNode
 	public MapAnnotationObject getMapAnnotation()
 	{
 		if(input!=null) {
-			MonitorAndDebug.printConsole("-- return saved mapped annotation");
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] return saved mapped annotation");
 			return new MapAnnotationObject(input);
 		}else if(getContainer()!=null) {
-			MonitorAndDebug.printConsole("-- read out map annotation from contentTree");
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] read out map annotation from contentTree");
 			HashMap<String,List<TagData>> input=MDEHelper.getInput(getContainer().getTreeNode());
 			MapAnnotationObject map=new MapAnnotationObject(input);
 			return map;
@@ -171,6 +169,7 @@ public class FNode extends DefaultMutableTreeNode
 	
 	public void reset() {
 		container=null;
+		input=null;
 		
 	}
 	public NodeContainer getContainer() {

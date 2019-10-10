@@ -36,6 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
@@ -91,7 +92,6 @@ public class ModuleContentGUI extends JPanel {
 	
 	private void addContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
 		if(node.getChildCount()>0) {
-//			MonitorAndDebug.printConsole("-- vizualise content: "+node.getUserObject().toString());
 			JXTaskPaneContainer nodeContent = new JXTaskPaneContainer();
 			nodeContent.setBackground(UIUtilities.BACKGROUND);
 			if (nodeContent.getLayout() instanceof VerticalLayout) {
@@ -104,12 +104,15 @@ public class ModuleContentGUI extends JPanel {
 				JXTaskPane taskPane=new ContentViewer(node.getUserObject().toString(), 
 						getHardwareTable(((ModuleTreeElement) node.getUserObject()).getType()), ((ModuleTreeElement)node.getUserObject()).getData());
 				for(int i = 0 ; i < node.getChildCount(); i++) {
-					addContent(nodeContent,(DefaultMutableTreeNode)node.getChildAt(i));
+					String type=((ModuleTreeElement) ((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject()).getType();
+					if(controller.configurationExists(type)) {
+						addContent(nodeContent,(DefaultMutableTreeNode)node.getChildAt(i));
+					}
 				}
 				taskPane.add(nodeContent);
 				parent.add(taskPane);
 			}catch(Exception e) {
-				System.out.println("-- ERROR: can't load content of "+node.getUserObject().toString());
+				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't load content of "+node.getUserObject().toString());
 				e.printStackTrace();
 			}
 			
@@ -119,8 +122,6 @@ public class ModuleContentGUI extends JPanel {
 	}
 	
 	private void addLeafContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
-//		MonitorAndDebug.printConsole("-- vizualise leaf content: "+node.getUserObject().toString());
-
 		ModuleContent content=((ModuleTreeElement)node.getUserObject()).getData();
 
 		if(controller!=null && content!=null) {
@@ -129,11 +130,11 @@ public class ModuleContentGUI extends JPanel {
 						getHardwareTable(((ModuleTreeElement) node.getUserObject()).getType()), content);
 				parent.add(taskPane);
 			}catch(Exception e) {
-				System.out.println("-- ERROR: can't load content of "+node.getUserObject().toString());
+				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't load content of "+node.getUserObject().toString());
 				e.printStackTrace();
 			}
 		}else {
-			System.out.println("-- WARNING: content of node "+node.getUserObject().toString()+" is empty [ModuleContentGUI::addLeafContent]");
+			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] content of node "+node.getUserObject().toString()+" is empty [ModuleContentGUI::addLeafContent]");
 		}
 	}
 	
