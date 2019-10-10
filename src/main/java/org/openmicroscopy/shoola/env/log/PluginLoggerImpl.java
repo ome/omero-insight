@@ -24,24 +24,17 @@
 package org.openmicroscopy.shoola.env.log;
 
 
-//Java imports
-
-//Third-party libraries
 import ij.IJ;
 import omero.log.LogMessage;
 
 import omero.log.Logger;
 
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.LookupNames;
 
 
 /**
  * Provides the log service for cases where execution
  * is taking place as a plugin.
- *
- * This is just a simple adapter that forwards calls to <i>slf4j</i>.
- * Thread-safety is already enforced by <i>slf4j</i>, so we don't deal with it.
  *
  * @since 5.0.0
  */

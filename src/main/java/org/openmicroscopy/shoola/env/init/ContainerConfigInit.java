@@ -84,7 +84,7 @@ public final class ContainerConfigInit
 		int count = 0;
 		try {
 			//Plugin folder
-		    File parent = new File(container.getHomeDir());
+		    File parent = new File(container.getPluginDir());
 		    File pp = parent.getParentFile();
 		    if (pp == null) pp = parent;
 			File dir;

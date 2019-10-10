@@ -26,10 +26,17 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.application.CreateStartScripts
 
+import java.nio.file.Paths
+
 @CompileStatic
 class Utils {
+
     static Configuration getRuntimeClasspathConfiguration(Project project) {
         project.configurations.findByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)
+    }
+
+    static String createClassPath(Project project, String libsDir) {
+        getRuntimeClasspathConfiguration(project).collect { Paths.get(libsDir, it.name) }.join(" ")
     }
 
     /**

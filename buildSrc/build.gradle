@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation "org.openmicroscopy:omero-javapackager-plugin:5.5.1"
+    implementation "com.github.jengelman.gradle.plugins:shadow:5.1.0"
 }
 
 gradlePlugin {

@@ -24,7 +24,6 @@
 package org.openmicroscopy.shoola;
 
 
-//Java imports
 import java.awt.BorderLayout;
 import java.awt.Menu;
 import java.awt.MenuItem;
@@ -35,10 +34,18 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.security.CodeSource;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -52,17 +59,11 @@ import javax.swing.event.HyperlinkListener;
 
 
 
-
-//Third-party libraries
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.BrowserLauncher;
 import ij.plugin.PlugIn;
 
-
-
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.PluginInfo;
@@ -262,14 +263,37 @@ implements PlugIn
         CodeSource src =
                 MainIJPlugin.class.getProtectionDomain().getCodeSource();
         File jarFile;
+        String pluginDir = "";
         if (home.length() == 0) {
             try {
                 jarFile = new File(src.getLocation().toURI().getPath());
-                home = jarFile.getParentFile().getPath();
+                JarFile jarfile = new JarFile(jarFile);
+                pluginDir = jarFile.getParentFile().getPath();
+                //read the config file from the jarFile
+                configFile = Container.CONFIG_FILE;
+                Enumeration<JarEntry> enu = jarfile.entries();
+                Path dir = Files.createTempDirectory("jar-file");
+                home = dir.toString();
+                File configDir = new File(dir.toString()+File.separator+Container.CONFIG_DIR);
+                configDir.mkdir();
+                while (enu.hasMoreElements()) {
+                    JarEntry je = enu.nextElement();
+                    if (!je.isDirectory() && je.getName().endsWith(".xml")) {
+                        //Extract config files from the jar
+                        File f = new File(configDir.getAbsolutePath() + File.separator + je.getName());
+                        try (InputStream is = jarfile.getInputStream(je)) {
+                            if (je.getName().equals(configFile)) {
+                                configFile = f.getName();
+                            }
+                            Files.copy(is, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    }
+                }
+
             } catch (Exception e) {}
         }
         try {
-            container = Container.startupInPluginMode(home, configFile, index);
+            container = Container.startupInPluginMode(home, configFile, index, pluginDir, null);
             if (save >=0) {
                 container.getRegistry().getEventBus().post(
                         new SaveEvent(LookupNames.IMAGE_J, save));

@@ -327,7 +327,6 @@ public class PixelsServicesFactory
 				proxy.shutDown();
 				singleton.rndSvcProxies.remove(pixelsID);
 				singleton.rndSvcProxiesCount.remove(pixelsID);
-				getCacheSize();
 			} else {
 				count--;
 				singleton.rndSvcProxiesCount.put(pixelsID, count);
@@ -380,7 +379,7 @@ public class PixelsServicesFactory
 			e = i.next();
 			proxy = (RenderingControlProxy) e.getValue();
 			if (!proxy.isProxyActive(timeout)) {
-				if (!proxy.shutDown(true))
+				if (!proxy.shutDown())
 					logger.info(singleton,
 							"Rendering Engine shut down: PixelsID "+e.getKey());
 			}
@@ -606,68 +605,22 @@ public class PixelsServicesFactory
 		if (rnd != null) return rnd;
 		singleton.rndSvcProxiesCount.put(id, 1);
 		RenderingEnginePrx master = reList.get(0);
-		int size = getCacheSize();
 		reList.remove(0);
 		rnd = new RenderingControlProxy(registry, ctx, master, pixels, metadata,
-										compression, defs, size);
+										compression, defs);
 		Iterator<RenderingEnginePrx> i = reList.iterator();
 		if (reList.size() > 0) {
 			List<RenderingControl> 
 			slaves = new ArrayList<RenderingControl>(reList.size());
 			while (i.hasNext()) {
 				slaves.add(new RenderingControlProxy(registry, ctx, 
-						i.next(), pixels, metadata, compression, defs, size));
+						i.next(), pixels, metadata, compression, defs));
 			}
 			((RenderingControlProxy) rnd).setSlaves(slaves);
 		}
 		
 		singleton.rndSvcProxies.put(id, rnd);
 		return rnd;
-	}
-	
-	/**
-	 * Returns the size of the cache.
-	 * 
-	 * @return See above.
-	 */
-	private static int getCacheSize()
-	{
-		MemoryUsage usage = 
-			ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
-		//percentage of memory used for caching.
-		maxSize = (int) (RATIO*(usage.getMax()-usage.getUsed()))/FACTOR; 
-		int m = singleton.rndSvcProxies.size();
-		int n = 0;
-		int sizeCache = 0;
-		RenderingControlProxy proxy;
-		Entry<Long, RenderingControl> entry;
-		Iterator<Entry<Long, RenderingControl>> i;
-		if (singleton.pixelsSource != null) n = 1;
-		if (n == 0 && m == 0) return maxSize*FACTOR;
-		else if (n == 0 && m > 0) {
-			sizeCache = (maxSize/(m+1))*FACTOR;
-			//reset all the image caches.
-			i = singleton.rndSvcProxies.entrySet().iterator();
-			while (i.hasNext()) {
-				entry = i.next();
-				proxy = (RenderingControlProxy) entry.getValue();
-				proxy.setCacheSize(sizeCache);
-			}
-			return sizeCache;
-		} else if (m == 0 && n > 0) {
-			sizeCache = (maxSize/(n+1))*FACTOR;
-			return sizeCache;
-		}
-		sizeCache = (maxSize/(m+n+1))*FACTOR;
-		//reset all the image caches.
-		i = singleton.rndSvcProxies.entrySet().iterator();
-		while (i.hasNext()) {
-			entry = i.next();
-			proxy = (RenderingControlProxy) entry.getValue();
-			proxy.setCacheSize(sizeCache);
-		}
-		
-		return sizeCache;
 	}
 
 }

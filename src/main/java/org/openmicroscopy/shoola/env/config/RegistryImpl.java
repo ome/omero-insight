@@ -28,13 +28,8 @@ import java.util.Map;
 
 //Third-party libraries
 
-
-
-
-import omero.gateway.Gateway;
 //Application-internal dependencies
-import omero.gateway.cache.CacheService;
-
+import omero.gateway.Gateway;
 import org.openmicroscopy.shoola.env.data.AdminService;
 import org.openmicroscopy.shoola.env.data.OmeroDataService;
 import org.openmicroscopy.shoola.env.data.OmeroImageService;
@@ -101,9 +96,6 @@ class RegistryImpl
     
     /** Reference to the Administration service. */
     private AdminService			admin;
-
-    /** Reference to the Cache service. */
-    private CacheService			cache;
     
     private Gateway gateway;
     
@@ -182,13 +174,7 @@ class RegistryImpl
      * @see Registry#getAdminService()
      */
     public AdminService getAdminService() { return admin; }
-    
-    /** 
-     * Implemented as specified by {@link Registry}.
-     * @see Registry#getCacheService()
-     */
-    public CacheService getCacheService() { return cache; }
-    
+
     /** 
      * Implemented as specified by {@link Registry}.
      * @see Registry#getDataServicesView(Class)
@@ -230,7 +216,7 @@ class RegistryImpl
     /**
      * Stores a reference to the {@link AdminService}.
      * 
-     * @param ms The {@link AdminService}.
+     * @param admin The {@link AdminService}.
      */
     void setAdminService(AdminService admin) { this.admin = admin; }
     
@@ -261,13 +247,6 @@ class RegistryImpl
      * @param os The {@link OmeroDataService}.
      */
     void setOS(OmeroDataService os) { this.os = os; }
-    
-    /**
-     * Stores a reference to the {@link CacheService}.
-     * 
-     * @param cache The {@link CacheService}.
-     */
-    void setCacheService(CacheService cache) { this.cache = cache; }
 
     public Gateway getGateway() {
         return gateway;

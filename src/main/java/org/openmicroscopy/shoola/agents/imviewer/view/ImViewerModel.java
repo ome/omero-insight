@@ -2159,13 +2159,13 @@ class ImViewerModel
 		if (endZ < startZ) endZ = ref.getEndZ();
 		state = ImViewer.PROJECTING;
 		StringBuffer buf = new StringBuffer();
-		buf.append("Original Image: "+getImageName());
+		buf.append("Image's name:"+getImageName());
 		buf.append("\n");
-		buf.append("Original Image ID: "+getImageID());
+		buf.append("Image:"+getImageID());
 		buf.append("\n");
-		buf.append("Projection type: "+typeName);
+		buf.append("Projection type:"+typeName);
 		buf.append("\n");
-		buf.append("z-sections: "+(startZ+1)+"-"+(endZ+1));
+		buf.append("z-sections:"+(startZ+1)+"-"+(endZ+1));
 		buf.append("\n");
 		
 		String imageNameWithRange = combineFilenameWith(ref.getImageName(),
@@ -2173,8 +2173,8 @@ class ImViewerModel
 		
 		int startT = ref.getStartT();
 		int endT = ref.getEndT();
-		if (startT == endT) buf.append("timepoint: "+(startT+1));
-		else buf.append("timepoints: "+(startT+1)+"-"+(endT+1));
+		if (startT == endT) buf.append("timepoint:"+(startT+1));
+		else buf.append("timepoints:"+(startT+1)+"-"+(endT+1));
 		List<Integer> channels = ref.getChannels();
 		
 		ProjectionParam param = new ProjectionParam(getPixelsID(),

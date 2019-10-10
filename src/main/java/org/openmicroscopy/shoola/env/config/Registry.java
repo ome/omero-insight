@@ -37,7 +37,6 @@ import org.openmicroscopy.shoola.env.event.EventBus;
 
 import omero.log.Logger;
 import omero.gateway.Gateway;
-import omero.gateway.cache.CacheService;
 
 import org.openmicroscopy.shoola.env.ui.TaskBar;
 import org.openmicroscopy.shoola.env.ui.UserNotifier;
@@ -152,13 +151,6 @@ public interface Registry
      * @return See above.
      */
     public AdminService getAdminService();
- 
-    /**
-     * Returns a reference to the {@link CacheService}.
-     * 
-     * @return See above.
-     */
-    public CacheService getCacheService();
 
     /**
      * Returns an implementation of the specified <code>view</code>.
