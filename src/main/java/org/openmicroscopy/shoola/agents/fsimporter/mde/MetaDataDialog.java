@@ -406,7 +406,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 		JPanel barR=new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		//mics
-		barR.add(new JLabel("Object Specification:"));
+		barR.add(new JLabel("Setup:"));
 		barR.add(Box.createHorizontalStrut(2));
 		barR.add(mics);
 
