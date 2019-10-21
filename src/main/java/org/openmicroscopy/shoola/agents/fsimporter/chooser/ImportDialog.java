@@ -138,7 +138,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 	/** Bound property indicating to import the selected files. */
 	public static final String IMPORT_PROPERTY = "import";
-	public static final String STARTIMPORT_PROPERTY = "startImport";
+	public static final String START_IMPORT_PROPERTY = "startImport";
 
 	/** Bound property indicating to refresh the location. */
 	public static final String REFRESH_LOCATION_PROPERTY = "refreshLocation";
@@ -1776,8 +1776,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 		switch (commandId) {
 			case CMD_IMPORT:
-				//importFiles();
-				firePropertyChange(STARTIMPORT_PROPERTY,false,true);
+				firePropertyChange(START_IMPORT_PROPERTY, Boolean.valueOf(false), Boolean.valueOf(true));
 				break;
 			case CMD_CLOSE:
 				firePropertyChange(CANCEL_SELECTION_PROPERTY,

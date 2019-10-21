@@ -391,7 +391,7 @@ class ImporterControl
          */
         private void handlePropertyChangedEvent(PropertyChangeEvent evt) {
             String name = evt.getPropertyName();
-						if(ImportDialog.STARTIMPORT_PROPERTY.equals(name)){
+						if(ImportDialog.START_IMPORT_PROPERTY.equals(name)){
 							view.startImport();
 						}
             if (ImportDialog.IMPORT_PROPERTY.equals(name)) {
