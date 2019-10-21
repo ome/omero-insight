@@ -127,7 +127,8 @@
   -----------------------
 
   1. To use the metadata extension [OMERO.mde](mde-extension.md),
-  set the following entry in [container.xml](src/config/container.xml) to `true`:
+  set the following entry in [container.xml](src/config/container.xml) or in
+  [containerImporter.xml](src/config/containerImporter.xml) to `true`:
   ```
   <entry name="omero.client.import.mde.enabled" type="boolean">false</entry>
   ```
