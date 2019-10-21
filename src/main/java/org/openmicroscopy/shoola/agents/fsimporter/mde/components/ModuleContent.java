@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * Holds content(properties==tags) of a module as list of TagData.
@@ -196,7 +196,7 @@ public class ModuleContent {
 
 	public void print() {
 		if(tagList==null) {
-			MonitorAndDebug.printConsole(this,"-- PRINT ModuleContent: \n\tno tag data!");
+			ImporterAgent.getRegistry().getLogger().debug(this, "-- PRINT ModuleContent: \n\tno tag data!");
 		}else {
 			for(TagData t:getTagList()) {
 				if(t!=null)

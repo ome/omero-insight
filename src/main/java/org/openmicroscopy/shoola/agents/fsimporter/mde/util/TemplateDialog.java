@@ -39,9 +39,9 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * Save input objects as template
@@ -260,9 +260,9 @@ public class TemplateDialog extends JDialog implements ActionListener{
 	public Boolean[] getSelection()
 	{
 		if(moduleList!=null) {
-			MonitorAndDebug.printConsole(this,"Size module selection: "+moduleList.length);
+			ImporterAgent.getRegistry().getLogger().debug(this, "Size module selection: "+moduleList.length);
 			for(int i=0; i<moduleList.length; i++) {
-				MonitorAndDebug.printConsole(this,"module "+i+" : "+moduleList[i]);
+				ImporterAgent.getRegistry().getLogger().debug(this, "module "+i+" : "+moduleList[i]);
 			}
 		}
 		return moduleList;

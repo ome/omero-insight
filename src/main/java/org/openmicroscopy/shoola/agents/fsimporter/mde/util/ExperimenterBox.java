@@ -40,9 +40,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
-
 import ome.xml.model.Experimenter;
+
 /**
  * 
  * @author Susanne Kunis<susannekunis at gmail dot com>
@@ -111,7 +110,7 @@ public class ExperimenterBox extends Box implements KeyListener
 		ExperimenterListModel m =(ExperimenterListModel) list.getModel();
 			m.addElement(e);
 			list.setModel(m);
-//			MonitorAndDebug.printConsole("ExpBox::addExpElem");
+//			ImporterAgent.getRegistry().getLogger().debug(this, "ExpBox::addExpElem");
 	}
 	
 	public void addExperimenterList(List<Experimenter> newList)
@@ -119,7 +118,7 @@ public class ExperimenterBox extends Box implements KeyListener
 		if(newList==null)
 			return;
 		
-//		MonitorAndDebug.printConsole(this,"ExpBox::addExpList...");
+//		ImporterAgent.getRegistry().getLogger().debug(this, "ExpBox::addExpList...");
 		((ExperimenterListModel)list.getModel()).setList(newList);
 	}
 	

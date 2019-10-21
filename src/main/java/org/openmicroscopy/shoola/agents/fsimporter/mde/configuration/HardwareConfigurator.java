@@ -67,6 +67,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
@@ -75,7 +76,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.CommonViewer;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleContentTableModel;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * TODO: hide "User::" fields, update mdecontent after changes; 
@@ -133,7 +133,7 @@ public class HardwareConfigurator extends JFrame implements ActionListener{
 	}
 	
 	private void buildGUI() {
-		MonitorAndDebug.printConsole(this,"--BUILD GUI : HardwareConfiguration");
+		ImporterAgent.getRegistry().getLogger().debug(this, "--BUILD GUI : HardwareConfiguration");
 		getContentPane().setLayout(new BorderLayout(5,5));
 		
 		loadMicroscopeList();
@@ -286,14 +286,14 @@ public class HardwareConfigurator extends JFrame implements ActionListener{
 		ModuleList hardware = conf.getPredefinitions(micName);
 		if(hardware==null) {
 			predefinitionsObject_Panel.add(new InstrumentTable(null, instrument),BorderLayout.CENTER);
-			MonitorAndDebug.printConsole(this,"--no predefinitions for selected mic "+micName+" and object "+instrument);
+			ImporterAgent.getRegistry().getLogger().debug(this, "--no predefinitions for selected mic "+micName+" and object "+instrument);
 			return;
 		}
 		List<ModuleContent> cInstrument=hardware.get(instrument);
 		if(cInstrument==null) {
 			predefinitionsObject_Panel.add(new InstrumentTable(null, instrument),BorderLayout.CENTER);
 		}else {
-			MonitorAndDebug.printConsole(this,"\tload instrument "+instrument+"["+cInstrument.size()+"] for "+micName);
+			ImporterAgent.getRegistry().getLogger().debug(this, "\tload instrument "+instrument+"["+cInstrument.size()+"] for "+micName);
 			predefinitionsObject_Panel.add(new InstrumentTable(cInstrument,instrument),BorderLayout.CENTER);
 		}
 		predefinitionsObject_Panel.revalidate();
@@ -396,7 +396,7 @@ public class HardwareConfigurator extends JFrame implements ActionListener{
 		if(micName.equals(MDEConfiguration.UNIVERSAL))
 			return;
 		int micIndex = micList.getSelectedIndex();
-		MonitorAndDebug.printConsole(this,"-- DELETE ["+micName+"]: on index "+micIndex+"/"+micList.getModel().getSize());
+		ImporterAgent.getRegistry().getLogger().debug(this, "-- DELETE ["+micName+"]: on index "+micIndex+"/"+micList.getModel().getSize());
 		if(micName==null || micName.equals("") )
 			return;
 		// delete from micList
@@ -411,7 +411,7 @@ public class HardwareConfigurator extends JFrame implements ActionListener{
 	private void createNewMicroscope(String micName) {
 		if(micName==null || micName.equals(""))
 			return;
-		System.out.println("--create new category: "+micName);
+		ImporterAgent.getRegistry().getLogger().debug(this, "--create new category: "+micName);
 		conf.initPredefinitionsForMicroscope(micName, new ModuleList());
 		//reload list
 		loadMicroscopeList();
@@ -434,8 +434,8 @@ public class HardwareConfigurator extends JFrame implements ActionListener{
 			micList.revalidate();
 			micList.repaint();
 		}
-		System.out.println("-- MDEConfigurator: Load available mic list: ");
-		System.out.println("\t"+Arrays.toString(availableMics));
+		ImporterAgent.getRegistry().getLogger().debug(this, "-- MDEConfigurator: Load available mic list: ");
+		ImporterAgent.getRegistry().getLogger().debug(this, "\t"+Arrays.toString(availableMics));
 	}
 	
 	
@@ -683,9 +683,7 @@ public class HardwareConfigurator extends JFrame implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			TableCellListener tcl = (TableCellListener)e.getSource();
-//            MonitorAndDebug.printConsole(this,"Row   : " + tcl.getRow());
-//            MonitorAndDebug.printConsole(this,"Column: " + tcl.getColumn());
-            MonitorAndDebug.printConsole(this,"EDIT Table: Old   : " + tcl.getOldValue()+", New   : " + tcl.getNewValue());
+			ImporterAgent.getRegistry().getLogger().debug(this, "EDIT Table: Old   : " + tcl.getOldValue()+", New   : " + tcl.getNewValue());
 		}
 		
 	}
@@ -733,7 +731,7 @@ public class HardwareConfigurator extends JFrame implements ActionListener{
 				
 				ModuleContent rowContent=((ModuleContentTableModel) t.getModel()).getRowData(i,controller.getContentOfType(name));
 				if(rowContent!=null) {
-//					MonitorAndDebug.printConsole(this,"--Add instrument content for "+name+" : "+rowContent.getAttributeValue(TagNames.MODEL));
+//					ImporterAgent.getRegistry().getLogger().debug(this, "--Add instrument content for "+name+" : "+rowContent.getAttributeValue(TagNames.MODEL));
 					result.add(rowContent);
 				}
 			}

@@ -64,7 +64,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElem
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DichroicConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * TODO: define in config if tree is editable or not?
@@ -423,12 +422,12 @@ public class ModuleTree extends JPanel implements ActionListener{
 
 	public static void printTree(DefaultMutableTreeNode node, String title) {
 		if(node == null) {
-			MonitorAndDebug.printConsole(null,title+" EMPTY");
+			ImporterAgent.getRegistry().getLogger().debug(null, title+" EMPTY");
 			return;
 		}
 
 		try {
-			MonitorAndDebug.printConsole(null,title+ node.getUserObject().toString());
+			ImporterAgent.getRegistry().getLogger().debug(null, title+ node.getUserObject().toString());
 			for(int i = 0 ; i < node.getChildCount(); i++)
 				printTree((DefaultMutableTreeNode)node.getChildAt(i), title + "  "); 
 		}catch(Exception ex) {

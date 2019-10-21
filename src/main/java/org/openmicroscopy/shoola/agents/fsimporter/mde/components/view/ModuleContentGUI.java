@@ -44,7 +44,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElem
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign.ObjectTable;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 import org.openmicroscopy.shoola.util.ui.JXTaskPaneContainerSingle;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import org.jdesktop.swingx.JXTaskPane;

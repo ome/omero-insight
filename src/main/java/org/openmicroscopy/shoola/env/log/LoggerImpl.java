@@ -23,19 +23,12 @@
 
 package org.openmicroscopy.shoola.env.log;
 
-
-//Java imports
-
-//Third-party libraries
 import omero.log.LogMessage;
 import omero.log.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
-
-//Application-internal dependencies
-
 
 /** 
  * Provides the log service.
@@ -47,10 +40,6 @@ import ch.qos.logback.core.util.StatusPrinter;
  * @author  <br>Andrea Falconi &nbsp;&nbsp;&nbsp;&nbsp;
  *              <a href="mailto:a.falconi@dundee.ac.uk">
  *              a.falconi@dundee.ac.uk</a>
- * @version 2.2 
- * <small>
- * (<b>Internal version:</b> $Revision$ $Date$)
- * </small>
  * @since OME2.2
  */
 
@@ -61,8 +50,11 @@ class LoggerImpl
     /** The name of the log file variable the log config file. */
     private static final String LOG_FILE_NAME = "logFileName";
 
-	/** The absolute pathname of the log file.*/
+	/** The absolute pathname of the log file. */
 	private String absFile;
+
+	/** Print output to the console. */
+	private boolean printToConsole = false;
 
     /**
      * Returns the <i>Log4j</i> logger for the specified object.
@@ -85,10 +77,11 @@ class LoggerImpl
      * @param configFile The pathname of a configuration file.
      * @param absFile The absolute pathname of the log file.
      */
-    LoggerImpl(String configFile, String absFile)
+    LoggerImpl(String configFile, String absFile, boolean console)
     {
         LoggerContext context = (LoggerContext)
                 org.slf4j.LoggerFactory.getILoggerFactory();
+        printToConsole = console;
         try {
           JoranConfigurator configurator = new JoranConfigurator();
           configurator.setContext(context);
@@ -108,6 +101,9 @@ class LoggerImpl
     public void debug(Object c, String logMsg)
     {
         getAdaptee(c).debug(logMsg);
+        if (printToConsole) {
+            System.err.println(logMsg);
+        }
     }
     
 	/** 
@@ -115,8 +111,11 @@ class LoggerImpl
      * @see Logger#debug(Object, LogMessage)
      */     
 	public void debug(Object c, LogMessage msg)
-	{
+    {
         getAdaptee(c).debug(msg == null ? null : msg.toString());
+        if (printToConsole) {
+            System.err.println(msg == null ? null : msg.toString());
+        }
 	}
 
 	/**

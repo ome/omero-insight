@@ -41,7 +41,6 @@ import javax.swing.event.ListSelectionListener;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 
 /**
@@ -153,7 +152,7 @@ public class ObjectList_Panel extends JPanel implements ActionListener{
 		objList.setSelectedIndex(0);
 		
 //		ModuleList hardware = conf.getPredefinitions(mic);
-//		MonitorAndDebug.printConsole(this,"\t\t Instruments["+mic+"]: "+hardware.keySet());
+//		ImporterAgent.getRegistry().getLogger().debug(this, "\t\t Instruments["+mic+"]: "+hardware.keySet());
 	}
 	
 	public String getSelectedValue() {

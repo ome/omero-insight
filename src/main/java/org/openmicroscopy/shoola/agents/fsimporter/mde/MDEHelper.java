@@ -43,7 +43,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElem
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ImportUserData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * Helper functions for object tree.
@@ -54,19 +53,18 @@ public class MDEHelper {
 	
 	public static final String SELECTOR="#";
 
-	public static void printList(String string, HashMap<String,List<TagData>> list) {
+	public static String printList(String string, Map<String,List<TagData>> list) {
 		String result="\t## "+string+" ##\n";
-		if(list==null || list.isEmpty()) {
-			MonitorAndDebug.printConsole(null,result);
-			return;
+		if (list == null || list.isEmpty()) {
+			return result;
 		}
-		for(Map.Entry<String, List<TagData>> entry: list.entrySet()) {
+		for (Map.Entry<String, List<TagData>> entry: list.entrySet()) {
 			result+="\t"+entry.getKey()+" :\n ";
-			for(TagData t: entry.getValue()) {
+			for (TagData t: entry.getValue()) {
 				result+="\t\t"+t.tagToString()+"\n";
 			}
 		}
-		MonitorAndDebug.printConsole(null,result);
+		return result;
 	}
 	
 	
@@ -144,7 +142,7 @@ public class MDEHelper {
 				DefaultMutableTreeNode n1=findNode((DefaultMutableTreeNode) tree1.getChildAt(i),tree2);
 				
 				if(n1==null) {
-//					MonitorAndDebug.printConsole(null,"-- Node "+nodeName+" doesn't exists, INSERT at depth "+depth);
+//					ImporterAgent.getRegistry().getLogger().debug(null, "-- Node "+nodeName+" doesn't exists, INSERT at depth "+depth));
 				}else {
 					DefaultMutableTreeNode p1=(DefaultMutableTreeNode) n1.getParent();
 					mergeTrees((DefaultMutableTreeNode) tree1.getChildAt(i),n1,depth);
@@ -358,7 +356,7 @@ public class MDEHelper {
 			for(int i=1; i< nodeNames.length;i++) {
 				DefaultMutableTreeNode child = getChildByName(parent,nodeNames[i]);
 				if(child==null && createNew) {
-					MonitorAndDebug.printConsole(null,"-- Insert new node here "+parent.getUserObject().toString());
+					ImporterAgent.getRegistry().getLogger().debug(null, "-- Insert new node here "+parent.getUserObject().toString());
 					child=createNode(nodeNames[i],parent);
 				}
 				parent=child;
@@ -391,7 +389,7 @@ public class MDEHelper {
 //	public void setImportUserData(ImportUserData data)
 //	{
 //		if(data!=null){
-//			MonitorAndDebug.printConsole(this,"# load import data\t[MDEModelManager::setImportData]");
+//			ImporterAgent.getRegistry().getLogger().debug(null, "# load import data\t[MDEModelManager::setImportData]");
 //			importUserData=data;
 //			try {
 //				ExperimentModel expCont=new ExperimentModel();
@@ -525,7 +523,7 @@ public class MDEHelper {
 				}
 			}else {
 				//node not found -> insert new ( no, because also used for reset objectTree)
-				MonitorAndDebug.printConsole(null,"-- TODO: add new node data for "+entry.getKey()+"?? [MDEHelper::replaceData]");
+				ImporterAgent.getRegistry().getLogger().debug(null, "-- TODO: add new node data for "+entry.getKey()+"?? [MDEHelper::replaceData]");
 			}
 		}
 	}
@@ -568,9 +566,9 @@ public class MDEHelper {
 					if(l1.containsKey(key)) {
 						valIn.dataHasChanged(true);
 						result.set(key, valIn);
-						MonitorAndDebug.printConsole(null,"\t\t replace "+currentC.getType()+":"+key+"[replaceData]");
-					}else {
-						MonitorAndDebug.printConsole(null,"\t\t replace "+currentC.getType()+":"+key+": no key available [replaceData]");
+						ImporterAgent.getRegistry().getLogger().debug(null, "\t\t replace "+currentC.getType()+":"+key+"[replaceData]");
+					} else {
+						ImporterAgent.getRegistry().getLogger().debug(null, "\t\t replace "+currentC.getType()+":"+key+": no key available [replaceData]");
 					}
 				}
 			}
@@ -629,10 +627,10 @@ public class MDEHelper {
 							result.set(key, valIn);
 						}else {
 							// content of current has still changed, don't replace this by new value
-							MonitorAndDebug.printConsole(null,"--Don't replace "+key +": "+l1.get(key).tagToString()+" != "+l3.get(key).tagToString());
+							ImporterAgent.getRegistry().getLogger().debug(null, "--Don't replace "+key +": "+l1.get(key).tagToString()+" != "+l3.get(key).tagToString());
 						}
-					}else {
-						MonitorAndDebug.printConsole(null,"\t\t replace "+currentC.getType()+":"+key+": no key available [MDEHelper::replaceUnchangedData]");
+					} else {
+						ImporterAgent.getRegistry().getLogger().debug(null, "\t\t replace "+currentC.getType()+":"+key+": no key available [MDEHelper::replaceUnchangedData]");
 					}
 				}
 			}

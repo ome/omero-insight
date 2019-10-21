@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * Datastructur:
@@ -68,7 +68,7 @@ public class ModuleList extends HashMap<String, List<ModuleContent>> {
 	}
 	
 	public void print(String header) {
-		MonitorAndDebug.printConsole(this,header);
+		ImporterAgent.getRegistry().getLogger().debug(this, header);
 		String result="{\n";
 		for(Map.Entry<String,List<ModuleContent>> entry: this.entrySet()) {
 			if(entry.getValue()!=null) {
@@ -81,7 +81,7 @@ public class ModuleList extends HashMap<String, List<ModuleContent>> {
 				result+=entry.getKey()+": null Elements \n";
 			}
 		}
-		MonitorAndDebug.printConsole(this,result+"\n}");
+		ImporterAgent.getRegistry().getLogger().debug(this, result+"\n}");
 	}
 	
 }

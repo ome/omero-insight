@@ -54,10 +54,8 @@ import javax.swing.plaf.FontUIResource;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-//import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 import org.openmicroscopy.shoola.util.ui.ScrollablePanel;
 
 

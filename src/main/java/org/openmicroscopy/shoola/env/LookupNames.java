@@ -242,6 +242,9 @@ public class LookupNames
     /** Field to access the <code>Log file</code> information. */
     public static final String LOG_FILE = "/services/LOG/file";
 
+    /** Field to access the <code>Log output</code> information. */
+    public static final String LOG_CONSOLE = "/services/LOG/output/console";
+
     /**
      * Field to access the maximum number of thumbnails retrieved
      * asynchronously.

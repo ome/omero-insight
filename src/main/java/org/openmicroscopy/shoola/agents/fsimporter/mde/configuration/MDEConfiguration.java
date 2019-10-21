@@ -36,9 +36,9 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.XMLWriter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 import ome.model.units.UnitEnum;
+
 /**
  * holds MDE configuration parse from xml file or use standard implement OME configuration. 
  *@author Susanne Kunis<susannekunis at gmail dot com>
@@ -336,13 +336,13 @@ public class MDEConfiguration {
 
 	private void printDefinedObjects() {
 		if(oDefinition==null)
-			MonitorAndDebug.printConsole(this,"-- PRINT Content List: list is empty");
+			ImporterAgent.getRegistry().getLogger().debug(this, "-- PRINT Content List: list is empty");
 		else {
 			for(Map.Entry<String, ModuleContent> entry:oDefinition.entrySet()) {
 				if(entry.getValue()!=null && entry.getValue().getList()!=null) {
 					entry.getValue().print();
 				}else {
-					MonitorAndDebug.printConsole(this,"-- PRINT ModuleContent: Content "+entry.getKey()+" elements: 0");
+					ImporterAgent.getRegistry().getLogger().debug(this, "-- PRINT ModuleContent: Content "+entry.getKey()+" elements: 0");
 				}
 			}
 		}
@@ -459,19 +459,19 @@ public class MDEConfiguration {
 	}
 
 	public void printObjects(String mic) {
-		MonitorAndDebug.printConsole(this,"------------  Objects for "+mic+" -------------");
+		ImporterAgent.getRegistry().getLogger().debug(this, "------------  Objects for "+mic+" -------------");
 	
 		if(mic.equals(UNIVERSAL)) {
 			for(Entry<String, ModuleContent> entry : oDefinition.entrySet()) {
-				MonitorAndDebug.printConsole(this,"\t"+entry.getKey());
+				ImporterAgent.getRegistry().getLogger().debug(this, "\t"+entry.getKey());
 			}
 		}else {
 			if(oConfiguration==null || !oConfiguration.containsKey(mic) || oConfiguration.get(mic)==null) {
-				MonitorAndDebug.printConsole(this,"\tNONE");
+				ImporterAgent.getRegistry().getLogger().debug(this, "\tNONE");
 				return;
 			}
 			for(Entry<String, ModuleConfiguration> entry : oConfiguration.get(mic).entrySet()) {
-				MonitorAndDebug.printConsole(this,"\t"+entry.getKey());
+				ImporterAgent.getRegistry().getLogger().debug(this, "\t"+entry.getKey());
 			}
 		}
 	}

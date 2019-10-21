@@ -100,7 +100,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TemplateDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.view.Importer;
 import org.openmicroscopy.shoola.env.data.model.ImportableFile;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 import org.openmicroscopy.shoola.util.ui.ClosableTabbedPaneComponent;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 
@@ -487,11 +486,11 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		
 		if(node.getContainer()==null || node.getContainer().getTreeNode()==null) 
 		{
-			MonitorAndDebug.printConsole(this,"-- nodeContainer is empty");
+			ImporterAgent.getRegistry().getLogger().debug(this, "-- nodeContainer is empty");
 			//get parent tree and data 
 			FNode pNode=getNextParentWithAvailableTree(node);
 			if(pNode!=null && pNode.getContainer()!=null) {
-				MonitorAndDebug.printConsole(this,"-- use tree and input of "+pNode.getAbsolutePath());
+				ImporterAgent.getRegistry().getLogger().debug(this, "-- use tree and input of "+pNode.getAbsolutePath());
 				pTree=pNode.getContainer().getTreeNode();
 				input=pNode.getInput();
 			}
@@ -547,7 +546,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	{
 		lastSelectionType=FILE;
 
-		MonitorAndDebug.printConsole(this,"-- Show file data \t[MetaDataDialog::loadAndShowDataForFile]");
+		ImporterAgent.getRegistry().getLogger().debug(this, "-- Show file data \t[MetaDataDialog::loadAndShowDataForFile]");
 
 		NodeContainer current = node.getContainer();
 		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Create or copy container for node "+node.getAbsolutePath());
@@ -567,7 +566,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	{
 		lastSelectionType=DIR;
 
-		MonitorAndDebug.printConsole(this,"-- Show dir data \t[MetaDataDialog::loadAndShowDataForDir]");
+		ImporterAgent.getRegistry().getLogger().debug(this, "-- Show dir data \t[MetaDataDialog::loadAndShowDataForDir]");
 
 		if(node!=null && !node.isLeaf() &&  node.getContainer()==null) {
 			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Create container for node "+node.getAbsolutePath());
@@ -590,13 +589,14 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				DefaultMutableTreeNode contentTree=getCurrentModuleTree().getRoot();
 				// get user input
 				HashMap<String,List<TagData>> input = MDEHelper.getInput(contentTree);
-//				MDEHelper.printList("-- input in current content", input);
+				//ImporterAgent.getRegistry().getLogger().debug(this, MDEHelper.printList("-- input in current content", input));
 
 				if(node.getContainer()!=null) {
 					// save moduletree
 					ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] save contentTree of "+node.getAbsolutePath());
-//					ModuleTree.printTree(contentTree, "");
-					
+					//ImporterAgent.getRegistry().getLogger().debug(this, MDEHelper.printList(contentTree, ""));
+
+
 					node.getContainer().setTreeNode(contentTree);
 					node.getContainer().setInstruments(fileInstrumentList);
 				}else {
@@ -624,7 +624,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				getCurrentModuleTree().setChangeTreeStructure(false);
 
 				node.setMapAnnotation(input);
-				MonitorAndDebug.printConsole(this,"-- MAPAnnotation AT DESELECTED NODE:");
+				ImporterAgent.getRegistry().getLogger().debug(this, "-- MAPAnnotation AT DESELECTED NODE:");
 				MDEHelper.printList(node.getAbsolutePath(), node.getInput());
 			}
 			lastNode=node;
@@ -793,10 +793,10 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		if(files==null || files.size()==0){
 			
 			// TODO: changes should be saved
-			MonitorAndDebug.printConsole(this,"# MetaDataDialog::resfreshFileView(): Filelist is null -> IMPORT ?");
+			ImporterAgent.getRegistry().getLogger().debug(this, "# MetaDataDialog::resfreshFileView(): Filelist is null -> IMPORT ?");
 			//    	disableTreeListener=true;
 		}else
-			MonitorAndDebug.printConsole(this,"# MetaDataDialog::refreshFileView(): list= "+files.size());
+			ImporterAgent.getRegistry().getLogger().debug(this, "# MetaDataDialog::refreshFileView(): list= "+files.size());
 
 		metaPanel.removeAll();
 		fileTree.createNodes(files,holdData);
@@ -884,7 +884,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				setTemplateName(tempFile);
 
 				if(selectedModules!=null && tempFile!=null) {
-					MonitorAndDebug.printConsole(this,"TODO: Save to tempfile: "+tempFile.getAbsolutePath());
+					ImporterAgent.getRegistry().getLogger().debug(this, "TODO: Save to tempfile: "+tempFile.getAbsolutePath());
 					//				MetaDataView currentView=getMetaDataView(metaPanel);
 					//				if(currentView!=null) {
 					//					try {
@@ -901,8 +901,8 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 						tfileWriter.write(template);
 						tfileWriter.flush();
 						tfileWriter.close();
-						MonitorAndDebug.printConsole(this,"-- successfully Copied JSON Object to File...");
-						MonitorAndDebug.printConsole(this,"\nJSON Object:\n " + template);
+						ImporterAgent.getRegistry().getLogger().debug(this, "-- successfully Copied JSON Object to File...");
+						ImporterAgent.getRegistry().getLogger().debug(this, "\nJSON Object:\n " + template);
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
@@ -914,7 +914,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				Boolean[] selectedModulesO=openF.getSelection();
 				tempFile= openF.getDestination();
 				setTemplateName(tempFile);
-				MonitorAndDebug.printConsole(this,"TODO: load template");
+				ImporterAgent.getRegistry().getLogger().debug(this, "TODO: load template");
 				//			MetaDataModel myModel=JSONModelWrapper.parseJSON(tempFile);
 				//			MetaDataView currentViewL=getMetaDataView(metaPanel);
 				//			if(currentViewL!=null) {
@@ -1167,23 +1167,23 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 	private void saveMapAnnotationForLeafs(FNode node,MapAnnotationObject parentMap)
 	{
-		MonitorAndDebug.printConsole(this,"-- save map annotation: "+node.getAbsolutePath());
+		ImporterAgent.getRegistry().getLogger().debug(this, "-- save map annotation: "+node.getAbsolutePath());
 			MapAnnotationObject maps=node.getMapAnnotation();
 		// no view exists and no changes input for this node -> use parent maps
 			if(maps==null && parentMap!=null){
-			MonitorAndDebug.printConsole(this,"\t => use parent mapAnnotation");
+				ImporterAgent.getRegistry().getLogger().debug(this, "\t => use parent mapAnnotation");
 				maps=new MapAnnotationObject(parentMap);
 			}
 		
 		if(node.isLeaf()){
-			MonitorAndDebug.printConsole(this,"-- LEAF NODE MAP");
+			ImporterAgent.getRegistry().getLogger().debug(this, "-- LEAF NODE MAP");
 			if(maps!=null){
 				maps.setFileName(node.getAbsolutePath());
 				// add mapannotation with key file name to ImportDialog mapAnnotation object -> element of ImportableObject
 				firePropertyChange(ImportDialog.ADD_MAP_ANNOTATION,null,maps);
 //				maps.printObject();
 			}else{
-				MonitorAndDebug.printConsole(this,"\t mapAnnotation is null");
+				ImporterAgent.getRegistry().getLogger().debug(this, "\t mapAnnotation is null");
 			}
 		}else{
 			// current node is not a leaf:
@@ -1259,14 +1259,14 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 			reader.setId(fName);
 			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] -- use READER: "+reader.getReader().getClass().getName());
-			MonitorAndDebug.printConsole(this,"-- Use Reader: "+reader.getReader().getClass().getSimpleName());
+			ImporterAgent.getRegistry().getLogger().debug(this, "-- Use Reader: "+reader.getReader().getClass().getSimpleName());
 
 			//load original data
 			//			series = reader.getSeriesMetadata();
 			//load ome
 			String xml = service.getOMEXML((MetadataRetrieve) metadata);
 
-//			MonitorAndDebug.printConsole(this,"Create Reader: FILE XML:\n"+xml);
+//			ImporterAgent.getRegistry().getLogger().debug(this, "Create Reader: FILE XML:\n"+xml);
 			ome = (OME) service.createOMEXMLRoot(xml);
 			//			companionFiles=reader.getUsedFiles();
 		}catch(Exception e){

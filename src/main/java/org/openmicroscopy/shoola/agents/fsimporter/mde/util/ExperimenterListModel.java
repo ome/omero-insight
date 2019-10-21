@@ -27,7 +27,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import org.apache.commons.lang.SerializationUtils;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 import ome.xml.model.Experimenter;
 import ome.xml.model.Objective;
@@ -115,7 +114,7 @@ public class ExperimenterListModel extends DefaultListModel<String>
 	{
 //		if(list!=null)
 //			for(int i=0; i<list.size();i++)
-//				MonitorAndDebug.printConsole(this,"ExpModel::setList "+list.get(i).getLastName());
+//				ImporterAgent.getRegistry().getLogger().debug(this, "ExpModel::setList "+list.get(i).getLastName());
 		exp=list;
 	}
 

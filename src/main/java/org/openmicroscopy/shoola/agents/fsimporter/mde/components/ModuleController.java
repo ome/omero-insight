@@ -60,7 +60,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.con
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.LEDConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.LaserConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ObjectiveConverter;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 
 
@@ -365,7 +364,7 @@ public class ModuleController {
 	}
 
 	public void printObjects() {
-		MonitorAndDebug.printConsole(this,"-- PRINT objects for selected category/microscope:");
+		ImporterAgent.getRegistry().getLogger().debug(this, "-- PRINT objects for selected category/microscope:");
 		if(mdeConf== null) {
 			return;
 		}

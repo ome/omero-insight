@@ -46,7 +46,6 @@ import ome.xml.model.primitives.PositiveInteger;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * TODO: rename class or move methods to other classes

@@ -24,12 +24,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
-
 import omero.gateway.model.MapAnnotationData;
 import omero.model.MapAnnotation;
 import omero.model.MapAnnotationI;
 import omero.model.NamedValue;
+
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 
 /**
  * 
@@ -121,11 +121,11 @@ public class MapAnnotationObject {
 	{
 		if(map==null)
 			return;
-		MonitorAndDebug.printConsole(null,"\t PRINT MAPANNOTATIONS: ");
+		ImporterAgent.getRegistry().getLogger().debug(null, "\t PRINT MAPANNOTATIONS: ");
 		
 		List<NamedValue> values=(List<NamedValue>) map.getContent();
 		for(NamedValue val:values){
-			MonitorAndDebug.printConsole(null,"\t\t"+ val.name+": "+val.value);
+			ImporterAgent.getRegistry().getLogger().debug(null, "\t\t"+ val.name+": "+val.value);
 		}
 	}
 	
@@ -134,7 +134,7 @@ public class MapAnnotationObject {
 		System.out.println("******* MAP ************");
 		for (Iterator i = map.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry next = (Map.Entry)i.next();
-			MonitorAndDebug.printConsole(null,"\t PRINT MAPANNOTATION OBJECT - : "+next.getKey());
+			ImporterAgent.getRegistry().getLogger().debug(null, "\t PRINT MAPANNOTATION OBJECT - : "+next.getKey());
 			printObject((MapAnnotationObject) next.getValue());
 		}
 		System.out.println("******* END MAP************");
@@ -144,11 +144,11 @@ public class MapAnnotationObject {
 	{
 		if(o==null)
 			return;
-		MonitorAndDebug.printConsole(null,"\t file : "+o.getFileName());
+		ImporterAgent.getRegistry().getLogger().debug(null, "\t file : "+o.getFileName());
 		List<MapAnnotationData> list=o.getMapAnnotationList();
 		int index=0;
 		for(MapAnnotationData m:list){
-			MonitorAndDebug.printConsole(null,"\t Series_"+index++);
+			ImporterAgent.getRegistry().getLogger().debug(null, "\t Series_"+index++);
 			printMapAnnotation(m);
 		}
 	}

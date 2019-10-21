@@ -51,8 +51,6 @@ import java.util.Observable;
 
 import javax.accessibility.Accessible;
 
-//import javafx.util.StringConverter;
-
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -77,9 +75,6 @@ import ome.model.enums.UnitsLength;
 import ome.model.units.Length;
 import ome.model.units.UNITS;
 import ome.model.units.Unit;
-//import ome.units.UNITS;
-//import ome.units.unit.Unit;
-//import ome.units.quantity.*;
 import ome.xml.model.Experimenter;
 
 import org.apache.commons.lang.BooleanUtils;
@@ -87,7 +82,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.OMEValueConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 
 /**
@@ -409,7 +403,7 @@ public class TagData
 	}
 	
 	public void print() {
-		MonitorAndDebug.printConsole(this,"TAG: "+parent+"::"+getTagName()+"\t PROP: u = "+getTagUnitString()+", visible = "+isVisible());
+		ImporterAgent.getRegistry().getLogger().debug(this, "TAG: "+parent+"::"+getTagName()+"\t PROP: u = "+getTagUnitString()+", visible = "+isVisible());
 	}
 
 	

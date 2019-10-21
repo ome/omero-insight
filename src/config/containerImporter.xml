@@ -98,6 +98,8 @@
     <entry name="/services/LOG/dir">log</entry>
     <!-- The name of the log file -->
     <entry name="/services/LOG/file">omeroimporter.log</entry>
+    <!-- Indicate to print out the log in the console -->
+    <entry name="/services/LOG/output/console" type="boolean">false</entry>
 
     <!-- Enables/disables the Caching Service. -->
     <entry name="/services/CACHE/on" type="boolean">true</entry>

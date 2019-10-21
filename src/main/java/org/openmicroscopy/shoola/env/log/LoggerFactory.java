@@ -68,13 +68,16 @@ public class LoggerFactory
 		//If logging is off, then we return the no-op adapter.
 		Registry reg = c.getRegistry();
 		Boolean isLoggingOn = (Boolean) reg.lookup(LookupNames.LOG_ON);
-		if (!isLoggingOn.booleanValue()) return makeNoOpLogger();
+        Boolean console = (Boolean) reg.lookup(LookupNames.LOG_CONSOLE);
+		if (!isLoggingOn.booleanValue()) {
+			new ConsoleLoggerImpl(console == null ? false : console.booleanValue());
+        }
 		
 		//Ok we have to log, so try and read the config file.
 		String relPathName = c.getConfigFileRelative(LOG_CONFIG_FILE);
 		File configFile = new File(relPathName);
 		if(!configFile.exists() || !configFile.isFile()) {
-			return makeNoOpLogger();
+			new ConsoleLoggerImpl(console == null ? false : console.booleanValue());
 		}
 
 		//We have a config file, set up slf4j.
@@ -99,32 +102,11 @@ public class LoggerFactory
 			logDir.mkdir();
 			if (logDir.isDirectory()) logFile = new File(logDir, logFileName);
 			else logFile = new File(home, logFileName);
-		    return new LoggerImpl(relPathName, logFile.getAbsolutePath());
+		    return new LoggerImpl(relPathName, logFile.getAbsolutePath(),
+                    console == null ? false : console.booleanValue());
 		} else {
 		    return new PluginLoggerImpl(value);
 		}
-	}
-	
-	/**
-	 * Creates a no-operation implementation of {@link Logger}.
-	 * 
-	 * @return See above.
-	 */
-	private static Logger makeNoOpLogger()
-	{
-		return new Logger() {
-			public void debug(Object c, String logMsg) {}
-			public void debug(Object c, LogMessage msg) {}
-			public void error(Object c, String logMsg) {}
-			public void error(Object c, LogMessage msg) {}
-			public void fatal(Object c, String logMsg) {}
-			public void fatal(Object c, LogMessage msg) {}
-			public void info(Object c, String logMsg) {}
-			public void info(Object c, LogMessage msg) {}
-			public void warn(Object c, String logMsg) {}
-			public void warn(Object c, LogMessage msg) {}
-			public String getLogFile() { return null; }
-		};
 	}
 
 }

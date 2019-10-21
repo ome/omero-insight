@@ -23,9 +23,9 @@ import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 import org.w3c.dom.Element;
 
 /**
@@ -137,7 +137,7 @@ public class ModuleTreeElement {
 	
 	public void printContent() {
 		if(data==null) {
-			MonitorAndDebug.printConsole(this,"-- PRINT ModuleContent: \n\tcontent is null!");
+			ImporterAgent.getRegistry().getLogger().debug(this, "-- PRINT ModuleContent: \n\tcontent is null!");
 		}else {
 			data.print();
 		}

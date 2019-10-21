@@ -28,7 +28,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.env.data.model.ImportableFile;
-import org.openmicroscopy.shoola.util.MonitorAndDebug;
 
 /**
  * Node in file tree of MDE.
