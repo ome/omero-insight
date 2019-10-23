@@ -23,7 +23,9 @@
 
 package org.openmicroscopy.shoola.env.config;
 
-/** 
+import omero.constants.GLACIER2PORT;
+
+/**
  * Holds the configuration information for the <i>OMERO</i> entry in the
  * container's configuration file.
  * 
@@ -61,7 +63,9 @@ public class OMEROInfo
      * can be modified by the user or not.
      */
     private boolean encryptedConfigurable;
-    
+
+    private static final int DEFAULT_PORT = GLACIER2PORT.value;;
+
     /**
      * Parses the specified string into an integer.
      * 
@@ -180,5 +184,12 @@ public class OMEROInfo
     {
     	this.encryptedConfigurable = encryptedConfigurable;
     }
-    
+
+    public String getConnectionString() {
+        if (getHostName()==null)
+            return "";
+        if (getPortSSL() < 1 || getPortSSL() == DEFAULT_PORT)
+            return getHostName();
+        return getHostName()+":"+getPortSSL();
+    }
 }

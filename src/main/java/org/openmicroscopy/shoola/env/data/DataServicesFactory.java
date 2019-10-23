@@ -51,7 +51,6 @@ import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 
 import omero.ServerError;
 import omero.api.IConfigPrx;
-import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
@@ -65,11 +64,8 @@ import omero.log.Logger;
 
 import org.openmicroscopy.shoola.env.rnd.PixelsServicesFactory;
 import org.openmicroscopy.shoola.env.rnd.RenderingControl;
-import org.openmicroscopy.shoola.env.ui.AbstractIconManager;
-import org.openmicroscopy.shoola.env.ui.UserNotifier;
 import org.openmicroscopy.shoola.svc.proxy.ProxyUtil;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
-import org.openmicroscopy.shoola.util.VersionCompare;
 import org.openmicroscopy.shoola.util.ui.IconManager;
 import org.openmicroscopy.shoola.util.ui.MessageBox;
 import org.openmicroscopy.shoola.util.ui.NotificationDialog;

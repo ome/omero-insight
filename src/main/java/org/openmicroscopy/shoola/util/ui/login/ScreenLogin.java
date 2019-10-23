@@ -37,13 +37,9 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
@@ -51,7 +47,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -66,10 +61,10 @@ import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.openmicroscopy.shoola.env.config.OMEROInfo;
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
-import org.openmicroscopy.shoola.util.StringComparator;
 import org.openmicroscopy.shoola.util.ui.IconManager;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 
@@ -102,9 +97,6 @@ public class ScreenLogin
 	
 	/** Identifies the password field. */
 	public static final int			PASSWORD_FIELD = 1;
-	
-	/** Default text if no server. */
-	public static final String		DEFAULT_SERVER = "Add a new server ->";
 
 	/** The font color for text. */
 	static final Color      		TEXT_COLOR = new Color(110, 102, 96);
@@ -124,9 +116,6 @@ public class ScreenLogin
 	/** The property name for the connection speed used to connect to server. */
 	private static final String  	OMERO_CONNECTION_SPEED = 
 													"omeroConnectionSpeed";
-	
-	/** The property name for the user who connects to <i>OMERO</i>. */
-	private static final String  	OMERO_USER_GROUP = "omeroUserGroup";
 	
 	/** 
 	 * The property name to indicated that the data transfer is
@@ -194,9 +183,6 @@ public class ScreenLogin
 	
 	/** The default foreground color. */
 	private Color				defaultForeground;
-
-	/** The name read from the system property if previously set. */
-	private String				originalServerName;
 	
 	/** The component displaying the login option. */
 	private List<JComponent> 	ref;
@@ -232,13 +218,15 @@ public class ScreenLogin
 	private ActionListener encryptionListener;
     
     /** The default server name from the configuration file.*/
-    private String configureServerName;
+    private String defaultServer;
 
     /** List of components to show or hide depending on connection status.*/
     private List<JComponent> components;
 
     /** Button popping up an message indicating to use either name or session.*/
     private JButton helpButton;
+
+    private boolean configurable = true;
     
 	/** Quits the application. */
 	private void quit()
@@ -261,8 +249,7 @@ public class ScreenLogin
 		buf.append(pass.getPassword());
 		String usr = user.getText(), psw = buf.toString();
 		String s = serverText.getText();
-		if (CommonsLangUtils.isBlank(usr) || CommonsLangUtils.isBlank(s) ||
-				s.trim().equals(DEFAULT_SERVER)) {
+		if (CommonsLangUtils.isBlank(usr) || CommonsLangUtils.isBlank(s)) {
 			requestFocusOnField();
 			return;
 		}
@@ -290,8 +277,8 @@ public class ScreenLogin
 		if (connectionSpeed) 
 			d = new ServerDialog(this, editor, s, speedIndex);
 		else d = new ServerDialog(this, editor, s);
-		if (editor.getRowCount() == 0 && configureServerName != null)
-			editor.addRow(configureServerName);
+		if (editor.getRowCount() == 0 && defaultServer != null)
+			editor.addRow(defaultServer);
 		d.addPropertyChangeListener(this);
 		UIUtilities.centerAndShow(d);
 	}
@@ -425,9 +412,6 @@ public class ScreenLogin
 		List<String> servers = editor.getServers();
 		if (!servers.isEmpty())
 			serverName = servers.get(servers.size()-1);
-		else
-			serverName = DEFAULT_SERVER;
-		originalServerName = serverName;
 		connectionSpeedText = new JLabel(getConnectionSpeed());
 		connectionSpeedText.setForeground(TEXT_COLOR);
 		connectionSpeedText.setBorder(
@@ -674,9 +658,8 @@ public class ScreenLogin
 	private void setNewServer(String s)
 	{
 		if (CommonsLangUtils.isBlank(s)) {
-			if (configureServerName != null)
-				s = configureServerName;
-			else s = DEFAULT_SERVER;
+			if (defaultServer != null)
+				s = defaultServer;
 		}
 		serverText.setText(s);
 		serverTextPane.validate();
@@ -690,17 +673,12 @@ public class ScreenLogin
 	{
 		boolean enabled = true;
 		String s = serverText.getText();
-		char[] name = pass.getPassword();
 		String usr = user.getText().trim();
 		if (CommonsLangUtils.isBlank(s) || CommonsLangUtils.isBlank(usr)) {
 			enabled = false;
-		} else {
-			s = s.trim();
-			if (DEFAULT_SERVER.equals(s)) {
-                enabled = false;
-            }
 		}
 		login.setEnabled(enabled);
+		configButton.setEnabled(this.configurable);
 		if (enabled) {
 			ActionListener[] listeners = login.getActionListeners();
 			if (listeners != null) {
@@ -935,7 +913,7 @@ public class ScreenLogin
 		login.setEnabled(b);
 		enableControls();
 		//login.requestFocus();
-		configButton.setEnabled(b);
+		configButton.setEnabled(this.configurable);
 		encryptedButton.setEnabled(b);
 		if (b) {
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1118,36 +1096,37 @@ public class ScreenLogin
     /**
      * Indicates if the user can modify or not the host name from the UI.
      * 
-     * @param hostName The hostname.
+     * @param info The connection information.
      * @param configurable Pass <code>true</code> to allow to change the 
      * host name, <code>false</code> otherwise.
      */
-    public void setHostNameConfiguration(String hostName, boolean configurable)
+    public void setDefaultHostConfiguration(OMEROInfo info, boolean configurable)
     {
-        configureServerName = hostName;
-        if (CommonsLangUtils.isNotBlank(hostName)) {
+		defaultServer = info.getConnectionString();
+		this.configurable = configurable;
+        if (CommonsLangUtils.isNotBlank(defaultServer)) {
             if (configurable) {
                 List<String> servers = editor.getServers();
                 if (servers == null || servers.size() == 0) 
-                    editor.addRow(hostName);
+                    editor.addRow(defaultServer);
                 else {
                     Iterator<String> i = servers.iterator();
                     String value;
                     boolean exist = false;
                     while (i.hasNext()) {
                         value = i.next();
-                        if (hostName.equals(value)) {
+                        if (defaultServer.equals(value)) {
                             exist = true;
                             break;
                         }
                     }
-                    if (!exist) editor.addRow(hostName);
+                    if (!exist) editor.addRow(defaultServer);
                 }
             } else {
-                serverName = hostName;
-                originalServerName = serverName;
-                setNewServer(originalServerName);
+                serverName = defaultServer;
             }
+            if (editor.getServers().size()<2)
+				setNewServer("");
         }
     }
 

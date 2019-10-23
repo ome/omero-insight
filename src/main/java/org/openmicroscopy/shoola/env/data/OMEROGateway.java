@@ -64,7 +64,6 @@ import omero.gateway.util.PojoMapper;
 import org.openmicroscopy.shoola.env.data.util.SearchDataContext;
 
 import omero.gateway.Gateway;
-import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;

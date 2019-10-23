@@ -43,7 +43,6 @@ import javax.swing.Icon;
 import ij.IJ;
 import ij.ImagePlus;
 
-import omero.gateway.LoginCredentials;
 import org.openmicroscopy.shoola.env.Agent;
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.Environment;
@@ -1031,7 +1030,7 @@ public class TaskBarManager
 		    		getSplashScreen(Factory.createIcon(n, f)), img, v);
 		    	login.setEncryptionConfiguration(info.isEncrypted(),
 		    			info.isEncryptedConfigurable());
-		    	login.setHostNameConfiguration(info.getHostName(),
+		    	login.setDefaultHostConfiguration(info,
 		    			info.isHostNameConfigurable());
 		    	login.setModal(true);
 		    	login.setStatusVisible(false);

@@ -51,7 +51,6 @@ import javax.swing.WindowConstants;
 //Third-party libraries
 
 //Application-internal dependencies
-import omero.gateway.LoginCredentials;
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.ui.IconManager;
 import org.openmicroscopy.shoola.util.ui.TitlePanel;

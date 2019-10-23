@@ -24,6 +24,8 @@ package org.openmicroscopy.shoola.util.ui.login;
 
 
 //Java imports
+import org.openmicroscopy.shoola.env.config.OMEROInfo;
+
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -202,13 +204,13 @@ public class ScreenLoginDialog
     /**
      * Indicates if the user can modify or not the host name from the UI.
      * 
-     * @param hostName The hostname.
+     * @param info The connection information.
      * @param configurable Pass <code>true</code> to allow to change the 
      * host name, <code>false</code> otherwise.
      */
-    public void setHostNameConfiguration(String hostName, boolean configurable)
+    public void setDefaultHostConfiguration(OMEROInfo info, boolean configurable)
     {
-    	view.setHostNameConfiguration(hostName, configurable);
+    	view.setDefaultHostConfiguration(info, configurable);
     }
     
 	/**

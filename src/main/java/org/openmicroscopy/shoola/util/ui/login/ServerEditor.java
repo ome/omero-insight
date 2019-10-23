@@ -431,7 +431,8 @@ public class ServerEditor
 	{
     	Preferences prefs = Preferences.userNodeForPackage(ServerEditor.class);
         String servers = prefs.get(OMERO_SERVER, null);
-        if (servers == null || servers.length() == 0)  return null;
+        if (servers == null || servers.length() == 0)
+            return new ArrayList<>();
         String[] l = servers.split(SERVER_NAME_SEPARATOR, 0);
 		for (int i=0; i<l.length; i++)
 			l[i] = l[i].replace(":"+DEFAULT_PORT, "");
@@ -449,8 +450,6 @@ public class ServerEditor
 	void handleServers(String serverName)
 	{
 		serverName = serverName == null ? "" : serverName.trim();
-		if (!serverName.matches(".+:[0-9]+$"))
-			serverName += ":"+DEFAULT_PORT;
 
 		Preferences prefs = Preferences.userNodeForPackage(ServerEditor.class);
 
@@ -465,8 +464,6 @@ public class ServerEditor
 		StringBuffer buffer = new StringBuffer();
 		for (String s : l) {
 			s = s.trim();
-			if (!s.matches(".+:[0-9]+$"))
-				s += ":"+DEFAULT_PORT;
 			if (!s.equals(serverName)) {
 				buffer.append(s);
 				buffer.append(SERVER_NAME_SEPARATOR);
