@@ -3632,7 +3632,7 @@ class TreeViewerComponent
             return;
         List l = selection == null ? browser.getSelectedDataObjects()
                 : selection;
-	    if (l == null) return;
+	    if (l == null || l.isEmpty()) return;
 	    Iterator i = l.iterator();
 	    Object object;
 	    List<DataObject> archived = new ArrayList<DataObject>();
@@ -3729,7 +3729,7 @@ class TreeViewerComponent
 				TreeViewerAgent.getRegistry().lookup(LookupNames.ENV);
 			String dir = env.getTmpDir();
 			List l = browser.getSelectedDataObjects();
-			if (l == null) return;
+			if (l == null || l.isEmpty()) return;
 			Iterator i = l.iterator();
 			Object object;
 			OpenActivityParam activity;
@@ -3938,7 +3938,7 @@ class TreeViewerComponent
 		Browser browser = model.getSelectedBrowser();
 		if (browser == null) return;
 		List l = browser.getSelectedDataObjects();
-		if (l == null) return;
+		if (l == null || l.isEmpty()) return;
 		Map<ExperimenterData, UserCredentials>
 			map = new HashMap<ExperimenterData, UserCredentials>();
 		Iterator i = l.iterator();
@@ -4247,7 +4247,7 @@ class TreeViewerComponent
 		Browser browser = model.getSelectedBrowser();
 		if (browser == null) return;
 		List l = browser.getSelectedDataObjects();
-		if (l == null) return;
+		if (l == null || l.isEmpty()) return;
 		Map<ExperimenterData, UserCredentials>
 			map = new HashMap<ExperimenterData, UserCredentials>();
 		UserCredentials uc = new UserCredentials(exp.getUserName(), "");

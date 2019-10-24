@@ -106,7 +106,7 @@ public class TaggingAction
 			ho instanceof PlateData || ho instanceof PlateAcquisitionData) {
         	if (model.canAnnotate(ho)) {
         		List selected = browser.getSelectedDataObjects();
-        		if (selected == null) setEnabled(false);
+        		if (selected.isEmpty()) setEnabled(false);
         		else {
         			List<Long> ids = new ArrayList<Long>();
             		Iterator i = selected.iterator();
