@@ -472,7 +472,6 @@ public class ServerEditor
 		if (serverName.length()>0)
 			buffer.append(serverName);
 
-		System.out.println("Save servers: "+buffer.toString());
 		prefs.put(OMERO_SERVER, buffer.toString());
 	}
 
