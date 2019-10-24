@@ -23,7 +23,6 @@
 package org.openmicroscopy.shoola.util.ui.login;
 
 
-//Java imports
 import org.openmicroscopy.shoola.env.config.OMEROInfo;
 
 import java.awt.Image;
@@ -31,10 +30,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.Icon;
 import javax.swing.JDialog;
-
-//Third-party libraries
-
-//Application-internal dependencies
 
 /** 
  * Creates a login dialog.

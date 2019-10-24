@@ -23,8 +23,6 @@
 package org.openmicroscopy.shoola.util.ui.login;
 
 
-
-//Java imports
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -48,9 +46,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.WindowConstants;
 
-//Third-party libraries
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.ui.IconManager;
 import org.openmicroscopy.shoola.util.ui.TitlePanel;
