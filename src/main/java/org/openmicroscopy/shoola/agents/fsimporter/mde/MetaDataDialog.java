@@ -1241,7 +1241,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	 * @param path of source image file
 	 * @return metadata as OMEXMLMetadata format
 	 */
-	public OME createMetadataReader(String fName)
+	private OME createMetadataReader(String fName)
 	{
 		ImageReader reader = new ImageReader();
 		OME ome=null;
@@ -1270,7 +1270,8 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 			ome = (OME) service.createOMEXMLRoot(xml);
 			//			companionFiles=reader.getUsedFiles();
 		}catch(Exception e){
-			e.printStackTrace();
+			// not a bioFormat readable file
+			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] file format of "+fName+"not readable by bio-formats!");
 			if(cursor!=null) this.setCursor(cursor);
 		}
 		//reset cursor

@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -94,26 +95,30 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		
 		this.controller = controller;
 //		controller.printObjects();
-		moduleTree =new DynamicModuleTree(initTree(ome, root),listener);
-		createInstrumentTables(fileInstrumentValues);
 		
-		moduleContentPanel = new JPanel(new BorderLayout());
-		
-		JScrollPane scrollView=new JScrollPane(moduleContentPanel);
-		
-		JSplitPane splitPane;		
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,moduleTree,scrollView);
-		splitPane.setResizeWeight(0.5);
-		splitPane.setDividerLocation(150);
-		add(splitPane,BorderLayout.CENTER);
-		
-		selectModuleAction(moduleTree.selectFirstNode());
-		
-		moduleTree.addTreeSelectionListener(this);
-		
-		// save file tree for reset action of object tree
-		fileObjectTree = ModuleTree.cloneTreeNode(getRootNode());
-		
+		if(ome!=null) {
+			moduleTree =new DynamicModuleTree(initTree(ome, root),listener);
+			createInstrumentTables(fileInstrumentValues);
+
+			moduleContentPanel = new JPanel(new BorderLayout());
+
+			JScrollPane scrollView=new JScrollPane(moduleContentPanel);
+
+			JSplitPane splitPane;		
+			splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,moduleTree,scrollView);
+			splitPane.setResizeWeight(0.5);
+			splitPane.setDividerLocation(150);
+			add(splitPane,BorderLayout.CENTER);
+
+			selectModuleAction(moduleTree.selectFirstNode());
+
+			moduleTree.addTreeSelectionListener(this);
+
+			// save file tree for reset action of object tree
+			fileObjectTree = ModuleTree.cloneTreeNode(getRootNode());
+		}else {
+			add(new JLabel("\tNot a valid microscopy file format!"), BorderLayout.CENTER);
+		}
 		revalidate();
 		repaint();
 	}
