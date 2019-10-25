@@ -584,7 +584,7 @@ public class MDEHelper {
 	 * @return modified currentC
 	 */
 	public static ModuleContent replaceUnchangedData(ModuleContent currentC,ModuleContent origC,ModuleContent newC) {
-		ModuleContent result = currentC;//new ModuleContent(currentC);
+		ModuleContent result = currentC;
 		if(newC==null ) {
 			return currentC;
 		}
@@ -621,7 +621,7 @@ public class MDEHelper {
 				TagData valIn=new TagData(entry.getValue());
 				if(valIn!=null && valIn.getTagValue()!=null && !valIn.getTagValue().equals("")) {
 					if(l1.containsKey(key)) {
-						if( l1.get(key).equalContent(l3.get(key))) {
+						if(  l1.get(key).getTagValue().trim().equals("")|| l1.get(key).equalContent(l3.get(key))) {
 							// unchanged content will be replaced by new values
 							valIn.dataHasChanged(true);
 							result.set(key, valIn);
