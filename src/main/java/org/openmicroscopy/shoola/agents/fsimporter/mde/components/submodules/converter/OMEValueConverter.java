@@ -290,8 +290,7 @@ public class OMEValueConverter {
 
 		Class unitClass=TagNames.getUnitClassFromSymbol(unitSymbol);
 
-
-		if(unitClass.equals(ome.model.units.ElectricPotential.class.getName())) {
+		if(unitClass.equals(ome.model.units.ElectricPotential.class)) {
 			for(int i=0; i<value.length;i++) {
 				if(value[i]!=null && !value[i].isEmpty()) {
 					omero.model.ElectricPotential tOld=new omero.model.ElectricPotentialI(Double.parseDouble(value[i]),ome.model.enums.UnitsElectricPotential.bySymbol(unitSymbol));
@@ -302,7 +301,7 @@ public class OMEValueConverter {
 				}
 			}
 		}
-		if(unitClass.equals(ome.model.units.Power.class.getName())) {
+		if(unitClass.equals(ome.model.units.Power.class)) {
 			for(int i=0; i<value.length;i++) {
 				if(value[i]!=null && !value[i].isEmpty()) {
 					omero.model.Power tOld=new omero.model.PowerI(Double.parseDouble(value[i]),ome.model.enums.UnitsPower.bySymbol(unitSymbol));
@@ -313,7 +312,7 @@ public class OMEValueConverter {
 				}
 			}			
 		}
-		if(unitClass.equals(ome.model.units.Frequency.class.getName())) {
+		if(unitClass.equals(ome.model.units.Frequency.class)) {
 			for(int i=0; i<value.length;i++) {
 				if(value[i]!=null && !value[i].isEmpty()) {
 					omero.model.Frequency tOld=new omero.model.FrequencyI(Double.parseDouble(value[i]),ome.model.enums.UnitsFrequency.bySymbol(unitSymbol));
@@ -324,7 +323,7 @@ public class OMEValueConverter {
 				}
 			}
 		}
-		if(unitClass.equals(ome.model.units.Pressure.class.getName())) {
+		if(unitClass.equals(ome.model.units.Pressure.class)) {
 			for(int i=0; i<value.length;i++) {
 				if(value[i]!=null && !value[i].isEmpty()) {
 					omero.model.Pressure tOld=new omero.model.PressureI(Double.parseDouble(value[i]),ome.model.enums.UnitsPressure.bySymbol(unitSymbol));
@@ -335,7 +334,7 @@ public class OMEValueConverter {
 				}
 			}
 		}
-		if(unitClass.equals(ome.model.units.Length.class.getName())) {
+		if(unitClass.equals(ome.model.units.Length.class)) {
 			for(int i=0; i<value.length;i++) {
 				if(value[i]!=null && !value[i].isEmpty()) {
 					omero.model.Length tOld=new omero.model.LengthI(Double.parseDouble(value[i]),ome.model.enums.UnitsLength.bySymbol(unitSymbol));
@@ -346,7 +345,7 @@ public class OMEValueConverter {
 				}
 			}
 		}
-		if(unitClass.equals(ome.model.units.Temperature.class.getName())) {
+		if(unitClass.equals(ome.model.units.Temperature.class)) {
 			for(int i=0; i<value.length;i++) {
 				if(value[i]!=null && !value[i].isEmpty()) {
 					omero.model.Temperature tOld=new omero.model.TemperatureI(Double.parseDouble(value[i]),ome.model.enums.UnitsTemperature.bySymbol(unitSymbol));
@@ -357,7 +356,7 @@ public class OMEValueConverter {
 				}
 			}
 		}
-		if(unitClass.equals(ome.model.units.Time.class.getName())) {
+		if(unitClass.equals(ome.model.units.Time.class)) {
 			for(int i=0; i<value.length;i++) {
 				if(value[i]!=null && !value[i].isEmpty()) {
 					omero.model.Time tOld=new omero.model.TimeI(Double.parseDouble(value[i]),UnitsTime.bySymbol(unitSymbol));
