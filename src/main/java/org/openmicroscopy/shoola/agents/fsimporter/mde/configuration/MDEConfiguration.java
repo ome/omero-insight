@@ -371,7 +371,8 @@ public class MDEConfiguration {
 	 */
 	public ModuleContent getContent(String micName,String type) {
 		if(oDefinition== null || oDefinition.get(type)==null) {
-			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] content of type "+type+" NOT exists!");
+			if(!type.equals(TagNames.OME_ROOT))
+				ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] content of type "+type+" NOT exists!");
 			return null;
 		}
 		if(micName.equals(UNIVERSAL)) {
