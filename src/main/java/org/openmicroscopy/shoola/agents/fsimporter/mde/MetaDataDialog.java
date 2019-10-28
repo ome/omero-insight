@@ -1228,10 +1228,10 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	}
 
 	/**
-	 * @return description for selected microscope workstation
+	 * @return description for universal setup
 	 */
 	public String getMicDesc() {
-		return "\t TODO: define desc";//customSettings.getMicDesc();
+		return "\t (no filter for objects; no predefinitions)";
 	}
 
 
