@@ -1442,23 +1442,23 @@ class OmeroImageServiceImpl
 		}
 		return Boolean.valueOf(true);
 	}
-
-  private List<Annotation> addMetaDataAnnotations(Map<String,List<MapAnnotationData>> map, List<Annotation> customAnnotationList, File file)
-  	{
-  //		System.out.println("# OmeroImageServiceImpl::addMetaDataAnnotations()...");
-  		List<Annotation> result=null;
-  		List<MapAnnotationData> maps=map.get(file.getAbsolutePath());
-  		// for seriesData and single file
-  		if(maps!=null){
-  			result=new ArrayList<Annotation>(customAnnotationList);
-  			for(MapAnnotationData m:maps){
-  				result.add((Annotation) m.asIObject());
-  			}
-  		}else
-  			result=customAnnotationList;
-  //		System.out.println("... OmeroImageServiceImpl::addMetaDataAnnotations()");
-  		return result;
-  	}
+	
+	private List<Annotation> addMetaDataAnnotations(Map<String,List<MapAnnotationData>> map, List<Annotation> customAnnotationList, File file)
+	{
+		List<Annotation> result=customAnnotationList;
+		if((Boolean) context.lookup(LookupNames.MDE_IMPORT_ENABLED) && map!=null && !map.isEmpty()){
+			List<MapAnnotationData> maps=map.get(file.getAbsolutePath());
+			// for seriesData and single file
+			if(maps!=null){
+				result=new ArrayList<Annotation>(customAnnotationList);
+				for(MapAnnotationData m:maps){
+					if(m!=null)
+						result.add((Annotation) m.asIObject());
+				}
+			}
+		}
+		return result;
+	}
 
 	/**
 	 * Implemented as specified by {@link OmeroImageService}.
