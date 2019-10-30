@@ -187,6 +187,10 @@ class ToolBar
         downloadItem.setEnabled(b);
         saveAsMenu.add(downloadItem);
 
+		Object ho = model.getRefObject();
+		boolean enabled = (ho instanceof ImageData ||
+				ho instanceof WellSampleData || ho instanceof DatasetData) && model.isExportable();
+
         exportAsOmeTiffItem = new JMenuItem(icons.getIcon(
                 IconManager.EXPORT_AS_OMETIFF));
         exportAsOmeTiffItem.setText("Export as OME-TIFF...");
@@ -199,7 +203,7 @@ class ToolBar
             b = model.getRefObject() instanceof ImageData &&
                     !model.isLargeImage();
         }
-        exportAsOmeTiffItem.setEnabled(b);
+        exportAsOmeTiffItem.setEnabled(enabled);
         saveAsMenu.add(exportAsOmeTiffItem);
         ActionListener l = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -211,9 +215,6 @@ class ToolBar
         Entry<Integer, String> e;
         Iterator<Entry<Integer, String>> i = formats.entrySet().iterator();
         JMenuItem item;
-        Object ho = model.getRefObject();
-        boolean enabled = (ho instanceof ImageData ||
-                ho instanceof WellSampleData || ho instanceof DatasetData) && model.isExportable();
         while (i.hasNext()) {
             e = i.next();
             item = new JMenuItem(icons.getIcon(
