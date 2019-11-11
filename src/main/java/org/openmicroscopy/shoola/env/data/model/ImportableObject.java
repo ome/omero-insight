@@ -51,6 +51,9 @@ import omero.gateway.model.ProjectData;
 import omero.gateway.model.ScreenData;
 import omero.gateway.model.TagAnnotationData;
 import omero.gateway.model.MapAnnotationData;
+import omero.model.NamedValue;
+import omero.model.MapAnnotation;
+import omero.model.MapAnnotationI;
 
 /**
  * Helper class where parameters required for the imports are stored.
@@ -344,16 +347,14 @@ public class ImportableObject
 	}
 
 	/**
-	 * Sets the mapAnnotation for given file
+	 * Sets the mapAnnotation for current import object
 	 *
-	 * @param fileName
-	 * @param annot
+	 * @param map
 	 */
-	public void setMapAnnotation(Map<String,List<MapAnnotationData>> maps)
+	public void setMapAnnotation(Map<String,List<MapAnnotationData>> map)
 	{
-		this.mapAnnots=maps;
+		this.mapAnnots=getCloneOfMap(map);
 	}
-
 	
 
 	/**
@@ -484,11 +485,38 @@ public class ImportableObject
 	 */
 	public Collection<TagAnnotationData> getTags() { return tags; }
 
-	public List<MapAnnotationData> getMapAnnotation(String fileName){
-			return mapAnnots.get(fileName);
+//	public List<MapAnnotationData> getMapAnnotation(String fileName){
+//			return mapAnnots.get(fileName);
+//	}
+
+	public Map<String,List<MapAnnotationData>> getMap(){
+		return mapAnnots;	
 	}
 
-	public Map<String,List<MapAnnotationData>> getMap(){return mapAnnots;	}
+	public Map<String,List<MapAnnotationData>> getCloneOfMap(Map<String,List<MapAnnotationData>> map){
+		Map<String,List<MapAnnotationData>> mdeMap=new HashMap<>();
+		if(map!=null) {
+			for(Map.Entry<String, List<MapAnnotationData>> entry: map.entrySet()) {
+				if(entry.getValue()!=null && !entry.getValue().isEmpty()) {
+					List<MapAnnotationData> mapValue = new ArrayList<>();
+					Iterator<MapAnnotationData> iterAnnot=entry.getValue().iterator();
+					while(iterAnnot.hasNext()) {
+						List<NamedValue> valuesOrig=(List<NamedValue>) iterAnnot.next().getContent();
+						MapAnnotation ma = new MapAnnotationI();
+						//copy values
+						List<NamedValue> values=new ArrayList<NamedValue>();
+						for(NamedValue val:valuesOrig){
+							values.add(new NamedValue(val.name, val.value));
+						}
+						ma.setMapValue(values);
+						mapValue.add(new MapAnnotationData(ma));
+					}
+					mdeMap.put(entry.getKey(), mapValue);
+				}
+			}
+		}
+		return mdeMap;
+	}
 
 
 	/**

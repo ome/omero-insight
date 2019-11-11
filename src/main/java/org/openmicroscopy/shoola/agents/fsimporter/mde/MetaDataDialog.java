@@ -264,12 +264,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 
 		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Load microscope conf: "+microscope);
-		if(microscope == null || microscope.isEmpty())
-			initComponents(filters, importerAction,null);
-		else
-			initComponents(filters, importerAction, microscope);
-
-		buildGUI();
+		initMDE(microscope);
 	}
 
 
@@ -283,13 +278,24 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	//    return exp;
 	//}
 
+	private void initMDE(String microscope) {
+		if(microscope == null || microscope.isEmpty())
+			initComponents(null);
+		else
+			initComponents( microscope);
+
+		buildGUI();
+
+	}
+
+
 	/**
 	 * Init gui components like workstation and buttons, filetree, seriesList and metadataview
 	 * @param filters
 	 * @param importerAction
 	 * @param microscope
 	 */
-	private void initComponents(FileFilter[] filters,ImporterAction importerAction, String microscope)
+	private void initComponents(String microscope)
 	{
 		holdData=false;
 		disableTreeListener=false;
@@ -444,6 +450,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	 */
 	private void buildGUI()
 	{
+		this.removeAll();
 		setLayout(new BorderLayout(0,0));
 
 		JSplitPane splitPane;		
@@ -464,6 +471,8 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		controls.add(bar);
 
 		this.add(controls, BorderLayout.SOUTH);
+		revalidate();
+		repaint();
 	}
 
 
@@ -790,13 +799,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] refresh file view");
 		this.fileFilter=fileFilter;
 		fileTree.setFileFilter(fileFilter);
-		if(files==null || files.size()==0){
 			
-			// TODO: changes should be saved
-			ImporterAgent.getRegistry().getLogger().debug(this, "# MetaDataDialog::resfreshFileView(): Filelist is null -> IMPORT ?");
-			//    	disableTreeListener=true;
-		}else
-			ImporterAgent.getRegistry().getLogger().debug(this, "# MetaDataDialog::refreshFileView(): list= "+files.size());
 
 		metaPanel.removeAll();
 		fileTree.createNodes(files,holdData);
@@ -860,6 +863,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 				resetObjectTree();
 				//clear node model data
+				if(selection!=null) {
 				selection.reset();
 				//TODO get parentTree
 				try {
@@ -874,7 +878,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 					e.printStackTrace();
 				}
 				showMDE(selection.getContainer(),null);
-
+				}
 				break;
 			case SAVE_TEMPLATE:
 				String template=null;
@@ -1155,6 +1159,9 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] PRESS import: save changes");
 		deselectNodeAction((FNode)fileTree.getLastSelectedPathComponent());
 		saveMapAnnotations();
+		
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] clean up");
+		initMDE(getMicName());
 	}
 
 	private void saveMapAnnotations() {

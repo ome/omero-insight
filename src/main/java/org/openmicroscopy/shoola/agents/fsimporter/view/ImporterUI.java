@@ -497,15 +497,8 @@ class ImporterUI extends TopWindow
 
 		/** refresh filetree of MetaDataEditor*/
 		public void refreshMetaFileView(List<ImportableFile> files){
-			if(mde==null) {
-				System.out.println("DEBUG:: mde null");
-				return;
-			}
-			if(chooser==null) {
-				System.out.println("DEBUG:: chooser null");
-				return;
-			}
-			mde.refreshFileView(files,chooser.getFileFilter());
+			if(mde!=null)
+				mde.refreshFileView(files,chooser.getFileFilter());
 		}
 
 		/** Indicates to the select the metaData chooser. */
@@ -852,7 +845,9 @@ class ImporterUI extends TopWindow
 		packWindow();
 		UIUtilities.centerAndShow(this);
 	}
-
+	/**
+	 * Save last changes of mde.
+	 */
 	public void startImport() {
 		if (mde != null) {
 			mde.saveChanges("");

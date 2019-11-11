@@ -85,6 +85,7 @@ public class EditorFileBrowser extends JTree
 				else if(f.getParent() instanceof ScreenData)
 					name=f.getParent().asScreen().getName().getValue();
 
+				String dName=f.getDataset()!=null? f.getDataset().getName():"from folder";
 			}
 			treeModel.reload();
 		}else{

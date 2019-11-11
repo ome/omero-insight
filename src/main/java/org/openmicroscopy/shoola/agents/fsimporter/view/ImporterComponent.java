@@ -38,7 +38,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.chooser.ImportDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.chooser.ImportLocationSettings;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
 import org.openmicroscopy.shoola.env.LookupNames;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ImportUserData;
 import org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponent;
 import org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponentI;
 import org.openmicroscopy.shoola.agents.fsimporter.util.ObjectToCreate;
@@ -124,10 +123,6 @@ class ImporterComponent
 	/** Flag indicating that the window has been marked to be closed.*/
 	private boolean 		markToclose;
 
-	/** holds import information like group, project, importer, dataset**/
-	private ImportUserData importUserData;
-
-	private boolean metaDataCreated;
 	/**
 	 * Posts event if required indicating the status of the import process.
 	 *
@@ -213,7 +208,6 @@ class ImporterComponent
 		controller = new ImporterControl(this);
 		view = new ImporterUI();
 		markToclose = false;
-		metaDataCreated=false;
 	}
 
 	/** Links up the MVC triad. */

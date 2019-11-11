@@ -227,15 +227,13 @@ class OmeroImageServiceImpl
 		Map<File, Status> files, Status status,
 		ImportableObject object, IObject ioContainer,
 		List<Annotation> list, long userID, boolean close, boolean hcs,
-		String userName)
+		String userName,Map<String,List<MapAnnotationData>> map)
 	throws DSAccessException, DSOutOfServiceException
 	{
 		if (status.isMarkedAsCancel()) {
 			if (close) gateway.closeImport(ctx, userName);
 			return Boolean.valueOf(false);
 		}
-		Map<String,List<MapAnnotationData>> map=new HashMap<>();
-		map.putAll(object.getMap());
 
 		Entry<File, Status> entry;
 		Iterator<Entry<File, Status>> jj = files.entrySet().iterator();
@@ -279,8 +277,7 @@ class OmeroImageServiceImpl
 							label.setCallback(Boolean.valueOf(false));
 						else {
 							importIc = icContainers.get(0);
-              List<Annotation> newList=addMetaDataAnnotations(map, list, file);
-							importIc.setCustomAnnotationList(newList);
+							importIc.setCustomAnnotationList(addMetaDataAnnotations(map, list, file));
 							
 							label.setCallback(gateway.importImageFile(ctx,
 									object, ioContainer, importIc,
@@ -1038,8 +1035,11 @@ class OmeroImageServiceImpl
 		if (importable == null || importable.getFile() == null)
 			throw new IllegalArgumentException("No images to import.");
 		Status status = importable.getStatus();
-    Map<String,List<MapAnnotationData>> map=new HashMap<>();
-    map.putAll(object.getMap());
+   
+		// save the mdeMap
+		Map<String,List<MapAnnotationData>> mdeMap=new HashMap<>();
+		mdeMap.putAll(object.getCloneOfMap(object.getMap()));
+		
 		SecurityContext ctx = new SecurityContext(importable.getGroup().getId());
 		//If import as.
 		ExperimenterData loggedIn = context.getAdminService().getUserDetails();
@@ -1109,6 +1109,7 @@ class OmeroImageServiceImpl
 		ImportContainer importIc;
 		List<ImportContainer> icContainers;
 		if (file.isFile()) {
+			customAnnotationList = addMetaDataAnnotations(mdeMap, customAnnotationList, file);
 			ic = gateway.getImportCandidates(ctx, object, file, status);
 			if (CollectionUtils.isEmpty(ic.getContainers())) {
 				Object o = status.getImportResult();
@@ -1229,8 +1230,7 @@ class OmeroImageServiceImpl
 					status.resetFile(f);
 					if (ioContainer == null) status.setNoContainer();
 					importIc = ic.getContainers().get(0);
-          List<Annotation> newList=addMetaDataAnnotations(map, customAnnotationList, file);
-					importIc.setCustomAnnotationList(newList);
+					importIc.setCustomAnnotationList(customAnnotationList);
 					status.setUsedFiles(importIc.getUsedFiles());
 					//Check after scanning
 					if (status.isMarkedAsCancel())
@@ -1263,7 +1263,7 @@ class OmeroImageServiceImpl
 					status.setFiles(files);
 					Object v = importCandidates(ctx, files, status, object,
 							ioContainer, customAnnotationList, userID, close,
-							hcs, userName);
+							hcs, userName,mdeMap);
 					if (v != null) return v;
 				}
 			} else { //single file let's try to import it.
@@ -1279,10 +1279,8 @@ class OmeroImageServiceImpl
 					return new ImportException(
 							ImportException.FILE_NOT_VALID_TEXT);
 				}
-				
-        List<Annotation> newList=addMetaDataAnnotations(map, customAnnotationList, file);
 				importIc = icContainers.get(0);
-				importIc.setCustomAnnotationList(newList);
+				importIc.setCustomAnnotationList(customAnnotationList);
 				status.setUsedFiles(importIc.getUsedFiles());
 				//Check after scanning
 				if (status.isMarkedAsCancel())
@@ -1365,7 +1363,7 @@ class OmeroImageServiceImpl
 			    setContainerForOfflineImport(importable, ioContainer);
 			} else {
 			    importCandidates(ctx, hcsFiles, status, object,
-	                    ioContainer, customAnnotationList, userID, close, true, userName);
+	                    ioContainer, customAnnotationList, userID, close, true, userName,mdeMap);
 			}
 		}
 		if (otherFiles.size() > 0) {
@@ -1432,12 +1430,10 @@ class OmeroImageServiceImpl
 			if (isOfflineImport()) {
 			    setContainerForOfflineImport(importable, ioContainer);
 			} else {
-				//set annotation map again (seems to be overwrite/delete somewhere above)
-				object.setMapAnnotation(map);
 		         //import the files that are not hcs files.
 	            importCandidates(ctx, otherFiles, status, object,
 	                    ioContainer, customAnnotationList, userID, close, false,
-	                    userName);
+	                    userName,mdeMap);
 			}
 		}
 		return Boolean.valueOf(true);
