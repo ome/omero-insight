@@ -83,7 +83,7 @@ public class DynamicModuleTree extends JPanel {
 	
 	
 	private JPanel generateButtonPane(ActionListener l) {
-		JButton resetBtn= new JButton("Reset");
+		JButton resetBtn= new JButton("Reset object tree");
 		resetBtn.setActionCommand(RESET_TREE_CMD);
 		resetBtn.addActionListener(l);
 		resetBtn.setToolTipText("Reset object tree to initial state. Initial state of a child node is inherit last state of parent node."
