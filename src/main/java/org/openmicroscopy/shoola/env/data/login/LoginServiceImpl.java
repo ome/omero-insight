@@ -330,9 +330,9 @@ public class LoginServiceImpl
         case LoginService.VERSION_MISMATCH:
             String cv = this.getClass().getPackage().getImplementationVersion();
             if (cv == null)
-                cv = "This Insight version";
+                cv = "This "+getAgent()+" version";
             else
-                cv = "Insight version "+cv;
+                cv = getAgent()+" version "+cv;
 
             String sv = "";
             try {
