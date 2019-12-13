@@ -769,7 +769,7 @@ class TreeViewerControl
 		List<Long> owners = new ArrayList<Long>();
 		if (browser != null) {
 			selection = browser.getSelectedDataObjects();
-			if (selection == null) return null;
+			if (selection.isEmpty()) return null;
 			int count = 0;
 			j = selection.iterator();
 			Object o;

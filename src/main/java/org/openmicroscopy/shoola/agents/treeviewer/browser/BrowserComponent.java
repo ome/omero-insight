@@ -987,8 +987,8 @@ class BrowserComponent
     public List getSelectedDataObjects()
     {
     	TreeImageDisplay[] nodes = getSelectedDisplays();
-    	if (nodes == null || nodes.length == 0) return null;
-    	List<DataObject> objects = new ArrayList<DataObject>();
+		List<DataObject> objects = new ArrayList<DataObject>();
+    	if (nodes == null || nodes.length == 0) return objects;
     	Object uo;
     	for (int i = 0; i < nodes.length; i++) {
 			uo = nodes[i].getUserObject();

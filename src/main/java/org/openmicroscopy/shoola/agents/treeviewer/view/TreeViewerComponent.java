@@ -603,7 +603,7 @@ class TreeViewerComponent
 				setLeaves((TreeImageSet) display, s);
 				db = DataBrowserFactory.getDataBrowser(display);
 				list = browser.getSelectedDataObjects();
-				if (list != null && list.size() == 1) {
+				if (list.size() == 1) {
 					app = TreeViewerFactory.getApplications(
 					model.getObjectMimeType(list.get(0)));
 				}
@@ -695,7 +695,7 @@ class TreeViewerComponent
 						view.displayBrowser(db);
 					}
 					list = browser.getSelectedDataObjects();
-					if (list != null && list.size() == 1) {
+					if (list.size() == 1) {
 						app = TreeViewerFactory.getApplications(
 								model.getObjectMimeType(list.get(0)));
 					}
@@ -718,7 +718,7 @@ class TreeViewerComponent
 	        						setLeaves((TreeImageSet) parent, s);
 	        						db = DataBrowserFactory.getDataBrowser(ho);
 	        						list = browser.getSelectedDataObjects();
-	        						if (list != null && list.size() == 1) {
+	        						if (list.size() == 1) {
 	        							app = TreeViewerFactory.getApplications(
 	        							model.getObjectMimeType(list.get(0)));
 	        						}
@@ -747,7 +747,7 @@ class TreeViewerComponent
 	                					db = DataBrowserFactory.getDataBrowser(
 	                							ho);
 	                					list = browser.getSelectedDataObjects();
-	                					if (list != null && list.size() == 1) {
+	                					if (list.size() == 1) {
 	                						app = 
 	                						TreeViewerFactory.getApplications(
 	                						model.getObjectMimeType(
@@ -840,7 +840,7 @@ class TreeViewerComponent
         						db = DataBrowserFactory.getDataBrowser(
         								display.getUserObject());
         						list = browser.getSelectedDataObjects();
-        						if (list != null && list.size() == 1) {
+        						if (list.size() == 1) {
         							app = TreeViewerFactory.getApplications(
         								model.getObjectMimeType(list.get(0)));
         						}
@@ -3632,7 +3632,7 @@ class TreeViewerComponent
             return;
         List l = selection == null ? browser.getSelectedDataObjects()
                 : selection;
-	    if (l == null) return;
+	    if (l.isEmpty()) return;
 	    Iterator i = l.iterator();
 	    Object object;
 	    List<DataObject> archived = new ArrayList<DataObject>();
@@ -3729,7 +3729,7 @@ class TreeViewerComponent
 				TreeViewerAgent.getRegistry().lookup(LookupNames.ENV);
 			String dir = env.getTmpDir();
 			List l = browser.getSelectedDataObjects();
-			if (l == null) return;
+			if (l.isEmpty()) return;
 			Iterator i = l.iterator();
 			Object object;
 			OpenActivityParam activity;
@@ -3938,7 +3938,7 @@ class TreeViewerComponent
 		Browser browser = model.getSelectedBrowser();
 		if (browser == null) return;
 		List l = browser.getSelectedDataObjects();
-		if (l == null) return;
+		if (l.isEmpty()) return;
 		Map<ExperimenterData, UserCredentials>
 			map = new HashMap<ExperimenterData, UserCredentials>();
 		Iterator i = l.iterator();
@@ -4247,7 +4247,7 @@ class TreeViewerComponent
 		Browser browser = model.getSelectedBrowser();
 		if (browser == null) return;
 		List l = browser.getSelectedDataObjects();
-		if (l == null) return;
+		if (l.isEmpty()) return;
 		Map<ExperimenterData, UserCredentials>
 			map = new HashMap<ExperimenterData, UserCredentials>();
 		UserCredentials uc = new UserCredentials(exp.getUserName(), "");
@@ -4700,7 +4700,7 @@ class TreeViewerComponent
 		if (group == null) 
 			throw new IllegalArgumentException("No group to move data to.");
 		
-		if (nodes == null || nodes.size() == 0) return;
+		if (nodes.isEmpty()) return;
 		Map<SecurityContext, List<DataObject>> 
 		map = new HashMap<SecurityContext, List<DataObject>>();
 		Iterator<DataObject> i = nodes.iterator();
