@@ -329,7 +329,7 @@ public class LoginServiceImpl
             break;
         case LoginService.VERSION_MISMATCH:
             String cv = this.getClass().getPackage().getImplementationVersion();
-            if (cv == null)
+            if (cv == null || cv.isEmpty())
                 cv = "This "+getAgent()+" version";
             else
                 cv = getAgent()+" version "+cv;
