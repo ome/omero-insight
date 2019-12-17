@@ -196,8 +196,10 @@ public class MovieExportDialog
 			while (i.hasNext()) {
 				entry = (Entry) i.next();
 				data = (ChannelData) entry.getKey();
-				button = new ChannelButton(data.getChannelLabeling(), 
-						(Color) entry.getValue(), data.getIndex());
+				Color buttonColor = entry.getValue() instanceof Color ?
+						(Color) entry.getValue() : Color.LIGHT_GRAY;
+				button = new ChannelButton(data.getChannelLabeling(),
+						buttonColor, data.getIndex());
 				button.setSelected(true);
 				button.addPropertyChangeListener(new PropertyChangeListener() {
 					
