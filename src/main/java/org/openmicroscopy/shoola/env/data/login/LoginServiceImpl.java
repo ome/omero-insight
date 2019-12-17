@@ -328,12 +328,12 @@ public class LoginServiceImpl
             text = "Error: System Failure.";
             break;
         case LoginService.VERSION_MISMATCH:
-            String cv = "";
-            try {
-                cv = failureDetails.split("\\s")[2];
-            } catch (Exception e) {
-                // just ignore
-            }
+            String cv = this.getClass().getPackage().getImplementationVersion();
+            if (cv == null || cv.isEmpty())
+                cv = "This "+getAgent()+" version";
+            else
+                cv = getAgent()+" version "+cv;
+
             String sv = "";
             try {
                 String[] tmp = failureDetails.split("\\s");
@@ -342,9 +342,7 @@ public class LoginServiceImpl
             } catch (Exception e) {
                 // just ignore
             }
-            text = getAgent()+" version "+ cv
-                    + " is not compatible with the server version.\n"
-                    + "Please download the latest "+ sv + " "+getAgent()+".";
+            text = cv + " is not compatible with the server version "+sv+".";
             break;
         case LoginService.PERMISSION_INDEX:
         default:
