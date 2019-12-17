@@ -11,7 +11,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -57,12 +57,14 @@ import org.openmicroscopy.shoola.agents.fsimporter.actions.PersonalManagementAct
 import org.openmicroscopy.shoola.agents.fsimporter.actions.RetryImportAction;
 import org.openmicroscopy.shoola.agents.fsimporter.actions.SubmitFilesAction;
 import org.openmicroscopy.shoola.agents.fsimporter.chooser.ImportDialog;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
 import org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponent;
 import org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponentI;
 import org.openmicroscopy.shoola.agents.fsimporter.util.ObjectToCreate;
 import org.openmicroscopy.shoola.agents.util.ViewerSorter;
 import org.openmicroscopy.shoola.agents.util.ui.JComboBoxImageObject;
 import org.openmicroscopy.shoola.env.LookupNames;
+import org.openmicroscopy.shoola.env.data.model.ImportableFile;
 import org.openmicroscopy.shoola.env.data.model.ImportableObject;
 import org.openmicroscopy.shoola.env.data.util.Status;
 import org.openmicroscopy.shoola.env.ui.UserNotifier;
@@ -75,8 +77,8 @@ import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.GroupData;
 
-/** 
- * The {@link Importer}'s controller. 
+/**
+ * The {@link Importer}'s controller.
  *
  * @author  Jean-Marie Burel &nbsp;&nbsp;&nbsp;&nbsp;
  * <a href="mailto:j.burel@dundee.ac.uk">j.burel@dundee.ac.uk</a>
@@ -91,40 +93,40 @@ class ImporterControl
 
 	/** Action ID indicating to send the files that could not imported. */
 	static final Integer SEND_BUTTON = 0;
-	
+
 	/** Action ID indicating to close the window. */
 	static final Integer CLOSE_BUTTON = 1;
-	
+
 	/** Action ID indicating to cancel. */
 	static final Integer CANCEL_BUTTON = 2;
-	
+
 	/** Action ID indicating to retry failed import. */
 	static final Integer RETRY_BUTTON = 3;
-	
+
 	/** Action ID indicating to switch between groups. */
 	static final Integer GROUP_BUTTON = 4;
-	
+
 	/** Action ID indicating to exit the application. */
 	static final Integer EXIT = 5;
-	
+
 	/** Action ID indicating to log off the current server. */
 	static final Integer LOG_OFF = 6;
-	
-	/** 
+
+	/**
 	 * Reference to the {@link Importer} component, which, in this context,
 	 * is regarded as the Model.
 	 */
 	private Importer 		model;
-	
+
 	/** Reference to the View. */
 	private ImporterUI		view;
 
 	/** Collection of files to submit. */
 	private List<FileImportComponentI> markedFailed;
-	
+
 	/** Maps actions identifiers onto actual <code>Action</code> object. */
 	private Map<Integer, ImporterAction>	actionsMap;
-	
+
 	/** Helper method to create all the UI actions. */
 	private void createActions()
 	{
@@ -137,10 +139,10 @@ class ImporterControl
 		actionsMap.put(EXIT, new ExitAction(model));
 		actionsMap.put(LOG_OFF, new LogOffAction(model));
 	}
-	
-	/** 
-	 * Creates the windowsMenuItems. 
-	 * 
+
+	/**
+	 * Creates the windowsMenuItems.
+	 *
 	 * @param menu The menu to handle.
 	 */
 	private void createWindowsMenuItems(JMenu menu)
@@ -148,7 +150,7 @@ class ImporterControl
 		menu.removeAll();
 		menu.add(new ActivateAction(model));
 	}
-	
+
 	/** Attaches listener to the window listener. */
 	private void attachListeners()
 	{
@@ -167,24 +169,24 @@ class ImporterControl
 		menu.addMenuListener(new MenuListener() {
 
 			public void menuSelected(MenuEvent e)
-			{ 
+			{
 				Object source = e.getSource();
 				if (source instanceof JMenu)
 					createWindowsMenuItems((JMenu) source);
 			}
 
-			/** 
-			 * Required by I/F but not actually needed in our case, 
+			/**
+			 * Required by I/F but not actually needed in our case,
 			 * no-operation implementation.
 			 * @see MenuListener#menuCanceled(MenuEvent)
-			 */ 
+			 */
 			public void menuCanceled(MenuEvent e) {}
 
-			/** 
-			 * Required by I/F but not actually needed in our case, 
+			/**
+			 * Required by I/F but not actually needed in our case,
 			 * no-operation implementation.
 			 * @see MenuListener#menuDeselected(MenuEvent)
-			 */ 
+			 */
 			public void menuDeselected(MenuEvent e) {}
 
 		});
@@ -199,15 +201,15 @@ class ImporterControl
 					createWindowsMenuItems((JMenu) source);
 			}
 
-			/** 
-			 * Required by I/F but not actually needed in our case, 
+			/**
+			 * Required by I/F but not actually needed in our case,
 			 * no-operation implementation.
 			 * @see MenuKeyListener#menuKeyPressed(MenuKeyEvent)
 			 */
 			public void menuKeyPressed(MenuKeyEvent e) {}
 
-			/** 
-			 * Required by I/F but not actually needed in our case, 
+			/**
+			 * Required by I/F but not actually needed in our case,
 			 * no-operation implementation.
 			 * @see MenuKeyListener#menuKeyTyped(MenuKeyEvent)
 			 */
@@ -215,14 +217,14 @@ class ImporterControl
 
 		});
 	}
-	
+
 	/**
 	 * Creates a new instance.
-	 * The {@link #initialize(FSImportUI) initialize} method 
-	 * should be called straight 
+	 * The {@link #initialize(FSImportUI) initialize} method
+	 * should be called straight
 	 * after to link this Controller to the other MVC components.
-	 * 
-	 * @param model  Reference to the {@link Importer} component, which, in 
+	 *
+	 * @param model  Reference to the {@link Importer} component, which, in
 	 *               this context, is regarded as the Model.
 	 *               Mustn't be <code>null</code>.
 	 */
@@ -231,10 +233,10 @@ class ImporterControl
 		if (model == null) throw new NullPointerException("No model.");
 		this.model = model;
 	}
-	
+
 	/**
 	 * Links this Controller to its View.
-	 * 
+	 *
 	 * @param view   Reference to the View. Mustn't be <code>null</code>.
 	 */
 	void initialize(ImporterUI view)
@@ -245,19 +247,19 @@ class ImporterControl
 		attachListeners();
 		ImporterFactory.attachWindowMenuToTaskBar();
 	}
-	
+
 	/**
 	 * Returns the action corresponding to the specified id.
-	 * 
+	 *
 	 * @param id One of the flags defined by this class.
 	 * @return The specified action.
 	 */
 	ImporterAction getAction(Integer id) { return actionsMap.get(id); }
 
-	
+
 	/**
-	 * Submits the files that failed to import. 
-	 * 
+	 * Submits the files that failed to import.
+	 *
 	 * @param fc The component to handle or <code>null</code>.
 	 */
 	void submitFiles(FileImportComponentI fc)
@@ -269,7 +271,7 @@ class ImporterControl
 		} else {
 			list = view.getMarkedFiles();
 		}
-		
+
 		markedFailed = list;
 		//Now prepare the list of object to send.
 		Iterator<FileImportComponentI> i = list.iterator();
@@ -313,14 +315,14 @@ class ImporterControl
             }
         }
 		UserNotifier un = ImporterAgent.getRegistry().getUserNotifier();
-		un.notifyError("Import Failures", "Files that failed to import", email, 
+		un.notifyError("Import Failures", "Files that failed to import", email,
 				toSubmit, this);
 	}
 
-	
+
 	/**
 	 * Returns the list of group the user is a member of.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	List<GroupSelectionAction> getUserGroupAction()
@@ -338,14 +340,31 @@ class ImporterControl
 		}
 		return l;
 	}
-	
+
 	/**
 	 * Returns <code>true</code> if the agent is the entry point
 	 * <code>false</code> otherwise.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	boolean isMaster() { return view.isMaster(); }
+
+	/**
+		* Disable the Cancel All button if there are no cancellable imports.
+		*/
+	 private void checkDisableCancelAllButtons() {
+			 final ImporterAction cancelAction = actionsMap.get(CANCEL_BUTTON);
+			 if (!cancelAction.isEnabled()) {
+					 return;
+			 }
+			 for (final ImporterUIElement importerUIElement : view.getImportElements()) {
+				 if (importerUIElement.hasImportToCancel()) {
+							 return;
+					 }
+			 }
+			 cancelAction.setEnabled(false);
+ }
+
 
         /**
          * Reacts to property changes.
@@ -365,13 +384,16 @@ class ImporterControl
                 SwingUtilities.invokeLater(run);
             }
         }
-    
+
         /**
          * Handles a PropertyChangedEvent
          * @param evt The event
          */
         private void handlePropertyChangedEvent(PropertyChangeEvent evt) {
             String name = evt.getPropertyName();
+						if(ImportDialog.START_IMPORT_PROPERTY.equals(name)){
+							view.startImport();
+						}
             if (ImportDialog.IMPORT_PROPERTY.equals(name)) {
                 actionsMap.get(CANCEL_BUTTON).setEnabled(true);
                 model.importData((ImportableObject) evt.getNewValue());
@@ -392,39 +414,55 @@ class ImporterControl
                     view.appendDebugText((String) evt.getNewValue());
             } else if (MacOSMenuHandler.QUIT_APPLICATION_PROPERTY.equals(name)) {
                     Action a = getAction(EXIT);
-                    ActionEvent event = 
+                    ActionEvent event =
                             new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "");
                     a.actionPerformed(event);
             } else if (ImportDialog.PROPERTY_GROUP_CHANGED.equals(name)) {
                     GroupData newGroup = (GroupData) evt.getNewValue();
                     model.setUserGroup(newGroup);
+						} else if (Status.FILE_IMPORT_STARTED_PROPERTY.equals(name) ||
+								 		FileImportComponent.CANCEL_IMPORT_PROPERTY.equals(name)) {
+						 				checkDisableCancelAllButtons();
             } else if (Status.IMPORT_DONE_PROPERTY.equals(name)) {
                     model.onImportComplete((FileImportComponentI) evt.getNewValue());
+										view.deleteMapAnnotations();
             } else if (Status.UPLOAD_DONE_PROPERTY.equals(name)) {
                     model.onUploadComplete((FileImportComponentI) evt.getNewValue());
-            }
+            } else if(ImportDialog.REFRESH_FILE_LIST.equals(name)){
+    								view.refreshMetaFileView((List<ImportableFile>) evt.getNewValue());
+    				} else if(ImportDialog.ADD_AND_REFRESH_FILE_LIST.equals(name)){
+//    			view.addAndRefreshMetaFileView( (File[]) evt.getNewValue());
+//    			view.addToMetaDataFileMap((File[])evt.getNewValue());
+//    			model.setMetaDataText(((File[])evt.getNewValue())!=null );
+    				} else if(ImportDialog.SHOW_METADATA_DIALOG.equals(name)){
+    							view.showMetaDataDialog();
+    				}else if(ImportDialog.ADD_MAP_ANNOTATION.equals(name)){
+    							view.setMapAnnotation((MapAnnotationObject) evt.getNewValue());
+    				}else if(ImportDialog.REFRESH_TITLE.equals(name)) {
+    							view.setNewTitle((String) evt.getNewValue());
+    				}
         }
 
-	/** 
+	/**
 	 * Re-uploads the file.
-	 * 
+	 *
 	 * @param fc The file to upload.
 	 */
 	void retryUpload(FileImportComponent fc)
 	{
 		model.retryUpload(fc);
 	}
-	
-	/** 
+
+	/**
 	 * Re-uploads the file.
-	 * 
+	 *
 	 * @param fc The file to upload.
 	 */
 	void cancel(FileImportComponentI fc)
 	{
 		model.onUploadComplete(fc);
 	}
-	
+
 	/**
 	 * Handles group selection.
 	 * @see ActionListener#actionPerformed(ActionEvent)
@@ -443,5 +481,5 @@ class ImporterControl
 			}
 		}
 	}
-	
+
 }

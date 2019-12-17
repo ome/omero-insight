@@ -678,6 +678,7 @@ public class DataServicesFactory
 				reg.bind(LookupNames.PRIV_SUDO, registry.lookup(LookupNames.PRIV_SUDO));
 				reg.bind(LookupNames.PRIV_UPLOAD_SCRIPT, registry.lookup(LookupNames.PRIV_UPLOAD_SCRIPT));
 				reg.bind(LookupNames.OFFLINE_IMPORT_ENABLED, registry.lookup(LookupNames.OFFLINE_IMPORT_ENABLED));
+                reg.bind(LookupNames.MDE_IMPORT_ENABLED, registry.lookup(LookupNames.MDE_IMPORT_ENABLED));
 			}
 		}
 	}

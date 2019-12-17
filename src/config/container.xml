@@ -98,6 +98,8 @@
     <entry name="/services/LOG/dir">log</entry>
     <!-- The name of the log file -->
     <entry name="/services/LOG/file">omeroinsight.log</entry>
+    <!-- Indicate to print out the log in the console -->
+    <entry name="/services/LOG/output/console" type="boolean">false</entry>
 
     <!-- Enables/disables the Caching Service. -->
     <entry name="/services/CACHE/on" type="boolean">true</entry>
@@ -183,6 +185,8 @@
     <!-- URL to do offline import -->
     <entry name="omero.client.import.offline.url">http://localhost:8000/ome/import</entry>
     <entry name="omero.client.import.offline.enabled" type="boolean">false</entry>
+    <!-- mde on/off -->
+    <entry name="omero.client.import.mde.enabled" type="boolean">false</entry>
   </services>
 
   <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

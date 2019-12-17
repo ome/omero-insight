@@ -11,7 +11,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
@@ -62,6 +63,9 @@ import omero.model.Channel;
 import omero.model.Dataset;
 import omero.model.IObject;
 import omero.model.Image;
+import omero.model.MapAnnotation;
+import omero.model.MapAnnotationI;
+import omero.model.NamedValue;
 import omero.model.Pixels;
 import omero.model.Project;
 import omero.model.ProjectDatasetLink;
@@ -124,8 +128,9 @@ import omero.gateway.model.PixelsData;
 import omero.gateway.model.ROIData;
 import omero.gateway.model.ScreenData;
 import omero.gateway.model.TagAnnotationData;
+import omero.gateway.model.MapAnnotationData;
 
-/** 
+/**
 * Implementation of the {@link OmeroImageService} I/F.
 *
 * @author  Jean-Marie Burel &nbsp;&nbsp;&nbsp;&nbsp;
@@ -140,20 +145,20 @@ class OmeroImageServiceImpl
 
 	/** The collection of supported file filters. */
 	private FileFilter[] filters;
-	
+
 	/** Uses it to gain access to the container's services. */
 	private Registry context;
 
 	/** Reference to the entry point to access the <i>OMERO</i> services. */
 	private OMEROGateway gateway;
-	
+
 	/** Lookup tables cache (they are not likely to change during a session) */
 	private static Collection<String> LOOKUP_TABLES;
 
 	/**
 	 * Returns <code>true</code> if the files are put on import queue,
 	 * <code>false</code>.
-	 * 
+	 *
 	 * @return See above
 	 */
 	private boolean isOfflineImport() {
@@ -179,23 +184,23 @@ class OmeroImageServiceImpl
             }
         }
     }
-   
+
 	/**
 	 * Returns the number of rendering engines to initialize or reload.
-	 * 
+	 *
 	 * @param ctx The security context.
 	 * @param pixelsID The id of pixels set.
 	 * @return See above.
 	 * @throws DSOutOfServiceException  If the connection is broken, or logged
 	 *                                  in.
-	 * @throws DSAccessException        If an error occurred while trying to 
+	 * @throws DSAccessException        If an error occurred while trying to
 	 *                                  retrieve data from OMEDS service.
 	 */
 	private int getNumberOfRenderingEngines(SecurityContext ctx, long pixelsID)
 			throws DSOutOfServiceException, DSAccessException
 	{
 		int number = 1;
-		Integer workers = 
+		Integer workers =
 				(Integer) context.lookup(LookupNames.RE_WORKER);
 		if (workers != null) {
 			number = workers.intValue();
@@ -204,10 +209,10 @@ class OmeroImageServiceImpl
 		if (!gateway.isLargeImage(ctx, pixelsID)) number = 1;
 		return number;
 	}
-	
+
 	/**
 	 * Imports the specified candidates.
-	 * 
+	 *
 	 * @param ctx The security context.
 	 * @param candidates The file to import.
 	 * @param status The original status.
@@ -222,13 +227,14 @@ class OmeroImageServiceImpl
 		Map<File, Status> files, Status status,
 		ImportableObject object, IObject ioContainer,
 		List<Annotation> list, long userID, boolean close, boolean hcs,
-		String userName)
+		String userName,Map<String,List<MapAnnotationData>> map)
 	throws DSAccessException, DSOutOfServiceException
 	{
 		if (status.isMarkedAsCancel()) {
 			if (close) gateway.closeImport(ctx, userName);
 			return Boolean.valueOf(false);
 		}
+
 		Entry<File, Status> entry;
 		Iterator<Entry<File, Status>> jj = files.entrySet().iterator();
 		Status label = null;
@@ -243,7 +249,7 @@ class OmeroImageServiceImpl
 			entry = jj.next();
 			file = (File) entry.getKey();
 			if (hcs && !file.getName().endsWith(ImportableObject.DAT_EXTENSION))
-				if (ioContainer != null && 
+				if (ioContainer != null &&
 					!(ioContainer.getClass().equals(Screen.class) ||
 					ioContainer.getClass().equals(ScreenI.class)))
 					ioContainer = null;
@@ -271,7 +277,8 @@ class OmeroImageServiceImpl
 							label.setCallback(Boolean.valueOf(false));
 						else {
 							importIc = icContainers.get(0);
-							importIc.setCustomAnnotationList(list);
+							importIc.setCustomAnnotationList(addMetaDataAnnotations(map, list, file));
+							
 							label.setCallback(gateway.importImageFile(ctx,
 									object, ioContainer, importIc,
 									label, toClose, userName));
@@ -289,9 +296,9 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Returns <code>true</code> if the binary data are available, 
+	 * Returns <code>true</code> if the binary data are available,
 	 * <code>false</code> otherwise.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	private boolean isBinaryAvailable()
@@ -300,15 +307,15 @@ class OmeroImageServiceImpl
 		if (b == null) return true;
 		return b.booleanValue();
 	}
-	
+
 	/**
 	 * Creates a <code>BufferedImage</code> from the passed array of bytes.
-	 * 
+	 *
 	 * @param values    The array of bytes.
 	 * @return See above.
 	 * @throws RenderingServiceException If we cannot create an image.
 	 */
-	private BufferedImage createImage(byte[] values) 
+	private BufferedImage createImage(byte[] values)
 		throws RenderingServiceException
 	{
 		try {
@@ -321,12 +328,12 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Creates a <code>BufferedImage</code> from the passed array of bytes.
-	 * 
+	 *
 	 * @param values    The array of bytes.
 	 * @return See above.
 	 * @throws RenderingServiceException If we cannot create an image.
 	 */
-	private BufferedImage createImage(String path) 
+	private BufferedImage createImage(String path)
 		throws FSAccessException
 	{
 		try {
@@ -335,11 +342,11 @@ class OmeroImageServiceImpl
 			throw new FSAccessException("Cannot create buffered image",
 					e);
 		}
-	} 
+	}
 
 	/**
 	 * Recycles or creates the container.
-	 * 
+	 *
 	 * @param ctx The security context.
 	 * @param dataset The dataset to create or recycle.
 	 * @param container The container to create and link the dataset to.
@@ -347,8 +354,8 @@ class OmeroImageServiceImpl
 	 * @param userName The name of the user to create the data for.
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
-	 * @throws DSAccessException If an error occurred while trying to 
-	 * retrieve data from OMERO service. 
+	 * @throws DSAccessException If an error occurred while trying to
+	 * retrieve data from OMERO service.
 	 */
 	private IObject determineContainer(SecurityContext ctx, DatasetData dataset,
 		DataObject container, ImportableObject object, String userName)
@@ -360,11 +367,11 @@ class OmeroImageServiceImpl
 		IObject project = null;
 		IObject link;
 		if (dataset != null) { //dataset
-			if (dataset.getId() <= 0) { 
+			if (dataset.getId() <= 0) {
 				//Check if it has been already been created.
 				//need to create it first
 				if (container != null) {
-					if (container.getId() <= 0) { 
+					if (container.getId() <= 0) {
 						//project needs to be created to.
 						createdData = object.hasObjectBeenCreated(
 								container, ctx);
@@ -377,19 +384,19 @@ class OmeroImageServiceImpl
 									PojoMapper.asDataObject(
 									project));
 							//now create the dataset
-							ioContainer = gateway.saveAndReturnObject(ctx, 
+							ioContainer = gateway.saveAndReturnObject(ctx,
 									dataset.asIObject(), parameters, userName);
 							//register
 							object.registerDataset(
 									project.getId().getValue(),
-									(DatasetData) 
+									(DatasetData)
 									PojoMapper.asDataObject(
 									ioContainer));
-							link = (ProjectDatasetLink) 
+							link = (ProjectDatasetLink)
 							ModelMapper.linkParentToChild(
-									(Dataset) ioContainer, 
+									(Dataset) ioContainer,
 									(Project) project);
-							link = (ProjectDatasetLink) 
+							link = (ProjectDatasetLink)
 							gateway.saveAndReturnObject(ctx, link,
 									parameters, userName);
 						} else {
@@ -403,14 +410,14 @@ class OmeroImageServiceImpl
 								//register
 								object.registerDataset(
 										createdData.getId(),
-										(DatasetData) 
+										(DatasetData)
 										PojoMapper.asDataObject(
 										ioContainer));
-								link = (ProjectDatasetLink) 
+								link = (ProjectDatasetLink)
 								ModelMapper.linkParentToChild(
-										(Dataset) ioContainer, 
+										(Dataset) ioContainer,
 										(Project) createdData.asProject());
-								link = (ProjectDatasetLink) 
+								link = (ProjectDatasetLink)
 								gateway.saveAndReturnObject(ctx, link,
 										parameters, userName);
 							} else ioContainer = d.asIObject();
@@ -425,22 +432,22 @@ class OmeroImageServiceImpl
 							//register
 							object.registerDataset(
 									container.getId(),
-									(DatasetData) 
+									(DatasetData)
 									PojoMapper.asDataObject(
 									ioContainer));
 							//Check that the project still exists
 							IObject ho = gateway.findIObject(ctx,
 									container.asIObject());
 							if (ho != null) {
-								link = (ProjectDatasetLink) 
+								link = (ProjectDatasetLink)
 								ModelMapper.linkParentToChild(
 									(Dataset) ioContainer,
 									(Project) container.asProject());
-									link = (ProjectDatasetLink) 
+									link = (ProjectDatasetLink)
 									gateway.saveAndReturnObject(ctx, link,
 										parameters, userName);
 							}
-							
+
 						} else ioContainer = createdData.asIObject();
 					}
 				} else { //dataset w/o project.
@@ -456,7 +463,7 @@ class OmeroImageServiceImpl
 			} else ioContainer = dataset.asIObject();
 		} else { //check on the container.
 			if (container != null) {
-				if (container.getId() <= 0) { 
+				if (container.getId() <= 0) {
 					//container needs to be created to.
 					createdData = object.hasObjectBeenCreated(
 							container, ctx);
@@ -476,10 +483,10 @@ class OmeroImageServiceImpl
 		//Check that the container still exist
 		return gateway.findIObject(ctx, ioContainer);
 	}
-	
+
 	/**
 	 * Creates a new instance.
-	 * 
+	 *
 	 * @param gateway   Reference to the OMERO entry point.
 	 *                  Mustn't be <code>null</code>.
 	 * @param registry  Reference to the registry. Mustn't be <code>null</code>.
@@ -493,20 +500,20 @@ class OmeroImageServiceImpl
 		context = registry;
 		this.gateway = gateway;
 	}
-	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#loadRenderingControl(SecurityContext, long)
 	 */
 	public RenderingControl loadRenderingControl(SecurityContext ctx,
 		long pixelsID)
 		throws DSOutOfServiceException, DSAccessException, FSAccessException
 	{
-		RenderingControl proxy = 
-			PixelsServicesFactory.getRenderingControl(context, 
+		RenderingControl proxy =
+			PixelsServicesFactory.getRenderingControl(context,
 					Long.valueOf(pixelsID), true);
 		if (proxy == null) {
-			UserCredentials uc = 
+			UserCredentials uc =
 				(UserCredentials) context.lookup(LookupNames.USER_CREDENTIALS);
 			int compressionLevel;
 			switch (uc.getSpeedLevel()) {
@@ -519,11 +526,11 @@ class OmeroImageServiceImpl
 				default:
 					compressionLevel = RenderingControl.UNCOMPRESSED;
 			}
-			
+
 			Pixels pixels = gateway.getPixels(ctx, pixelsID);
 			if (pixels == null) return null;
 			int number = getNumberOfRenderingEngines(ctx, pixelsID);
-			
+
 			ExperimenterData exp = (ExperimenterData) context.lookup(
 					LookupNames.CURRENT_USER_DETAILS);
 			List<RenderingEnginePrx> reList =
@@ -542,10 +549,10 @@ class OmeroImageServiceImpl
 				m.add(new ChannelData(index, i.next()));
 				index++;
 			}
-			
+
 			proxy = PixelsServicesFactory.createRenderingControl(context, ctx,
 					reList, pixels, m, compressionLevel, defs);
-			
+
 			proxy.setAvailableLookupTables(getLookupTables(ctx));
 		}
 		return proxy;
@@ -553,7 +560,7 @@ class OmeroImageServiceImpl
 
     /**
      * Get the lookup tables
-     * 
+     *
      * @param ctx
      *            The SecurityContext
      * @return See above
@@ -571,9 +578,9 @@ class OmeroImageServiceImpl
         }
         return Collections.emptyList();
     }
-	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#renderImage(SecurityContext, long, PlaneDef,
 	 * boolean, int)
 	 */
@@ -589,7 +596,7 @@ class OmeroImageServiceImpl
 		}
 	}
 
-	/** 
+	/**
 	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#isAlive(SecurityContext)
 	 */
@@ -598,8 +605,8 @@ class OmeroImageServiceImpl
 	    return gateway.getGateway().isAlive(ctx);
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#shutDown(SecurityContext,long)
 	 */
 	public void shutDown(SecurityContext ctx, long pixelsID)
@@ -612,9 +619,9 @@ class OmeroImageServiceImpl
 			context.getLogger().error(this, e.getMessage());
 		}
 	}
-	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getThumbnail(SecurityContext, long, int, int, long)
 	 */
 	public BufferedImage getThumbnail(SecurityContext ctx,long pixID, int sizeX,
@@ -635,8 +642,8 @@ class OmeroImageServiceImpl
 		}
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getThumbnailSet(SecurityContext, List, int)
 	 */
 	public Map<Long, BufferedImage> getThumbnailSet(SecurityContext ctx,
@@ -644,7 +651,7 @@ class OmeroImageServiceImpl
 		throws RenderingServiceException
 	{
 		Map<Long, BufferedImage> r = new HashMap<Long, BufferedImage>();
-		
+
 		List<Long> ids = new ArrayList<Long>();
 		Iterator i;
 		try {
@@ -685,12 +692,12 @@ class OmeroImageServiceImpl
 			//m = gateway.getThumbnailSet(pixelsID, max, false);
 			if (m == null || m.size() == 0) {
 				i = ids.iterator();
-				while (i.hasNext()) 
+				while (i.hasNext())
 					r.put((Long) i.next(), null);
 				return r;
 			}
 			i = m.keySet().iterator();
-			
+
 			byte[] values;
 			while (i.hasNext()) {
 				id = (Long) i.next();
@@ -707,24 +714,24 @@ class OmeroImageServiceImpl
 				}
 			}
 			//could not get a thumbnail for remaining images
-			if (ids.size() > 0) { 
+			if (ids.size() > 0) {
 				i = ids.iterator();
-				while (i.hasNext()) 
+				while (i.hasNext())
 					r.put((Long) i.next(), null);
 			}
 			return r;
 		} catch (Exception e) {
 			context.getLogger().error(this, e.getMessage());
-			if (ids.size() > 0) { 
+			if (ids.size() > 0) {
 				i = ids.iterator();
-				while (i.hasNext()) 
+				while (i.hasNext())
 					r.put((Long) i.next(), null);
-			} 
+			}
 			return r;
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#reloadRenderingService(SecurityContext, long)
 	 */
@@ -752,17 +759,17 @@ class OmeroImageServiceImpl
 					"rendering engine for : "+pixelsID, e);
 		}
 	}
-	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#resetRenderingService(SecurityContext, long)
 	 */
 	public RenderingControl resetRenderingService(SecurityContext ctx,
 		long pixelsID)
 		throws RenderingServiceException
 	{
-		RenderingControl proxy = 
-			PixelsServicesFactory.getRenderingControl(context, 
+		RenderingControl proxy =
+			PixelsServicesFactory.getRenderingControl(context,
 					Long.valueOf(pixelsID), false);
 		if (proxy == null) return null;
 		try {
@@ -789,40 +796,40 @@ class OmeroImageServiceImpl
 		}
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#loadPixels(SecurityContext, long)
 	 */
 	public PixelsData loadPixels(SecurityContext ctx, long pixelsID)
 		throws DSOutOfServiceException, DSAccessException
 	{
-		if (pixelsID < 0) 
+		if (pixelsID < 0)
 			throw new IllegalArgumentException("Pixels' ID not valid.");
 		return (PixelsData) PojoMapper.asDataObject(
 				gateway.getPixels(ctx, pixelsID));
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getPlane(SecurityContext, long, int, int, int)
 	 */
 	public byte[] getPlane(SecurityContext ctx, long pixelsID, int z, int t,
 			int c)
 		throws DSOutOfServiceException, DSAccessException, FSAccessException
 	{
-		if (pixelsID < 0) 
+		if (pixelsID < 0)
 			throw new IllegalArgumentException("Pixels' ID not valid.");
 		return gateway.getPlane(ctx, pixelsID, z, t, c);
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#pasteRenderingSettings(SecurityContext, long,
 	 * Class, List)
 	 */
 	public Map pasteRenderingSettings(SecurityContext ctx, long pixelsID,
-		Class rootNodeType, List nodesID) 
-		throws DSOutOfServiceException, DSAccessException 
+		Class rootNodeType, List nodesID)
+		throws DSOutOfServiceException, DSAccessException
 	{
 		if (nodesID == null || nodesID.size() == 0)
 			throw new IllegalArgumentException("No nodes specified.");
@@ -830,59 +837,59 @@ class OmeroImageServiceImpl
 				nodesID);
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#resetRenderingSettings(Class, List)
 	 */
 	public Map resetRenderingSettings(SecurityContext ctx, Class rootNodeType,
-		List nodesID) 
-		throws DSOutOfServiceException, DSAccessException 
+		List nodesID)
+		throws DSOutOfServiceException, DSAccessException
 	{
 		if (nodesID == null || nodesID.size() == 0)
 			throw new IllegalArgumentException("No nodes specified.");
 		return gateway.resetRenderingSettings(ctx, rootNodeType, nodesID);
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#setMinMaxSettings(SecurityContext, Class, List)
 	 */
 	public Map setMinMaxSettings(SecurityContext ctx, Class rootNodeType,
-			List nodesID) 
-		throws DSOutOfServiceException, DSAccessException 
+			List nodesID)
+		throws DSOutOfServiceException, DSAccessException
 	{
 		if (nodesID == null || nodesID.size() == 0)
 			throw new IllegalArgumentException("No nodes specified.");
 		return gateway.setMinMaxSettings(ctx, rootNodeType, nodesID);
 	}
-	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#setOwnerRenderingSettings(SecurityContext, Class,
 	 * List)
 	 */
 	public Map setOwnerRenderingSettings(SecurityContext ctx,
-			Class rootNodeType, List nodesID) 
-		throws DSOutOfServiceException, DSAccessException 
+			Class rootNodeType, List nodesID)
+		throws DSOutOfServiceException, DSAccessException
 	{
 		if (nodesID == null || nodesID.size() == 0)
 			throw new IllegalArgumentException("No nodes specified.");
 		return gateway.setOwnerRenderingSettings(ctx, rootNodeType, nodesID);
 	}
-	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getRenderingSettings(ctx, long, long)
 	 */
 	public Map<DataObject, Collection<RndProxyDef>> getRenderingSettings(
-	        SecurityContext ctx, long pixelsID, long userID) 
+	        SecurityContext ctx, long pixelsID, long userID)
 		throws DSOutOfServiceException, DSAccessException
 	{
 		return gateway.getRenderingSettings(ctx, pixelsID, userID);
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getRenderingSettingsFor(long, long)
 	 */
 	public List<RndProxyDef> getRenderingSettingsFor(SecurityContext ctx,
@@ -891,9 +898,9 @@ class OmeroImageServiceImpl
 	{
 		return gateway.getRenderingSettingsFor(ctx, pixelsID, userID);
 	}
-	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#renderProjected(SecurityContext, long, int, int,
 	 * int, int, List)
 	 */
@@ -905,8 +912,8 @@ class OmeroImageServiceImpl
 				endZ, type, stepping, channels);
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#projectImage(SecurityContext, ProjectionParam)
 	 */
 	public ImageData projectImage(SecurityContext ctx, ProjectionParam ref)
@@ -914,13 +921,13 @@ class OmeroImageServiceImpl
 	{
 		if (ref == null) return null;
 		ImageData image = gateway.projectImage(ctx, ref.getPixelsID(),
-				ref.getStartT(), ref.getEndT(), ref.getStartZ(), 
+				ref.getStartT(), ref.getEndT(), ref.getStartZ(),
 				ref.getEndZ(), ref.getStepping(), ref.getProjectionType(),
 				ref.getChannels(), ref.getName(), ref.getPixelsType());
 		if (image == null) return null;
 		Image img = image.asImage();
 		img.setDescription(omero.rtypes.rstring(ref.getDescription()));
-		image = (ImageData) 
+		image = (ImageData)
 			PojoMapper.asDataObject(gateway.updateObject(ctx, img,
 					new Parameters()));
 		image = gateway.getImage(ctx, image.getId(), new Parameters());
@@ -943,7 +950,7 @@ class OmeroImageServiceImpl
 					existing.add((DatasetData)
 						svc.createDataObject(ctx, i.next(),
 							ref.getDatasetParent(), null));
-				} 
+				}
 			}
 			List<IObject> links = new ArrayList<IObject>(datasets.size());
 			img = image.asImage();
@@ -958,13 +965,13 @@ class OmeroImageServiceImpl
 		return image;
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#createRenderingSettings(SecurityContext, long,
 	 * RndProxyDef, List)
 	 */
 	public Boolean createRenderingSettings(SecurityContext ctx, long pixelsID,
-		RndProxyDef rndToCopy, List<Integer> indexes) 
+		RndProxyDef rndToCopy, List<Integer> indexes)
 		throws DSOutOfServiceException, DSAccessException, FSAccessException
 	{
 		if (rndToCopy == null) {
@@ -982,12 +989,12 @@ class OmeroImageServiceImpl
 			throw new DSAccessException("Unable to copy the " +
 					"rendering settings.");
 		}
-		
+
 		return Boolean.TRUE;
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#loadPlaneInfo(SecurityContext, long, int, int, int)
 	 */
 	public Collection loadPlaneInfo(SecurityContext ctx, long pixelsID, int z,
@@ -996,11 +1003,11 @@ class OmeroImageServiceImpl
 	{
 		return gateway.loadPlaneInfo(ctx, pixelsID, z, t, channel);
 	}
-	
+
 	/**
 	 * Returns <code>true</code> if the containers are <code>HCS</code>
 	 * containers, <code>false</code> otherwise.
-	 * 
+	 *
 	 * @param containers The collection to handle.
 	 * @return See above.
 	 */
@@ -1016,9 +1023,9 @@ class OmeroImageServiceImpl
 		}
 		return count == containers.size();
 	}
-	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#importFile(ImportableObject,
 	 * ImportableFile, long, long, boolean)
 	 */
@@ -1028,6 +1035,11 @@ class OmeroImageServiceImpl
 		if (importable == null || importable.getFile() == null)
 			throw new IllegalArgumentException("No images to import.");
 		Status status = importable.getStatus();
+   
+		// save the mdeMap
+		Map<String,List<MapAnnotationData>> mdeMap=new HashMap<>();
+		mdeMap.putAll(object.getCloneOfMap(object.getMap()));
+		
 		SecurityContext ctx = new SecurityContext(importable.getGroup().getId());
 		//If import as.
 		ExperimenterData loggedIn = context.getAdminService().getUserDetails();
@@ -1097,6 +1109,7 @@ class OmeroImageServiceImpl
 		ImportContainer importIc;
 		List<ImportContainer> icContainers;
 		if (file.isFile()) {
+			customAnnotationList = addMetaDataAnnotations(mdeMap, customAnnotationList, file);
 			ic = gateway.getImportCandidates(ctx, object, file, status);
 			if (CollectionUtils.isEmpty(ic.getContainers())) {
 				Object o = status.getImportResult();
@@ -1250,7 +1263,7 @@ class OmeroImageServiceImpl
 					status.setFiles(files);
 					Object v = importCandidates(ctx, files, status, object,
 							ioContainer, customAnnotationList, userID, close,
-							hcs, userName);
+							hcs, userName,mdeMap);
 					if (v != null) return v;
 				}
 			} else { //single file let's try to import it.
@@ -1350,7 +1363,7 @@ class OmeroImageServiceImpl
 			    setContainerForOfflineImport(importable, ioContainer);
 			} else {
 			    importCandidates(ctx, hcsFiles, status, object,
-	                    ioContainer, customAnnotationList, userID, close, true, userName);
+	                    ioContainer, customAnnotationList, userID, close, true, userName,mdeMap);
 			}
 		}
 		if (otherFiles.size() > 0) {
@@ -1400,7 +1413,7 @@ class OmeroImageServiceImpl
 					}
 				} catch (Exception e) {
 				}
-			} else { //folder 
+			} else { //folder
 				if (dataset != null) { //dataset
 					try {
 						ioContainer = determineContainer(ctx, dataset,
@@ -1420,14 +1433,31 @@ class OmeroImageServiceImpl
 		         //import the files that are not hcs files.
 	            importCandidates(ctx, otherFiles, status, object,
 	                    ioContainer, customAnnotationList, userID, close, false,
-	                    userName);
+	                    userName,mdeMap);
 			}
 		}
 		return Boolean.valueOf(true);
 	}
 	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	private List<Annotation> addMetaDataAnnotations(Map<String,List<MapAnnotationData>> map, List<Annotation> customAnnotationList, File file)
+	{
+		List<Annotation> result=customAnnotationList;
+		if((Boolean) context.lookup(LookupNames.MDE_IMPORT_ENABLED) && map!=null && !map.isEmpty()){
+			List<MapAnnotationData> maps=map.get(file.getAbsolutePath());
+			// for seriesData and single file
+			if(maps!=null){
+				result=new ArrayList<Annotation>(customAnnotationList);
+				for(MapAnnotationData m:maps){
+					if(m!=null)
+						result.add((Annotation) m.asIObject());
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getSupportedFileFormats()
 	 */
 	public FileFilter[] getSupportedFileFormats()
@@ -1450,8 +1480,8 @@ class OmeroImageServiceImpl
 		return filters;
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#createMovie(SecurityContext, long, long, List,
 	 * MovieExportParam)
 	 */
@@ -1471,9 +1501,9 @@ class OmeroImageServiceImpl
 		return gateway.createMovie(ctx, imageID, pixelsID, exp.getId(),
 				channels, param);
 	}
-	
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#loadROI(SecurityContext, long, List, long)
 	 */
 	public List<ROIResult> loadROI(SecurityContext ctx, long imageID,
@@ -1485,8 +1515,8 @@ class OmeroImageServiceImpl
 		return gateway.loadROI(ctx, imageID, fileID, userID);
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#saveROI(SecurityContext, long, long, List)
 	 */
 	public Collection<ROIData> saveROI(SecurityContext ctx, long imageID, long userID,
@@ -1539,7 +1569,7 @@ class OmeroImageServiceImpl
                 in = new FileInputStream(inputXML);
                 transformer.transform(new StreamSource(in),
                         new StreamResult(out));
-                inputXML = output; 
+                inputXML = output;
             } catch (Exception e) {
                 throw new Exception("Cannot apply transform", e);
             } finally {
@@ -1555,8 +1585,8 @@ class OmeroImageServiceImpl
         return f;
     }
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#exportImageAsOMEObject(SecurityContext, int, long,
 	 * File, Target)
 	 */
@@ -1593,7 +1623,7 @@ class OmeroImageServiceImpl
 		List<InputStream> transforms = target.getTransforms();
 		if (CollectionUtils.isEmpty(transforms)) return file;
 		//Apply each transform one after another.
-		
+
 		File r;
 		File tmp = null;
 		File result = null;
@@ -1636,8 +1666,8 @@ class OmeroImageServiceImpl
 		}
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#createFigure(SecurityContext, List, Class, Object)
 	 */
 	public ScriptCallback createFigure(SecurityContext ctx, List<Long> ids,
@@ -1655,8 +1685,8 @@ class OmeroImageServiceImpl
 		return null;
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#loadROIFromServer(SecurityContext, long, long)
 	 */
 	public List<ROIResult> loadROIFromServer(SecurityContext ctx, long imageID,
@@ -1668,8 +1698,8 @@ class OmeroImageServiceImpl
 		return gateway.loadROI(ctx, imageID, null, userID);
 	}
 
-	/** 
-	 * Implemented as specified by {@link OmeroImageService}. 
+	/**
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#renderOverLays(SecurityContext, long, PlaneDef,
 	 * long, Map)
 	 */
@@ -1684,22 +1714,22 @@ class OmeroImageServiceImpl
 			throw new RenderingServiceException("RenderImage", e);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#runScript(SecurityContext, ScriptObject)
 	 */
 	public ScriptCallback runScript(SecurityContext ctx, ScriptObject script)
 			throws ProcessException, DSOutOfServiceException, DSAccessException
 	{
-		if (script == null) 
+		if (script == null)
 			throw new IllegalArgumentException("No script to run.");
 		if (!script.allRequiredValuesPopulated())
 		    throw new ProcessException("No all required parameters have been" +
 		    		" filled.");
 		return gateway.runScript(ctx, script);
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 * @see OmeroImageService#loadAvailableScriptsWithUI(SecurityContext)
@@ -1709,7 +1739,7 @@ class OmeroImageServiceImpl
 	{
 		return gateway.loadRunnableScriptsWithUI(ctx);
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 * @see OmeroImageService#loadAvailableScripts(SecurityContext, long)
@@ -1720,7 +1750,7 @@ class OmeroImageServiceImpl
 	{
 		return gateway.loadRunnableScripts(ctx);
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 * @see OmeroImageService#loadScript(SecurityContext, long)
@@ -1730,7 +1760,7 @@ class OmeroImageServiceImpl
 	{
 		return gateway.loadScript(ctx, scriptID);
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 * @see OmeroImageService#getScriptsAsString(SecurityContext)
@@ -1740,7 +1770,7 @@ class OmeroImageServiceImpl
 	{
 		return gateway.getScriptsAsString(ctx);
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 * @see OmeroImageService#uploadScript(SecurityContext, ScriptObject)
@@ -1756,13 +1786,13 @@ class OmeroImageServiceImpl
 		if (b != null) value = b.booleanValue();
 		return gateway.uploadScript(ctx, script, value);
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 * @see OmeroImageService#loadRatings(SecurityContext, Class, long, long)
 	 */
 	public Collection loadROIMeasurements(SecurityContext ctx, Class type,
-		long id, long userID) 
+		long id, long userID)
 		throws DSOutOfServiceException, DSAccessException
 	{
 		if (ImageData.class.equals(type)) {
@@ -1804,7 +1834,7 @@ class OmeroImageServiceImpl
 		List<DataObject> files, int maxLength, long userID)
 		throws DSAccessException, DSOutOfServiceException, FSAccessException
 	{
-		Map<DataObject, BufferedImage> 
+		Map<DataObject, BufferedImage>
 			m = new HashMap<DataObject, BufferedImage>();
 		if (files == null || files.size() == 0) return m;
 		Iterator<DataObject> i = files.iterator();
@@ -1822,7 +1852,7 @@ class OmeroImageServiceImpl
 			file = i.next();
 			path = view.getThumbnail(file);
 			try {
-				if (path != null) m.put(file, 
+				if (path != null) m.put(file,
 					Factory.scaleBufferedImage(createImage(path), maxLength));
 				else m.put(file, null);
 			} catch (Exception e) {
@@ -1840,7 +1870,7 @@ class OmeroImageServiceImpl
 		SecurityContext ctx, List<DataObject> experimenters, int maxLength)
 		throws DSAccessException, DSOutOfServiceException
 	{
-		Map<DataObject, BufferedImage> 
+		Map<DataObject, BufferedImage>
 			m = new HashMap<DataObject, BufferedImage>();
 		if (experimenters == null || experimenters.size() == 0) return m;
 		List<Long> ids = new ArrayList<Long>();
@@ -1852,7 +1882,7 @@ class OmeroImageServiceImpl
 			}
 			return m;
 		}
-		
+
 		String path;
 		List<Class> types = new ArrayList<Class>();
 		types.add(FileAnnotationData.class);
@@ -1870,7 +1900,7 @@ class OmeroImageServiceImpl
 		} catch (Exception e) {
 			return m;
 		}
-		
+
 		if (annotations == null || annotations.size() == 0)
 			return m;
 		//Make
@@ -1907,17 +1937,17 @@ class OmeroImageServiceImpl
 				try {
 					img = createImage(gateway.getUserPhoto(ctx,
 						ann.getFileID(), ann.getFileSize()));
-					m.put(exps.get(id), Factory.scaleBufferedImage(img, 
+					m.put(exps.get(id), Factory.scaleBufferedImage(img,
 							maxLength));
 				} catch (Exception e) {
 					//nothing to do.
 				}
-				
+
 			}
 		}
 		return m;
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 * @see OmeroImageService#saveAs(SecurityContext, SaveAsParam)
@@ -1945,7 +1975,7 @@ class OmeroImageServiceImpl
 	{
 		return gateway.isLargeImage(ctx, pixelsId);
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 * @see OmeroImageService#getFileSet(SecurityContext, long)
@@ -1968,7 +1998,7 @@ class OmeroImageServiceImpl
 
         return null;
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 * @see OmeroImageService#getRenderingDef(SecurityContext, long, long)
@@ -1997,7 +2027,7 @@ class OmeroImageServiceImpl
 
     /**
      * Implemented as specified by {@link OmeroDataService}.
-     * 
+     *
      * @see OmeroImageService#createPixelsStore(SecurityContext)
      */
     public RawPixelsStorePrx createPixelsStore(SecurityContext ctx)

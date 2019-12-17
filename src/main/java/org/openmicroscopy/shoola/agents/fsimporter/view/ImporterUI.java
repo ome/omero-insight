@@ -1,5 +1,5 @@
 /*
- * org.openmicroscopy.shoola.agents.fsimporter.view.ImporterUI 
+ * org.openmicroscopy.shoola.agents.fsimporter.view.ImporterUI
  *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
@@ -13,7 +13,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -83,6 +83,8 @@ import org.openmicroscopy.shoola.agents.fsimporter.IconManager;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.actions.GroupSelectionAction;
 import org.openmicroscopy.shoola.agents.fsimporter.chooser.ImportDialog;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
 import org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponentI;
 import org.openmicroscopy.shoola.agents.imviewer.view.ImViewer;
 import org.openmicroscopy.shoola.env.LookupNames;
@@ -95,7 +97,7 @@ import org.openmicroscopy.shoola.util.ui.ClosableTabbedPaneComponent;
 import org.openmicroscopy.shoola.util.ui.TitlePanel;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 
-/** 
+/**
  * The {@link Importer}'s View. Displays the on-going import and the finished
  * ones.
  *
@@ -115,56 +117,62 @@ class ImporterUI extends TopWindow
 	/** The text displayed in the header of the dialog.*/
 	private static final String TEXT_TITLE_DESCRIPTION =
 			"Select data to import and monitor imports.";
-	
+
 	/** The window's title. */
 	private static final String TEXT_TITLE = "Import Data";
-	
+
 	/** The text displayed to notify the user to refresh. */
 	private static final String	TEXT_REFRESH =
 			"New containers added. Please Refresh";
-	
+
 	/** Identifies the style of the document.*/
 	private static final String STYLE = "StyleName";
-	
+
 	/** The maximum number of characters in the debug text.*/
 	private static final int 	MAX_CHAR = 2000;
 
 	/** Reference to the model. */
 	private ImporterModel	model;
-	
+
 	/** Reference to the control. */
 	private ImporterControl	controller;
-	
+
+	private ImportDialog chooser;
+
+	private MetaDataDialog mde;
+
 	/** The total of imports. */
 	private int total;
-	
+
 	/** The component displaying the various imports. */
 	private ClosableTabbedPane tabs;
-	
+
 	/** Flag used to indicate that the component has been displayed or not. */
 	private boolean initialized;
-	
+
 	/** The identifier of the UI element. */
 	private int uiElementID;
-	
+
 	/** Keeps track of the imports. */
 	private Map<Integer, ImporterUIElement> uiElements;
-	
+
 	/** The controls bar. */
 	private JComponent controlsBar;
 
 	/** The component indicating to refresh the containers view.*/
 	private JXLabel messageLabel;
-	
+
 	/** The menu displaying the groups the user is a member of. */
     private JPopupMenu	personalMenu;
-    
+
     /** The debug text.*/
     private JTextPane	debugTextPane;
-    
+
+		private TitlePanel titlePane;
+
 	/**
 	 * Creates the component hosting the debug text.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	private JComponent createDebugTab()
@@ -199,21 +207,21 @@ class ImporterUI extends TopWindow
 		panel.add(sp, BorderLayout.CENTER);
 		return panel;
 	}
-	
+
     /**
      * Sets the defaults of the specified menu item.
-     * 
+     *
      * @param item The menu item.
      */
     private void initMenuItem(JMenuItem item)
     {
         item.setBorder(null);
     }
-    
+
     /**
      * Brings up the <code>ManagePopupMenu</code>on top of the specified
      * component at the specified location.
-     * 
+     *
      * @param c The component that requested the po-pup menu.
      * @param p The point at which to display the menu, relative to the
      *            <code>component</code>'s coordinates.
@@ -222,10 +230,10 @@ class ImporterUI extends TopWindow
     {
     	if (p == null)
     		return;
-    	
+
         if (c == null)
         	throw new IllegalArgumentException("No component.");
-        
+
     	personalMenu = new JPopupMenu();
     	personalMenu.setBorder(
     			BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -249,7 +257,7 @@ class ImporterUI extends TopWindow
 
     /**
      * Builds and lays out the controls.
-     * 
+     *
      * @return See above.
      */
     private JPanel buildControls()
@@ -279,30 +287,30 @@ class ImporterUI extends TopWindow
         }
         return UIUtilities.buildComponentPanelRight(p);
     }
-	
+
 	/** Builds and lays out the UI. */
 	private void buildGUI()
 	{
 		Container container = getContentPane();
 		container.setLayout(new BorderLayout(0, 0));
-		
+
 		IconManager icons = IconManager.getInstance();
-		TitlePanel tp = new TitlePanel(TEXT_TITLE, "", TEXT_TITLE_DESCRIPTION, 
+		titlePane = new TitlePanel(TEXT_TITLE, "", TEXT_TITLE_DESCRIPTION,
 				icons.getIcon(IconManager.IMPORT_48));
 		JXPanel p = new JXPanel();
 		JXPanel lp = new JXPanel();
 		lp.setLayout(new FlowLayout(FlowLayout.LEFT));
 		lp.add(messageLabel);
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		p.add(tp);
+		p.add(titlePane);
 		p.add(lp);
-		p.setBackgroundPainter(tp.getBackgroundPainter());
-		lp.setBackgroundPainter(tp.getBackgroundPainter());
+		p.setBackgroundPainter(titlePane.getBackgroundPainter());
+		lp.setBackgroundPainter(titlePane.getBackgroundPainter());
 		container.add(p, BorderLayout.NORTH);
 		container.add(tabs, BorderLayout.CENTER);
 		container.add(controlsBar, BorderLayout.SOUTH);
 	}
-	
+
 	/** Displays the window. */
 	private void display()
 	{
@@ -311,7 +319,7 @@ class ImporterUI extends TopWindow
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(6*(screenSize.width/10), 8*(screenSize.height/10));
 	}
-	
+
 	/** Initializes the components. */
 	private void initComponents()
 	{
@@ -323,14 +331,14 @@ class ImporterUI extends TopWindow
 		controlsBar.setVisible(false);
 		uiElementID = 0;
 		uiElements = new LinkedHashMap<Integer, ImporterUIElement>();
-		tabs = new ClosableTabbedPane(JTabbedPane.TOP, 
+		tabs = new ClosableTabbedPane(JTabbedPane.TOP,
 				JTabbedPane.WRAP_TAB_LAYOUT);
 		tabs.setAlignmentX(LEFT_ALIGNMENT);
 		tabs.addPropertyChangeListener(controller);
 		tabs.addChangeListener(new ChangeListener() {
-			
+
 			public void stateChanged(ChangeEvent e) {
-				controlsBar.setVisible(tabs.getSelectedIndex() != 0);
+				controlsBar.setVisible(tabs.getSelectedIndex() != 0 && tabs.getSelectedIndex()!=1);
 				controller.getAction(
 						ImporterControl.RETRY_BUTTON).setEnabled(
 							hasFailuresToReupload());
@@ -340,10 +348,10 @@ class ImporterUI extends TopWindow
 			}
 		});
 	}
-	
+
 	 /**
      * Helper method to create the <code>File</code> menu.
-     * 
+     *
      * @return See above.
      */
     private JMenu createFileMenu()
@@ -354,10 +362,10 @@ class ImporterUI extends TopWindow
         menu.add(new JMenuItem(controller.getAction(ImporterControl.EXIT)));
         return menu;
     }
-    
+
 	/**
      * Creates the menu bar.
-     * 
+     *
      * @return The menu bar.
      */
     private JMenuBar createMenuBar()
@@ -369,7 +377,7 @@ class ImporterUI extends TopWindow
     	for (int i = 0; i < existingMenus.length; i++) {
     		existingMenus[i] = bar.getMenu(i);
     	}
-    	
+
  		bar.removeAll();
  		bar.add(createFileMenu());
  		for (int i = 0; i < existingMenus.length; i++) {
@@ -377,7 +385,7 @@ class ImporterUI extends TopWindow
 		}
     	return bar;
     }
-    
+
     /** Packs the window and resizes it if the screen is too small. */
 	private void packWindow()
 	{
@@ -394,12 +402,12 @@ class ImporterUI extends TopWindow
 		if (h > height) {
 			reset = true;
 			h = height;
-		} 
+		}
 		if (reset) {
 			setSize(h, h);
 		}
 	}
-	
+
 	/** Creates a new instance. */
 	ImporterUI()
 	{
@@ -408,7 +416,7 @@ class ImporterUI extends TopWindow
 
 	/**
      * Links this View to its Controller.
-     * 
+     *
      * @param model 		The Model.
      * @param controller	The Controller.
      */
@@ -422,29 +430,30 @@ class ImporterUI extends TopWindow
 		buildGUI();
 		setName("importer window");
 	}
-	
+
 	/**
 	 * Displays or hides the message indicating to refresh the location view.
-	 * 
+	 *
 	 * @param show Pass <code>true</code> to show, <code>false</code> to hide.
 	 */
 	void showRefreshMessage(boolean show) { messageLabel.setVisible(show); }
 
-	/** 
+	/**
 	 * Adds the chooser to the tab.
-	 * 
+	 *
 	 * @param chooser The component to add.
 	 */
 	void addComponent(ImportDialog chooser)
 	{
 		if (chooser == null) return;
+		this.chooser=chooser;
 		tabs.insertTab("Select Data to Import", null, chooser, "", 0);
 		//if in debug mode insert the debug section
-		Boolean debugEnabled = (Boolean) 
+		Boolean debugEnabled = (Boolean)
 			ImporterAgent.getRegistry().lookup("/options/Debug");
 		if (debugEnabled != null && debugEnabled.booleanValue()) {
 			IconManager icons = IconManager.getInstance();
-			ClosableTabbedPaneComponent c = new ClosableTabbedPaneComponent(1, 
+			ClosableTabbedPaneComponent c = new ClosableTabbedPaneComponent(1,
 					"Debug Text", icons.getIcon(IconManager.DEBUG));
 			c.setCloseVisible(false);
 			c.setClosable(false);
@@ -456,13 +465,52 @@ class ImporterUI extends TopWindow
 		selectChooser();
 		pack();
 	}
-	
+
+	/**
+		 * Adds the chooser to the tab.
+		 *
+		 * @param chooser The component to add.
+		 */
+		void addMDComponent(MetaDataDialog mde)
+		{
+			if (mde == null) return;
+			this.mde=mde;
+			tabs.insertTab("Specify MetaData", null, mde, "", 1);
+			//if in debug mode insert the debug section
+			Boolean debugEnabled = (Boolean)
+				ImporterAgent.getRegistry().lookup("/options/Debug");
+			if (debugEnabled != null && debugEnabled.booleanValue()) {
+				IconManager icons = IconManager.getInstance();
+				ClosableTabbedPaneComponent c = new ClosableTabbedPaneComponent(1,
+						"Debug Text", icons.getIcon(IconManager.DEBUG));
+				c.setCloseVisible(false);
+				c.setClosable(false);
+				double[][] tl = {{TableLayout.FILL}, {TableLayout.FILL}};
+				c.setLayout(new TableLayout(tl));
+				c.add(createDebugTab(), "0, 0");
+				tabs.insertClosableComponent(c);
+			}
+			String title=mde.getMicName()+(mde.getMicDesc()!=null?mde.getMicDesc():"");
+			setNewTitle(title);
+			pack();
+		}
+
+		/** refresh filetree of MetaDataEditor*/
+		public void refreshMetaFileView(List<ImportableFile> files){
+			if(mde!=null)
+				mde.refreshFileView(files,chooser.getFileFilter());
+		}
+
+		/** Indicates to the select the metaData chooser. */
+		void selectMetaDataChooser() { tabs.setSelectedIndex(1); }
+
+
 	/** Indicates to the select the import chooser. */
 	void selectChooser() { tabs.setSelectedIndex(0); }
-	
+
 	/**
 	 * Returns the collection of files that could not be imported.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	List<FileImportComponentI> getMarkedFiles()
@@ -474,26 +522,26 @@ class ImporterUI extends TopWindow
 		ImporterUIElement element = getSelectedPane();
 		if(element == null)
 			return null;
-		
+
 		l = element.getMarkedFiles();
 		if (l != null && l.size() > 0)
 			list.addAll(l);
 		return list;
 	}
-	
+
 	/**
 	 * Adds the component to the display.
-	 * 
+	 *
 	 * @param object The component to add.
 	 */
 	ImporterUIElement addImporterElement(ImportableObject object)
 	{
-		if (object == null) 
+		if (object == null)
 		    return null;
-		
+
 		int maxFiles = (Integer) ImporterAgent.getRegistry().lookup(
                 "/options/DetailedImportFileLimit");
-		
+
 		int n = tabs.getComponentCount();
 		String title = "Import #"+total;
 		ImporterUIElement element = null;
@@ -514,7 +562,7 @@ class ImporterUI extends TopWindow
 		}
 		return element;
 	}
-	
+
     private int fileCount(ImportableObject obj) {
         int count = 0;
         for (ImportableFile f : obj.getFiles()) {
@@ -536,21 +584,21 @@ class ImporterUI extends TopWindow
         }
         return 1;
     }
-	
+
 	/** Resets the import.*/
 	void reset()
 	{
 		int n = tabs.getTabCount();
-		for (int i = 1; i < n; i++) {
+		for (int i = 2; i < n; i++) {
 			tabs.remove(i);
 		}
 		uiElements.clear();
 	}
-	
+
 	/**
-	 * Modifies the icon corresponding to the specified component when 
+	 * Modifies the icon corresponding to the specified component when
 	 * the import has ended.
-	 * 
+	 *
 	 * @param element The element to handle.
 	 */
 	void onImportEnded(ImporterUIElement element)
@@ -567,25 +615,26 @@ class ImporterUI extends TopWindow
 					index = i;
 				}
 			}
-			if (index >= 0) 
+			if (index >= 0)
 				tabs.setIconAt(index, element.getImportIcon());
-			
+
 		}
 	}
-	
+
 	/**
 	 * Sets the selected pane when the import start.
-	 * 
+	 *
 	 * @param element The element to select.
-	 * @param startImport Pass <code>true</code> to start the import, 
+	 * @param startImport Pass <code>true</code> to start the import,
 	 * 					  <code>false</code> otherwise.
 	 */
 	void setSelectedPane(ImporterUIElement element, boolean startImport)
 	{
 		int n = tabs.getComponentCount();
-		
+
 		if (n == 0 || element == null) return;
-		
+		if (tabs.getSelectedComponent() == element) return;
+
 		Component[] components = tabs.getComponents();
 		int index = -1;
 		for (int i = 0; i < components.length; i++) {
@@ -594,16 +643,16 @@ class ImporterUI extends TopWindow
 				tabs.setSelectedComponent(element);
 			}
 		}
-		
+
 		if (startImport) {
 			Icon icon = element.startImport(tabs);
 			if (index >=0) tabs.setIconAt(index, icon);
 		}
 	}
-	
+
 	/**
 	 * Returns the selected pane.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	ImporterUIElement getSelectedPane()
@@ -612,10 +661,10 @@ class ImporterUI extends TopWindow
 			return (ImporterUIElement) tabs.getSelectedComponent();
 		return null;
 	}
-	
+
 	/**
 	 * Returns the UI element corresponding to the passed index.
-	 * 
+	 *
 	 * @param index The identifier of the component
 	 * @return See above.
 	 */
@@ -626,7 +675,7 @@ class ImporterUI extends TopWindow
 
 	/**
 	 * Returns the first element with data to import.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	ImporterUIElement getElementToStartImportFor()
@@ -641,10 +690,10 @@ class ImporterUI extends TopWindow
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Removes the specified element. Returns the element or <code>null</code>.
-	 * 
+	 *
 	 * @param object The object to remove.
 	 * @return See above.
 	 */
@@ -666,7 +715,7 @@ class ImporterUI extends TopWindow
 
 	/**
 	 * Returns the elements with data to import.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	Collection<ImporterUIElement> getImportElements()
@@ -705,11 +754,11 @@ class ImporterUI extends TopWindow
         }
 	    return false;
 	}
-    
+
 	/**
 	 * Returns <code>true</code> if errors to send, <code>false</code>
 	 * otherwise.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	boolean hasFailuresToSend()
@@ -718,11 +767,11 @@ class ImporterUI extends TopWindow
 		if (element == null) return false;
 		return element.hasFailuresToSend();
 	}
-	
+
     /**
-     * Brings up the menu on top of the specified component at 
+     * Brings up the menu on top of the specified component at
      * the specified location.
-     * 
+     *
      * @param menuID    The id of the menu.
      * @param c         The component that requested the pop-up menu.
      * @param p         The point at which to display the menu, relative to the
@@ -733,20 +782,20 @@ class ImporterUI extends TopWindow
         switch (menuID) {
             case Importer.PERSONAL_MENU:
             	showPersonalMenu(c, p);
-        }  
+        }
     }
-	
+
 	/**
 	 * Returns <code>true</code> if the agent is the entry point
 	 * <code>false</code> otherwise.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	boolean isMaster() { return model.isMaster(); }
-	
-	/** 
+
+	/**
 	 * Adds the text to the debug pane.
-	 * 
+	 *
 	 * @param text The text to display.
 	 */
 	void appendDebugText(String text)
@@ -761,10 +810,10 @@ class ImporterUI extends TopWindow
 			//ignore
 		}
 	}
-    
+
     /**
 	 * Returns the collection of files that could not be imported.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	List<FileImportComponentI> getFilesToReimport()
@@ -777,7 +826,7 @@ class ImporterUI extends TopWindow
 	/**
 	 * Returns <code>true</code> if file to re-upload, <code>false</code>
 	 * otherwise.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	boolean hasFailuresToReupload()
@@ -787,14 +836,47 @@ class ImporterUI extends TopWindow
 		return element.hasFailuresToReupload();
 	}
 
-	/** 
+	/**
 	 * Overridden to the set the location of the {@link ImViewer}.
-	 * @see TopWindow#setOnScreen() 
+	 * @see TopWindow#setOnScreen()
 	 */
 	public void setOnScreen()
 	{
 		packWindow();
 		UIUtilities.centerAndShow(this);
+	}
+	/**
+	 * Save last changes of mde.
+	 */
+	public void startImport() {
+		if (mde != null) {
+			mde.saveChanges("");
+		}
+		chooser.importFiles();
+	}
+
+
+	public void setNewTitle(String micName)
+	{
+		titlePane.setTitle(TEXT_TITLE+": "+micName);
+	}
+
+	public void setMapAnnotation(MapAnnotationObject o)
+	{
+		if(o==null || (o!=null && o.getMapAnnotationList().isEmpty())){
+			return;
+		}
+
+		chooser.setMapAnnotation(o.getFileName(), o.getMapAnnotationList());
+	}
+
+	public void deleteMapAnnotations() {
+		chooser.deleteMapAnnotations();
+	}
+
+
+	public void showMetaDataDialog() {
+		selectMetaDataChooser();
 	}
 
 }

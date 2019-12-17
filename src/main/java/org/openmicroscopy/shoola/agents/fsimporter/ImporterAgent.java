@@ -106,6 +106,17 @@ public class ImporterAgent
                 context.lookup(LookupNames.OFFLINE_IMPORT_ENABLED); 
         return offline != null && offline;  
     }
+
+    /**
+     * Returns <code>true</code> run an mde import
+     * <code>false</code> otherwise.
+     */
+    public static boolean isMDEImport() {
+        Registry context = getRegistry();
+        Boolean mde = (Boolean)
+                context.lookup(LookupNames.MDE_IMPORT_ENABLED);
+        return mde != null && mde;
+    }
     
     /**
      * Returns <code>true</code> if the currently logged in user
