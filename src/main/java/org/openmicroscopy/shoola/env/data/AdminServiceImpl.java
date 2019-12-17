@@ -102,7 +102,7 @@ class AdminServiceImpl
 		if (group != null && exp.getDefaultGroup().getId() != group.getId()) {
 			gateway.changeCurrentGroup(ctx, exp, group.getId());
 		}
-		String userName = uc.getUserName();
+		String userName = uc.getUser().getUsername();
 		if (asAdmin) userName = exp.getUserName();
 		data = gateway.getUserDetails(ctx, userName, true);
 		if (currentUser.getId() != exp.getId()) 
@@ -139,30 +139,30 @@ class AdminServiceImpl
 		context = registry;
 		this.gateway = gateway;
 	}
-	
+
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
-	 * @see OmeroDataService#getServerName()
+	 * @see AdminService#getServerName()
 	 */
-	public String getServerName() 
+	public String getServerName()
 	{
-		UserCredentials uc = (UserCredentials) 
-		context.lookup(LookupNames.USER_CREDENTIALS);
+		UserCredentials uc = (UserCredentials)
+				context.lookup(LookupNames.USER_CREDENTIALS);
 		if (uc == null) return "";
-		return uc.getHostName();
+		return uc.getServer().getHostname();
 	}
 
 	/**
-     * Implemented as specified by {@link OmeroDataService}.
-     * @see OmeroDataService#getPort()
-     */
-    public int getPort()
-    {
-        UserCredentials uc = (UserCredentials) 
-        context.lookup(LookupNames.USER_CREDENTIALS);
-        if (uc == null) return -1;
-        return uc.getPort();
-    }
+	 * Implemented as specified by {@link OmeroDataService}.
+	 * @see AdminService#getPort()
+	 */
+	public int getPort()
+	{
+		UserCredentials uc = (UserCredentials)
+				context.lookup(LookupNames.USER_CREDENTIALS);
+		if (uc == null) return -1;
+		return uc.getServer().getPort();
+	}
 
 	/**
 	 * Implemented as specified by {@link AdminService}.
@@ -186,7 +186,7 @@ class AdminServiceImpl
 	{
 		UserCredentials uc = (UserCredentials) 
 		context.lookup(LookupNames.USER_CREDENTIALS);
-		return uc.getUserName();
+		return uc.getUser().getUsername();
 	}
 
 	/**
@@ -217,7 +217,7 @@ class AdminServiceImpl
 			throw new IllegalArgumentException("Password not valid.");
 		UserCredentials uc = (UserCredentials) 
 		context.lookup(LookupNames.USER_CREDENTIALS);
-		if (!uc.getPassword().equals(oldPassword)) 
+		if (!uc.getUser().getPassword().equals(oldPassword))
 			return Boolean.valueOf(false);
 
 		gateway.changePassword(ctx, newPassword, oldPassword);
@@ -237,14 +237,14 @@ class AdminServiceImpl
 		UserCredentials uc = (UserCredentials) 
 		context.lookup(LookupNames.USER_CREDENTIALS);
 		if (exp == null) {
-			exp = gateway.getUserDetails(ctx, uc.getUserName(), false);
+			exp = gateway.getUserDetails(ctx, uc.getUser().getUsername(), false);
 		}
 		if (groupID < 0)
 			throw new DSAccessException("No group specified.");
 		if (exp.getDefaultGroup().getId() != groupID) {
 			gateway.changeCurrentGroup(ctx, exp, groupID);
 		}
-		ExperimenterData data = gateway.getUserDetails(ctx, uc.getUserName(),
+		ExperimenterData data = gateway.getUserDetails(ctx, uc.getUser().getUsername(),
 				true);
 		context.bind(LookupNames.CURRENT_USER_DETAILS, data);
 //		Bind user details to all agents' registry.
@@ -354,7 +354,7 @@ class AdminServiceImpl
 	
 	/**
 	 * Implemented as specified by {@link AdminService}.
-	 * @see AdminService#deleteExperimenters(List)
+	 * @see AdminService#deleteExperimenters(SecurityContext, List)
 	 */
 	public List<ExperimenterData> deleteExperimenters(SecurityContext ctx,
 			List<ExperimenterData> experimenters)
@@ -380,7 +380,7 @@ class AdminServiceImpl
 
 	/**
 	 * Implemented as specified by {@link AdminService}.
-	 * @see AdminService#updateGroup(SecurityContext, GroupData, int)
+	 * @see AdminService#updateGroup(SecurityContext, GroupData)
 	 */
 	public GroupData updateGroup(SecurityContext ctx, GroupData group)
 			throws DSOutOfServiceException, DSAccessException
@@ -444,7 +444,7 @@ class AdminServiceImpl
 	
 	/**
 	 * Implemented as specified by {@link AdminService}.
-	 * @see AdminService#copyExperimenters(SecurityContext, GroupData, Set)
+	 * @see AdminService#copyExperimenters(SecurityContext, GroupData, Collection)
 	 */
 	public List<ExperimenterData> copyExperimenters(SecurityContext ctx,
 			GroupData group, Collection experimenters) 
@@ -561,8 +561,8 @@ class AdminServiceImpl
 				}
 				//Check owner
 				//reset login name
-				if (!exp.getUserName().equals(uc.getUserName())) {
-					reset = gateway.resetUserName(ctx, uc.getUserName(), exp);
+				if (!exp.getUserName().equals(uc.getUser().getUsername())) {
+					reset = gateway.resetUserName(ctx, uc.getUser().getUsername(), exp);
 					if (!reset) {
 						l.put(exp, new Exception(
 								"The selected User Name is already taken."));
@@ -629,7 +629,7 @@ class AdminServiceImpl
 				if (CommonsLangUtils.isNotBlank(ldap)) l.add(exp);
 				else 
 					gateway.resetPassword(ctx, exp.getUserName(), exp.getId(), 
-						uc.getPassword());
+						uc.getUser().getPassword());
 			} catch (Exception e) {
 				l.add(exp);
 			}
@@ -749,7 +749,7 @@ class AdminServiceImpl
 
 	/**
 	 * Implemented as specified by {@link AdminService}.
-	 * @see AdminService#isExistingExperimenter(SecurityContext, String)
+	 * @see AdminService#lookupExperimenter(SecurityContext, String)
 	 */
 	public ExperimenterData lookupExperimenter(SecurityContext ctx,
 			String name)
@@ -763,7 +763,7 @@ class AdminServiceImpl
 
 	/**
 	 * Implemented as specified by {@link AdminService}.
-	 * @see AdminService#isExistingGroup(SecurityContext, String)
+	 * @see AdminService#lookupGroup(SecurityContext, String)
 	 */
 	public GroupData lookupGroup(SecurityContext ctx, String name) 
 		throws DSOutOfServiceException, DSAccessException
@@ -776,7 +776,7 @@ class AdminServiceImpl
 
 	/**
 	 * Implemented as specified by {@link AdminService}.
-	 * @see AdminService#uploadUserPhoto(SecurityContext, File, String, experimenter)
+	 * @see AdminService#uploadUserPhoto(SecurityContext, File, String, ExperimenterData)
 	 */
 	public BufferedImage uploadUserPhoto(SecurityContext ctx, File f,
 			String format, ExperimenterData experimenter)

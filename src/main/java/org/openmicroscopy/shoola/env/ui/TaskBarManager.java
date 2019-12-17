@@ -82,7 +82,6 @@ import org.openmicroscopy.shoola.util.ui.BrowserLauncher;
 import org.openmicroscopy.shoola.util.ui.MacOSMenuHandler;
 import org.openmicroscopy.shoola.util.ui.MessageBox;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
-import org.openmicroscopy.shoola.util.ui.login.LoginCredentials;
 import org.openmicroscopy.shoola.util.ui.login.ScreenLogin;
 import org.openmicroscopy.shoola.util.ui.login.ScreenLoginDialog;
 import org.openmicroscopy.shoola.util.file.IOUtil;
@@ -331,13 +330,13 @@ public class TaskBarManager
 		StringBuffer buffer = new StringBuffer();
 		try {
 			buffer.append("location=[OMERO] open=[omero:server=");
-			buffer.append(lc.getHostName());
+			buffer.append(lc.getServer().getHostname());
 			buffer.append("\nuser=");
-			buffer.append(lc.getUserName());
+			buffer.append(lc.getUser().getUsername());
 			buffer.append("\nport=");
-			buffer.append(lc.getPort());
+			buffer.append(lc.getServer().getPort());
 			buffer.append("\npass=");
-			buffer.append(lc.getPassword());
+			buffer.append(lc.getUser().getPassword());
 			buffer.append("\ngroupID=");
 			buffer.append(ctx.getGroupID());
 			buffer.append("\niid=");
@@ -504,15 +503,13 @@ public class TaskBarManager
     		v = (String) version;
     	OMEROInfo omeroInfo = (OMEROInfo) container.getRegistry().lookup(
     				LookupNames.OMERODS);
-        
-    	String port = ""+omeroInfo.getPortSSL();
     	String f = container.getConfigFileRelative(Container.CONFIG_DIR);
 
     	String n = (String) container.getRegistry().lookup(
 				LookupNames.SPLASH_SCREEN_LOGO);
 
 		reconnectDialog = new ScreenLoginDialog(Container.TITLE,
-				getSplashScreen(Factory.createIcon(n, f)), img, v, port);
+				getSplashScreen(Factory.createIcon(n, f)), img, v);
 		reconnectDialog.setStatusVisible(false);
 		reconnectDialog.showConnectionSpeed(true);
 		reconnectDialog.addPropertyChangeListener(new PropertyChangeListener() {
@@ -522,8 +519,7 @@ public class TaskBarManager
 				if (ScreenLogin.QUIT_PROPERTY.equals(name))
 					exitApplication(null);
 				else if (ScreenLogin.LOGIN_PROPERTY.equals(name)) {
-					LoginCredentials lc = (LoginCredentials) evt.getNewValue();
-					
+					UserCredentials lc = (UserCredentials) evt.getNewValue();
 					if (lc != null) {
 						collectCredentials(lc,
 								(ScreenLoginDialog) evt.getSource());
@@ -856,7 +852,7 @@ public class TaskBarManager
 	}
 	
 	/**
-	 * Attaches the {@link #doExit() exit} action to all exit buttons and
+	 * Attaches the exit action to all exit buttons and
 	 * fires {@link #synchConnectionButtons()} when the window is first open.
 	 */
 	private void attachOpenExitListeners()
@@ -907,21 +903,16 @@ public class TaskBarManager
      * @param lc The value collected.
      * @param dialog the dialog to handle.
      */
-    private void collectCredentials(LoginCredentials lc,
+    private void collectCredentials(UserCredentials lc,
     		ScreenLoginDialog dialog)
     {
-    	UserCredentials uc = new UserCredentials(lc.getUserName(),
-				lc.getPassword(), lc.getHostName(), lc.getSpeedLevel());
-		uc.setPort(lc.getPort());
-		uc.setEncrypted(lc.isEncrypted());
-		uc.setGroup(lc.getGroup());
 		LoginService svc = (LoginService) 
 			container.getRegistry().lookup(LookupNames.LOGIN);
 		success = false;
-		switch (svc.login(uc)) {
+		switch (svc.login(lc)) {
 			case LoginService.CONNECTED:
 				//needed b/c need to retrieve user's details later.
-	            container.getRegistry().bind(LookupNames.USER_CREDENTIALS, uc);
+	            container.getRegistry().bind(LookupNames.USER_CREDENTIALS, lc);
 	            dialog.close();
 	            if (dialog == reconnectDialog) {
 	            	reconnectDialog = null;
@@ -1030,18 +1021,16 @@ public class TaskBarManager
 		    	OMEROInfo info = 
 		    		(OMEROInfo) container.getRegistry().lookup(
 		    				LookupNames.OMERODS);
-		        
-		    	String port = ""+info.getPortSSL();
 		    	String f = container.getConfigFileRelative(null);
 
 				String n = (String) container.getRegistry().lookup(
 						LookupNames.SPLASH_SCREEN_LOGO);
 
 		    	login = new ScreenLoginDialog(Container.TITLE,
-		    		getSplashScreen(Factory.createIcon(n, f)), img, v, port);
+		    		getSplashScreen(Factory.createIcon(n, f)), img, v);
 		    	login.setEncryptionConfiguration(info.isEncrypted(),
 		    			info.isEncryptedConfigurable());
-		    	login.setHostNameConfiguration(info.getHostName(),
+		    	login.setDefaultHostConfiguration(info,
 		    			info.isHostNameConfigurable());
 		    	login.setModal(true);
 		    	login.setStatusVisible(false);
@@ -1116,7 +1105,7 @@ public class TaskBarManager
 			if (exp == null) container.exit(); //not connected
 			//else doExit(true, null);
 		} else if (ScreenLogin.LOGIN_PROPERTY.equals(name)) {
-			LoginCredentials lc = (LoginCredentials) evt.getNewValue();
+			UserCredentials lc = (UserCredentials) evt.getNewValue();
 			if (lc != null) collectCredentials(lc, login);
 		} else if (ScreenLogin.QUIT_PROPERTY.equals(name)) {
 			login.close();

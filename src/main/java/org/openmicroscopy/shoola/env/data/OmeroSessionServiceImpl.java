@@ -89,8 +89,8 @@ public class OmeroSessionServiceImpl implements OmeroSessionService {
 
         UserCredentials uc = (UserCredentials)
                 context.lookup(LookupNames.USER_CREDENTIALS);
-        username = uc.getUserName();
-        password = uc.getPassword();
+        username = uc.getUser().getUsername();
+        password = uc.getUser().getPassword();
     }
 
     private client newClient() {

@@ -23,8 +23,6 @@
 package org.openmicroscopy.shoola.util.ui.login;
 
 
-
-//Java imports
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -48,9 +46,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.WindowConstants;
 
-//Third-party libraries
-
-//Application-internal dependencies
+import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.ui.IconManager;
 import org.openmicroscopy.shoola.util.ui.TitlePanel;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
@@ -150,7 +146,6 @@ class ServerDialog
 	/** Closes and disposes. */
 	private void close()
 	{
-		if (editor != null) editor.stopEdition();
 		setVisible(false);
 		dispose();
 	}
@@ -279,20 +274,20 @@ class ServerDialog
 		button.setText("High (LAN)");
 		button.setActionCommand(""+HIGH_SPEED);
 		button.addActionListener(this);
-		button.setSelected(index == LoginCredentials.HIGH);
+		button.setSelected(index == UserCredentials.HIGH);
 		buttonsGroup.add(button);
 		p.add(button);
 		button = new JRadioButton();
 		button.setText("Medium (Broadband)");
 		button.setActionCommand(""+MEDIUM_SPEED);
-		button.setSelected(index == LoginCredentials.MEDIUM);
+		button.setSelected(index == UserCredentials.MEDIUM);
 		button.addActionListener(this);
 		buttonsGroup.add(button);
 		p.add(button);
 		button = new JRadioButton();
 		button.setText("Low (Dial-up)");
 		button.setActionCommand(""+LOW_SPEED);
-		button.setSelected(index == LoginCredentials.LOW);
+		button.setSelected(index == UserCredentials.LOW);
 		button.addActionListener(this);
 		buttonsGroup.add(button);
 		p.add(button);
@@ -316,23 +311,21 @@ class ServerDialog
 		int factor = -1;
 		switch (index) {
 			case HIGH_SPEED:
-				factor = LoginCredentials.HIGH;
+				factor = UserCredentials.HIGH;
 				break;
 			case MEDIUM_SPEED:
-				factor = LoginCredentials.MEDIUM;
+				factor = UserCredentials.MEDIUM;
 				break;
 			case LOW_SPEED:
-				factor = LoginCredentials.LOW;
+				factor = UserCredentials.LOW;
 		}
 		if (editor != null) {
-			int original = editor.getOriginalRow();
-			if (original == -1)
-				finishButton.setEnabled(true);
-			else {
-				if (editor.isOriginal(server))
-					finishButton.setEnabled(originalIndexSpeed != factor);
-				else finishButton.setEnabled(true);
+			if (editor.isOriginalSelected()) {
+				finishButton.setEnabled(factor > -1 &&
+						originalIndexSpeed != factor);
 			}
+			else
+				finishButton.setEnabled(true);
 		} else finishButton.setEnabled(originalIndexSpeed != factor);
 	}
 	
@@ -342,15 +335,11 @@ class ServerDialog
 		//Check list of servers and remove empty from list
 		String server = null;
 		if (editor != null) {
-			editor.stopEdition();
 			server = editor.getSelectedServer();
-			editor.onApply();
 		}
 		if (server != null && server.length() > 0) {
-			String port = editor.getSelectedPort();
-			editor.handleServers(server, editor.getSelectedPort());
-			String value = server+ServerEditor.SERVER_PORT_SEPARATOR+port;
-			firePropertyChange(SERVER_PROPERTY, null, value);
+			editor.handleServers(server);
+			firePropertyChange(SERVER_PROPERTY, null, server);
 		}
 		if (buttonsGroup != null) {
 			Enumeration en = buttonsGroup.getElements();
@@ -363,15 +352,15 @@ class ServerDialog
 					switch (index) {
 						case HIGH_SPEED:
 							firePropertyChange(CONNECTION_SPEED_PROPERTY, null, 
-									Integer.valueOf(LoginCredentials.HIGH));
+									Integer.valueOf(UserCredentials.HIGH));
 							break;
 						case MEDIUM_SPEED:
 							firePropertyChange(CONNECTION_SPEED_PROPERTY, null, 
-									Integer.valueOf(LoginCredentials.MEDIUM));
+									Integer.valueOf(UserCredentials.MEDIUM));
 							break;
 						case LOW_SPEED:
 							firePropertyChange(CONNECTION_SPEED_PROPERTY, null, 
-									Integer.valueOf(LoginCredentials.LOW));
+									Integer.valueOf(UserCredentials.LOW));
 					}
 				}
 			}
@@ -440,22 +429,18 @@ class ServerDialog
 	{
 		String name = evt.getPropertyName();
 		if (ServerEditor.EDIT_PROPERTY.equals(name)) {
-			Boolean value = (Boolean) evt.getNewValue();
-			if (editor.isEditing()) finishButton.setEnabled(value);
-			else {
-				if (originalIndexSpeed == -1) {
-					setControlEnabled(originalIndexSpeed);
-				} 
-				if (buttonsGroup != null) {
-					Enumeration en = buttonsGroup.getElements();
-					JRadioButton button;
-					int index;
-					while (en.hasMoreElements()) {
-						button = (JRadioButton) en.nextElement();
-						if (button.isSelected()) {
-							index = Integer.parseInt(button.getActionCommand());
-							setControlEnabled(index);
-						}
+			if (originalIndexSpeed == -1) {
+				setControlEnabled(originalIndexSpeed);
+			}
+			if (buttonsGroup != null) {
+				Enumeration en = buttonsGroup.getElements();
+				JRadioButton button;
+				int index;
+				while (en.hasMoreElements()) {
+					button = (JRadioButton) en.nextElement();
+					if (button.isSelected()) {
+						index = Integer.parseInt(button.getActionCommand());
+						setControlEnabled(index);
 					}
 				}
 			}

@@ -50,7 +50,6 @@ import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 
 import omero.ServerError;
 import omero.api.IConfigPrx;
-import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
@@ -64,11 +63,8 @@ import omero.log.Logger;
 
 import org.openmicroscopy.shoola.env.rnd.PixelsServicesFactory;
 import org.openmicroscopy.shoola.env.rnd.RenderingControl;
-import org.openmicroscopy.shoola.env.ui.AbstractIconManager;
-import org.openmicroscopy.shoola.env.ui.UserNotifier;
 import org.openmicroscopy.shoola.svc.proxy.ProxyUtil;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
-import org.openmicroscopy.shoola.util.VersionCompare;
 import org.openmicroscopy.shoola.util.ui.IconManager;
 import org.openmicroscopy.shoola.util.ui.MessageBox;
 import org.openmicroscopy.shoola.util.ui.NotificationDialog;
@@ -478,16 +474,9 @@ public class DataServicesFactory
         if (CommonsLangUtils.isBlank(name)) {
             name = LookupNames.MASTER_INSIGHT;
         }
-		LoginCredentials cred = new LoginCredentials();
-        cred.getUser().setUsername(uc.getUserName());
-        cred.getUser().setPassword(uc.getPassword());
-        cred.getServer().setHostname( uc.getHostName());
-        cred.getServer().setPort(uc.getPort());
-        cred.setApplicationName(name);
-        cred.setCheckNetwork(true);
-        cred.setCompression(determineCompression(uc.getSpeedLevel()));
-        cred.setEncryption(uc.isEncrypted());
-        ExperimenterData exp = omeroGateway.connect(cred);
+        uc.setApplicationName(name);
+        uc.setCheckNetwork(true);
+        ExperimenterData exp = omeroGateway.connect(uc);
 
 		//check client server version
 		compatible = true;
@@ -496,7 +485,7 @@ public class DataServicesFactory
     	String clientVersion = "";
     	if (v != null && v instanceof String)
     		clientVersion = (String) v;
-    	if (uc.getUserName().equals(omeroGateway.getSessionId(exp))) {
+    	if (uc.getUser().getUsername().equals(omeroGateway.getSessionId(exp))) {
     	    container.getRegistry().bind(LookupNames.SESSION_KEY, Boolean.TRUE);
     	}
         //Check if client and server are compatible.

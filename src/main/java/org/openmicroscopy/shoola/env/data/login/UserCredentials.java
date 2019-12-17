@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import omero.gateway.LoginCredentials;
 import omero.gateway.model.GroupData;
 
 /** 
@@ -37,7 +38,7 @@ import omero.gateway.model.GroupData;
  * @version 2.2
  * @since OME2.2
  */
-public class UserCredentials
+public class UserCredentials extends LoginCredentials
 {
     
 	/** Identifies a high speed connection. */
@@ -48,30 +49,10 @@ public class UserCredentials
 	
 	/** Identifies a low speed connection. */
 	public static final int LOW = 2;
-	
-    /**
-     * The <i>OMERO</i> login name of the user.
-     * This is the <code>OME Name</code> that was assigned to the user when
-     * it was created in the DB.
-     */
-    private String  userName;
-    
-    /**
-     * The <i>OMERO</i> login password of the user.
-     * This is the password that was chosen for the user when it was created
-     * in the DB.
-     */
-    private String  password;
-    
-    /** The name of the <i>OMERO</i> server. */
-    private String  hostName;
     
     /** The connection speed level. */
     private int 	speedLevel;
-    
-    /** The value of the port. */
-    private int 	port;
-    
+
     /** The selected group or <code>-1</code>. */
     private long 	group;
     
@@ -128,12 +109,9 @@ public class UserCredentials
     public UserCredentials(String userName, String password, String hostName,
     		int speedLevel)
     {
+    	super(userName, password, hostName);
     	checkSpeedLevel(speedLevel);
     	this.speedLevel = speedLevel;
-        this.userName = userName;
-        this.password = password;
-        this.hostName = hostName;
-        port = -1;
         group = -1L;
         owner = null;
         administrator = null;
@@ -171,13 +149,6 @@ public class UserCredentials
     public long getGroup() { return group; }
     
     /**
-     * Sets the port.
-     * 
-     * @param port The value to set.
-     */
-    public void setPort(int port) { this.port = port; }
-    
-    /**
      * Sets the flag indicating if the data transfer is encrypted or not.
      * 
      * @param encrypted The value to set.
@@ -201,46 +172,9 @@ public class UserCredentials
     {
     	 if (password == null || password.trim().length() == 0)
              throw new IllegalArgumentException("Please specify a password.");
-    	 this.password = password;
+    	 super.getUser().setPassword(password);
     }
-    
-    /**
-     * Returns the port used, if <code>-1</code>, the port is the value set
-     * in the configuration file
-     * 
-     * @return See above.
-     */
-    public int getPort() { return port; }
-    
-    /**
-     * Returns the name of the <i>OMERO</i> server.
-     * 
-     * @return See above.
-     */
-    public String getHostName() { return hostName; }
-    
-    /**
-     * Returns the <i>OMERO</i> login name of the user.
-     * This is the <code>OME Name</code> that was assigned to the user when
-     * it was created in the DB.
-     * This field is always a non-<code>null</code> string with a positive
-     * length.
-     * 
-     * @return See above.
-     */
-    public String getUserName() { return userName; }
 
-    /**
-     * Returns the <i>OMERO</i> login password of the user.
-     * This is the password that was chosen for the user when it was created
-     * in the DB.
-     * This field is always a non-<code>null</code> string with a positive
-     * length.
-     * 
-     * @return See above.
-     */
-    public String getPassword() { return password; }
-    
     /**
      * Returns the selected connection speed.
      * 
@@ -362,10 +296,10 @@ public class UserCredentials
     public String toString()
     {
         StringBuffer buf = new StringBuffer("User Name: ");
-        buf.append(userName);
+        buf.append(getUser().getUsername());
         buf.append(" -- Password: ");
-		if (password != null)
-			for (int i = 0; i < password.length(); ++i)
+		if (getUser().getPassword() != null)
+			for (int i = 0; i < getUser().getPassword().length(); ++i)
 				buf.append('*');
         return buf.toString();
     }

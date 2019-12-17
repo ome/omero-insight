@@ -23,16 +23,13 @@
 package org.openmicroscopy.shoola.util.ui.login;
 
 
-//Java imports
+import org.openmicroscopy.shoola.env.config.OMEROInfo;
+
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.Icon;
 import javax.swing.JDialog;
-
-//Third-party libraries
-
-//Application-internal dependencies
 
 /** 
  * Creates a login dialog.
@@ -76,7 +73,7 @@ public class ScreenLoginDialog
 	 */
 	public ScreenLoginDialog(String title, Icon logo, Image frameIcon)
 	{
-		this(title, logo, frameIcon, null, null);
+		this(title, logo, frameIcon, null);
 	}
 
 	/**
@@ -89,7 +86,7 @@ public class ScreenLoginDialog
 	 */
 	public ScreenLoginDialog(Icon logo, Image frameIcon, String version)
 	{
-		this(null, logo, frameIcon, version, null);
+		this(null, logo, frameIcon, version);
 	}
 
 	/**
@@ -101,7 +98,7 @@ public class ScreenLoginDialog
 	 */
 	public ScreenLoginDialog(Icon logo, Image frameIcon)
 	{
-		this(null, logo, frameIcon, null, null);
+		this(null, logo, frameIcon, null);
 	}
 
 	/**
@@ -112,12 +109,11 @@ public class ScreenLoginDialog
 	 * 					 Mustn't be <code>null</code>.
 	 * @param frameIcon  The image icon for the window.
 	 * @param version	 The version of the software.
-	 * @param defaultPort The default port.
 	 */
 	public ScreenLoginDialog(String title, Icon logo, Image frameIcon, 
-			String version, String defaultPort)
+			String version)
 	{
-		view = new ScreenLogin(title, logo, frameIcon, version, defaultPort);
+		view = new ScreenLogin(title, logo, frameIcon, version);
 		view.addPropertyChangeListener(this);
 		setProperties();
 		getContentPane().add(view.getContentPane().getComponent(0));
@@ -203,13 +199,13 @@ public class ScreenLoginDialog
     /**
      * Indicates if the user can modify or not the host name from the UI.
      * 
-     * @param hostName The hostname.
+     * @param info The connection information.
      * @param configurable Pass <code>true</code> to allow to change the 
      * host name, <code>false</code> otherwise.
      */
-    public void setHostNameConfiguration(String hostName, boolean configurable)
+    public void setDefaultHostConfiguration(OMEROInfo info, boolean configurable)
     {
-    	view.setHostNameConfiguration(hostName, configurable);
+    	view.setDefaultHostConfiguration(info, configurable);
     }
     
 	/**
