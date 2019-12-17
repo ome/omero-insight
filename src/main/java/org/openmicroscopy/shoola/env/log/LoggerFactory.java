@@ -50,7 +50,7 @@ public class LoggerFactory
 {
 	
 	/** The name of the log configuration file in the config directory. */
-	private static final String		LOG_CONFIG_FILE = "logback.xml";
+	private static final String		LOG_CONFIG_FILE = "logback-spring.xml";
 	
 	/**
 	 * Creates a new {@link Logger}.
