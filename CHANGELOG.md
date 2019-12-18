@@ -1,4 +1,11 @@
-5.5.7 (September 2019)
+5.5.7 (December 2019)
+---------------------
+
+- Major new metdata feature from @sukunis (#69)
+- Enable login via web sockets (#66)
+- Bump to omero-gateway-java 5.6.0 with support for OMERO 5.6
+
+5.5.6 (September 2019)
 ----------------------
 
 - Cast ByteBuffer to Byte for JDK8 support [#77](https://github.com/ome/omero-insight/pull/77)
