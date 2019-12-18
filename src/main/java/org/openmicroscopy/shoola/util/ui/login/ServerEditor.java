@@ -46,6 +46,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -164,6 +165,7 @@ public class ServerEditor
 		};
 		servers.stream().forEach(s -> this.servers.addElement(s));
 		this.table = new JList<>(this.servers);
+		this.table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.table.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent listSelectionEvent) {
@@ -184,12 +186,12 @@ public class ServerEditor
 			public void actionPerformed(ActionEvent e) 
 			{
 				int row = table.getSelectedIndex();
-				if (row > 0) {
+				if (row > -1) {
 					int sel = row - 1;
 					if (sel < 0)
 						sel = 0;
-					ServerEditor.this.table.setSelectedIndex(sel);
 					ServerEditor.this.servers.remove(row);
+					ServerEditor.this.table.setSelectedIndex(sel);
 				}
 			}
 		});
