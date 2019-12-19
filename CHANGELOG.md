@@ -1,3 +1,8 @@
+5.5.8 (December 2019)
+---------------------
+
+- Bump to omero-gateway-java 5.6.1 with units fix
+
 5.5.7 (December 2019)
 ---------------------
 
