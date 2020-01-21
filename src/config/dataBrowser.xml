@@ -9,7 +9,7 @@
        <structuredEntry name="/resources/icons/Factory" type = "icons">
          <!-- The location tag specifies the FQN of the package that contains
          the icon files. -->
-         <location>images.agents.dataBrowser</location>
+         <location>images.agents.databrowser</location>
        </structuredEntry>
 
      </iconFactories>
