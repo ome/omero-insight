@@ -330,7 +330,7 @@ public class TaskBarManager
 		StringBuffer buffer = new StringBuffer();
 		try {
 			buffer.append("location=[OMERO] open=[omero:server=");
-			buffer.append(lc.getServer().getHostname());
+			buffer.append(lc.getServer().getHost());
 			buffer.append("\nuser=");
 			buffer.append(lc.getUser().getUsername());
 			buffer.append("\nport=");
