@@ -1,3 +1,9 @@
+5.5.9 (January 2020)
+--------------------
+
+-  Fix issue preventing to open image in ImageJ when using web sockets [#106](https://github.com/ome/omero-insight/pull/106)
+-  Fix loading of icons on Windows [#104](https://github.com/ome/omero-insight/pull/104)
+
 5.5.8 (December 2019)
 ---------------------
 
@@ -6,8 +12,8 @@
 5.5.7 (December 2019)
 ---------------------
 
-- Major new metdata feature from @sukunis (#69)
-- Enable login via web sockets (#66)
+- Major new metadata feature from @sukunis [#69](https://github.com/ome/omero-insight/pull/69)
+- Enable login via web sockets [#66](https://github.com/ome/omero-insight/pull/66)
 - Bump to omero-gateway-java 5.6.0 with support for OMERO 5.6
 
 5.5.6 (September 2019)
