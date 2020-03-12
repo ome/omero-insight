@@ -31,11 +31,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.swing.Icon;
@@ -87,6 +83,7 @@ import org.openmicroscopy.shoola.util.ui.login.ScreenLoginDialog;
 import org.openmicroscopy.shoola.util.file.IOUtil;
 
 import omero.gateway.model.ExperimenterData;
+import omero.gateway.model.ImageData;
 
 /** 
  * Creates and manages the {@link TaskBarView}.
@@ -328,7 +325,22 @@ public class TaskBarManager
 		UserCredentials lc = (UserCredentials) container.getRegistry().lookup(
 				LookupNames.USER_CREDENTIALS);
 		StringBuffer buffer = new StringBuffer();
+		boolean largePlane = false;
+		// Retrieve the image size
+
 		try {
+			DataServicesFactory f = DataServicesFactory.getInstance(container);
+			Collection<ImageData> images = f.getOS().getImages(ctx,
+					ImageData.class, Arrays.asList(id), -1);
+			if (!images.isEmpty()) {
+				ImageData image = images.iterator().next();
+				long pixelsId = image.getDefaultPixels().getId();
+				Boolean b = f.getIS().isLargeImage(ctx, pixelsId);
+				if (b != null) {
+					largePlane = b.booleanValue();
+				}
+			}
+			IJ.log(""+largePlane);
 			buffer.append("location=[OMERO] open=[omero:server=");
 			buffer.append(lc.getServer().getHost());
 			buffer.append("\nuser=");
@@ -342,6 +354,10 @@ public class TaskBarManager
 			buffer.append("\niid=");
 			buffer.append(id);
 			buffer.append("]");
+			buffer.append("view=Hyperstack "); // select hyperstack
+			if (largePlane) {
+				buffer.append("crop=true ");
+			}
 			IJ.runPlugIn("loci.plugins.LociImporter", buffer.toString());
 			ImagePlus img = IJ.getImage();
 			img.setTitle(img.getTitle() + "--" + "OMERO ID:" + id);
