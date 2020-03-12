@@ -256,14 +256,20 @@ public class ScreenLogin
 		if (usr != null) usr = usr.trim();
 		if (s != null) s = s.trim();
 		setControlsEnabled(false);
-		UserCredentials lc= new UserCredentials(usr, psw, s, speedIndex);
-		lc.setEncrypted(encrypted);
-		setUserName(usr);
-		setEncrypted();
-		setControlsEnabled(false);
-		loginAttempt = true;
-		login.setEnabled(false);
-		firePropertyChange(LOGIN_PROPERTY, null, lc);
+		try {
+			UserCredentials lc = new UserCredentials(usr, psw, s, speedIndex);
+			lc.setEncrypted(encrypted);
+			setUserName(usr);
+			setEncrypted();
+			setControlsEnabled(false);
+			loginAttempt = true;
+			login.setEnabled(false);
+			firePropertyChange(LOGIN_PROPERTY, null, lc);
+		} catch (IllegalArgumentException e) {
+			// an unsuppported server URL has been specified
+			JOptionPane.showMessageDialog(this, e.getMessage(),
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	/** 
