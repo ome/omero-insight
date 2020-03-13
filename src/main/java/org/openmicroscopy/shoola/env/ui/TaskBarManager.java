@@ -361,8 +361,8 @@ public class TaskBarManager
 			buffer.append(ctx.getGroupID());
 			buffer.append("\niid=");
 			buffer.append(id);
-			buffer.append("]");
-			buffer.append("view=Hyperstack "); // select hyperstack by default
+			buffer.append("] ");
+			buffer.append("view=Hyperstack windowless=false "); // select hyperstack by default
 			if (largePlane) {
 				buffer.append("crop=true ");
 				//TODO: pass if possible the region to crop
