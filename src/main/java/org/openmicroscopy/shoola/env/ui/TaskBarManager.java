@@ -31,7 +31,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.Icon;
@@ -39,6 +45,7 @@ import javax.swing.Icon;
 import ij.IJ;
 import ij.ImagePlus;
 
+import omero.gateway.model.PixelsData;
 import org.openmicroscopy.shoola.env.Agent;
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.Environment;
@@ -332,9 +339,11 @@ public class TaskBarManager
 			DataServicesFactory f = DataServicesFactory.getInstance(container);
 			Collection<ImageData> images = f.getOS().getImages(ctx,
 					ImageData.class, Arrays.asList(id), -1);
+			PixelsData pixels = null;
 			if (!images.isEmpty()) {
 				ImageData image = images.iterator().next();
-				long pixelsId = image.getDefaultPixels().getId();
+				pixels = image.getDefaultPixels();
+				long pixelsId = pixels.getId();
 				Boolean b = f.getIS().isLargeImage(ctx, pixelsId);
 				if (b != null) {
 					largePlane = b.booleanValue();
@@ -354,9 +363,27 @@ public class TaskBarManager
 			buffer.append("\niid=");
 			buffer.append(id);
 			buffer.append("]");
-			buffer.append("view=Hyperstack "); // select hyperstack
+			buffer.append("view=Hyperstack "); // select hyperstack by default
 			if (largePlane) {
 				buffer.append("crop=true ");
+				// set a region
+				int sizeX = pixels.getSizeX();
+				int sizeY = pixels.getSizeY();
+				//TODO: retrieve max plane size
+				int x = sizeX/2;
+				int y = sizeY/2;
+                int w = sizeX/2;
+                int h = sizeY/2;
+
+				//x_coordinate_1=0 y_coordinate_1=0 width_1=439 height_1=167
+				buffer.append("x_coordinate_1="+x);
+				buffer.append(" y_coordinate_1="+y);
+				buffer.append(" width_1="+w);
+				buffer.append(" height_1="+h);
+
+			} else {
+				buffer.append("crop=false ");
+
 			}
 			IJ.runPlugIn("loci.plugins.LociImporter", buffer.toString());
 			ImagePlus img = IJ.getImage();
