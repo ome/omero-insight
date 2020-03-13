@@ -349,7 +349,6 @@ public class TaskBarManager
 					largePlane = b.booleanValue();
 				}
 			}
-			IJ.log(""+largePlane);
 			buffer.append("location=[OMERO] open=[omero:server=");
 			buffer.append(lc.getServer().getHost());
 			buffer.append("\nuser=");
@@ -366,25 +365,11 @@ public class TaskBarManager
 			buffer.append("view=Hyperstack "); // select hyperstack by default
 			if (largePlane) {
 				buffer.append("crop=true ");
-				// set a region
-				int sizeX = pixels.getSizeX();
-				int sizeY = pixels.getSizeY();
-				//TODO: retrieve max plane size
-				int x = sizeX/2;
-				int y = sizeY/2;
-                int w = sizeX/2;
-                int h = sizeY/2;
-
-				//x_coordinate_1=0 y_coordinate_1=0 width_1=439 height_1=167
-				buffer.append("x_coordinate_1="+x);
-				buffer.append(" y_coordinate_1="+y);
-				buffer.append(" width_1="+w);
-				buffer.append(" height_1="+h);
-
+				//TODO: pass if possible the region to crop
 			} else {
 				buffer.append("crop=false ");
-
 			}
+			IJ.log(buffer.toString());
 			IJ.runPlugIn("loci.plugins.LociImporter", buffer.toString());
 			ImagePlus img = IJ.getImage();
 			img.setTitle(img.getTitle() + "--" + "OMERO ID:" + id);
