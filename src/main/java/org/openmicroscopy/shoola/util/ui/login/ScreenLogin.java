@@ -62,6 +62,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.openmicroscopy.shoola.env.config.OMEROInfo;
+import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
@@ -227,7 +228,10 @@ public class ScreenLogin
     private JButton helpButton;
 
     private boolean configurable = true;
-    
+
+    /** Reference to the Registry */
+    private Registry registry;
+
 	/** Quits the application. */
 	private void quit()
 	{
@@ -267,8 +271,15 @@ public class ScreenLogin
 			firePropertyChange(LOGIN_PROPERTY, null, lc);
 		} catch (IllegalArgumentException e) {
 			// an unsuppported server URL has been specified
-			JOptionPane.showMessageDialog(this, e.getMessage(),
-					"Error", JOptionPane.ERROR_MESSAGE);
+			if (this.registry != null) {
+				this.registry.getUserNotifier().notifyError("Error",
+						"There is a problem with the server name or URL:\n"+e.getMessage());
+			} else {
+				JOptionPane.showMessageDialog(this, e.getMessage(),
+						"Error", JOptionPane.ERROR_MESSAGE);
+			}
+			setControlsEnabled(true);
+			requestFocusOnField();
 		}
 	}
 
@@ -806,9 +817,10 @@ public class ScreenLogin
 	 * connect to a server, <code>false</code> otherwise.
 	 */
 	public ScreenLogin(String title, Icon logo, Image frameIcon, String version,
-			boolean serverAvailable)
+					   boolean serverAvailable, Registry registry)
 	{
 		super(title);
+		this.registry = registry;
 		setName("login window");
 		Dimension d;
 		if (logo != null)
@@ -851,7 +863,7 @@ public class ScreenLogin
 	 */
 	public ScreenLogin(String title, Icon logo, Image frameIcon, String version)
 	{
-		this(title, logo, frameIcon, version, true);
+		this(title, logo, frameIcon, version, true, null);
 	}
 
 	/**

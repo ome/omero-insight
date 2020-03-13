@@ -169,7 +169,7 @@ class SplashScreenManager
 
         boolean serverAvailable = connectToServer();
     	view = new ScreenLogin(Container.TITLE, splashscreen, img, clientVersion,
-    			 serverAvailable);
+    			 serverAvailable, container.getRegistry());
     	view.setEncryptionConfiguration(info.isEncrypted(),
     			info.isEncryptedConfigurable());
     	view.setDefaultHostConfiguration(info, configurable);
