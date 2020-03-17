@@ -31,7 +31,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +45,7 @@ import javax.swing.Icon;
 import ij.IJ;
 import ij.ImagePlus;
 
+import omero.gateway.model.PixelsData;
 import org.openmicroscopy.shoola.env.Agent;
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.Environment;
@@ -87,6 +90,7 @@ import org.openmicroscopy.shoola.util.ui.login.ScreenLoginDialog;
 import org.openmicroscopy.shoola.util.file.IOUtil;
 
 import omero.gateway.model.ExperimenterData;
+import omero.gateway.model.ImageData;
 
 /** 
  * Creates and manages the {@link TaskBarView}.
@@ -328,7 +332,23 @@ public class TaskBarManager
 		UserCredentials lc = (UserCredentials) container.getRegistry().lookup(
 				LookupNames.USER_CREDENTIALS);
 		StringBuffer buffer = new StringBuffer();
+		boolean largePlane = false;
+		// Retrieve the image size
+
 		try {
+			DataServicesFactory f = DataServicesFactory.getInstance(container);
+			Collection<ImageData> images = f.getOS().getImages(ctx,
+					ImageData.class, Arrays.asList(id), -1);
+			PixelsData pixels = null;
+			if (!images.isEmpty()) {
+				ImageData image = images.iterator().next();
+				pixels = image.getDefaultPixels();
+				long pixelsId = pixels.getId();
+				Boolean b = f.getIS().isLargeImage(ctx, pixelsId);
+				if (b != null) {
+					largePlane = b.booleanValue();
+				}
+			}
 			buffer.append("location=[OMERO] open=[omero:server=");
 			buffer.append(lc.getServer().getHost());
 			buffer.append("\nuser=");
@@ -341,7 +361,15 @@ public class TaskBarManager
 			buffer.append(ctx.getGroupID());
 			buffer.append("\niid=");
 			buffer.append(id);
-			buffer.append("]");
+			buffer.append("] ");
+			buffer.append("view=Hyperstack windowless=false "); // select hyperstack by default
+			if (largePlane) {
+				buffer.append("crop=true ");
+				//TODO: pass if possible the region to crop
+			} else {
+				buffer.append("crop=false ");
+			}
+			IJ.log(buffer.toString());
 			IJ.runPlugIn("loci.plugins.LociImporter", buffer.toString());
 			ImagePlus img = IJ.getImage();
 			img.setTitle(img.getTitle() + "--" + "OMERO ID:" + id);
