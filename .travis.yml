@@ -1,30 +1,52 @@
-language: java
-os:
-  - osx
-  - linux
-osx_image: xcode9.3
+jobs:
+  include:
+   - os: osx
+     language: java
+     osx_image: xcode9.3
+     before_install:
+       - brew update
+       - brew install gradle
+     install:
+       - DIR=$PWD; (cd /tmp; gradle wrapper --gradle-version=5.2.1; mv .gradle gradle gradlew $DIR)
+     script:
+       - travis_retry ./gradlew packageApplicationDmg
+       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationDmg ; fi
+       - test -f build/packaged/main/bundles/OMERO.insight-*
+   - os: linux
+     language: java
+     install:
+       - DIR=$PWD; (cd /tmp; gradle wrapper --gradle-version=5.2.1; mv .gradle gradle gradlew $DIR)
+     script:
+       - ./gradlew build
+       - test -f build/libs/omero_ij*
+       - test -f build/distributions/OMERO.insight-*
+   - os: windows
+     language: sh
+     before_install:
+       - choco install gradle jdk8
+       - choco install innosetup --version=5.6.1
+       - if [[ -n "$TRAVIS_TAG" ]]; then choco install wixtoolset ; fi
+       - export PATH="/c/Program Files/Java/jdk1.8.0_211:/c/ProgramData/chocolatey/lib/gradle/tools:$PATH"
+       - export PATH="/c/Program Files (x86)/Inno Setup 5:$PATH"
+       - export JAVA_HOME="/c/Program Files/Java/jdk1.8.0_211"
+     install:
+       - DIR=$PWD
+       - rm -rf $HOME/.gradle
+       - gradle wrapper --gradle-version=5.2.1
+       - mv .gradle gradle gradlew $DIR
+     script:
+       - travis_retry ./gradlew packageApplicationExe
+       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageApplicationMsi ; fi
+       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationMsi ; fi
+       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationExe ; fi
+
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
-
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gradle  ; fi
-
-install:
-  - DIR=$PWD; (cd /tmp; gradle wrapper --gradle-version=5.2.1; mv .gradle gradle gradlew $DIR)
-
-script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_retry ./gradlew packageApplicationDmg ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" && -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationDmg ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then test -f build/packaged/main/bundles/OMERO.insight-* ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./gradlew build ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -f build/libs/omero_ij* ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -f build/distributions/OMERO.insight-* ; fi
 
 deploy:
   - provider: releases
