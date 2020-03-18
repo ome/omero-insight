@@ -72,7 +72,7 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      condition: "$TRAVIS_OS_NAME = osx"
+      condition: "$TRAVIS_OS_NAME != linux"
   - provider: releases
     api_key: $GITHUB_OAUTH_TOKEN
     file_glob: true
@@ -80,4 +80,4 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      condition: "$TRAVIS_OS_NAME = osx"
+      condition: "$TRAVIS_OS_NAME != linux"
