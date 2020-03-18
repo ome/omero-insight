@@ -101,6 +101,14 @@
   1. Download and install [Inno Setup](http://www.jrsoftware.org/isdl.php).
   2. Add the Inno Setup install directory (default `C:\Program Files (x86)\Inno Setup 5`) to the PATH.
 
+  You can install Inno Setup using Chocolatey:
+
+      choco install innosetup
+
+   Depending on the Windows version you might not be able to use the latest version of Inno Setup.
+
+
+
   **WiX (required to build .msi installer):**
 
   1. Download and install [WiX 3.0 or greater](http://wixtoolset.org/).
