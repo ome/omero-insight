@@ -30,6 +30,7 @@ jobs:
        - export PATH="/c/Program Files/Java/jdk1.8.0_211:/c/ProgramData/chocolatey/lib/gradle/tools:$PATH"
        - export PATH="/c/Program Files (x86)/Inno Setup 5:$PATH"
        - export JAVA_HOME="/c/Program Files/Java/jdk1.8.0_211"
+       - export GRADLE_OPTS="-Dorg.gradle.daemon=false"
      install:
        - DIR=$PWD
        - rm -rf $HOME/.gradle
