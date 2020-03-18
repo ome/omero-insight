@@ -18,7 +18,7 @@
  *
  *------------------------------------------------------------------------------
  */
-package org.openmicroscopy.shoola.util.ui.login;
+package org.openmicroscopy.shoola.env.ui.login;
 
 
 import java.awt.Color;

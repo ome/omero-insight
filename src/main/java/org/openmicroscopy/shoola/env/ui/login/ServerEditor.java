@@ -1,5 +1,5 @@
 /*
- * org.openmicroscopy.shoola.util.ui.login.ServerEditor 
+ * org.openmicroscopy.shoola.env.ui.login.ServerEditor
  *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2019 University of Dundee. All rights reserved.
@@ -20,7 +20,7 @@
  *
  *------------------------------------------------------------------------------
  */
-package org.openmicroscopy.shoola.util.ui.login;
+package org.openmicroscopy.shoola.env.ui.login;
 
 
 import java.awt.Color;

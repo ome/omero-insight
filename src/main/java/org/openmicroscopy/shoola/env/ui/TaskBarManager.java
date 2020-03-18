@@ -82,8 +82,8 @@ import org.openmicroscopy.shoola.util.ui.BrowserLauncher;
 import org.openmicroscopy.shoola.util.ui.MacOSMenuHandler;
 import org.openmicroscopy.shoola.util.ui.MessageBox;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
-import org.openmicroscopy.shoola.util.ui.login.ScreenLogin;
-import org.openmicroscopy.shoola.util.ui.login.ScreenLoginDialog;
+import org.openmicroscopy.shoola.env.ui.login.ScreenLogin;
+import org.openmicroscopy.shoola.env.ui.login.ScreenLoginDialog;
 import org.openmicroscopy.shoola.util.file.IOUtil;
 
 import omero.gateway.model.ExperimenterData;
