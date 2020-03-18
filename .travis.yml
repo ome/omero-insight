@@ -26,7 +26,6 @@ jobs:
        - choco install gradle
        - choco install jdk8
        - choco install innosetup --version=5.6.1
-       - if [[ -n "$TRAVIS_TAG" ]]; then choco install wixtoolset ; fi
        - export PATH="/c/Program Files/Java/jdk1.8.0_211:/c/ProgramData/chocolatey/lib/gradle/tools:$PATH"
        - export PATH="/c/Program Files (x86)/Inno Setup 5:$PATH"
        - export JAVA_HOME="/c/Program Files/Java/jdk1.8.0_211"
@@ -38,8 +37,6 @@ jobs:
        - mv .gradle gradle gradlew $DIR
      script:
        - travis_retry ./gradlew packageApplicationExe
-       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageApplicationMsi ; fi
-       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationMsi ; fi
        - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationExe ; fi
 
 before_cache:
