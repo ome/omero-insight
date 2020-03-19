@@ -75,6 +75,7 @@ import omero.log.Logger;
 import org.openmicroscopy.shoola.env.rnd.RndProxyDef;
 import org.openmicroscopy.shoola.env.ui.RefWindow;
 import org.openmicroscopy.shoola.env.ui.UserNotifier;
+import org.openmicroscopy.shoola.util.filter.file.CSVFilter;
 import org.openmicroscopy.shoola.util.filter.file.ExcelFilter;
 import org.openmicroscopy.shoola.util.filter.file.HTMLFilter;
 import org.openmicroscopy.shoola.util.filter.file.JPEGFilter;
@@ -227,6 +228,7 @@ class EditorControl
 	private void createFileFilters()
 	{
 		filters = new ArrayList<FileFilter>();
+		filters.add(new CSVFilter());
 		filters.add(new PDFFilter());
 		filters.add(new PNGFilter());
 		filters.add(new HTMLFilter());
