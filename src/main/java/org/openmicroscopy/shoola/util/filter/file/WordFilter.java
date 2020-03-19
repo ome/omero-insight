@@ -56,7 +56,13 @@ public class WordFilter
     
     /** Possible file extension. */
     public static final String  WORD_T = "doct";
-    
+
+	/** Possible file extension. */
+	public static final String  WORD_M = "docm";
+
+	/** Possible file extension. */
+	public static final String  WORD_B = "docb";
+
 	/** The possible extensions. */
     public static final String[]	extensions;
 	
@@ -64,10 +70,12 @@ public class WordFilter
 	private static final String		description;
 		
 	static {
-		extensions = new String[3];
+		extensions = new String[5];
 		extensions[0] = WORD;
 		extensions[1] = WORD_X;
 		extensions[2] = WORD_T;
+		extensions[3] = WORD_M;
+		extensions[4] = WORD_B;
 		
 		StringBuffer s = new StringBuffer();
 		s.append("Microsoft Word (");
