@@ -96,6 +96,7 @@ class PackagerPlugin implements Plugin<Project> {
             @Override
             void execute(WinOptions opts) {
                 opts.startMenuGroup = "OMERO insight"
+                opts.registryVendor = "The OME team, University of Dundee"
             }
         }
     }
