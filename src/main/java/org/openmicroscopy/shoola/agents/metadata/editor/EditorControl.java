@@ -80,6 +80,7 @@ import org.openmicroscopy.shoola.util.filter.file.ExcelFilter;
 import org.openmicroscopy.shoola.util.filter.file.HTMLFilter;
 import org.openmicroscopy.shoola.util.filter.file.JPEGFilter;
 import org.openmicroscopy.shoola.util.filter.file.OMETIFFFilter;
+import org.openmicroscopy.shoola.util.filter.file.OpenDocumentFilter;
 import org.openmicroscopy.shoola.util.filter.file.PDFFilter;
 import org.openmicroscopy.shoola.util.filter.file.PNGFilter;
 import org.openmicroscopy.shoola.util.filter.file.PowerPointFilter;
@@ -228,7 +229,6 @@ class EditorControl
 	private void createFileFilters()
 	{
 		filters = new ArrayList<FileFilter>();
-		filters.add(new CSVFilter());
 		filters.add(new PDFFilter());
 		filters.add(new PNGFilter());
 		filters.add(new HTMLFilter());
@@ -236,8 +236,10 @@ class EditorControl
 		filters.add(new ExcelFilter());
 		filters.add(new WordFilter());
 		filters.add(new PowerPointFilter());
+		filters.add(new OpenDocumentFilter());
 		filters.add(new XMLFilter());
 		filters.add(new TIFFFilter());
+		filters.add(new CSVFilter());
 		filters.add(new TEXTFilter());
 		exportFilters = new ArrayList<FileFilter>();
 		exportFilters.add(new OMETIFFFilter());
