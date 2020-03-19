@@ -44,6 +44,8 @@ jobs:
      script:
        - travis_retry ./gradlew packageApplicationExe
        - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageApplicationMsi ; fi
+       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationMsi ; fi
+       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationExe ; fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
