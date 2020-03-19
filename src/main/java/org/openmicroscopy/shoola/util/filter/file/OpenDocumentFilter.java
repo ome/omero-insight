@@ -1,8 +1,5 @@
-/*
- * org.openmicroscopy.shoola.util.filter.file.CSVFilter 
- *
-  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2007 University of Dundee. All rights reserved.
+/*------------------------------------------------------------------------------
+ *  Copyright (C) 2020 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -23,28 +20,16 @@
 package org.openmicroscopy.shoola.util.filter.file;
 
 
-
-//Java imports
-
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-//Third-party libraries
-
-//Application-internal dependencies
 
 /** 
  * 
- * Filters the <code>CSV</code> files. 
+ * Filters the <code>Open Document</code> files.
  * 
- * @author  Jean-Marie Burel &nbsp;&nbsp;&nbsp;&nbsp;
- * 	<a href="mailto:j.burel@dundee.ac.uk">j.burel@dundee.ac.uk</a>
- * @author	Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
- * 	<a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
- * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $Date: $)
- * </small>
+ * @author  Dominik Lindner &nbsp;&nbsp;&nbsp;&nbsp;
+ * 	<a href="mailto:d.lindner@dundee.ac.uk">d.lindner@dundee.ac.uk</a>
  * @since OME3.0
  */
 public class OpenDocumentFilter
