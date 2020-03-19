@@ -43,6 +43,7 @@ jobs:
        - mv .gradle gradle gradlew $DIR
      script:
        - travis_retry ./gradlew packageApplicationExe
+       - test -f build/packaged/main/bundles/OMERO.insight-*
        - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageApplicationMsi ; fi
        - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationMsi ; fi
        - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationExe ; fi
