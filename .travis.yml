@@ -30,6 +30,12 @@ jobs:
        - export PATH="/c/Program Files (x86)/Inno Setup 5:$PATH"
        - export JAVA_HOME="/c/Program Files/Java/jdk1.8.0_211"
        - export GRADLE_OPTS="-Dorg.gradle.daemon=false"
+       - choco install nuget.commandline
+       - DIR=$PWD
+       - cd "C:\Program Files (x86)"
+       - nuget install WiX
+       - export PATH="/c/Program Files (x86)/WiX.3.11.2/tools:$PATH"
+       - cd $DIR
      install:
        - DIR=$PWD
        - rm -rf $HOME/.gradle
@@ -37,7 +43,7 @@ jobs:
        - mv .gradle gradle gradlew $DIR
      script:
        - travis_retry ./gradlew packageApplicationExe
-       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageImporterApplicationExe ; fi
+       - if [[ -n "$TRAVIS_TAG" ]]; then travis_retry ./gradlew packageApplicationMsi ; fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
