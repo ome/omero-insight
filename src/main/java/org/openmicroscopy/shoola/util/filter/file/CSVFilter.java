@@ -53,6 +53,9 @@ public class CSVFilter
 	/** Possible file extension. */
 	public static final String  CSV = "csv";
 
+	/** Possible file extension. */
+	public static final String  TSV = "tsv";
+
 	/** The possible extensions. */
 	public static final String[] extensions;
 	
@@ -60,11 +63,12 @@ public class CSVFilter
 	private static final String	description;
 	
 	static {
-		extensions = new String[1];
+		extensions = new String[2];
 		extensions[0] = CSV;
-		
+		extensions[1] = TSV;
+
 		StringBuffer s = new StringBuffer();
-		s.append( "Comma Separated Value (");
+		s.append( "Comma/Tab Separated Value (");
 		for (int i = 0; i < extensions.length; i++) {
 			s.append("*."+extensions[i]);
 			if (i < extensions.length-1)
@@ -78,7 +82,7 @@ public class CSVFilter
 	 * 	Overridden to return the MIME type.
 	 * 	@see CustomizedFileFilter#getMIMEType()
 	 */
-	public String getMIMEType() { return "text/css"; }
+	public String getMIMEType() { return "text/csv"; }
 	
 	/**
 	 * 	Overridden to return the extension of the filter.
