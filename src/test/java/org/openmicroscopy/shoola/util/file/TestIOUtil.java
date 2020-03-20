@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2013 University of Dundee. All rights reserved.
+ *  Copyright (C) 2013-2020 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,14 @@
  */
 package org.openmicroscopy.shoola.util.file;
 
-//Java imports
+import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,6 +35,8 @@ import org.apache.commons.io.FilenameUtils;
 import com.google.common.io.Files;
 
 import junit.framework.TestCase;
+
+
 
 
 
@@ -46,19 +51,10 @@ public class TestIOUtil
     extends TestCase
 {
 
-    //Helpers
     /**
-     * Closes the specified steam.
-     * 
-     * @param stream The stream to close.
+     * Size of the buffer to read/write data
      */
-    private static void closeStream(InputStream stream)
-    {
-        if (stream == null) return;
-        try {
-            stream.close();
-        } catch (Exception e) {}
-    }
+    private static final int BUFFER_SIZE = 4096;
 
     /**
      * Unzips the file using the command line. Return <code>true</code>
@@ -68,29 +64,56 @@ public class TestIOUtil
      * @param destDir The destination folder.
      * @return See above.
      */
-    private boolean unzip(File zip, File destDir)
+    private boolean unzip(File zip, File destDir) throws IOException
     {
-        Process p = null;
-        try {
-            List<String> cmds = new ArrayList<String>();
-            cmds.add("unzip");
-            cmds.add(zip.getAbsolutePath());
-            cmds.add("-d");
-            cmds.add(destDir.getAbsolutePath());
-            ProcessBuilder pb = new ProcessBuilder(cmds);
-            p = pb.start();
-            if (p.waitFor() != 0) return false;
-        } catch (Exception e) {
-            return false;
-        } finally {
-            if (p != null) {
-                //just in case.
-                closeStream(p.getErrorStream());
-                closeStream(p.getInputStream());
-                p.destroy();
+        if (!destDir.exists()) {
+            destDir.mkdir();
+        }
+        try(ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zip.getAbsolutePath()))) {
+            ZipEntry entry = zipIn.getNextEntry();
+            // iterates over entries in the zip file
+            while (entry != null) {
+                String filePath = destDir + File.separator + entry.getName();
+                if (entry.isDirectory()) {
+                    // if the entry is a directory, make the directory
+                    File dir = new File(filePath);
+                    dir.mkdir();
+                } else {
+                    // if the entry is a file, extracts it
+                    String[] values = entry.getName().split(File.separator);
+                    if (values.length > 1) {
+                        File parent = destDir;
+                        int n = values.length-1;
+                        for (int i = 0; i < n; i++) {
+                            File f = new File(destDir + File.separator + values[i]);
+                            f.mkdir();
+                            parent = f.getAbsoluteFile();
+                        }
+                        filePath = parent + File.separator + values[n];
+                    }
+                    extractFile(zipIn, filePath);
+                }
+                zipIn.closeEntry();
+                entry = zipIn.getNextEntry();
             }
         }
         return true;
+    }
+
+    /**
+     * Extracts a zip entry (file entry)
+     * @param zipIn
+     * @param filePath
+     * @throws IOException
+     */
+    private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+        try(BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
+            byte[] bytesIn = new byte[BUFFER_SIZE];
+            int read = 0;
+            while ((read = zipIn.read(bytesIn)) != -1) {
+                bos.write(bytesIn, 0, read);
+            }
+        }
     }
 
     /**
@@ -112,7 +135,7 @@ public class TestIOUtil
     {
         try {
             File dir = Files.createTempDir();
-            File f = File.createTempFile("test", ".tmp", dir);
+            File f = File.createTempFile("testZipDirectory", ".tmp", dir);
             File zip = IOUtil.zipDirectory(dir);
             assertEquals(FilenameUtils.getExtension(zip.getName()), "zip");
             File destDir = Files.createTempDir();
@@ -135,9 +158,9 @@ public class TestIOUtil
     {
         try {
             File dir = Files.createTempDir();
-            File f = File.createTempFile("test", ".tmp", dir);
-            File subfolder =Files.createTempDir();
-            File f1 = File.createTempFile("test1", ".tmp", subfolder);
+            File f = File.createTempFile("testZipDirectoryWithSubfolder", ".tmp", dir);
+            File subfolder = Files.createTempDir();
+            File f1 = File.createTempFile("sub_testZipDirectoryWithSubfolder", ".tmp", subfolder);
 
             FileUtils.moveDirectoryToDirectory(subfolder, dir, false);
 
