@@ -99,7 +99,15 @@
   **Inno Setup (required to create .exe installer):**
 
   1. Download and install [Inno Setup](http://www.jrsoftware.org/isdl.php).
-  2. Add the Inno Setup install directory (default `C:\Program Files (x86)\Inno Setup 5`) to the PATH.
+  2. Add the Inno Setup install directory (e.g. `C:\Program Files (x86)\Inno Setup 5`) to the PATH.
+
+  You can install Inno Setup using Chocolatey:
+
+      choco install innosetup
+
+   Depending on the Windows version you are using, you might not be able to use the latest version of Inno Setup.
+
+
 
   **WiX (required to build .msi installer):**
 
@@ -146,4 +154,4 @@
   Copyright
   ---------
 
-  Copyright (C) 2006-2019 University of Dundee. All rights reserved.
+  Copyright (C) 2006-2020 University of Dundee. All rights reserved.
