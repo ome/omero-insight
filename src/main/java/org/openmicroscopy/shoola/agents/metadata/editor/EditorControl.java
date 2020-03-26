@@ -229,18 +229,18 @@ class EditorControl
 	private void createFileFilters()
 	{
 		filters = new ArrayList<FileFilter>();
-		filters.add(new PDFFilter());
-		filters.add(new PNGFilter());
+		filters.add(new CSVFilter());
+		filters.add(new ExcelFilter());
 		filters.add(new HTMLFilter());
 		filters.add(new JPEGFilter());
-		filters.add(new ExcelFilter());
-		filters.add(new WordFilter());
-		filters.add(new PowerPointFilter());
 		filters.add(new OpenDocumentFilter());
-		filters.add(new XMLFilter());
-		filters.add(new TIFFFilter());
-		filters.add(new CSVFilter());
+		filters.add(new PDFFilter());
+		filters.add(new PNGFilter());
+		filters.add(new PowerPointFilter());
 		filters.add(new TEXTFilter());
+		filters.add(new TIFFFilter());
+		filters.add(new WordFilter());
+		filters.add(new XMLFilter());
 		exportFilters = new ArrayList<FileFilter>();
 		exportFilters.add(new OMETIFFFilter());
 	}
