@@ -24,14 +24,7 @@ import ij.ImagePlus;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -52,10 +45,9 @@ import org.openmicroscopy.shoola.agents.fsimporter.TagsLoader;
 import org.openmicroscopy.shoola.agents.fsimporter.util.FileImportComponentI;
 import org.openmicroscopy.shoola.agents.fsimporter.util.ObjectToCreate;
 import org.openmicroscopy.shoola.env.LookupNames;
-import org.openmicroscopy.shoola.env.data.model.FileObject;
-import org.openmicroscopy.shoola.env.data.model.ImportableFile;
-import org.openmicroscopy.shoola.env.data.model.ImportableObject;
-import org.openmicroscopy.shoola.env.data.model.ResultsObject;
+import org.openmicroscopy.shoola.env.config.Registry;
+import org.openmicroscopy.shoola.env.data.OmeroDataService;
+import org.openmicroscopy.shoola.env.data.model.*;
 
 import omero.gateway.SecurityContext;
 
@@ -72,6 +64,7 @@ import omero.gateway.model.ImageData;
 import omero.gateway.model.ProjectData;
 import omero.gateway.model.ROIData;
 import omero.gateway.model.ScreenData;
+import omero.log.LogMessage;
 
 /** 
  * The Model component in the <code>Importer</code> MVC triad.
@@ -772,5 +765,27 @@ class ImporterModel
         this.object = object;
     }
 
+    DataObject createDataObjectDirect(ObjectToCreate data)
+	{
+		if (data == null) {
+			return null;
+		}
+		SecurityContext ctx = new SecurityContext(data.getGroup().getId());
+		ctx.setServerInformation(this.ctx.getServerInformation());
+		ctx.setExperimenter(data.getExperimenter());
+
+		Registry reg = ImporterAgent.getRegistry();
+		OmeroDataService os = reg.getDataService();
+		DataObject object = null;
+		try {
+			object = os.createDataObject(ctx,data.getChild(), data.getParent(), null);
+		} catch (Exception e) {
+			LogMessage logMsg = new LogMessage();
+			logMsg.println("Cannot create object. ");
+			logMsg.print(e);
+			reg.getLogger().error(this, logMsg);
+		}
+		return object;
+	}
 
 }

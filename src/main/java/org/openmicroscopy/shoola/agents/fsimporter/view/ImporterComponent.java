@@ -957,4 +957,14 @@ class ImporterComponent
             }
         }
     }
+
+	/**
+	 * Implemented as specified by the {@link Importer} interface.
+	 * @see Importer#createDataObjectDirect(ObjectToCreate)
+	 */
+	public DataObject createDataObjectDirect(ObjectToCreate data)
+	{
+		return model.createDataObjectDirect(data);
+	}
+
 }

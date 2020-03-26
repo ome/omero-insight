@@ -247,6 +247,14 @@ public interface Importer
 
     /**
      * Creates the data object.
+     *
+     * @param data The object hosting information about the object to create.
+     * @return  The created object.
+     */
+    public DataObject createDataObjectDirect(ObjectToCreate data);
+
+    /**
+     * Creates the data object.
      * 
      * @param data The object hosting information about the object to create.
      */

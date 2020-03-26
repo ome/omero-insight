@@ -82,16 +82,14 @@ import org.jdesktop.swingx.JXTaskPane;
 import org.openmicroscopy.shoola.agents.fsimporter.IconManager;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.actions.ImporterAction;
+import org.openmicroscopy.shoola.agents.fsimporter.util.ObjectToCreate;
 import org.openmicroscopy.shoola.agents.fsimporter.view.ImportLocationDetails;
 import org.openmicroscopy.shoola.agents.fsimporter.view.Importer;
 import org.openmicroscopy.shoola.agents.util.SelectionWizard;
 import org.openmicroscopy.shoola.agents.util.browser.TreeImageDisplay;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.Registry;
-import org.openmicroscopy.shoola.env.data.model.DiskQuota;
-import org.openmicroscopy.shoola.env.data.model.FileObject;
-import org.openmicroscopy.shoola.env.data.model.ImportableFile;
-import org.openmicroscopy.shoola.env.data.model.ImportableObject;
+import org.openmicroscopy.shoola.env.data.model.*;
 import org.openmicroscopy.shoola.env.rnd.RenderingControl;
 import org.openmicroscopy.shoola.util.ui.ClosableTabbedPaneComponent;
 import org.openmicroscopy.shoola.util.ui.NumericalTextField;
@@ -1755,9 +1753,11 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 							.getValue());
 			}
 		} else if (ImportDialog.PROPERTY_GROUP_CHANGED.equals(name)
-				|| ImportDialog.REFRESH_LOCATION_PROPERTY.equals(name)
-				|| ImportDialog.CREATE_OBJECT_PROPERTY.equals(name)) {
+				|| ImportDialog.REFRESH_LOCATION_PROPERTY.equals(name)) {
 			firePropertyChange(name, evt.getOldValue(), evt.getNewValue());
+		} else if (ImportDialog.CREATE_OBJECT_PROPERTY.equals(name)) {
+			DataObject data = model.createDataObjectDirect((ObjectToCreate) evt.getNewValue());
+			onDataObjectSaved(data, null);
 		} else if (LocationDialog.ADD_TO_QUEUE_PROPERTY.equals(name)) {
 		    Object src = evt.getSource();
 		    if (src != detachedDialog) {
