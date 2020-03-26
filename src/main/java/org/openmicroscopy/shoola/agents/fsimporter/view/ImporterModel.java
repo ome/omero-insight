@@ -24,7 +24,14 @@ import ij.ImagePlus;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -47,7 +54,10 @@ import org.openmicroscopy.shoola.agents.fsimporter.util.ObjectToCreate;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.OmeroDataService;
-import org.openmicroscopy.shoola.env.data.model.*;
+import org.openmicroscopy.shoola.env.data.model.FileObject;
+import org.openmicroscopy.shoola.env.data.model.ImportableFile;
+import org.openmicroscopy.shoola.env.data.model.ImportableObject;
+import org.openmicroscopy.shoola.env.data.model.ResultsObject;
 
 import omero.gateway.SecurityContext;
 
