@@ -42,13 +42,14 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -82,6 +83,7 @@ import org.jdesktop.swingx.JXTaskPane;
 import org.openmicroscopy.shoola.agents.fsimporter.IconManager;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.actions.ImporterAction;
+import org.openmicroscopy.shoola.agents.fsimporter.util.ObjectToCreate;
 import org.openmicroscopy.shoola.agents.fsimporter.view.ImportLocationDetails;
 import org.openmicroscopy.shoola.agents.fsimporter.view.Importer;
 import org.openmicroscopy.shoola.agents.util.SelectionWizard;
@@ -1755,9 +1757,13 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 							.getValue());
 			}
 		} else if (ImportDialog.PROPERTY_GROUP_CHANGED.equals(name)
-				|| ImportDialog.REFRESH_LOCATION_PROPERTY.equals(name)
-				|| ImportDialog.CREATE_OBJECT_PROPERTY.equals(name)) {
+				|| ImportDialog.REFRESH_LOCATION_PROPERTY.equals(name)) {
 			firePropertyChange(name, evt.getOldValue(), evt.getNewValue());
+		} else if (ImportDialog.CREATE_OBJECT_PROPERTY.equals(name)) {
+
+			ObjectToCreate o = (ObjectToCreate) evt.getNewValue();
+			onDataObjectSaved(o.getChild(), null);
+
 		} else if (LocationDialog.ADD_TO_QUEUE_PROPERTY.equals(name)) {
 		    Object src = evt.getSource();
 		    if (src != detachedDialog) {
