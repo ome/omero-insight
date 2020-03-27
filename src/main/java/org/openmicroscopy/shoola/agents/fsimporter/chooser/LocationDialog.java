@@ -1804,7 +1804,7 @@ class LocationDialog extends JDialog implements ActionListener,
 	 * Enables or disables the user input controls
 	 * @param isEnabled Whether to enable or disable the controls
 	 */
-	private void setInputsEnabled(boolean isEnabled)
+	void setInputsEnabled(boolean isEnabled)
 	{
 		projectsBox.setEnabled(isEnabled);
 		datasetsBox.setEnabled(isEnabled);
@@ -1825,4 +1825,5 @@ class LocationDialog extends JDialog implements ActionListener,
 	 * <code>false</code> to import the images from all windows.
 	 */
 	boolean isActiveWindow() { return activeWindow; }
+
 }

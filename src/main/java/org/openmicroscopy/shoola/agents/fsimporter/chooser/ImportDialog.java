@@ -1756,8 +1756,10 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 				|| ImportDialog.REFRESH_LOCATION_PROPERTY.equals(name)) {
 			firePropertyChange(name, evt.getOldValue(), evt.getNewValue());
 		} else if (ImportDialog.CREATE_OBJECT_PROPERTY.equals(name)) {
+			locationDialog.setInputsEnabled(false);
 			DataObject data = model.createDataObjectDirect((ObjectToCreate) evt.getNewValue());
 			onDataObjectSaved(data, null);
+			locationDialog.setInputsEnabled(true);
 		} else if (LocationDialog.ADD_TO_QUEUE_PROPERTY.equals(name)) {
 		    Object src = evt.getSource();
 		    if (src != detachedDialog) {
