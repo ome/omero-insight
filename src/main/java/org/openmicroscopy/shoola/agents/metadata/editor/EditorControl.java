@@ -230,7 +230,7 @@ class EditorControl
 	{
 		filters = new ArrayList<FileFilter>();
 		filters.add(new CSVFilter());
-		filters.add(new ExcelFilter());
+		filters.add(new WordFilter());
 		filters.add(new HTMLFilter());
 		filters.add(new JPEGFilter());
 		filters.add(new OpenDocumentFilter());
@@ -239,7 +239,7 @@ class EditorControl
 		filters.add(new PowerPointFilter());
 		filters.add(new TEXTFilter());
 		filters.add(new TIFFFilter());
-		filters.add(new WordFilter());
+		filters.add(new ExcelFilter());
 		filters.add(new XMLFilter());
 		exportFilters = new ArrayList<FileFilter>();
 		exportFilters.add(new OMETIFFFilter());
