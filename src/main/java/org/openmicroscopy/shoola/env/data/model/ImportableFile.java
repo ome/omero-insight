@@ -144,6 +144,16 @@ public class ImportableFile
 	 * @return See above.
 	 */
 	public boolean isFolderAsContainer() { return folderAsContainer; }
+
+	/**
+	 * Returns <code>true</code> if the object is already created,
+	 * <code>false</code> otherwise.
+	 * @return See above.
+	 */
+	public boolean isDatasetCreated()
+	{
+		return dataset.getId() >= 0;
+	}
 	
 	/**
 	 * Sets the component used to notify of the progress.

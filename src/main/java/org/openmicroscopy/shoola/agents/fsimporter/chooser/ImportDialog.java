@@ -1181,7 +1181,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		if (!reload) {
 			while (i.hasNext()) {
 				file = i.next();
-				if (file.isFolderAsContainer()
+				if ((file.isFolderAsContainer() || !file.isDatasetCreated())
 						&& !ImportableObject.isHCSFile(file.getFile())) {
 					// going to check if the dataset has been created.
 					reload = true;
