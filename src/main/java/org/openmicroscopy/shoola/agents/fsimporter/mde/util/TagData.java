@@ -961,6 +961,14 @@ public class TagData
 	private void setTagData(ome.model.units.Unit[] u) {
 		if(u==null || u.length==0)
 			return;
+		// check dimensions
+		if(unitSymbol.length<u.length){
+			unitSymbol=new String[u.length];
+		}
+		if(value.length<u.length){
+			value=new String[u.length];
+		}
+
 		for(int i=0; i<u.length; i++) {
 			if(u[i]!=null) {
 				value[i]=String.valueOf(u[i].getValue());
@@ -998,9 +1006,16 @@ public class TagData
 			unitSymbol=new String[] {unitsymbol};
 			unitClass = TagNames.getUnit(unitsymbol).getClass();
 			return;
-		}else if(getTagValue().trim().equals("")){
-			for(int i=0; i<unitSymbol.length;i++)
+		}else if(getTagValue().trim().equals("") && unitsymbol!=null){
+			// initialisation of symbol array necessary?
+			if(unitSymbol==null){
+				if(value!=null){
+					unitSymbol= new String[value.length];
+				}
+			}
+			for(int i=0; i<unitSymbol.length;i++) {
 				unitSymbol[i]=unitsymbol;
+			}
 			unitClass = TagNames.getUnit(unitsymbol).getClass();
 			return;
 		}
