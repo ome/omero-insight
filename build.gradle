@@ -47,6 +47,7 @@ dependencies {
         // Conflicts with `net.java.dev.jna`
         exclude group: "com.sun.jna", module: "jna"
     }
+    implementation(fileTree(dir: "external", include: ["*.jar"]))
 }
 
 test {
