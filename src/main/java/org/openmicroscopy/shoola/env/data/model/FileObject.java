@@ -223,6 +223,7 @@ public class FileObject
             return ((File) file).getName();
         } else if (file instanceof ImagePlus) {
             ImagePlus img = (ImagePlus) file;
+            IJ.log(img.getTitle());
             return img.getTitle();
         }
         return null;
@@ -258,12 +259,9 @@ public class FileObject
             ImagePlus img = (ImagePlus) file;
             generated = true;
             try {
-                //name w/o extension
-                String baseName = FilenameUtils.getBaseName(
-                        FilenameUtils.removeExtension(img.getTitle()));
-                baseName = CommonsLangUtils.deleteWhitespace(baseName);
+                String baseName = CommonsLangUtils.deleteWhitespace(img.getTitle());
                 String n = baseName+".ome.tif";
-                f = File.createTempFile(img.getTitle(), ".ome.tif");
+                f = File.createTempFile(baseName, ".ome.tif");
                 File p = f.getParentFile();
                 File[] list = p.listFiles();
                 if (list != null) {
