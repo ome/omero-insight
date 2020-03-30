@@ -93,6 +93,8 @@ public class XMLWriter {
 	final String ATTR_VISIBLE="Visible";
 	final String ATTR_UNIT="Unit";
 	final String ATTR_TYPE="Type";
+	final String ATTR_INSERT="Insert";
+	final String ATTR_INSERTPOINT="InsertPoint";
 	
 	private final String ATTR_VALUES="Values";
 	private LinkedHashMap<String, ModuleList> hardwareConfiguration;
@@ -316,7 +318,12 @@ public class XMLWriter {
 			if(n.getNodeName().equals(ELEM_OBJECT_CONF) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String type=eElement.getAttribute(ATTR_TYPE);
-				list.put(type, elementsToTagDataPropList(eElement.getElementsByTagName(ELEM_TAGDATAPROP)));
+				String insertInTree=eElement.getAttribute(ATTR_INSERT);
+				String insertPoint=eElement.getAttribute(ATTR_INSERTPOINT);
+				ModuleConfiguration mconf =  elementsToTagDataPropList(eElement.getElementsByTagName(ELEM_TAGDATAPROP));
+				mconf.setInsertInTree(Boolean.valueOf(insertInTree));
+				mconf.setInsertPoint(insertPoint);
+				list.put(type,mconf);
 			}
 		}
 		return list;
@@ -584,7 +591,7 @@ public class XMLWriter {
 						ImporterAgent.getRegistry().getLogger().info(this,"[MDE] no setup configurations defined in mde configuration file");
 					}
 				}else {
-					ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] No configuration file available for MDE");
+					ImporterAgent.getRegistry().getLogger().info(this,"[MDE] No configuration file available for MDE under "+configPath);
 				}
 			}
 		}catch(Exception e) {

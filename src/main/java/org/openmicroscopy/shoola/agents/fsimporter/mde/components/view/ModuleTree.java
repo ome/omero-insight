@@ -27,11 +27,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
@@ -58,6 +54,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
@@ -140,6 +137,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 		        String type = ((ModuleTreeElement) ((DefaultMutableTreeNode)value).getUserObject()).getType();
 		        is_selected = false;
 		        
+		        // disable tree nodes that are not list in SetupConf
 		        if (!((DefaultMutableTreeNode)value).isRoot() && !controller.configurationExists(type)) {
 		          this.setEnabled(false);
 		          this.setDisabledIcon(this.getClosedIcon()); // I used the standard      
@@ -281,8 +279,9 @@ public class ModuleTree extends JPanel implements ActionListener{
 		}
 		String pType=((ModuleTreeElement) parent.getUserObject()).getType();
 		// it is allowed to insert object at this point?
-		if(thisElem!=null) {
+		if(thisElem!=null && thisElem.getUserObject()!=null ) {
 			if( pType.equals(TagNames.OME_ROOT) || controller.configurationExists(pType)) {
+				if (((ModuleTreeElement) thisElem.getUserObject()).getData() != null) {
 				if( ((ModuleTreeElement) thisElem.getUserObject()).getData().hasParent(pType)) {
 					ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] addNode: "+getName(thisElem) + " at "+parent.getUserObject().toString());
 					this.changeTreeStructure=true;
@@ -301,8 +300,13 @@ public class ModuleTree extends JPanel implements ActionListener{
 					ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't insert node at selected parent! Allowed parents: "+Arrays.toString(((ModuleTreeElement) thisElem.getUserObject()).getData().getParents()));
 				}
 			}else {
+					ImporterAgent.getRegistry().getLogger().warn(this, "[MDE] can't insert node, content data empty");
+				}
+			} else {
 				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't insert node, content not configurated for selected mic");
 			}
+		}else{
+			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't insert node, given new element is empty");
 		}
 		return null;
 
@@ -318,7 +322,39 @@ public class ModuleTree extends JPanel implements ActionListener{
 		repaint();
 	}
 
+	public void customizeTree(String micName){
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] load custom tree for "+micName);
+		HashMap<String, ModuleConfiguration> confMap=controller.getMDEConfiguration().getConfiguratedObjects(micName);
+		DefaultMutableTreeNode cTree=getRoot();
+		if(confMap!=null) {
+			for (Map.Entry<String, ModuleConfiguration> entry : confMap.entrySet()) {
+				if(entry.getValue()!=null ) {
+					if (MDEHelper.getChildByName(cTree, entry.getKey()) == null) {
+						if(entry.getValue().isInsertInTree()) {
+							String pType = entry.getValue().getInsertPoint();
+							List<DefaultMutableTreeNode> insertAtNodeList=MDEHelper.getChildsByType(cTree,pType);
+							if(insertAtNodeList!=null){
+								for(DefaultMutableTreeNode insertAtNode:insertAtNodeList) {
+									// Test if this kind of child still exists
+									if(MDEHelper.getListOfChilds(entry.getKey(),insertAtNode)==null ) {
+										ModuleContent c = controller.getContentOfType(entry.getKey());
+										ModuleTreeElement choice = null;
+										if (c != null && c.getList() == null) {
+											choice = new ModuleTreeElement(c, insertAtNode);
+										} else {
+											choice = new ModuleTreeElement(entry.getKey(), null, "", c, insertAtNode);
+										}
 
+										addNode(insertAtNode, new DefaultMutableTreeNode(choice));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
 	public void removeNodeFromParent(DefaultMutableTreeNode current) {
 		if(tree==null)

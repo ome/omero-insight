@@ -32,7 +32,12 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
  *
  */
 public class ModuleConfiguration {
-	/* Configuration for attributes*/
+
+	/* configuration for object*/
+	private boolean insertInTree;
+	private String insertPoint;
+
+	/* Configuration for object attributes*/
 	private LinkedHashMap<String, TagDataProp> tagConf;
 	public ModuleConfiguration() {
 		this.tagConf=new LinkedHashMap<>();
@@ -52,6 +57,21 @@ public class ModuleConfiguration {
 		}
 	}
 	
+	public boolean isInsertInTree() {
+		return insertInTree;
+	}
+
+	public void setInsertInTree(boolean insertInTree) {
+		this.insertInTree = insertInTree;
+	}
+
+	public String getInsertPoint() {
+		return insertPoint;
+	}
+
+	public void setInsertPoint(String insertPoint) {
+		this.insertPoint = insertPoint;
+	}
 	public TagDataProp getConfigurationFor(String name) {
 		if(tagConf!=null && tagConf.containsKey(name))
 			return tagConf.get(name);

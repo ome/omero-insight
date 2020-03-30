@@ -259,6 +259,8 @@ public class MDEHelper {
 				list.add((DefaultMutableTreeNode) tree.getChildAt(i));
 			}
 		}
+		if(list.isEmpty())
+			return null;
 		return list;
 	}
 	
@@ -325,7 +327,7 @@ public class MDEHelper {
 	 * @param name
 	 * @return child node as a {@link DefaultMutableTreeNode} or null if no child of this name exists.
 	 */
-	private static DefaultMutableTreeNode getChildByName(DefaultMutableTreeNode tree, String name) {
+	public static DefaultMutableTreeNode getChildByName(DefaultMutableTreeNode tree, String name) {
 		if(tree!=null) {
 			Enumeration e = tree.breadthFirstEnumeration();
 			while(e.hasMoreElements()) {
@@ -337,6 +339,22 @@ public class MDEHelper {
 		}
 		return null;
 	}
+	
+	public static List<DefaultMutableTreeNode> getChildsByType(DefaultMutableTreeNode tree, String type) {
+		if(tree!=null) {
+			List<DefaultMutableTreeNode> listOfChilds=new ArrayList<>();
+			Enumeration e = tree.breadthFirstEnumeration();
+			while(e.hasMoreElements()) {
+				DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
+				if(((ModuleTreeElement) node.getUserObject()).getType().trim().equals(type.trim())) {
+					listOfChilds.add(node);
+				}
+			}
+			return listOfChilds;
+		}
+		return null;
+	}
+
 	
 	/**
 	 * @param tree that holds the prospected node

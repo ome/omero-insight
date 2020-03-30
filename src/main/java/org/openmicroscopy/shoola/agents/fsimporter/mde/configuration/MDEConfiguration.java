@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
@@ -458,7 +459,11 @@ public class MDEConfiguration {
 	 * @return
 	 */
 	public DefaultMutableTreeNode getTree(String micName) {
+		if(micName.equals(UNIVERSAL)) {
 		return getStandardTree(micName);
+		}else{
+			return getCustomTree(micName);
+	}
 	}
 
 	public void printObjects(String mic) {
@@ -486,6 +491,50 @@ public class MDEConfiguration {
 	}
 	
 	
+	private DefaultMutableTreeNode getCustomTree(String micName){
+		DefaultMutableTreeNode cTree = getStandardTree(UNIVERSAL);
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] load custom tree for "+micName);
+		HashMap<String, ModuleConfiguration> confMap=getConfiguratedObjects(micName);
+
+		if(confMap!=null) {
+			for (Map.Entry<String, ModuleConfiguration> entry : confMap.entrySet()) {
+				if(entry.getValue()!=null ) {
+					if(entry.getValue().isInsertInTree()) {
+						String pType = entry.getValue().getInsertPoint();
+						List<DefaultMutableTreeNode> insertAtNodeList=MDEHelper.getChildsByType(cTree,pType);
+						if(insertAtNodeList!=null){
+							for(DefaultMutableTreeNode insertAtNode:insertAtNodeList) {
+								// Test if this kind of child still exists
+								if(MDEHelper.getListOfChilds(entry.getKey(),insertAtNode)==null ) {
+									System.out.println("### Insert object " + entry.getKey() + " at node " + insertAtNode.getUserObject().toString());
+									ModuleContent c = getContent(micName, entry.getKey());
+
+									// it is allowed to insert object at this point?
+									if (pType.equals(TagNames.OME_ROOT) || configurationExists(micName,pType)) {
+										if (c != null && c.hasParent(pType)) {
+											ModuleTreeElement choice = null;
+											if(c.getList()==null){
+												choice = new ModuleTreeElement(c, insertAtNode);
+											} else {
+												choice = new ModuleTreeElement(entry.getKey(), null, "", c, insertAtNode);
+											}
+											insertAtNode.add(new DefaultMutableTreeNode(choice));
+										}
+									}
+								}else{
+									System.out.println("-- childs of type "+entry.getKey()+" still exists");
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return cTree;
+	}
+
+
 	/**
 	 * Create standard ome tree
 
