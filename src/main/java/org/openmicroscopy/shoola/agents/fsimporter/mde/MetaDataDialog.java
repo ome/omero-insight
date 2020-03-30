@@ -666,6 +666,8 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	}
 	
 	private void updateObjectTree(FNode node) {
+		if(node==null)
+			return;
 		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] update object tree");
 		DefaultMutableTreeNode tree=node.getContainer().getTreeNode();
 		//ModuleTree treePanel=getCurrentModuleTree();
