@@ -23,10 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,18 +33,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
-import org.openmicroscopy.shoola.agents.treeviewer.actions.CreateObjectWithChildren;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -340,7 +332,7 @@ public class XMLWriter {
 		if(eElement.getElementsByTagName(ELEM_PARENTS)!=null && eElement.getElementsByTagName(ELEM_PARENTS).getLength()>0) {
 			parents=((Element) eElement.getElementsByTagName(ELEM_PARENTS).item(0)).getAttribute(ATTR_VALUES);
 		}
-		return new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type), type,  parents.split(","));
+		return new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type,false), type,  parents.split(","));
 	}
 
 	
@@ -634,9 +626,10 @@ public class XMLWriter {
 	 * }
 	 * @param nodeList list of elements TAGDATA
 	 * @param parent owned object
+	 * @param pre is true if TagData element is part of predefinitions (objPre), else false (disable value specification for objectConf)
 	 * @return
 	 */
-	private LinkedHashMap<String,TagData> elementsToTagDataList(NodeList nodeList,String parent){
+	private LinkedHashMap<String,TagData> elementsToTagDataList(NodeList nodeList,String parent,boolean pre){
 		if(nodeList==null)
 			return null;
 		LinkedHashMap<String,TagData> list = new LinkedHashMap<>();
@@ -645,7 +638,10 @@ public class XMLWriter {
 			if(n.getNodeName().equals(ELEM_TAGDATA) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String tagName=eElement.getAttribute(ATTR_NAME);
-				String tagVal=eElement.getAttribute(ATTR_VALUE);
+				String tagVal="";
+				if(pre) {
+					tagVal = eElement.getAttribute(ATTR_VALUE);
+				}
 				String tagUnit=eElement.getAttribute(ATTR_UNIT);
 				String tagVis=eElement.getAttribute(ATTR_VISIBLE);
 				String defaultVal = eElement.getAttribute(ATTR_DEFAULT_VAL);
@@ -678,7 +674,7 @@ public class XMLWriter {
 			if(n.getNodeName().equals(ELEM_OBJECT_PRE) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String type=eElement.getAttribute(ATTR_TYPE);
-				ModuleContent c=new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type), type, null);
+				ModuleContent c=new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type,true), type, null);
 				List<ModuleContent> cList=list.get(type);
 				if(cList==null) {
 					cList = new ArrayList<>();
