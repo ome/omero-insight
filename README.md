@@ -14,10 +14,12 @@
   This directory is the repository of the software artifacts of the
   OMERO.insight Project. Its contents are as follows:
 
-    + build: This directory contains the tools to compile, run, test and
-             deliver the application.
+    + buildSrc: This directory contains the code to package the application
     + src: Contains the application source files, various configuration
            files required by the application to run and the test code.
+    + icons: The icons to package the application.
+    + external: Where to add third-party jars to be included e.g. SlideBook Reader.
+                Only files with .jar extension will be included in the CLASSPATH.
     + README: This file.
 
   Building OMERO.insight
