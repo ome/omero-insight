@@ -27,21 +27,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
 
-import ome.xml.model.LightPath;
 import ome.xml.model.Dichroic;
 import ome.xml.model.Filter;
 import ome.xml.model.enums.FilterType;
-import ome.xml.model.FilterSet;
 
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ImportUserData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 /**
@@ -131,50 +126,50 @@ public class MDEHelper {
 	}
 	
 	
-	/**
-	 * merge inTree into destTree.
-	 * @param tree1
-	 * @param tree2
-	 * @return destTree with data of inTree
-	 */
-	public static DefaultMutableTreeNode mergeTrees(DefaultMutableTreeNode tree1, DefaultMutableTreeNode tree2,int depth) {
+//	/**
+//	 * merge data of tree1 into tree2.
+//	 * @param tree1
+//	 * @param tree2
+//	 * @return destTree with data of inTree
+//	 */
+//	public static DefaultMutableTreeNode mergeTrees(DefaultMutableTreeNode tree1, DefaultMutableTreeNode tree2,int depth) {
+//
+//		if(((ModuleTreeElement) tree1.getUserObject()).isContainer()) {
+//			depth++;
+//			for(int i = 0 ; i < tree1.getChildCount(); i++) {
+//				String nodeName=((DefaultMutableTreeNode)tree1.getChildAt(i)).getUserObject().toString();
+//				DefaultMutableTreeNode n1=findNode((DefaultMutableTreeNode) tree1.getChildAt(i),tree2);
+//
+//				if(n1==null) {
+////					ImporterAgent.getRegistry().getLogger().debug(null, "-- Node "+nodeName+" doesn't exists, INSERT at depth "+depth));
+//				}else {
+//					DefaultMutableTreeNode p1=(DefaultMutableTreeNode) n1.getParent();
+//					mergeTrees((DefaultMutableTreeNode) tree1.getChildAt(i),n1,depth);
+//				}
+//
+//			}
+//			// iterate through children
+//			// find first child node of same type in destTree
+//			// save depth of inserted node
+//			// get next child of inTree
+//			// find this node at return depth or insert
+//
+//			//recursive for childs of childs
+//		}
+//		return tree2;
+//	}
+//
+//	/**
+//	 *
+//	 * @param tree
+//	 * @param structure
+//	 * @return tree with additional elements that are available in structure
+//	 */
+//	public static DefaultMutableTreeNode inheritTreeStructure(DefaultMutableTreeNode tree, DefaultMutableTreeNode structure) {
+//
+//		return tree;
+//	}
 		
-		if(((ModuleTreeElement) tree1.getUserObject()).isContainer()) {
-			depth++;
-			for(int i = 0 ; i < tree1.getChildCount(); i++) {
-				String nodeName=((DefaultMutableTreeNode)tree1.getChildAt(i)).getUserObject().toString();
-				DefaultMutableTreeNode n1=findNode((DefaultMutableTreeNode) tree1.getChildAt(i),tree2);
-				
-				if(n1==null) {
-//					ImporterAgent.getRegistry().getLogger().debug(null, "-- Node "+nodeName+" doesn't exists, INSERT at depth "+depth));
-				}else {
-					DefaultMutableTreeNode p1=(DefaultMutableTreeNode) n1.getParent();
-					mergeTrees((DefaultMutableTreeNode) tree1.getChildAt(i),n1,depth);
-				}
-				
-			}
-			// iterate through children
-			// find first child node of same type in destTree
-			// save depth of inserted node
-			// get next child of inTree
-			// find this node at return depth or insert
-			
-			//recursive for childs of childs
-		}
-		return tree2;
-	}
-	
-	/**
-	 * 
-	 * @param tree
-	 * @param structure
-	 * @return tree with additional elements that are available in structure
-	 */
-	public static DefaultMutableTreeNode inheritTreeStructure(DefaultMutableTreeNode tree, DefaultMutableTreeNode structure) {
-		
-		return tree;
-	}
-	
 	/**
 	 * Trees are equal if all paths to leafs are equal
 	 * @param n1
@@ -512,7 +507,7 @@ public class MDEHelper {
 	}
 	
 	/**
-	 * Add data in tree with entries in input, marke it has data has change
+	 * Add data in tree with entries in input, mark it as data has change
 	 * @param tree
 	 * @param input list of nodepath,list(tagData)
 	 */

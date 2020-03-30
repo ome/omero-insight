@@ -247,11 +247,9 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	
 	public DefaultMutableTreeNode addContent(ModuleContent c, int index, DefaultMutableTreeNode parent) {
 		if(parent==null) {
-			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Can't add content. Tree is null [MDEContent::addContent]");
 			return null;
 		}
 		if(c==null) {
-			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Can't add content - is null [MDEContent::addContent]");
 			return null;
 		}
 		List<DefaultMutableTreeNode> childs=MDEHelper.getListOfChilds(c.getType(), parent);
@@ -262,6 +260,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 				parent.add(newChild);
 				childs.add(index, newChild);
 			}
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Add content: "+c.getType());
 			node = childs.get(index);
 			ModuleContent newC=MDEHelper.completeData(((ModuleTreeElement) node.getUserObject()).getData(), c);
 			((ModuleTreeElement)node.getUserObject()).setData(newC);

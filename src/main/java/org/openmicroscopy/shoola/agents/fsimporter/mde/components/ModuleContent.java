@@ -50,7 +50,7 @@ public class ModuleContent {
 	
 	/**
 	 * Copy constructor
-	 * @param orig
+	 * @param orig input to copy
 	 */
 	public ModuleContent(ModuleContent orig) {
 		if(orig!=null) {
@@ -170,7 +170,7 @@ public class ModuleContent {
 	
 	/**
 	 * Replace element at i with given tagdata
-	 * @param i
+	 * @param key
 	 * @param tagData
 	 */
 	public void set(String key, TagData tagData) {

@@ -195,6 +195,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	 * @param importerAction
 	 *            The cancel-all-imports action.
 	 * @param microscope TODO
+	 *
 	 */
 	public MetaDataDialog(JFrame owner, FileFilter[] filters, int type,
 			ImporterAction importerAction, Importer importer,JButton importBtn,JButton cancelImportBtn,
@@ -639,6 +640,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		//ModuleTree treePanel=getCurrentModuleTree();
 
 		if(tree!=null) {
+			// save input of current tree
 			HashMap<String,List<TagData>> cinput = MDEHelper.getInput(tree);
 
 			// load new tree and set input again
