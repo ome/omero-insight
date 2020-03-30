@@ -55,16 +55,19 @@ public class MapAnnotationObject {
 	}
 	
 	/**
-	 * Return {@link MapAnnotationObject} with key:= parent | node | tagName; value:= tagValue tagUnit
+	 * Return {@link MapAnnotationObject} with key:= parent | node | tagName; value:= tagValue tagUnit; null if given list is null or empty
 	 * @param input
 	 */
 	public MapAnnotationObject(HashMap<String, List<TagData>> input) {
+		if(input==null || input.isEmpty())
+			return;
 		MapAnnotation ma = new MapAnnotationI();
 		List<NamedValue> values = new ArrayList<NamedValue>();
 		//input->values
 		for(Map.Entry<String, List<TagData>> entry: input.entrySet()) {
 			if(entry.getValue()!=null) {
 				for(TagData t:entry.getValue()) {
+					if(t.getTagValue()!=null && !t.getTagValue().trim().isEmpty())
 					values.add(new NamedValue(entry.getKey()+" | "+t.getTagName(),t.getTagWholeValue()));
 				}
 			}
