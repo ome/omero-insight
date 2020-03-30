@@ -90,6 +90,8 @@ public class ModuleContentGUI extends JPanel {
 	}
 	
 	private void addContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
+		String typec=((ModuleTreeElement) node.getUserObject()).getType();
+		if(controller.configurationExists(typec)) {
 		if(node.getChildCount()>0) {
 			JXTaskPaneContainer nodeContent = new JXTaskPaneContainer();
 			nodeContent.setBackground(UIUtilities.BACKGROUND);
@@ -118,6 +120,7 @@ public class ModuleContentGUI extends JPanel {
 		}else {
 			addLeafContent(parent,node);
 		}
+	}
 	}
 	
 	private void addLeafContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {

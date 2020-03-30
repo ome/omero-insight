@@ -65,7 +65,7 @@ import org.w3c.dom.NodeList;
  *
  */
 public class XMLWriter {
-	
+
 	
 	final String MDE_CONFIGURATION = "MDEConfiguration";
 	final String MDE_PREDEFINITIONS="MDEPredefinitions";
