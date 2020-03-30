@@ -113,10 +113,14 @@ public class MDEHelper {
 		
 	}
 	
+	/**
+	 * Reset input for all ModuleTreeElements
+	 * @param contentTree
+	 */
 	public static void resetInput(DefaultMutableTreeNode contentTree) {
 		if(contentTree==null)
 			return;
-		
+		ImporterAgent.getRegistry().getLogger().debug(null,"[MDE] reset input of object tree");
 		Enumeration e = contentTree.breadthFirstEnumeration();
 		while(e.hasMoreElements()) {
 			DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
@@ -129,8 +133,8 @@ public class MDEHelper {
 	
 	/**
 	 * merge inTree into destTree.
-	 * @param inTree
-	 * @param destTree
+	 * @param tree1
+	 * @param tree2
 	 * @return destTree with data of inTree
 	 */
 	public static DefaultMutableTreeNode mergeTrees(DefaultMutableTreeNode tree1, DefaultMutableTreeNode tree2,int depth) {
@@ -245,7 +249,7 @@ public class MDEHelper {
 	
 	/**
 	 * Return list of direct childs of given tree with same type like child
-	 * @param child
+	 * @param type
 	 * @param tree
 	 * @return
 	 */
@@ -304,7 +308,7 @@ public class MDEHelper {
 	
 	/**
 	 * Find MDETreeElement with type==mdeTreeElement.getType() and childIndex==mdeTreeElement.getchildIndex()
-	 * @param node
+	 * @param n
 	 * @param tree
 	 * @return
 	 */

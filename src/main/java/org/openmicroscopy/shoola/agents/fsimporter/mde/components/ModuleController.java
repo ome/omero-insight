@@ -98,11 +98,10 @@ public class ModuleController {
 	}
 
 	/**
-	 * Return a copy of tree. If no tree specify in configuration file, return standard tree
-	 * @return
+	 * Return a copy of "fresh" tree for selected setup.
+	 * @return DefaultMutableTreeNode as tree of objects.
 	 */
 	public DefaultMutableTreeNode getTree() {
-		
 		return ModuleTree.cloneTreeNode(mdeConf.getTree(micName));
 	}
 	

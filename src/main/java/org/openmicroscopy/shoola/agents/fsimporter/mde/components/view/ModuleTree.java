@@ -356,6 +356,8 @@ public class ModuleTree extends JPanel implements ActionListener{
 		}
 	}
 
+
+
 	public void removeNodeFromParent(DefaultMutableTreeNode current) {
 		if(tree==null)
 			return;

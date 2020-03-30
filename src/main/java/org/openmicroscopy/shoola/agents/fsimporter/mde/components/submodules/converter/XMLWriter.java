@@ -276,12 +276,12 @@ public class XMLWriter {
 		if(nodeList==null)
 			return null;
 		HashMap<String, ModuleContent> list=new HashMap<>();
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] XML: parse ObjectDef's ");
 		for(int i=0; i<nodeList.getLength();i++) {
 			Node n=nodeList.item(i);
 			if(n.getNodeName().equals(ELEM_OBJECT_DEF) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String type=eElement.getAttribute(ATTR_TYPE);
-				ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] XML: parse ObjectDef: "+type);
 				ModuleContent defContent= universal!=null?universal.get(type):null;
 				list.put(type, elementToModuleContent(defContent,eElement,type));
 			}

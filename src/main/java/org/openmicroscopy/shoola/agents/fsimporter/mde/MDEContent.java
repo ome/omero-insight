@@ -258,7 +258,6 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 		DefaultMutableTreeNode node=null;
 		if(childs!=null && !childs.isEmpty()) {
 			if(childs.size()<=index) { 
-				ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] insert new subtree of type : "+c.getType());
 				DefaultMutableTreeNode newChild=controller.cloneTreeStructure(childs.get(0), parent);
 				parent.add(newChild);
 				childs.add(index, newChild);
@@ -290,7 +289,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 			return null;
 		}
 		
-		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Read file content index: "+i);
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Read file content of index: "+i);
 		List<Objective> objList=null;
 		List<Detector> detectorList=null;
 		List<LightSource> lightSourceList=null;

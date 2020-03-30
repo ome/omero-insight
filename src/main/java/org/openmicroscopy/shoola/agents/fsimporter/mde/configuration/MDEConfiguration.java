@@ -537,7 +537,6 @@ public class MDEConfiguration {
 
 	/**
 	 * Create standard ome tree
-
  * @return 	 */
 	private DefaultMutableTreeNode getStandardTree(String micName) {
 		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] load standard tree for "+micName);
