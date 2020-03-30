@@ -846,7 +846,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 				FNode selection=(FNode)fileTree.getLastSelectedPathComponent();
 
-				resetObjectTree();
+				//resetObjectTree();
 				//clear node model data
 				if(selection!=null) {
 				selection.reset();
