@@ -168,6 +168,8 @@
     <entry name="/services/DEBUGGER/emailAddress">qa@openmicroscopy.org.uk</entry>
     <!-- mde on/off -->
     <entry name="omero.client.import.mde.enabled" type="boolean">false</entry>
+    <!-- mde config file location (. for in config dir; omero for local user omero dir) -->
+    <entry name="omero.client.import.mde.path">.</entry>
   </services>
 
   <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -65,9 +65,7 @@ import org.w3c.dom.NodeList;
  *
  */
 public class XMLWriter {
-
-	public static final String xmlFilePath_hardware = "C:\\Users\\Kunis.MB-Bordetella\\omero\\mdeConfiguration.xml";
-	public static final String xmlFilePath_structure = "C:\\Users\\Kunis.MB-Bordetella\\omero\\mdeConfig_structure.xml";
+	
 	
 	final String MDE_CONFIGURATION = "MDEConfiguration";
 	final String MDE_PREDEFINITIONS="MDEPredefinitions";
@@ -377,7 +375,7 @@ public class XMLWriter {
 	 * @param conf
 	 */
 	public void saveToXML(LinkedHashMap<String, ModuleList> hconf, HashMap<String,ModuleContent> oDef,
-			LinkedHashMap<String,HashMap<String,ModuleConfiguration>> oConf) {
+			LinkedHashMap<String,HashMap<String,ModuleConfiguration>> oConf,String configPath) {
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
@@ -406,7 +404,7 @@ public class XMLWriter {
 			transformer = transformerFactory.newTransformer();
 
 			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = new StreamResult(new File(xmlFilePath_hardware));
+			StreamResult streamResult = new StreamResult(new File(configPath));
 
 			// If you use
 			// StreamResult result = new StreamResult(System.out);
@@ -424,7 +422,7 @@ public class XMLWriter {
 			e.printStackTrace();
 		}
 
-		ImporterAgent.getRegistry().getLogger().info(this,"[MDE] Create XML File at "+xmlFilePath_hardware);
+		ImporterAgent.getRegistry().getLogger().info(this,"[MDE] Create XML File at "+configPath);
         
 	}
 	
@@ -555,9 +553,9 @@ public class XMLWriter {
 		return result;
 	}
 	
-	public void parseConfiguration(){
+	public void parseConfiguration(String configPath){
 		try {
-			File hardwareFile = new File(xmlFilePath_hardware);
+			File hardwareFile = new File(configPath);
 			if(hardwareFile.exists()) {
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

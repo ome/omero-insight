@@ -62,10 +62,12 @@ public class MDEConfiguration {
 	
 	/* standard ome tree */
 	private DefaultMutableTreeNode standardTree;
+	private String configPath;
 	
-	public MDEConfiguration() {
+	public MDEConfiguration(String configPath) {
 		//copy default ome unit map
 		defaultUnitMap=new HashMap<>();
+		this.configPath=configPath;
 		
 		for(Map.Entry<String, ome.model.units.UnitEnum> entry: TagNames.omeUnitEnumsDef.entrySet()) {
 			defaultUnitMap.put(entry.getKey(), entry.getValue());
@@ -74,7 +76,7 @@ public class MDEConfiguration {
 //		this.hConfiguration=new LinkedHashMap<String,ModuleList>();
 //		this.oConfiguration=new LinkedHashMap<String,HashMap<String,ModuleContent>>();
 		// load def,config and predef from file if available
-		parse();
+		parse(configPath);
 		
 		ModuleController c=ModuleController.getInstance();
 		if(oDefinition==null || oDefinition.isEmpty()) {
@@ -426,17 +428,17 @@ public class MDEConfiguration {
 		return null;
 	}
 	
-	public void parse() {
+	public void parse(String configPath) {
 		XMLWriter writer=new XMLWriter();
-		writer.parseConfiguration();
+		writer.parseConfiguration(configPath);
 		hConfiguration=writer.getHardwareConfiguration();
 		oConfiguration=writer.getObjectConfiguration();
 		oDefinition=writer.getObjectDefinition();
 	}
 	
-	public void writeToFile() {
+	public void writeToFile(String configPath) {
 		XMLWriter writer=new XMLWriter();
-		writer.saveToXML(hConfiguration,oDefinition,oConfiguration);
+		writer.saveToXML(hConfiguration,oDefinition,oConfiguration,configPath);
 	}
 
 	/**

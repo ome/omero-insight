@@ -77,6 +77,7 @@ public class ModuleController {
 
 	private MDEConfiguration mdeConf;
 	private String micName;
+	private String mdeConfigPath;
 	
 	/**
 	 * Constructor for dir element
@@ -280,9 +281,10 @@ public class ModuleController {
 	}
 	
 	
-	public void initMDEConfiguration(String curMic) {
+	public void initMDEConfiguration(String curMic,String configPath) {
 		setCurrentMicName(curMic);
-		mdeConf=new MDEConfiguration();
+		mdeConfigPath=configPath;
+		mdeConf=new MDEConfiguration(configPath);
 	}
 	
 	
@@ -302,7 +304,7 @@ public class ModuleController {
 	
 	public MDEConfiguration getMDEConfiguration() {
 		if(mdeConf==null) {
-			initMDEConfiguration(getCurrentMicName());
+			initMDEConfiguration(getCurrentMicName(),mdeConfigPath);
 		}
 		return mdeConf;
 	}

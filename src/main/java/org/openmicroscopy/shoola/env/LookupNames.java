@@ -433,4 +433,8 @@ public class LookupNames
     /** Lookup name for the flag indicating if the mde import is on/off.*/
     public static final String MDE_IMPORT_ENABLED = "omero.client.import.mde.enabled";
 
+    /** Lookup name for the path where the mdeConfig file is located (. = config dir,omero = cuser omero dir) .*/
+    public static final String MDE_CONFIG_PATH="omero.client.import.mde.path";
+    public static final String USER_MDE_PATH = "/user/home/omero";
+
 }
