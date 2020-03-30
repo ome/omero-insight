@@ -19,29 +19,23 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.TypeFilter_GUI;
 
 /**
  * Save input objects as template
@@ -50,202 +44,208 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleControll
  */
 public class TemplateDialog extends JDialog implements ActionListener{
 
-	private static String title="Select Modules To Save As Template";
+	
 	
 	private JPanel chBoxPanel;
-	private JButton  buttonOK;
-	private JButton  buttonCancel;
-	private JButton destPath_btn;
-	private JTextField destPath_txt;
-	private Boolean[] moduleList;
+	private JButton btn_OK;
+	private JButton btn_cancel;
+	private JButton btn_filter_save;
+	private JButton btn_filter_load;
+	private JButton btn_browse_save;
+	private JTextField txt_path;
+	private JCheckBox cb_loadObjectData;
+	private JCheckBox cb_loadTreeStructure;
+	private JCheckBox cb_loadObjectDef;
+	private List<String> moduleList;
 	private File tempFile;
+	private final String suffix=".xml";
+	private DefaultMutableTreeNode tree;
+	private boolean cancel;
 	
-	private JCheckBox imageCB;
-	private JCheckBox objectiveCB;
-	private JCheckBox detectorCB;
-	private JCheckBox lightSourceCB;
-	private JCheckBox channelCB;
-	private JCheckBox lightPathCB;
-	private JCheckBox sampleCB;
-	private JCheckBox experimentCB;
+	private JButton btn_browse_load;
 
-	private JButton srcPath_btn;
 	
-	public static int IMAGE_INDEX=0;
-	public static int OBJECTIVE_INDEX=1;
-	public static int DETECTOR_INDEX=2;
-	public static int LIGHTSRC_INDEX=3;
-	public static int CHANNEL_INDEX=4;
-	public static int LIGHTPATH_INDEX=5;
-	public static int SAMPLE_INDEX=6;
-	public static int EXPERIMENT_INDEX=7;
-	
-	public TemplateDialog(JFrame parent,File tempFile,boolean load)
+	public TemplateDialog(JFrame parent, File tempFile, boolean load, DefaultMutableTreeNode root)
 	{
-		super(parent,title);
+		super(parent,"");
 		this.tempFile=tempFile;
-		moduleList=new Boolean[8];
-		for(int i=0; i<moduleList.length; i++) {
-			moduleList[i]=Boolean.TRUE;
+		this.tree=root;
+		cancel =false;
+		if(load) {
+			this.setTitle("Load Metadata from Template File ");
+			buildGUI_loadFile();
+		}else {
+			this.setTitle("Save Metadata to Template File ");
+			buildGUI_saveFile();
 		}
-		buildGUI(load);
-		
 		pack();
 		setVisible(true);
 	}
 	
-	private void buildGUI(boolean load)
-	{
+	private void buildGUI_loadFile(){
 		setBounds(100, 100, 500, 600);
 		getContentPane().setLayout(new BorderLayout(5,5));
 		setModal(true);
 		
-		chBoxPanel=new JPanel(new GridLayout(0, 1));
-	    Border border = BorderFactory.createTitledBorder("Modules");
-	    chBoxPanel.setBorder(border);
 	    
-	    ModuleController controller = ModuleController.getInstance();
-	    HashMap<String,ModuleContent> list=controller.getAvailableContent();
-	    for(Map.Entry<String, ModuleContent> entry:list.entrySet()) {
-	    	JCheckBox ch=new JCheckBox(entry.getKey());
-	    	ch.setSelected(true);
-	    	ch.addActionListener(this);
-	    	chBoxPanel.add(ch);
+		btn_OK = new JButton("OK");
+		btn_OK.addActionListener(this);
+		btn_cancel = new JButton("Cancel");
+		btn_cancel.addActionListener(this);
+		Box btnPane=Box.createHorizontalBox();
+		btnPane.add(btn_cancel);
+		btnPane.add(Box.createHorizontalStrut(5));
+		btnPane.add(btn_OK);
+
+		JPanel subPanel= new JPanel();
+		Border titleBorder = BorderFactory.createTitledBorder("Configuration:");
+		//subPanel.setLayout(new BorderLayout(5,5));
+		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.Y_AXIS));
+		//subPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		subPanel.setBorder(titleBorder);
+
+		btn_filter_load = new JButton("Filter by objects: data to load...");
+		btn_filter_load.addActionListener(this);
+		subPanel.add(btn_filter_load);
+
+		cb_loadObjectData = new JCheckBox("Load object data");
+		cb_loadObjectData.setSelected(true);
+		cb_loadObjectData.setEnabled(false);
+		subPanel.add(cb_loadObjectData);
+
+		cb_loadObjectDef = new JCheckBox("Load object definition");
+		cb_loadObjectDef.setSelected(false);
+		cb_loadObjectDef.setEnabled(false);
+		subPanel.add(cb_loadObjectDef);
+
+		cb_loadTreeStructure = new JCheckBox("Load tree structure");
+		cb_loadTreeStructure.setSelected(false);
+		cb_loadTreeStructure.setEnabled(false);
+		subPanel.add(cb_loadTreeStructure);
+
+		JLabel srcPath_Lbl=new JLabel("Source");
+		txt_path =new JTextField(50);
+		txt_path.setEditable(false);
+		txt_path.setToolTipText("Source template file");
+		if(tempFile!=null)
+			txt_path.setText(tempFile.getAbsolutePath());
+		btn_browse_load =new JButton("Browse");
+		btn_browse_load.addActionListener(this);
+		JPanel destP=new JPanel();
+		destP.add(srcPath_Lbl);
+		destP.add(txt_path);
+		destP.add(btn_browse_load);
+
+		JPanel mainPanel=new JPanel();
+		mainPanel.setLayout(new BorderLayout(5,5));
+		mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		mainPanel.add(subPanel,BorderLayout.CENTER);
+		mainPanel.add(destP,BorderLayout.SOUTH);
+
+		getContentPane().add(mainPanel,BorderLayout.CENTER);
+		getContentPane().add(btnPane,BorderLayout.SOUTH);
 	    }
-//	    imageCB = new JCheckBox("Image");
-//	    imageCB.setSelected(true);
-//	    imageCB.addActionListener(this);
-//	    chBoxPanel.add(imageCB);
-//	    
-//	    objectiveCB = new JCheckBox("Objective");
-//	    objectiveCB.setSelected(true);
-//	    objectiveCB.addActionListener(this);
-//	    chBoxPanel.add(objectiveCB);
-//	    
-//	    detectorCB = new JCheckBox("Detector");
-//	    detectorCB.setSelected(true);
-//	    detectorCB.addActionListener(this);
-//	    chBoxPanel.add(detectorCB);
-//	    
-//	    lightSourceCB = new JCheckBox("LightSource");
-//	    lightSourceCB.setSelected(true);
-//	    lightSourceCB.addActionListener(this);
-//	    chBoxPanel.add(lightSourceCB);
-//	    
-//	    channelCB = new JCheckBox("Channel");
-//	    channelCB.setSelected(true);
-//	    channelCB.addActionListener(this);
-//	    chBoxPanel.add(channelCB);
-//	    
-//	    lightPathCB = new JCheckBox("LightPath");
-//	    lightPathCB.setSelected(true);
-//	    lightPathCB.addActionListener(this);
-//	    chBoxPanel.add(lightPathCB);
-//	    
-//	    sampleCB = new JCheckBox("Sample");
-//	    sampleCB.setSelected(true);
-//	    sampleCB.addActionListener(this);
-//	    chBoxPanel.add(sampleCB);
-//	    
-//	    experimentCB = new JCheckBox("Experiment");
-//	    experimentCB.setSelected(true);
-//	    experimentCB.addActionListener(this);
-//	    chBoxPanel.add(experimentCB);
 	    
-	    buttonOK = new JButton("OK");
-	    buttonOK.addActionListener(this);
-	    buttonCancel = new JButton("Cancel");
-	    buttonCancel.addActionListener(this);
+	private void buildGUI_saveFile()
+	{
+		setBounds(100, 100, 500, 600);
+		getContentPane().setLayout(new BorderLayout(5,5));
+		setModal(true);
+	    
+	    btn_OK = new JButton("OK");
+	    btn_OK.addActionListener(this);
+	    btn_cancel = new JButton("Cancel");
+	    btn_cancel.addActionListener(this);
 	    Box btnPane=Box.createHorizontalBox();
-	    btnPane.add(buttonCancel);
+	    btnPane.add(btn_cancel);
 	    btnPane.add(Box.createHorizontalStrut(5));
-	    btnPane.add(buttonOK);
+	    btnPane.add(btn_OK);
 	    
+	    btn_filter_save = new JButton("Filter by objects: data to save...");
+	    btn_filter_save.addActionListener(this);
+
+		JPanel subPanel= new JPanel();
+		Border titleBorder = BorderFactory.createTitledBorder("Configuration:");
+		//subPanel.setLayout(new BorderLayout(5,5));
+		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.Y_AXIS));
+		//subPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		subPanel.setBorder(titleBorder);
+		subPanel.add(btn_filter_save);
+
 	    JPanel mainPanel=new JPanel();
 	    mainPanel.setLayout(new BorderLayout(5,5));
 	    mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-	    mainPanel.add(chBoxPanel,BorderLayout.CENTER);
+	    mainPanel.add(subPanel,BorderLayout.CENTER);
 	    
-	    if(!load) {
+
 	    	JLabel destPath_Lbl=new JLabel("Destination");
-	    	destPath_txt=new JTextField(50);
-	    	destPath_txt.setEditable(true);
-	    	destPath_txt.setToolTipText("Destination to store json template file");
+		txt_path =new JTextField(50);
+		txt_path.setEditable(false);
+		txt_path.setToolTipText("Destination to store json template file");
 	    	if(tempFile!=null)
-	    		destPath_txt.setText(tempFile.getAbsolutePath());
-	    	destPath_btn=new JButton("Browse");
-	    	destPath_btn.addActionListener(this);
+			txt_path.setText(tempFile.getAbsolutePath());
+		btn_browse_save =new JButton("Browse");
+		btn_browse_save.addActionListener(this);
 	    	JPanel destP=new JPanel();
 	    	destP.add(destPath_Lbl);
-	    	destP.add(destPath_txt);
-	    	destP.add(destPath_btn);
+		destP.add(txt_path);
+		destP.add(btn_browse_save);
 
 	    	mainPanel.add(destP,BorderLayout.SOUTH);
-	    }else {
-	    	JLabel srcPath_Lbl=new JLabel("Source");
-	    	destPath_txt=new JTextField(50);
-	    	destPath_txt.setEditable(true);
-	    	destPath_txt.setToolTipText("Source template file");
-	    	if(tempFile!=null)
-	    		destPath_txt.setText(tempFile.getAbsolutePath());
-	    	srcPath_btn=new JButton("Browse");
-	    	srcPath_btn.addActionListener(this);
-	    	JPanel destP=new JPanel();
-	    	destP.add(srcPath_Lbl);
-	    	destP.add(destPath_txt);
-	    	destP.add(srcPath_btn);
 
-	    	mainPanel.add(destP,BorderLayout.SOUTH);
-	    }
-	    
 	    getContentPane().add(mainPanel,BorderLayout.CENTER);
 	    getContentPane().add(btnPane,BorderLayout.SOUTH);
 	    
 	}
 	
 	
+
+
+
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == buttonOK){
+		if(e.getSource() == btn_OK){
 			setVisible(false);
 			dispose();
-		}else if(e.getSource()==buttonCancel) {
+		}else if(e.getSource()==btn_filter_load){
+			TypeFilter_GUI filterGUI = new TypeFilter_GUI(new JFrame(),tempFile.getAbsolutePath());
+			moduleList=filterGUI.getTypeFilter();
+		}else if(e.getSource()==btn_filter_save){
+			TypeFilter_GUI filterGui = new TypeFilter_GUI(new JFrame(),tree);
+			moduleList=filterGui.getTypeFilter();
+		}else if(e.getSource()== btn_cancel) {
+			cancel =true;
 			moduleList=null;
 			setVisible(false);
 			dispose();
-		}else if(e.getSource()==imageCB) {
-			moduleList[IMAGE_INDEX]=imageCB.isSelected();
-		}else if(e.getSource()==objectiveCB) {
-			moduleList[OBJECTIVE_INDEX]=objectiveCB.isSelected();
-		}else if(e.getSource()==detectorCB) {
-			moduleList[DETECTOR_INDEX]=detectorCB.isSelected();
-		}else if(e.getSource()==lightSourceCB) {
-			moduleList[LIGHTSRC_INDEX]=lightSourceCB.isSelected();
-		}else if(e.getSource()==channelCB) {
-			moduleList[CHANNEL_INDEX]=channelCB.isSelected();
-		}else if(e.getSource()==lightPathCB) {
-			moduleList[LIGHTPATH_INDEX]=lightPathCB.isSelected();
-		}else if(e.getSource()==sampleCB) {
-			moduleList[SAMPLE_INDEX]=sampleCB.isSelected();
-		}else if(e.getSource()==experimentCB) {
-			moduleList[EXPERIMENT_INDEX]=experimentCB.isSelected();
-		}else if(e.getSource()==destPath_btn) {
+		}else if(e.getSource()== btn_browse_save) {
+			FileFilter filter = new FileNameExtensionFilter("XML file", "xml");
 			JFileChooser fcSave =new JFileChooser();
+			fcSave.addChoosableFileFilter(filter);
+			fcSave.setFileFilter(filter);
 			if(tempFile!=null)
 				fcSave.setCurrentDirectory(new File(tempFile.getParent()));
         	int returnValSave=fcSave.showSaveDialog(this);
         	if(returnValSave==JFileChooser.APPROVE_OPTION) {
         		tempFile=fcSave.getSelectedFile();
-        		destPath_txt.setText(tempFile.getAbsolutePath());
+				if(!fcSave.getSelectedFile().getAbsolutePath().endsWith(suffix)){
+					tempFile = new File(fcSave.getSelectedFile() + suffix);
         	}
-		}else if(e.getSource()==srcPath_btn) {
+        		txt_path.setText(tempFile.getAbsolutePath());
+        	}
+		}else if(e.getSource()== btn_browse_load) {
+			FileFilter filter = new FileNameExtensionFilter("XML file", "xml");
 			JFileChooser fcOpen =new JFileChooser();
+			fcOpen.addChoosableFileFilter(filter);
+			fcOpen.setFileFilter(filter);
 			if(tempFile!=null)
 				fcOpen.setCurrentDirectory(new File(tempFile.getParent()));
         	int returnValOpen=fcOpen.showOpenDialog(this);
         	if(returnValOpen == JFileChooser.APPROVE_OPTION) {
         		tempFile = fcOpen.getSelectedFile();
-        		destPath_txt.setText(tempFile.getAbsolutePath());
+        		txt_path.setText(tempFile.getAbsolutePath());
         	}
 		}
 		
@@ -257,16 +257,49 @@ public class TemplateDialog extends JDialog implements ActionListener{
 	}
 	
 	
-	public Boolean[] getSelection()
+	public List<String> getSelectionSave()
 	{
-		if(moduleList!=null) {
-			ImporterAgent.getRegistry().getLogger().debug(this, "Size module selection: "+moduleList.length);
-			for(int i=0; i<moduleList.length; i++) {
-				ImporterAgent.getRegistry().getLogger().debug(this, "module "+i+" : "+moduleList[i]);
+		if(moduleList==null) {
+			//get list from chosen setup
+			HashMap<String,ModuleContent> list= ModuleController.getInstance().getAvailableContent();
+			if(list!=null)
+				moduleList = new ArrayList<>(list.keySet());
+
+			}
+		return moduleList;
+		}
+
+	/**
+	 *
+	 * @param availableTypelist list of types for that tagdata definition is available in file
+	 * @return list of objectTypes that are part of chosen setup and tagdata definition is available
+	 */
+	public List<String> getSelectionLoad(List<String> availableTypelist)
+	{
+		if(moduleList==null) {
+			//get list from chosen setup
+			HashMap<String,ModuleContent> list= ModuleController.getInstance().getAvailableContent();
+			List<String> objectTypes=null;
+			if(list!=null)
+				objectTypes = new ArrayList<>(list.keySet());
+
+			if(objectTypes!=null && availableTypelist!=null && !availableTypelist.isEmpty()){
+				moduleList=new ArrayList<>();
+				// merge lists: keep all available contents that are def in file
+				for(String s:objectTypes){
+					if(availableTypelist.contains(s)){
+						moduleList.add(s);
+					}
+				}
 			}
 		}
 		return moduleList;
 	}
+
+    public Boolean loadTreeStructure() {
+		return cb_loadTreeStructure.isSelected();
+}
+    public Boolean isCancelled(){return cancel;}
 
 }
 

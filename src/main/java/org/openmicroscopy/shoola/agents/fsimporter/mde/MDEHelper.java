@@ -815,5 +815,21 @@ public class MDEHelper {
 	}
 	
 	
-	
+	/**
+	 *
+	 * @param tree
+	 * @return available activated types in given tree
+	 */
+	public static List<String> getTypes(DefaultMutableTreeNode tree) {
+		List<String> typeList=new ArrayList<>();
+		Enumeration e = tree.breadthFirstEnumeration();
+		while(e.hasMoreElements()) {
+			DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
+			String type = ((ModuleTreeElement) node.getUserObject()).getType();
+			if(!typeList.contains(type) && ModuleController.getInstance().configurationExists(type)) {
+				typeList.add(type);
+}
+		}
+		return typeList;
+	}
 }

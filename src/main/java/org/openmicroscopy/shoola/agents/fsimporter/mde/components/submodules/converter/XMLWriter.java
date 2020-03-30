@@ -40,6 +40,8 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ModuleContentParser;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.TagDataParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -160,7 +162,7 @@ public class XMLWriter {
 		if(oDef==null)
 			return defElem;
 		for (Entry<String, ModuleContent> object : oDef.entrySet()) {
-			Element objElem=objectDefToXML(object.getKey(),object.getValue(),doc);
+			Element objElem=objectDefToXML(object.getKey(),object.getValue(),doc,true);
 			if(objElem!=null)
 				defElem.appendChild(objElem);
 		}
@@ -198,7 +200,7 @@ public class XMLWriter {
 	 * @param doc
 	 * @return
 	 */
-	private Element objectDefToXML(String type,ModuleContent content,Document doc) {
+	private Element objectDefToXML(String type,ModuleContent content,Document doc,boolean saveVal) {
 		if(content==null)
 			return null;
 
@@ -209,8 +211,9 @@ public class XMLWriter {
 		if(list == null)
 			return result;
 
+		TagDataParser td_parser=new TagDataParser();
 		for(int i=0;i<list.size();i++) {
-			Element child = createTagDataElement(list.get(i), doc);
+			Element child =  td_parser.createXMLElem(list.get(i), doc,ELEM_TAGDATA,saveVal);
 			if(child!=null)
 				result.appendChild(child);
 		}
@@ -332,7 +335,8 @@ public class XMLWriter {
 		if(eElement.getElementsByTagName(ELEM_PARENTS)!=null && eElement.getElementsByTagName(ELEM_PARENTS).getLength()>0) {
 			parents=((Element) eElement.getElementsByTagName(ELEM_PARENTS).item(0)).getAttribute(ATTR_VALUES);
 		}
-		return new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type,false), type,  parents.split(","));
+		return new ModuleContentParser().parseFromConfig(eElement,type,false, parents.split(","));
+		//return new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type,false), type,  parents.split(","));
 	}
 
 	
@@ -451,10 +455,13 @@ public class XMLWriter {
 		Element result = doc.createElement(ELEM_SETUP_PRE);
 		result.setAttribute(ATTR_NAME, micName);
 
+		ModuleContentParser mc_parser=new ModuleContentParser();
 		for (Entry<String, List<ModuleContent>> entry : list.entrySet()) {
 			if(entry.getValue()!=null) {
 				for(ModuleContent c:entry.getValue()) {
-					Element child=objectPreToXML(c, doc);
+					Element child=null;
+					if(c!=null)
+						child=mc_parser.createXMLElem(c,c.getAttributeValue(TagNames.ID), doc,ELEM_OBJECT_PRE,true);
 					if(child!=null)
 						result.appendChild(child);
 				}
@@ -464,67 +471,40 @@ public class XMLWriter {
 	}
 	
 	
-	/**
-	 * Builds the tag for a certain instrument from {@link ModuleContent} object
-	 * <pre>{@code 
-	 * <ObjectPre Type="" ATTR_ID="" >
-	 * 		<TagData...>
-	 * 			
-	 * </ObjectPre>
-	 * }</pre>
-	 * @param c    {@link ModuleContent} object holds instrument values
-	 * @param doc
-	 */
-	private Element objectPreToXML(ModuleContent c, Document doc) {
-		if(c==null)
-			return null;
+//	/**
+//	 * Builds the tag for a certain instrument from {@link ModuleContent} object
+//	 * <pre>{@code
+//	 * <ObjectPre Type="" ATTR_ID="" >
+//	 * 		<TagData...>
+//	 *
+//	 * </ObjectPre>
+//	 * }</pre>
+//	 * @param c    {@link ModuleContent} object holds instrument values
+//	 * @param doc
+//	 */
+//	private Element objectPreToXML(ModuleContent c, Document doc) {
+//		if(c==null)
+//			return null;
+//
+//		Element result = doc.createElement(ELEM_OBJECT_PRE);
+//		result.setAttribute(ATTR_ID, c.getAttributeValue(TagNames.ID));//TODO necessary?
+//		result.setAttribute(ATTR_TYPE, c.getType());
+//
+//		List<TagData> list= c.getTagList();
+//		if(list == null)
+//			return result;
+//		//add tagData
+//		TagDataParser td_parser=new TagDataParser();
+//		for(int i=0;i<list.size();i++) {
+//			Element child = td_parser.createXMLElem(list.get(i), doc,ELEM_TAGDATA);
+//			if(child!=null)
+//				result.appendChild(child);
+//		}
+//		return result;
+//	}
 		
-		Element result = doc.createElement(ELEM_OBJECT_PRE);
-		result.setAttribute(ATTR_ID, c.getAttributeValue(TagNames.ID));//TODO necessary?
-		result.setAttribute(ATTR_TYPE, c.getType());
 		
-		List<TagData> list= c.getTagList();
-		if(list == null)
-			return result;
-		//add tagData
-		for(int i=0;i<list.size();i++) {
-			Element child = createTagDataElement(list.get(i), doc);
-			if(child!=null)
-				result.appendChild(child);
-		}
-		return result;
-	}
 	
-	
-	
-	/**
-	 * Builds {@link TagData} element with his properties as attributes.
-	 * {@code
-	 * <TagData Name="" Type="" Visible="" Value="" Unit="" DefaultValues="">
-	 * }
-	 * @param t
-	 * @param doc
-	 * @return
-	 */
-	private Element createTagDataElement(TagData t,Document doc) {
-		if(t==null)
-			return null;
-		
-		Element result=doc.createElement(ELEM_TAGDATA);
-		
-		result.setAttribute(ATTR_NAME, t.getTagName());
-		result.setAttribute(ATTR_TYPE, String.valueOf(t.getTagType()));
-		result.setAttribute(ATTR_VISIBLE,String.valueOf( t.isVisible()));
-		result.setAttribute(ATTR_VALUE, t.getTagValue());
-		result.setAttribute(ATTR_UNIT, t.getTagUnitString());
-		result.setAttribute(ATTR_DEFAULT_VAL, t.getDefaultValuesAsString());
-		
-		
-//		attr=doc.createAttribute("Required");
-//		attr.setValue(t.);
-		
-		return result;
-	}
 	
 	/**
 	 * Builds {@link TagData} element with his properties as attributes.
@@ -618,44 +598,6 @@ public class XMLWriter {
 		return list;
 	}
 	
-	
-	/**
-	 * Parse list of {@link TagData} from given NodeList
-	 * {@code
-	 * <TagData Name="" Type="" Visible="" Value="" Unit="" DefaultValues="">
-	 * }
-	 * @param nodeList list of elements TAGDATA
-	 * @param parent owned object
-	 * @param pre is true if TagData element is part of predefinitions (objPre), else false (disable value specification for objectConf)
-	 * @return
-	 */
-	private LinkedHashMap<String,TagData> elementsToTagDataList(NodeList nodeList,String parent,boolean pre){
-		if(nodeList==null)
-			return null;
-		LinkedHashMap<String,TagData> list = new LinkedHashMap<>();
-		for(int i=0; i<nodeList.getLength();i++) {
-			Node n=nodeList.item(i);
-			if(n.getNodeName().equals(ELEM_TAGDATA) && n.getNodeType()==Node.ELEMENT_NODE) {
-				Element eElement=(Element)n;
-				String tagName=eElement.getAttribute(ATTR_NAME);
-				String tagVal="";
-				if(pre) {
-					tagVal = eElement.getAttribute(ATTR_VALUE);
-				}
-				String tagUnit=eElement.getAttribute(ATTR_UNIT);
-				String tagVis=eElement.getAttribute(ATTR_VISIBLE);
-				String defaultVal = eElement.getAttribute(ATTR_DEFAULT_VAL);
-				String tagType=eElement.getAttribute(ATTR_TYPE);
-				
-				TagData t= new TagData(parent,tagName, tagVal, tagUnit,false, tagType, defaultVal.split(","));
-				t.setVisible(Boolean.parseBoolean(tagVis));
-				list.put(tagName,t);
-			}
-		}
-		return list;
-	}
-	
-	
 	/**
 	 * Parse list of instruments to {@link ModuleList} .For instrument elements :
 	 * <pre>{@code 
@@ -674,7 +616,8 @@ public class XMLWriter {
 			if(n.getNodeName().equals(ELEM_OBJECT_PRE) && n.getNodeType()==Node.ELEMENT_NODE) {
 				Element eElement=(Element)n;
 				String type=eElement.getAttribute(ATTR_TYPE);
-				ModuleContent c=new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type,true), type, null);
+				ModuleContent c= new ModuleContentParser().parseFromConfig(eElement,type,true,null);
+				//ModuleContent c=new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type,true), type, null);
 				List<ModuleContent> cList=list.get(type);
 				if(cList==null) {
 					cList = new ArrayList<>();
