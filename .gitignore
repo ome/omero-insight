@@ -9,6 +9,7 @@ out
 
 # Gradle cache
 .gradle
+gradle
 
 # Local configuration file (sdk path, etc)
 local.properties
