@@ -18,70 +18,28 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-
-import javax.accessibility.Accessible;
-
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.event.DocumentListener;
-
 import loci.common.DateTools;
 import ome.model.enums.UnitsLength;
-import ome.model.units.Length;
-import ome.model.units.UNITS;
 import ome.model.units.Unit;
 import ome.xml.model.Experimenter;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.OMEValueConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.*;
 
 
 /**
@@ -1163,14 +1121,13 @@ public class TagData
 		if(s==null){
 			dateformat=DateTools.ISO8601_FORMAT;
 			s=DateTools.formatDate(val, dateformat);
-			
 		}
-		DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateformat);
+
 		DateFormat df=new SimpleDateFormat(dateformat);
 		
-		Date d=null;
+
 		try {
-			d=df.parse(s);
+			Date d=df.parse(s);
 			SimpleDateFormat f=new SimpleDateFormat(DateTools.TIMESTAMP_FORMAT);
 			return f.format(d);
 
@@ -1181,45 +1138,64 @@ public class TagData
 		}
 	}
 
-	private void setValTimestamp(JComponent inputField) 
-	{
-		String val=value[0];
-		if(val!=null && !val.equals("")){
+	private void setValTimestamp(JComponent inputField){
+		String oldval=value[0];
+				
+		if(oldval!=null && !oldval.equals("")) {
+			System.out.println("Read out timestamp: "+oldval);
+			String currentDatePattern=getDatePattern(oldval);
+			
 			((JTextField) inputField).setForeground(Color.black);
-			String dateformat= DateTools.ISO8601_FORMAT_MS;
-			String s=DateTools.formatDate(val,dateformat);
-			if(s==null){
-				dateformat=DateTools.ISO8601_FORMAT;
-				s=DateTools.formatDate(val, dateformat);
-				
-			}
-			DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateformat);
-			DateFormat df=new SimpleDateFormat(dateformat);
-			
-			Date d=null;
-			try {
-				d=df.parse(s);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Parse error for date format "+dateformat);
-				setTagInfoError(val+". Invalid Date Format!");
+			String newVal=convertDate(oldval,currentDatePattern,DateTools.TIMESTAMP_FORMAT);
+
+			if(newVal==null){
+				ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Can't parse date "+oldval);
+				setTagInfoError(oldval+". Invalid Date Format!");
 				((JTextField) inputField).setText("");
-				e1.printStackTrace();
+			}else{
+				((JTextField) inputField).setText( newVal);
 			}
-			
-			try {
-				//			((JTextField) inputField).setText( d.toString());
-				SimpleDateFormat f=new SimpleDateFormat(DateTools.TIMESTAMP_FORMAT);
-				((JTextField) inputField).setText( f.format(d));
-			} catch (Exception e) {
-				ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Parse error for timestamp");
-				((JTextField) inputField).setText("");
-				setTagInfoError(val+". Invalid Date Format!");
-				e.printStackTrace();
-			}
-			
 		}
+	}
+			
+	private String getDatePattern(String dateStr){
+		Date parsedDate=null;
+		String pattern=null;
+
+		for(int i=0; i<DATE_FORMATS_TAGS.length;i++){
+			SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMATS_TAGS[i]);
+			try {
+				parsedDate =sdf.parse(dateStr);
+				return(sdf.toPattern());
+			}
+			catch (ParseException e){
+				continue;
+			}
+		}
+		return null;
+	}
+			
+	/**
+	 * Convert given dateStr of format dateFormatOld to new date string of format dateFormatNew.
+	 * @param dateStr
+	 * @param dateFormatOld
+	 * @param dateFormatNew
+	 * @return timestamp string
+	 */
+	private String convertDate(String dateStr,String dateFormatOld,String dateFormatNew) {
+		if(dateFormatNew==null || dateFormatOld==null){
+			return null;
+		}
+		try {
+			SimpleDateFormat df=new SimpleDateFormat(dateFormatOld);
+			Date d=df.parse(dateStr);
+			df.applyPattern(dateFormatNew);
+			return df.format(d);
 				
+		} catch (DateTimeParseException | ParseException e) {
+			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Error while parsing date from "+dateFormatOld+"to "+dateFormatNew);
+			return null;
+		}
 	}
 
 	private void setValArrayField(JArray field) 
