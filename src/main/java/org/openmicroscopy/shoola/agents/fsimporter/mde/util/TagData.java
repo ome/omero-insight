@@ -194,8 +194,6 @@ public class TagData
 	private String[] value;
 	// default values, e.g. for comboboxes
 	private String[] defaultValue;
-	// class of unit elem of ome.model.units.Unit
-	private Class unitClass;
 	// default unit
 	private String[] unitSymbol;
 	
@@ -217,7 +215,6 @@ public class TagData
 	public TagData(TagData orig)
 	{
 		if(orig.unitSymbol!=null) unitSymbol=orig.unitSymbol.clone();
-		unitClass=orig.unitClass;
 		if(orig.value!=null) value=orig.value.clone();
 		status=orig.status;
 		prop=orig.prop;
@@ -357,7 +354,6 @@ public class TagData
 //		else {
 //			setTagUnit(unit[0]);
 //		}
-		this.unitClass=unitClass;
 		this.unitSymbol=unit;
 		
 		this.defaultValue=defaultVal;
@@ -982,31 +978,26 @@ public class TagData
 	
 	public String getUnitType()
 	{
-		if(unitClass==null) {
 			if(getTagUnitString()!=null && !getTagUnitString().equals("") && TagNames.getUnitClassFromSymbol(getTagUnitString())!=null) {
 				return TagNames.getUnitClassFromSymbol(getTagUnitString()).getName();
 			}
 			return "";
 		}
-		return unitClass.getName();
 
-	}
-	
 	/**
 	 * set unitsymbol. If unitsymbol is differ from current unit -> convert value
-	 * @param unitsymbol
+	 * @param newsymbol
 	 */
-	public void setTagUnit(String unitsymbol) {
+	public void setTagUnit(String newsymbol) {
 		
-		if(unitsymbol==null || unitsymbol.equals("")) {
+		if(newsymbol==null || newsymbol.equals("")) {
 			return;
 		}
 		// no conversion necessary
 		if(getTagValue()==null ) {
-			unitSymbol=new String[] {unitsymbol};
-			unitClass = TagNames.getUnit(unitsymbol).getClass();
+			unitSymbol=new String[] {newsymbol};
 			return;
-		}else if(getTagValue().trim().equals("") && unitsymbol!=null){
+		}else if(getTagValue().trim().equals("") && newsymbol!=null){
 			// initialisation of symbol array necessary?
 			if(unitSymbol==null){
 				if(value!=null){
@@ -1014,18 +1005,18 @@ public class TagData
 				}
 			}
 			for(int i=0; i<unitSymbol.length;i++) {
-				unitSymbol[i]=unitsymbol;
+				unitSymbol[i] = newsymbol;
 			}
-			unitClass = TagNames.getUnit(unitsymbol).getClass();
+
 			return;
 		}
 
+
 		Unit[] newVal=null;
 		// conversion necessary?
-		if(value!= null &&  unitSymbol!=null && unitSymbol[0]!=null &&
-				unitSymbol[0]!=null && 	!unitsymbol.equals(unitSymbol[0])) {
+		if(value!= null &&  unitSymbol!=null && unitSymbol[0]!=null && !newsymbol.equals(unitSymbol[0])) {
 			try {
-				newVal=OMEValueConverter.convert(value,unitSymbol[0],unitsymbol);
+				newVal=OMEValueConverter.convert(value,unitSymbol[0],newsymbol);
 			}catch(Exception e) {
 				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] Can't parse unit for "+getTagName());
 			}
@@ -1037,14 +1028,14 @@ public class TagData
 		
 		if(newVal==null) {
 			newVal=new Unit[1];
-			newVal[0]=TagNames.getUnit(unitsymbol);
+			newVal[0]=TagNames.getUnit(newsymbol);
 		}
-		unitClass=newVal[0].getClass();
+
 		if(unitSymbol==null) {
 			unitSymbol=new String[value.length];
 		}
 		for(int i=0; i<unitSymbol.length; i++)
-			this.unitSymbol[i]=unitsymbol;	
+			this.unitSymbol[i]=newsymbol;
 	}
 
 	public void setTagValue(String val, boolean property)
