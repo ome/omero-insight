@@ -1188,6 +1188,7 @@ class LocationDialog extends JDialog implements ActionListener,
 							long loggedUserID, boolean isAdmin, boolean userIsAdmin)
 	{
 		//data owner
+		if (node.getId() < 0) return true;
 		if (node.getOwner().getId() == userID) return true;
 		if (!node.canLink()) return false; //handle private group case.
 		PermissionData permissions = group.getPermissions();
@@ -1579,13 +1580,18 @@ class LocationDialog extends JDialog implements ActionListener,
 			}
 		}
 		Iterator<DataNode> i = nodes.iterator();
+		ExperimenterData exp = getSelectedUser();
 		while (i.hasNext()) {
 			node = i.next();
 			if (!node.isDefaultNode()) {
-				map.put(node.getDataObject().getOwner().getId(), node);
+				ExperimenterData owner = node.getDataObject().getOwner();
+				if (owner != null) {
+					map.put(owner.getId(), node);
+				} else {
+					map.put(exp.getId(), node);
+				}
 			}
 		}
-		ExperimenterData exp = getSelectedUser();
 		List<DataNode> l = null;
 		if (exp != null) l = map.get(exp.getId());
 		if (CollectionUtils.isNotEmpty(l))
