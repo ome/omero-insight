@@ -1035,6 +1035,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 			resetFileDataButton.setEnabled(true);
 			DefaultMutableTreeNode pTree= loadDataForSelection(selectedNode, false);
+			updateObjectConf(selectedNode);
 			showMDE(selectedNode.getContainer(),pTree);
 
 			revalidate();
