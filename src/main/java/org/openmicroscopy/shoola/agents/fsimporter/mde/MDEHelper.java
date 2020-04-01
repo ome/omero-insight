@@ -547,7 +547,7 @@ public class MDEHelper {
 	
 
 	/**
-	 * Set data of newC if newC(data)!=null and newC(data)!=""
+	 * Set data of newC if newC(data)!=null and newC(data)!="" and data is visible
 	 * @param currentC ModuleContent of type X
 	 * @param newC ModuleContent of type X
 	 * @return modified currentC
@@ -580,7 +580,7 @@ public class MDEHelper {
 				String key=entry.getKey();
 				TagData valIn=new TagData(entry.getValue());
 				if(valIn!=null && valIn.getTagValue()!=null && !valIn.getTagValue().equals("")) {
-					if(l1.containsKey(key)) {
+					if(l1.containsKey(key) && l1.get(key).isVisible()) {
 						valIn.dataHasChanged(true);
 						result.set(key, valIn);
 						ImporterAgent.getRegistry().getLogger().debug(null, "\t\t replace "+currentC.getType()+":"+key+"[replaceData]");
@@ -594,7 +594,7 @@ public class MDEHelper {
 	}
 	
 	/**
-	 * Set data of newC if newC(data)!=null and newC(data)!=""
+	 * Set data of newC if newC(data)!=null and newC(data)!="" and data is visible
 	 * @param currentC current ModuleContent of type X
 	 * @param newC new input ModuleContent of type X
 	 * @param origC content of object at init
@@ -632,7 +632,7 @@ public class MDEHelper {
 				result.setAllDataChanged();
 				return result;
 			}
-
+			System.out.println("Replace by key");
 			for (Map.Entry<String, TagData> entry : l2.entrySet()) {
 				String key=entry.getKey();
 				TagData valIn=new TagData(entry.getValue());
