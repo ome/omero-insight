@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MDEConfiguration>
+    <MDEPredefinitions>
+        <SetupPre Name="Universal" />
+        <SetupPre Name="Example Setup: Fields">
+            <ObjectPre Type="Available InputFields" >
+                <TagData DefaultValues="2" Name="Tag of Type ArrayField"
+                         Type="ArrayField" Unit="" Value="3,4" Visible="true" />
+                <TagData DefaultValues="3" Name="Tag of Type ArrayField with Unit"
+                         Type="ArrayField" Unit="s" Value="3,4,6" Visible="true" />
+                <TagData DefaultValues="" Name="Tag of Type TextArea" Type="TextArea"
+                         Unit="" Value="this is a text" Visible="true" />
+                <TagData DefaultValues="" Name="Tag of Type TextField" Type="TextField"
+                         Unit="" Value="this is also a text" Visible="true" />
+                <TagData DefaultValues="" Name="Tag of Type TextField with Unit" Type="TextField"
+                         Unit="mm" Value="millimeter value" Visible="true" />
+                <TagData DefaultValues="Value1,Value2,Value3" Name="Tag of Type ComboBox" Type="ComboBox"
+                         Unit="" Value="Value1" Visible="true" />
+                <TagData DefaultValues="" Name="Tag of Type TimeStamp" Type="TimeStamp"
+                         Unit="" Value="2020-01-01" Visible="true" />
+            </ObjectPre>
+            <ObjectPre ID="" Type="OME:Objective">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="HCX PL APO CS 40x/0.75-1.25" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="Leica" Visible="true" />
+                <TagData DefaultValues="" Name="Nominal Magnification"
+                         Type="TextField" Unit="" Value="40.0" Visible="true" />
+                <TagData DefaultValues="" Name="Calibration Magnification"
+                         Type="TextField" Unit="" Value="40.0" Visible="true" />
+                <TagData DefaultValues="" Name="Lens NA" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="Oil,Water,WaterDipping,Air,Multi,Glycerol,Other"
+                        Name="Immersion" Type="ComboBox" Unit="" Value="Oil" Visible="true" />
+                <TagData
+                        DefaultValues="UV,PlanApo,PlanFluor,SuperFluor,VioletCorrected,Achro,Achromat,Fluor,Fl,Fluar,Neofluar,Fluotar,Apo,PlanNeofluar,Other"
+                        Name="Correction" Type="ComboBox" Unit="" Value="PlanApo"
+                        Visible="true" />
+                <TagData DefaultValues="" Name="Working Distance"
+                         Type="TextField" Unit="µm" Value="220.0" Visible="true" />
+                <TagData DefaultValues="" Name="Iris" Type="TextField"
+                         Unit="" Value="true" Visible="true" />
+                <TagData DefaultValues="" Name="User::Refraction Index"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="Air,Oil,Water,Glycerol,Other"
+                         Name="User::Medium" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Correction Collar"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+            </ObjectPre>
+        </SetupPre>
+    </MDEPredefinitions>
+    <MDEObjects>
+        <Definitions>
+            <ObjectDef Type="Study Info">
+                <TagData DefaultValues="" Name="Study Type" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="Arabidopsis thaliana,Danio rerio,Drosophila melanogaster,Gallus gallus,Homo sapiens,Mus musculus, Mus musculus x Mus spretus,Saccharomyces cerevisiae,Schizosaccharomyces pombe" Name="Organism" Type="ComboBox"
+                         Unit="" Value="Homo sapiens" Visible="true" />
+                <TagData DefaultValues="" Name="Experiment Type" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Imaging Method" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Publication Title" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Publication Authors" Type="TextArea"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="PubMed ID" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="PMC ID" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Publication DOI" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="License" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Data Publisher" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Data DOI" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <Parents Values="OME-Model" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Detector">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="CCD,IntensifiedCCD,AnalogVideo,PMT,Photodiode,Spectroscopy,LifetimeImaging,CorrelationSpectroscopy,FTIR,EMCCD,APD,CMOS,EBCCD,Other"
+                        Name="DetectorType" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Zoom" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="AmplificationGain"
+                         Type="TextField" Unit="" Value="" Visible="true" ></TagData>
+                <TagData DefaultValues="" Name="User::Voltage"
+                         Type="TextField" Unit="V" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Offset"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Gain" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Confocal Zoom"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="1x1,2x2,4x4,8x8,Other"
+                         Name="User::Binning" Type="ComboBox" Unit="" Value=""
+                         Visible="true" />
+                <TagData DefaultValues="" Name="User::Subarray"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME:Channel" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Laser">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Power" Type="TextField"
+                         Unit="mW" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="Excimer,Gas,MetalVapor,SolidState,Dye,Semiconductor,FreeElectron,Other"
+                        Name="L_Type" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="Cu,Ag,ArFl,ArCl,KrFl,KrCl,XeFl,XeCl,XeBr,N,Ar,Kr,Xe,HeNe,HeCd,CO,CO2,H2O,HFl,NdGlass,NdYAG,ErGlass,ErYAG,HoYLF,HoYAG,Ruby,TiSapphire,Alexandrite,Rhodamine6G,CoumarinC30,GaAs,GaAlAs,EMinus,Other"
+                        Name="Laser Medium" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Frequency Multiplication"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="true,false" Name="Tunable"
+                         Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="CW,Single,QSwitched,Repetitive,ModeLocked,Other"
+                        Name="Pulse" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="true,false" Name="Pockel Cell"
+                         Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Repititation Rate"
+                         Type="TextField" Unit="MHz" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Pump" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Wavelength" Type="TextField"
+                         Unit="nm" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Wavelength"
+                         Type="TextField" Unit="nm" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Attenuation"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME:LightSource" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Arc">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="Hg,Xe,HgXe,Other" Name="A_Type"
+                         Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Wavelength"
+                         Type="TextField" Unit="nm" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Attenuation"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME:LightSource" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Objective">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Nominal Magnification"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Calibration Magnification"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Lens NA" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="Oil,Water,WaterDipping,Air,Multi,Glycerol,Other"
+                        Name="Immersion" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="UV,PlanApo,PlanFluor,SuperFluor,VioletCorrected,Achro,Achromat,Fluor,Fl,Fluar,Neofluar,Fluotar,Apo,PlanNeofluar,Other"
+                        Name="Correction" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Working Distance"
+                         Type="TextField" Unit="µm" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Iris" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Refraction Index"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="Air,Oil,Water,Glycerol,Other"
+                         Name="User::Medium" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Correction Collar"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME:Image" />
+            </ObjectDef>
+            <ObjectDef Type="OME:EmissionFilter">
+                <Parents Values="OME:LightPath" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Filter">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="Dichroic,LongPass,ShortPass,BandPass,MultiPass,NeutralDensity,Tuneable,Other"
+                        Name="FilterType" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Filterwheel"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="CutIn" Type="TextField"
+                         Unit="nm" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="CutOut" Type="TextField"
+                         Unit="nm" Value="" Visible="true" />
+                <Parents Values="OME:EmissionFilter,OME:ExcitationFilter" />
+            </ObjectDef>
+            <ObjectDef Type="OME:ImagingEnvironment">
+                <TagData DefaultValues="" Name="Temperature"
+                         Type="TextField" Unit="°C" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Air Pressure"
+                         Type="TextField" Unit="Mbar" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Humidity %" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="CO2 Percent %"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME:Image" />
+            </ObjectDef>
+            <ObjectDef Type="OME:ExcitationFilter">
+                <Parents Values="OME:LightPath" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Dichroic">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME:EmissionFilter,OME:ExcitationFilter,OME:LightPath" />
+            </ObjectDef>
+            <ObjectDef Type="OME:LightEmittingDiode">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Description" Type="TextArea"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Wavelength"
+                         Type="TextField" Unit="nm" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Attenuation"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME:LightSource" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Channel">
+                <TagData DefaultValues="" Name="Name" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Color" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Fluorophore"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="Transmitted,Epifluorescence,Oblique,NonLinear,Other"
+                        Name="Illumination Type" Type="ComboBox" Unit="" Value=""
+                        Visible="true" />
+                <TagData DefaultValues="" Name="Exposure Time"
+                         Type="TextField" Unit="s" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Excitation Wavelength"
+                         Type="TextField" Unit="nm" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Emission Wavelength"
+                         Type="TextField" Unit="nm" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="WideField,LaserScanningConfocalMicroscopy,SpinningDiskConfocal,SlitScanConfocal,MultiPhotonMicroscopy,StructuredIllumination,SingleMoleculeImaging,TotalInternalReflection,FluorescenceLifetime,SpectralImaging,FluorescenceCorrelationSpectroscopy,NearFieldScanningOpticalMicroscopy,SecondHarmonicGenerationImaging,PALM,STORM,STED,TIRF,FSM,LCM,Other,BrightField,SweptFieldConfocal,SPIM"
+                        Name="Imaging Mode" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="Brightfield,Phase,DIC,HoffmanModulation,ObliqueIllumination,PolarizedLight,Darkfield,Fluorescence,Other"
+                        Name="Contrast Method" Type="ComboBox" Unit="" Value=""
+                        Visible="true" />
+                <TagData DefaultValues="" Name="ND Filter" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Pinhole Size"
+                         Type="TextField" Unit="µm" Value="" Visible="true" />
+                <Parents Values="OME:Image" />
+            </ObjectDef>
+            <ObjectDef Type="OME:LightSource">
+                <Parents Values="OME:Channel" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Experiment">
+                <TagData DefaultValues="" Name="Description" Type="TextArea"
+                         Unit="" Value="" Visible="true" />
+                <TagData
+                        DefaultValues="FP,FRET,TimeLapse,FourDPlus,Screen,Immunocytochemistry,Immunofluorescence,FISH,Electrophysiology,IonImaging,Colocalization,PGIDocumentation,FluorescenceLifetime,SpectralImaging,Photobleaching,SPIM,Other"
+                        Name="ExperimentType" Type="ComboBox" Unit="" Value=""
+                        Visible="true" />
+                <TagData DefaultValues="" Name="Experimenter Name"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME-Model" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Filament">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Power" Type="TextField"
+                         Unit="mW" Value="" Visible="true" />
+                <TagData DefaultValues="Incandescent,Halogen,Other"
+                         Name="F_Type" Type="ComboBox" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Wavelength"
+                         Type="TextField" Unit="nm" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Attenuation"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME:LightSource" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Generic_Excitation_Src">
+                <TagData DefaultValues="" Name="ID" Type="TextField" Unit=""
+                         Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Manufacturer"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Model" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Power" Type="TextField"
+                         Unit="mW" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Map" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Wavelength"
+                         Type="TextField" Unit="nm" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="User::Attenuation"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <Parents Values="OME:LightSource" />
+            </ObjectDef>
+            <ObjectDef Type="OME:LightPath">
+                <Parents Values="OME:Channel" />
+            </ObjectDef>
+            <ObjectDef Type="OME:Image">
+                <TagData DefaultValues="" Name="Name" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Description"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Acquisition Time"
+                         Type="TimeStamp" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="2" Name="Dim X x Y"
+                         Type="ArrayField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Pixel Depth"
+                         Type="TextField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="2" Name="Pixel Size (XY)"
+                         Type="ArrayField" Unit="µm" Value="" Visible="true" />
+                <TagData DefaultValues="3" Name="Dim Z x T x C"
+                         Type="ArrayField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Time Increment"
+                         Type="TextField" Unit="ms" Value="" Visible="true" />
+                <TagData DefaultValues="2" Name="Stage Label (XY)"
+                         Type="ArrayField" Unit="reference frame" Value="" Visible="true" />
+                <Parents Values="OME-Model" />
+            </ObjectDef>
+            <ObjectDef Type="Available InputFields">
+                <TagData DefaultValues="2" Name="Tag of Type ArrayField"
+                         Type="ArrayField" Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="3" Name="Tag of Type ArrayField with Unit"
+                         Type="ArrayField" Unit="s" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Tag of Type TextArea" Type="TextArea"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Tag of Type TextField" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Tag of Type TextField with Unit" Type="TextField"
+                         Unit="nm" Value="" Visible="true" />
+                <TagData DefaultValues="Value1,Value2,Value3" Name="Tag of Type ComboBox" Type="ComboBox"
+                         Unit="" Value="Value1" Visible="true" />
+                <TagData DefaultValues="" Name="Tag of Type TimeStamp" Type="TimeStamp"
+                         Unit="" Value="" Visible="true" />
+                <Parents Values="OME-Model" />
+            </ObjectDef>
+        </Definitions>
+        <Configurations>
+            <SetupConf Name="Example Setup: Fields">
+                <ObjectConf Type="OME:Image">
+                    <TagDataProp Name="Name" Unit="" Visible="true" />
+                    <TagDataProp Name="Description" Unit="" Visible="true" />
+                    <TagDataProp Name="Acquisition Time" Unit=""
+                                 Visible="false" />
+                    <TagDataProp Name="Dim X x Y" Unit="" Visible="true" />
+                    <TagDataProp Name="Pixel Depth" Unit="" Visible="true" />
+                    <TagDataProp Name="Pixel Size (XY)" Unit="µm"
+                                 Visible="true" />
+                    <TagDataProp Name="Dim Z x T x C" Unit="" Visible="true" />
+                    <TagDataProp Name="Time Increment" Unit="s"
+                                 Visible="true" />
+                    <TagDataProp Name="Stage Label (XY)"
+                                 Unit="reference frame" Visible="true" />
+                </ObjectConf>
+                <ObjectConf Type="OME:Objective">
+                    <TagDataProp DefaultValues="" Name="ID" Type="TextField" Unit=""
+                             Value="" Visible="false" />
+                    <TagDataProp DefaultValues="" Name="Model" Type="TextField"
+                             Unit="" Value="" Visible="false" />
+                    <TagDataProp DefaultValues="" Name="Manufacturer"
+                             Type="TextField" Unit="" Value="" Visible="false" />
+                    <TagDataProp DefaultValues="" Name="Nominal Magnification"
+                             Type="TextField" Unit="" Value="" Visible="false" />
+                    <TagDataProp DefaultValues="" Name="Calibration Magnification"
+                             Type="TextField" Unit="" Value="" Visible="false" />
+                    <TagDataProp DefaultValues="" Name="Lens NA" Type="TextField"
+                             Unit="" Value="" Visible="false" />
+                    <TagDataProp
+                            DefaultValues="Oil,Water,WaterDipping,Air,Multi,Glycerol,Other"
+                            Name="Immersion" Type="ComboBox" Unit="" Value="" Visible="false" />
+                    <TagDataProp
+                            DefaultValues="UV,PlanApo,PlanFluor,SuperFluor,VioletCorrected,Achro,Achromat,Fluor,Fl,Fluar,Neofluar,Fluotar,Apo,PlanNeofluar,Other"
+                            Name="Correction" Type="ComboBox" Unit="" Value="" Visible="false" />
+                    <TagDataProp DefaultValues="" Name="Working Distance"
+                             Type="TextField" Unit="µm" Value="" Visible="false" />
+                    <TagDataProp DefaultValues="" Name="Iris" Type="TextField"
+                             Unit="" Value="" Visible="false" />
+                    <TagDataProp Name="User::Refraction Index" Unit=""  Visible="true" />
+                    <TagDataProp Name="User::Medium"  Unit="" Visible="true" />
+                    <TagDataProp Name="User::Correction Collar" Unit="" Visible="true" />
+                </ObjectConf>
+
+                <ObjectConf Type="Available InputFields" Insert="true" InsertPoint="OME-Model">
+                    <TagDataProp Name="Tag of Type ArrayField"	Unit=""  Visible="false" />
+                    <TagDataProp Name="Tag of Type ArrayField with Unit" Unit="s"  Visible="true" />
+                    <TagDataProp Name="Tag of Type TextArea" Unit="" Visible="false" />
+                </ObjectConf>
+            </SetupConf>
+            <SetupConf Name="Example Setup: Study Info">
+                <ObjectConf Type="OME:Image"/>
+                <ObjectConf Type="Study Info" Insert="true" InsertPoint="OME-Model"/>
+            </SetupConf>
+        </Configurations>
+    </MDEObjects>
+</MDEConfiguration>
