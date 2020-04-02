@@ -86,7 +86,7 @@ class FileSelectionTable
 
 	/** Description of the <code>Add All</code> action.*/
 	private static final String TOOLTIP_BUTTON_ADD = "Add the selected files"+
-	        "to the queue.";
+	        " to the queue.";
 
 	/** Tooltip text for group column */
 	private static final String TOOLTIP_GROUP = 
