@@ -588,7 +588,7 @@ public class MDEHelper {
 				result.setAllDataChanged();
 				return result;
 			}
-			//System.out.println("Replace by key");
+
 			for (Map.Entry<String, TagData> entry : l2.entrySet()) {
 				String key=entry.getKey();
 				TagData valIn=new TagData(entry.getValue());

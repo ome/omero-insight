@@ -58,10 +58,8 @@ public class ImportFromTemplateFile {
     final String ELEM_OBJECT_PRE="ObjectPre";
     final String ELEM_CHILD="ObjectChild";
     final String ELEM_TAGDATA="TagData";
-    final String ATTR_PTYPE="P_Type";
-    final String ATTR_PIDX="P_ID";
     final String ATTR_TYPE="Type";
-    final String ATTR_ID="ID";
+
 
     private HashMap<String,List<Element>> xmlObjectPreList;
     private DefaultMutableTreeNode tempObjTree;
@@ -161,82 +159,6 @@ public class ImportFromTemplateFile {
         return tempObjTree;
     }
 
-    private DefaultMutableTreeNode buildTreeFromXML(NodeList nodeList,List<String> filter, NodeList objectPre){
-        DefaultMutableTreeNode tree = new DefaultMutableTreeNode(new ModuleTreeElement(null,null));
-        if(nodeList==null)
-            return tree;
-
-        for(int i=0; i<nodeList.getLength();i++) {
-            Node n = nodeList.item(i);
-            if (n.getNodeName().equals(ELEM_ROOT) && n.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) n.getFirstChild();
-                String type = eElement.getAttribute(ATTR_TYPE);
-                if (filter != null && filter.contains(type)) {
-                    // get node + childs
-
-                    ModuleTreeElement mte = new ModuleTreeParser().getModuleTreeElement(eElement, tree);
-                    DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(mte);
-                    parseChildsFromXml(eElement,filter,objectPre,currentNode);
-                    tree.add(currentNode);
-                }
-            }
-        }
-        return null;
-
-    }
-
-    private void parseChildsFromXml(Element eElement, List<String> filter, NodeList objectPre,
-                                    DefaultMutableTreeNode currentNode) {
-        if(eElement!=null){
-            NodeList listOfChilds = eElement.getElementsByTagName(ELEM_CHILD);
-            if(listOfChilds==null){
-                return;
-            }
-            for(int i=0; i<listOfChilds.getLength();i++) {
-                DefaultMutableTreeNode tNode= buildChildNode(listOfChilds.item(i),objectPre,eElement.getAttribute(ATTR_ID),
-                        eElement.getAttribute(ATTR_TYPE));
-                if(tNode!=null)
-                    currentNode.add(tNode);
-            }
-        }
-    }
-
-    private DefaultMutableTreeNode buildChildNode(Node chNode, NodeList objectPre,String pIdx, String pType) {
-        if(chNode==null || objectPre==null){
-            return null;
-        }
-        Element eElement = (Element) chNode.getFirstChild();
-        if(eElement!=null){
-            String cNodeID=eElement.getAttribute(ATTR_ID);
-            String cNodeType=eElement.getAttribute(ATTR_TYPE);
-
-            //getElementChildsByAttributes(pIdx,pType)
-            String xpathExp=MDE_TEMPLATE+"/"+ELEM_OBJECT_PRE+"/@"+ATTR_TYPE+"[.=="+cNodeType+"]";
-        }
-        return null;
-    }
-
-//    private NodeList evaluateXPath(Document doc, String xpathexpression) throws Exception{
-//        // Create XPathFactory object
-//        XPathFactory xpathFactory = XPathFactory.newInstance();
-//
-//        // Create XPath object
-//        XPath xpath = xpathFactory.newXPath();
-//
-//        NodeList nodes=null;
-//        try
-//        {
-//            // Create XPathExpression object
-//            XPathExpression expr = xpath.compile(xpathExpression);
-//
-//            // Evaluate expression result on XML document
-//            nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
-//
-//        } catch (XPathExpressionException e) {
-//            e.printStackTrace();
-//        }
-//        return nodes;
-//    }
 
     /**
      *
@@ -310,7 +232,7 @@ public class ImportFromTemplateFile {
             String type = eElement.getAttribute(ATTR_TYPE);
 
             ModuleTreeElement mte = new ModuleTreeParser().getModuleTreeElementData(eElement, parent,filter.contains(type));
-            //System.out.println("Create Node: " + mte.getType()+" -- withData: "+filter.contains(type));
+
             thisNode = new DefaultMutableTreeNode(mte);
             NodeList childs = eElement.getElementsByTagName(ELEM_CHILD);
             if (childs != null) {
@@ -344,8 +266,6 @@ public class ImportFromTemplateFile {
                     return elem;
                 }
             }
-        }else{
-            //System.out.println("Cannot parse elements of type: "+type);
         }
         return null;
     }

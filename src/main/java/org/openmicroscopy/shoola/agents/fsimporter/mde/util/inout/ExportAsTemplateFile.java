@@ -62,14 +62,8 @@ public class ExportAsTemplateFile {
     final String ELEM_OBJECT_PRE="ObjectPre";
     final String ELEM_CHILD="ObjectChild";
 
-    final String ELEM_TAGDATA="TagData";
     final String ATTR_UUID="UUID";
     final String ATTR_ID="ID";
-    final String ATTR_NAME="Name";
-    final String ATTR_DEFAULT_VAL="DefaultValues";
-    final String ATTR_VALUE="Value";
-    final String ATTR_VISIBLE="Visible";
-    final String ATTR_UNIT="Unit";
     final String ATTR_TYPE="Type";
 
     String fName;
@@ -98,19 +92,12 @@ public class ExportAsTemplateFile {
             transformer = transformerFactory.newTransformer();
             DOMSource domSource = new DOMSource(doc);
             StreamResult streamResult = new StreamResult(new File(fileName));
-
-            // If you use
-            // StreamResult result = new StreamResult(System.out);
-            // the output will be pushed to the standard output ...
-            // You can use that for debugging
             transformer.transform(domSource, streamResult);
         } catch (TransformerConfigurationException e) {
             e.printStackTrace();
         } catch (TransformerException e) {
             e.printStackTrace();
         }
-
-
     }
 
     /**
@@ -130,7 +117,6 @@ public class ExportAsTemplateFile {
             document.appendChild(rootElem);
 
             generateRoot_XMLElem(tree,document,filter,rootElem);
-
 
         }catch(Exception e){
             ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Cannot generate template xml");
@@ -212,7 +198,6 @@ public class ExportAsTemplateFile {
                     root.appendChild(childObj);
                 }
             }
-            //ImporterAgent.getRegistry().getLogger().debug(null, "\nadd to template "+ node.getUserObject().toString());
             root.appendChild(nodeObj);
         }
         return nodeObj;
@@ -241,9 +226,4 @@ public class ExportAsTemplateFile {
         UUID idOne = UUID.randomUUID();
         return idOne.toString();
     }
-
-
-
-
-
 }

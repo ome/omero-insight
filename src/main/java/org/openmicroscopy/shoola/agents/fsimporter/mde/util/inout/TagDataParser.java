@@ -29,7 +29,6 @@ import org.w3c.dom.Node;
 public class TagDataParser {
 
     final String ELEM_TAGDATA="TagData";
-    final String ATTR_ID="ID";
     final String ATTR_NAME="Name";
     final String ATTR_DEFAULT_VAL="DefaultValues";
     final String ATTR_VALUE="Value";

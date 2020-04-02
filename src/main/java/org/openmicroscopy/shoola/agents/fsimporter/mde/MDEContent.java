@@ -207,8 +207,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	}
 	
 	/**
-	 * Read ome-xml from image file and return tree generated from file 
-	 * @param fName
+	 * Read ome-xml from image file and return tree generated from file
 	 */
 	private DefaultMutableTreeNode initTree(OME ome,DefaultMutableTreeNode root) {
 		if(ome ==null ) {

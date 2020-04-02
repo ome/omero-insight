@@ -79,11 +79,8 @@ public class XMLWriter {
 	final String ELEM_PARENTS="Parents";
 	final String ELEM_TAGDATA="TagData";
 	final String ELEM_TAGDATAPROP="TagDataProp";
-	
-	final String ATTR_ID="ID";
+
 	final String ATTR_NAME="Name";
-	final String ATTR_DEFAULT_VAL="DefaultValues";
-	final String ATTR_VALUE="Value";
 	final String ATTR_VISIBLE="Visible";
 	final String ATTR_UNIT="Unit";
 	final String ATTR_TYPE="Type";
@@ -92,7 +89,6 @@ public class XMLWriter {
 	
 	private final String ATTR_VALUES="Values";
 	private LinkedHashMap<String, ModuleList> hardwareConfiguration;
-//	private LinkedHashMap<String, HashMap<String,ModuleContent>> objectConfiguration;
 	
 	/** available object definitions*/
 	HashMap<String,ModuleContent> objectDefinition;
@@ -179,11 +175,7 @@ public class XMLWriter {
 		return mdeObjects;
 	}
 	
-	
-	
 
-
-	
 
 	/**
 	 * {@link ModuleContent} -> xmlElement: builds the element
@@ -226,6 +218,8 @@ public class XMLWriter {
 		
 		return result;
 	}
+
+
 	/**
 	 * {@link ModuleContent} -> xmlElement: builds the element
 	 * <pre>{@code
@@ -235,7 +229,7 @@ public class XMLWriter {
 	 * 	</ObjectConf>
 	 * }</pre>
 	 * @param type
-	 * @param content
+	 * @param conf
 	 * @param doc
 	 * @return
 	 */
@@ -375,7 +369,7 @@ public class XMLWriter {
 	 *  </MDEObjects>
 	 * </xml>
 	 * }</pre>
-	 * @param conf
+	 *
 	 */
 	public void saveToXML(LinkedHashMap<String, ModuleList> hconf, HashMap<String,ModuleContent> oDef,
 			LinkedHashMap<String,HashMap<String,ModuleConfiguration>> oConf,String configPath) {
@@ -408,11 +402,6 @@ public class XMLWriter {
 
 			DOMSource domSource = new DOMSource(document);
 			StreamResult streamResult = new StreamResult(new File(configPath));
-
-			// If you use
-			// StreamResult result = new StreamResult(System.out);
-			// the output will be pushed to the standard output ...
-			// You can use that for debugging 
 			transformer.transform(domSource, streamResult);
 		} catch (TransformerConfigurationException e1) {
 			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Cannot parse mde configuration file");
@@ -482,8 +471,7 @@ public class XMLWriter {
 		result.setAttribute(ATTR_NAME, t.getName());
 		result.setAttribute(ATTR_VISIBLE,String.valueOf( t.isVisible()));
 		result.setAttribute(ATTR_UNIT, t.getUnitSymbol());
-		
-		
+
 //		attr=doc.createAttribute("Required");
 //		attr.setValue(t.);
 		
@@ -631,10 +619,8 @@ public class XMLWriter {
 		return objectConfiguration;
 	}
 
-
 	public HashMap<String, ModuleContent> getObjectDefinition() {
 		return objectDefinition;
 	}
-	
-	
+
 }

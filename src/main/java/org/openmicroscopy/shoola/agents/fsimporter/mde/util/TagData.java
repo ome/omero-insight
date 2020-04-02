@@ -1142,7 +1142,6 @@ public class TagData
 		String oldval=value[0];
 				
 		if(oldval!=null && !oldval.equals("")) {
-			//System.out.println("Read out timestamp: "+oldval);
 			String currentDatePattern=getDatePattern(oldval);
 			
 			((JTextField) inputField).setForeground(Color.black);

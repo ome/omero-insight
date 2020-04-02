@@ -36,9 +36,7 @@ public class ModuleContentParser {
 
     final String ATTR_ID="ID";
     final String ATTR_TYPE="Type";
-
     final String ELEM_TAGDATA="TagData";
-
 
 
     /**

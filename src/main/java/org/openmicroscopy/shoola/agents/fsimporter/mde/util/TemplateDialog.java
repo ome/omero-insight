@@ -198,10 +198,6 @@ public class TemplateDialog extends JDialog implements ActionListener{
 	    getContentPane().add(btnPane,BorderLayout.SOUTH);
 	    
 	}
-	
-	
-
-
 
 
 	@Override
@@ -264,10 +260,9 @@ public class TemplateDialog extends JDialog implements ActionListener{
 			HashMap<String,ModuleContent> list= ModuleController.getInstance().getAvailableContent();
 			if(list!=null)
 				moduleList = new ArrayList<>(list.keySet());
-
-			}
-		return moduleList;
 		}
+		return moduleList;
+	}
 
 	/**
 	 *
