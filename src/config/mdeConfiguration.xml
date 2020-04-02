@@ -2,6 +2,20 @@
 <MDEConfiguration>
     <MDEPredefinitions>
         <SetupPre Name="Universal" />
+        <SetupPre Name="MyCustomSetup">
+            <ObjectPre Type="MyCustomObject">
+                <TagData DefaultValues="" Name="ExampleKey_1" Type="TextField"
+                         Unit="" Value="Example Value 1A" Visible="true" />
+                <TagData DefaultValues="" Name="ExampleKey_2" Type="TextField"
+                         Unit="" Value="Example Value 2A" Visible="true" />
+            </ObjectPre>
+            <ObjectPre Type="MyCustomObject">
+                <TagData DefaultValues="" Name="ExampleKey_1" Type="TextField"
+                         Unit="" Value="Example Value 1B" Visible="true" />
+                <TagData DefaultValues="" Name="ExampleKey_2" Type="TextField"
+                         Unit="" Value="Example Value 2B" Visible="true" />
+            </ObjectPre>
+        </SetupPre>
         <SetupPre Name="Example Setup: Fields">
             <ObjectPre Type="Available InputFields" >
                 <TagData DefaultValues="2" Name="Tag of Type ArrayField"
@@ -370,6 +384,13 @@
                          Unit="" Value="" Visible="true" />
                 <Parents Values="OME-Model" />
             </ObjectDef>
+            <ObjectDef Type="MyCustomObject">
+                <TagData DefaultValues="" Name="ExampleKey_1" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="ExampleKey_2" Type="TextField"
+                         Unit="" Value="" Visible="true" />
+                <Parents Values="OME:Image" />
+            </ObjectDef>
         </Definitions>
         <Configurations>
             <SetupConf Name="Example Setup: Fields">
@@ -425,6 +446,13 @@
             <SetupConf Name="Example Setup: Study Info">
                 <ObjectConf Type="OME:Image"/>
                 <ObjectConf Type="Study Info" Insert="true" InsertPoint="OME-Model"/>
+            </SetupConf>
+            <SetupConf Name="MyCustomSetup">
+                <ObjectConf Type="OME:Image">
+                    <TagDataProp Name ="Description" Unit ="" Visible ="false"/>
+                </ObjectConf>
+                <ObjectConf Type="OME:Objective"/>
+                <ObjectConf Type="MyCustomObject" Insert="true" InsertPoint="OME:Image"/>
             </SetupConf>
         </Configurations>
     </MDEObjects>
