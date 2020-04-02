@@ -57,14 +57,7 @@ import java.util.UUID;
  */
 public class ExportAsTemplateFile {
 
-    final String MDE_TEMPLATE = "MDETemplate";
-    final String ELEM_ROOT="ObjectTreeRoot";
-    final String ELEM_OBJECT_PRE="ObjectPre";
-    final String ELEM_CHILD="ObjectChild";
 
-    final String ATTR_UUID="UUID";
-    final String ATTR_ID="ID";
-    final String ATTR_TYPE="Type";
 
     String fName;
     public ExportAsTemplateFile(String fileName){
@@ -113,7 +106,7 @@ public class ExportAsTemplateFile {
             DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
             document = documentBuilder.newDocument();
             // root element
-            Element rootElem = document.createElement(MDE_TEMPLATE);
+            Element rootElem = document.createElement(ElementNames.MDE_TEMPLATE);
             document.appendChild(rootElem);
 
             generateRoot_XMLElem(tree,document,filter,rootElem);
@@ -149,10 +142,10 @@ public class ExportAsTemplateFile {
             } else  {
                 Element objPre= generateObjectPre_XMLElem(node,document,filter,rootElem);
                if(objPre!=null){
-                   Element rootObj = document.createElement(ELEM_ROOT);
-                   rootObj.setAttribute(ATTR_ID, String.valueOf(((ModuleTreeElement) node.getUserObject()).getChildIndex()));
-                   rootObj.setAttribute(ATTR_TYPE, objectType);
-                   rootObj.setAttribute(ATTR_UUID,objPre.getAttribute(ATTR_UUID));
+                   Element rootObj = document.createElement(ElementNames.ELEM_ROOT);
+                   rootObj.setAttribute(ElementNames.ATTR_ID, String.valueOf(((ModuleTreeElement) node.getUserObject()).getChildIndex()));
+                   rootObj.setAttribute(ElementNames.ATTR_TYPE, objectType);
+                   rootObj.setAttribute(ElementNames.ATTR_UUID,objPre.getAttribute(ElementNames.ATTR_UUID));
 
                    rootElem.appendChild(rootObj);
                    rootElem.appendChild(objPre);
@@ -185,8 +178,8 @@ public class ExportAsTemplateFile {
         // only  data of objects available in filter will be saved
         ModuleContentParser mc_parser=new ModuleContentParser();
         Element nodeObj = mc_parser.createXMLElem(((ModuleTreeElement)node.getUserObject()).getData(),
-                String.valueOf(((ModuleTreeElement)node.getUserObject()).getChildIndex()),doc,ELEM_OBJECT_PRE,filter.contains(objectType));
-        nodeObj.setAttribute(ATTR_UUID,String.valueOf(generateUniqueID()));
+                String.valueOf(((ModuleTreeElement)node.getUserObject()).getChildIndex()),doc,ElementNames.ELEM_OBJECT_PRE,filter.contains(objectType));
+        nodeObj.setAttribute(ElementNames.ATTR_UUID,String.valueOf(generateUniqueID()));
 
         if(nodeObj!=null) {
             // add all child objects as objectPre
@@ -210,10 +203,10 @@ public class ExportAsTemplateFile {
      * @return ObjectChild element
      */
     private Element generateChild_XMLElem(Element childObj, Document doc) {
-        Element child = doc.createElement(ELEM_CHILD);
-        child.setAttribute(ATTR_UUID,childObj.getAttribute(ATTR_UUID));
-        child.setAttribute(ATTR_ID, childObj.getAttribute(ATTR_ID));
-        child.setAttribute(ATTR_TYPE, childObj.getAttribute(ATTR_TYPE));
+        Element child = doc.createElement(ElementNames.ELEM_CHILD);
+        child.setAttribute(ElementNames.ATTR_UUID,childObj.getAttribute(ElementNames.ATTR_UUID));
+        child.setAttribute(ElementNames.ATTR_ID, childObj.getAttribute(ElementNames.ATTR_ID));
+        child.setAttribute(ElementNames.ATTR_TYPE, childObj.getAttribute(ElementNames.ATTR_TYPE));
         return child;
     }
 
