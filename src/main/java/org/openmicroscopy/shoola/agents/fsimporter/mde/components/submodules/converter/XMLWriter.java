@@ -428,14 +428,7 @@ public class XMLWriter {
 		ImporterAgent.getRegistry().getLogger().info(this,"[MDE] Create XML File at "+configPath);
         
 	}
-	
-	
 
-
-
-
-
-	//TOD=: Desc for mic?
 	/**
 	 * Builds the element
 	 * <pre>{@code
@@ -469,42 +462,7 @@ public class XMLWriter {
 		}
 		return result;
 	}
-	
-	
-//	/**
-//	 * Builds the tag for a certain instrument from {@link ModuleContent} object
-//	 * <pre>{@code
-//	 * <ObjectPre Type="" ATTR_ID="" >
-//	 * 		<TagData...>
-//	 *
-//	 * </ObjectPre>
-//	 * }</pre>
-//	 * @param c    {@link ModuleContent} object holds instrument values
-//	 * @param doc
-//	 */
-//	private Element objectPreToXML(ModuleContent c, Document doc) {
-//		if(c==null)
-//			return null;
-//
-//		Element result = doc.createElement(ELEM_OBJECT_PRE);
-//		result.setAttribute(ATTR_ID, c.getAttributeValue(TagNames.ID));//TODO necessary?
-//		result.setAttribute(ATTR_TYPE, c.getType());
-//
-//		List<TagData> list= c.getTagList();
-//		if(list == null)
-//			return result;
-//		//add tagData
-//		TagDataParser td_parser=new TagDataParser();
-//		for(int i=0;i<list.size();i++) {
-//			Element child = td_parser.createXMLElem(list.get(i), doc,ELEM_TAGDATA);
-//			if(child!=null)
-//				result.appendChild(child);
-//		}
-//		return result;
-//	}
-		
-		
-	
+
 	
 	/**
 	 * Builds {@link TagData} element with his properties as attributes.

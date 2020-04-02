@@ -250,24 +250,6 @@ public class ModuleTree extends JPanel implements ActionListener{
 	}
 
 
-	/**
-	 * show node at jtree and his childs according moduleList
-	 * @param parent
-	 * @param elem
-	 */
-//	private void visualizeNodes(DefaultMutableTreeNode parent, DefaultMutableTreeNode thisElem) {
-//		if(thisElem!=null) {
-//			if(parent==null) {
-//				parent = root;
-//			}
-//			treeModel.insertNodeInto(thisElem, parent, parent.getChildCount());
-//
-//			//make sure the tree is visible in the panel on this path
-//			if(thisElem!=null && tree!=null)
-//				tree.scrollPathToVisible(new TreePath(thisElem.getPath()));
-//		}
-//	}
-
 	private String getName(DefaultMutableTreeNode thisElem) {
 		return thisElem.getUserObject().toString();
 	}

@@ -124,51 +124,7 @@ public class MDEHelper {
 			}
 		}
 	}
-	
-	
-//	/**
-//	 * merge data of tree1 into tree2.
-//	 * @param tree1
-//	 * @param tree2
-//	 * @return destTree with data of inTree
-//	 */
-//	public static DefaultMutableTreeNode mergeTrees(DefaultMutableTreeNode tree1, DefaultMutableTreeNode tree2,int depth) {
-//
-//		if(((ModuleTreeElement) tree1.getUserObject()).isContainer()) {
-//			depth++;
-//			for(int i = 0 ; i < tree1.getChildCount(); i++) {
-//				String nodeName=((DefaultMutableTreeNode)tree1.getChildAt(i)).getUserObject().toString();
-//				DefaultMutableTreeNode n1=findNode((DefaultMutableTreeNode) tree1.getChildAt(i),tree2);
-//
-//				if(n1==null) {
-////					ImporterAgent.getRegistry().getLogger().debug(null, "-- Node "+nodeName+" doesn't exists, INSERT at depth "+depth));
-//				}else {
-//					DefaultMutableTreeNode p1=(DefaultMutableTreeNode) n1.getParent();
-//					mergeTrees((DefaultMutableTreeNode) tree1.getChildAt(i),n1,depth);
-//				}
-//
-//			}
-//			// iterate through children
-//			// find first child node of same type in destTree
-//			// save depth of inserted node
-//			// get next child of inTree
-//			// find this node at return depth or insert
-//
-//			//recursive for childs of childs
-//		}
-//		return tree2;
-//	}
-//
-//	/**
-//	 *
-//	 * @param tree
-//	 * @param structure
-//	 * @return tree with additional elements that are available in structure
-//	 */
-//	public static DefaultMutableTreeNode inheritTreeStructure(DefaultMutableTreeNode tree, DefaultMutableTreeNode structure) {
-//
-//		return tree;
-//	}
+
 		
 	/**
 	 * Trees are equal if all paths to leafs are equal
@@ -632,7 +588,7 @@ public class MDEHelper {
 				result.setAllDataChanged();
 				return result;
 			}
-			System.out.println("Replace by key");
+			//System.out.println("Replace by key");
 			for (Map.Entry<String, TagData> entry : l2.entrySet()) {
 				String key=entry.getKey();
 				TagData valIn=new TagData(entry.getValue());
@@ -782,38 +738,6 @@ public class MDEHelper {
 		return res;
 	}
 
-	/**
-	 * Search for additional nodes in tree1 compare to tree2. 
-	 * @param tree1
-	 * @param tree2
-	 * @return
-	 */
-	public static List<DefaultMutableTreeNode> getAdditionalNodes(DefaultMutableTreeNode tree1,
-			DefaultMutableTreeNode tree2) {
-		List<DefaultMutableTreeNode> list = new ArrayList<>();
-		
-		if(tree1.toString().equals(tree2.toString())) {
-			for(int i=0; i< tree1.getChildCount(); i++) {
-				DefaultMutableTreeNode child = (DefaultMutableTreeNode) tree1.getChildAt(i);
-				if(getChild(tree2,child)==null) {
-					list.add(child);
-				}else {
-					list.addAll(getAdditionalNodes(child, getChild(tree2,child)));
-				}
-			}
-			
-		}
-		return list;
-	}
-	
-	private static DefaultMutableTreeNode getChild(DefaultMutableTreeNode tree, DefaultMutableTreeNode child) {
-		for(int i=0; i<tree.getChildCount(); i++) {
-			if(tree.getChildAt(i).toString().equals(child.toString()))
-				return (DefaultMutableTreeNode) tree.getChildAt(i);
-		}
-		return null;
-	}
-	
 	
 	/**
 	 *

@@ -127,9 +127,10 @@ public class MapAnnotationObject {
 		ImporterAgent.getRegistry().getLogger().debug(null, "\t PRINT MAPANNOTATIONS: ");
 		
 		List<NamedValue> values=(List<NamedValue>) map.getContent();
+		if(values!=null){
 		for(NamedValue val:values){
 			ImporterAgent.getRegistry().getLogger().debug(null, "\t\t"+ val.name+": "+val.value);
-		}
+		}}
 	}
 	
 	static public void printMapAnnotations(Map<String,MapAnnotationObject> map)
@@ -150,10 +151,11 @@ public class MapAnnotationObject {
 		ImporterAgent.getRegistry().getLogger().debug(null, "\t file : "+o.getFileName());
 		List<MapAnnotationData> list=o.getMapAnnotationList();
 		int index=0;
+		if(list!=null){
 		for(MapAnnotationData m:list){
 			ImporterAgent.getRegistry().getLogger().debug(null, "\t Series_"+index++);
 			printMapAnnotation(m);
-		}
+		}}
 	}
 
 	public void printObject() {
