@@ -1,8 +1,5 @@
-/*
- * org.openmicroscopy.shoola.util.filter.file.CSVFilter 
- *
-  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2007 University of Dundee. All rights reserved.
+/*------------------------------------------------------------------------------
+ *  Copyright (C) 2020 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -23,38 +20,39 @@
 package org.openmicroscopy.shoola.util.filter.file;
 
 
-
-//Java imports
-import java.io.File;
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
-//Third-party libraries
-
-//Application-internal dependencies
 
 /** 
  * 
- * Filters the <code>CSV</code> files. 
+ * Filters the <code>Open Document</code> files.
  * 
- * @author  Jean-Marie Burel &nbsp;&nbsp;&nbsp;&nbsp;
- * 	<a href="mailto:j.burel@dundee.ac.uk">j.burel@dundee.ac.uk</a>
- * @author	Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
- * 	<a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
- * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $Date: $)
- * </small>
+ * @author  Dominik Lindner &nbsp;&nbsp;&nbsp;&nbsp;
+ * 	<a href="mailto:d.lindner@dundee.ac.uk">d.lindner@dundee.ac.uk</a>
  * @since OME3.0
  */
-public class CSVFilter 
+public class OpenDocumentFilter
 	extends CustomizedFileFilter
 {
 
 	/** Possible file extension. */
-	public static final String  CSV = "csv";
+	public static final String  ODT = "odt";
 
 	/** Possible file extension. */
-	public static final String  TSV = "tsv";
+	public static final String  OTT = "ott";
+
+	/** Possible file extension. */
+	public static final String  ODS = "ods";
+
+	/** Possible file extension. */
+	public static final String  ODM = "odm";
+
+	/** Possible file extension. */
+	public static final String  ODP = "odp";
+
+	/** Possible file extension. */
+	public static final String  ODG = "odg";
 
 	/** The possible extensions. */
 	public static final String[] extensions;
@@ -63,12 +61,16 @@ public class CSVFilter
 	private static final String	description;
 	
 	static {
-		extensions = new String[2];
-		extensions[0] = CSV;
-		extensions[1] = TSV;
+		extensions = new String[6];
+		extensions[0] = ODT;
+		extensions[1] = OTT;
+		extensions[2] = ODS;
+		extensions[3] = ODM;
+		extensions[4] = ODP;
+		extensions[5] = ODG;
 
 		StringBuffer s = new StringBuffer();
-		s.append( "Comma/Tab Separated Value (");
+		s.append( "Open Document Format (");
 		for (int i = 0; i < extensions.length; i++) {
 			s.append("*."+extensions[i]);
 			if (i < extensions.length-1)
@@ -82,13 +84,13 @@ public class CSVFilter
 	 * 	Overridden to return the MIME type.
 	 * 	@see CustomizedFileFilter#getMIMEType()
 	 */
-	public String getMIMEType() { return "text/csv"; }
+	public String getMIMEType() { return "application/vnd.oasis.opendocument"; }
 	
 	/**
 	 * 	Overridden to return the extension of the filter.
 	 * 	@see CustomizedFileFilter#getExtension()
 	 */
-	public String getExtension() { return CSV; }
+	public String getExtension() { return ODT; }
 	
 	/**
 	 * 	Overridden to return the description of the filter.

@@ -51,6 +51,18 @@ public class ExcelFilter
     /** Possible file extension. */
     public static final String  EXCEL = "xls";
 
+	/** Possible file extension. */
+	public static final String  EXCEL_X = "xlsx";
+
+	/** Possible file extension. */
+	public static final String  EXCEL_M = "xlsm";
+
+	/** Possible file extension. */
+	public static final String  EXCEL_TX = "xltx";
+
+	/** Possible file extension. */
+	public static final String  EXCEL_TM = "xltm";
+
 	/** The possible extensions. */
     public static final String[] 	extensions;
 	
@@ -58,8 +70,12 @@ public class ExcelFilter
 	private static final String		description;
 	
 	static {
-		extensions = new String[1];
+		extensions = new String[5];
 		extensions[0] = EXCEL;
+		extensions[1] = EXCEL_X;
+		extensions[2] = EXCEL_M;
+		extensions[3] = EXCEL_TX;
+		extensions[4] = EXCEL_TM;
 		StringBuffer s = new StringBuffer();
 		s.append("Microsoft Excel (");
 		for (int i = 0; i < extensions.length; i++) {
