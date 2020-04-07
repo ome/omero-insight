@@ -414,15 +414,32 @@ public class ServerEditor
 	 */
 	List<String> getServers()
 	{
-    	Preferences prefs = Preferences.userNodeForPackage(ServerEditor.class);
-        String servers = prefs.get(OMERO_SERVER, null);
-        if (servers == null || servers.length() == 0)
-            return new ArrayList<>();
-        String[] l = servers.split(SERVER_NAME_SEPARATOR, 0);
+		Preferences prefs = Preferences.userNodeForPackage(ServerEditor.class);
+        List<String> servers = getServersFromPrefs(prefs);
+
+        // Workaround to load old preferences (remove again in next release):
+		Preferences oldPrefs = Preferences.userNodeForPackage(org.openmicroscopy.shoola.util.ui.login.ServerEditor.class);
+		servers.addAll(getServersFromPrefs(oldPrefs));
+
+		return servers;
+	}
+
+	/**
+	 * Returns the list of existing servers from the provided Preferences
+	 *
+	 * @param prefs The Preferences
+	 * @return See above.
+	 */
+	private List<String> getServersFromPrefs(Preferences prefs)
+	{
+		String servers = prefs.get(OMERO_SERVER, null);
+		if (servers == null || servers.length() == 0)
+			return new ArrayList<>();
+		String[] l = servers.split(SERVER_NAME_SEPARATOR, 0);
 		for (int i=0; i<l.length; i++)
 			l[i] = l[i].replace(":"+DEFAULT_PORT, "");
-        if (l == null)
-        	return new ArrayList<>();
+		if (l == null)
+			return new ArrayList<>();
 		return Stream.of(l).collect(Collectors.toList());
 	}
 	
