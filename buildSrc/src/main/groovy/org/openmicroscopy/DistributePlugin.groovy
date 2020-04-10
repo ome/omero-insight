@@ -87,7 +87,7 @@ class DistributePlugin implements Plugin<Project> {
 
             @Override
             void execute(CreateStartScripts css) {
-                css.mainClassName = InsightBasePlugin.MAIN_INSIGHT
+                css.mainClassName = InsightBasePlugin.MAIN_INSIGHT+" containerImporter.xml"
                 css.defaultJvmOpts = InsightBasePlugin.DEFAULT_JVM_ARGS
                 css.applicationName = "omero-importer"
                 css.outputDir = new File(project.getBuildDir(), "importerScripts")
