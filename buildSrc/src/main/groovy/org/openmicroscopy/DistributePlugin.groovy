@@ -87,6 +87,7 @@ class DistributePlugin implements Plugin<Project> {
 
             @Override
             void execute(CreateStartScripts css) {
+                //TODO review how to pass the argument. This approach is working but not ideal
                 css.mainClassName = InsightBasePlugin.MAIN_INSIGHT+" containerImporter.xml"
                 css.defaultJvmOpts = InsightBasePlugin.DEFAULT_JVM_ARGS
                 css.applicationName = "omero-importer"
