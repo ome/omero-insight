@@ -1,3 +1,12 @@
+5.5.10 (April 2020)
+-------------------
+
+- Remove ant build system [#125](https://github.com/ome/omero-insight/pull/125)
+- Add CSV to the list of the supported formats for the attachments dialog [#118](https://github.com/ome/omero-insight/pull/118)
+- Build Windows executable using Travis [#115](https://github.com/ome/omero-insight/pull/115)
+- Fiji plugin, use the Bio-Formats crop option when opening a large image in Fiji [#114](https://github.com/ome/omero-insight/pull/114)
+- Bump to omero-gateway-java 5.6.3
+
 5.5.9 (January 2020)
 --------------------
 
