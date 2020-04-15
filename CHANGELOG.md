@@ -1,6 +1,7 @@
 5.5.10 (April 2020)
 -------------------
 
+- Fix the bin/omero-importer script [#127](https://github.com/ome/omero-insight/pull/127)
 - Remove ant build system [#125](https://github.com/ome/omero-insight/pull/125)
 - Add CSV to the list of the supported formats for the attachments dialog [#118](https://github.com/ome/omero-insight/pull/118)
 - Build Windows executable using Travis [#115](https://github.com/ome/omero-insight/pull/115)
