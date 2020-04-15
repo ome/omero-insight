@@ -29,6 +29,7 @@ import org.gradle.api.distribution.Distribution
 import org.gradle.api.distribution.DistributionContainer
 import org.gradle.api.distribution.plugins.DistributionPlugin
 import org.gradle.api.file.CopySpec
+import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.application.CreateStartScripts
@@ -77,17 +78,22 @@ class DistributePlugin implements Plugin<Project> {
         project.tasks.withType(Tar).configureEach {
             it.setEnabled(false)
         }
+
     }
 
     private TaskProvider<CreateStartScripts> addImporterCreateScriptsTask() {
         project.tasks.register(TASK_IMPORTER_START_SCRIPTS, CreateStartScripts, new Action<CreateStartScripts>() {
+            CreateStartScripts insight_css = project.tasks.named(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts).get()
+
             @Override
             void execute(CreateStartScripts css) {
-                css.mainClassName = InsightBasePlugin.MAIN_INSIGHT
+                //TODO review how to pass the argument. This approach is working but not ideal
+                css.mainClassName = InsightBasePlugin.MAIN_INSIGHT+" containerImporter.xml"
                 css.defaultJvmOpts = InsightBasePlugin.DEFAULT_JVM_ARGS
                 css.applicationName = "omero-importer"
                 css.outputDir = new File(project.getBuildDir(), "importerScripts")
                 css.executableDir = "bin"
+                css.classpath = insight_css.classpath
                 Utils.configureStartScripts(css)
             }
         })
