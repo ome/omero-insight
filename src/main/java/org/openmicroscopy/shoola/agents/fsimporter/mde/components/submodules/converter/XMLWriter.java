@@ -330,7 +330,6 @@ public class XMLWriter {
 			parents=((Element) eElement.getElementsByTagName(ELEM_PARENTS).item(0)).getAttribute(ATTR_VALUES);
 		}
 		return new ModuleContentParser().parseFromConfig(eElement,type,false, parents.split(","));
-		//return new ModuleContent(elementsToTagDataList(eElement.getElementsByTagName(ELEM_TAGDATA),type,false), type,  parents.split(","));
 	}
 
 	
