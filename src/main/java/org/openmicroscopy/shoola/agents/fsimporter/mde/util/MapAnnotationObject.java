@@ -30,6 +30,7 @@ import omero.model.MapAnnotationI;
 import omero.model.NamedValue;
 
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 
 /**
  * 
@@ -75,8 +76,8 @@ public class MapAnnotationObject {
 		
 		ma.setMapValue(values);
 		MapAnnotationData res=new MapAnnotationData(ma);
-		res.setDescription("MDE");
-		res.setNameSpace("MDE_v1.0");
+		res.setDescription(MDEHelper.APPLICATION_NAME);
+		res.setNameSpace(MDEHelper.APPLICATION_NAME+"_v"+MDEHelper.VERSION);
 		
 		this.mapAnnotation=new ArrayList<>();
 		this.mapAnnotation.add(res);
