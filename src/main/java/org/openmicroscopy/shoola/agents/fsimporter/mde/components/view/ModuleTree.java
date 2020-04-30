@@ -26,10 +26,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
-import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -41,15 +43,11 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEContent;
@@ -58,8 +56,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleConfigur
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.DichroicConverter;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 
 /**
@@ -279,7 +275,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 
 					return thisElem;
 				}else {
-					ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't insert node at selected parent! Allowed parents: "+Arrays.toString(((ModuleTreeElement) thisElem.getUserObject()).getData().getParents()));
+					ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't insert node at selected parent! Allowed parents: "+ Arrays.toString(((ModuleTreeElement) thisElem.getUserObject()).getData().getParents()));
 				}
 			}else {
 					ImporterAgent.getRegistry().getLogger().warn(this, "[MDE] can't insert node, content data empty");

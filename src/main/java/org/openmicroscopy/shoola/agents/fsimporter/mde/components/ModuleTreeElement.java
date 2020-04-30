@@ -18,15 +18,11 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.components;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.w3c.dom.Element;
+
 
 /**
  * Element/node in of object tree.
