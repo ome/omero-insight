@@ -699,6 +699,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		table = new FileSelectionTable(this);
 		table.addPropertyChangeListener(this);
 		chooser = new GenericFileChooser();
+		chooser.setFileHidingEnabled(false);
 		JList list = (JList) UIUtilities.findComponent(chooser, JList.class);
 		KeyAdapter ka = new KeyAdapter() {
 
