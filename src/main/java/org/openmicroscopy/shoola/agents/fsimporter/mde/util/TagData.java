@@ -22,6 +22,7 @@ import loci.common.DateTools;
 import ome.model.enums.UnitsLength;
 import ome.model.units.Unit;
 import ome.xml.model.Experimenter;
+import omero.log.LogMessage;
 import org.apache.commons.lang.BooleanUtils;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
@@ -469,7 +470,11 @@ public class TagData
 				try {
 					saveTagValue((JComponent) e.getSource());
 				}catch(Exception ex) {
-					ex.printStackTrace();
+					String s = "[MDE] can't save Tag value ";
+					LogMessage msg = new LogMessage();
+					msg.print(s);
+					msg.print(e);
+					ImporterAgent.getRegistry().getLogger().error(this, msg);
 				}
 			}
 			@Override
@@ -487,7 +492,11 @@ public class TagData
 				try {
 					saveTagValue((JComponent) e.getSource());
 				}catch(Exception ex) {
-					ex.printStackTrace();
+					String s = "[MDE] can't save Tag value ";
+					LogMessage msg = new LogMessage();
+					msg.print(s);
+					msg.print(e);
+					ImporterAgent.getRegistry().getLogger().error(this, msg);
 				}
 				valChanged=true;	
 				valSaved=false;
@@ -816,7 +825,11 @@ public class TagData
 					try {
 						val=((JArray) source).getValuesAsArray();
 					}catch(Exception ex) {
-						ex.printStackTrace();
+						String s = "[MDE] can't save Tag value ";
+						LogMessage msg = new LogMessage();
+						msg.print(s);
+						msg.print(ex);
+						ImporterAgent.getRegistry().getLogger().error(this, msg);
 					}
 				}else {
 					val=new String[1];
@@ -1384,7 +1397,11 @@ public class TagData
 					try {
 						saveTagValue(getValuesAsArray());
 					}catch(Exception ex) {
-						ex.printStackTrace();
+						String s = "[MDE] can't save Tag value ";
+						LogMessage msg = new LogMessage();
+						msg.print(s);
+						msg.print(ex);
+						ImporterAgent.getRegistry().getLogger().error(this, msg);
 					}
 				}
 
@@ -1402,7 +1419,11 @@ public class TagData
 					try {
 						saveTagValue(getValuesAsArray());
 					}catch(Exception ex) {
-						ex.printStackTrace();
+						String s = "[MDE] can't save Tag value ";
+						LogMessage msg = new LogMessage();
+						msg.print(s);
+						msg.print(ex);
+						ImporterAgent.getRegistry().getLogger().error(this, msg);
 					}
 					valChanged=true;	
 					valSaved=false;

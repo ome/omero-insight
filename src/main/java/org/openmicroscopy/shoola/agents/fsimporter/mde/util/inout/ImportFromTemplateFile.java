@@ -119,7 +119,11 @@ public class ImportFromTemplateFile {
                 }
             }
         }catch(Exception e) {
-            e.printStackTrace();
+            String s = "[MDE] An error occurred when parsing TemplateFile: ";
+            LogMessage msg = new LogMessage();
+            msg.print(s);
+            msg.print(e);
+            ImporterAgent.getRegistry().getLogger().error(this, msg);
         }
     }
 

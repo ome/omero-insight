@@ -36,6 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import omero.log.LogMessage;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
@@ -113,8 +114,11 @@ public class ModuleContentGUI extends JPanel {
 				taskPane.add(nodeContent);
 				parent.add(taskPane);
 			}catch(Exception e) {
-				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't load content of "+node.getUserObject().toString());
-				e.printStackTrace();
+				String s = "[MDE] can't load content of "+node.getUserObject().toString();
+				LogMessage msg = new LogMessage();
+				msg.print(s);
+				msg.print(e);
+				ImporterAgent.getRegistry().getLogger().error(this, msg);
 			}
 			
 		}else {
@@ -132,8 +136,11 @@ public class ModuleContentGUI extends JPanel {
 						getHardwareTable(((ModuleTreeElement) node.getUserObject()).getType()), content);
 				parent.add(taskPane);
 			}catch(Exception e) {
-				ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't load content of "+node.getUserObject().toString());
-				e.printStackTrace();
+				String s = "[MDE] can't load content of "+node.getUserObject().toString();
+				LogMessage msg = new LogMessage();
+				msg.print(s);
+				msg.print(e);
+				ImporterAgent.getRegistry().getLogger().error(this, msg);
 			}
 		}else {
 			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] content of node "+node.getUserObject().toString()+" is empty [ModuleContentGUI::addLeafContent]");

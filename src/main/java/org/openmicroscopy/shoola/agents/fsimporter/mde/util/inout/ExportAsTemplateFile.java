@@ -18,6 +18,7 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
+import omero.log.LogMessage;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
@@ -87,9 +88,17 @@ public class ExportAsTemplateFile {
             StreamResult streamResult = new StreamResult(new File(fileName));
             transformer.transform(domSource, streamResult);
         } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
+            String s = "[MDE] can't saveXML ";
+            LogMessage msg = new LogMessage();
+            msg.print(s);
+            msg.print(e);
+            ImporterAgent.getRegistry().getLogger().error(this, msg);
         } catch (TransformerException e) {
-            e.printStackTrace();
+            String s = "[MDE] saveXML ";
+            LogMessage msg = new LogMessage();
+            msg.print(s);
+            msg.print(e);
+            ImporterAgent.getRegistry().getLogger().error(this, msg);
         }
     }
 
@@ -112,8 +121,11 @@ public class ExportAsTemplateFile {
             generateRoot_XMLElem(tree,document,filter,rootElem);
 
         }catch(Exception e){
-            ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Cannot generate template xml");
-            e.printStackTrace();
+            String s = "[MDE] Cannot generate template xml";
+            LogMessage msg = new LogMessage();
+            msg.print(s);
+            msg.print(e);
+            ImporterAgent.getRegistry().getLogger().error(this, msg);
         }
         return document;
     }

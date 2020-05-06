@@ -33,6 +33,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import omero.log.LogMessage;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
@@ -403,14 +405,23 @@ public class XMLWriter {
 			StreamResult streamResult = new StreamResult(new File(configPath));
 			transformer.transform(domSource, streamResult);
 		} catch (TransformerConfigurationException e1) {
-			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Cannot parse mde configuration file");
-			e1.printStackTrace();
+			String s = "[MDE] Cannot parse mde configuration file";
+			LogMessage msg = new LogMessage();
+			msg.print(s);
+			msg.print(e1);
+			ImporterAgent.getRegistry().getLogger().error(this, msg);
 		} catch (TransformerException e) {
-			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Cannot parse mde configuration file");
-			e.printStackTrace();
+			String s = "[MDE] Cannot parse mde configuration file";
+			LogMessage msg = new LogMessage();
+			msg.print(s);
+			msg.print(e);
+			ImporterAgent.getRegistry().getLogger().error(this, msg);
 		} catch (ParserConfigurationException e) {
-			ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Cannot parse mde configuration file");
-			e.printStackTrace();
+			String s = "[MDE] Cannot parse mde configuration file";
+			LogMessage msg = new LogMessage();
+			msg.print(s);
+			msg.print(e);
+			ImporterAgent.getRegistry().getLogger().error(this, msg);
 		}
 
 		ImporterAgent.getRegistry().getLogger().info(this,"[MDE] Create XML File at "+configPath);
@@ -512,7 +523,11 @@ public class XMLWriter {
 				}
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			String s = "[MDE] Cannot parse mde configuration file";
+			LogMessage msg = new LogMessage();
+			msg.print(s);
+			msg.print(e);
+			ImporterAgent.getRegistry().getLogger().error(this, msg);
 		}
 	}
 	

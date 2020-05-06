@@ -26,6 +26,8 @@ import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
+import omero.log.LogMessage;
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
@@ -74,8 +76,12 @@ public class ModuleContentTableModel extends DefaultTableModel{
 				try {
 						o[i]=l.containsKey(idents[i])? l.get(idents[i]).getTagValue():"";
 						columnTypes[i]=l.get(idents[i]).getTagTypeClass();
-				}catch(Exception err){
-					err.printStackTrace();
+				} catch(Exception err) {
+					String s = "[MDE] error occurred when parsing ModuleContent";
+					LogMessage msg = new LogMessage();
+					msg.print(s);
+					msg.print(err);
+					ImporterAgent.getRegistry().getLogger().error(this, msg);
 				}
 			}
 		}

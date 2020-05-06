@@ -56,6 +56,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import omero.log.LogMessage;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.actions.ImporterAction;
 import org.openmicroscopy.shoola.agents.fsimporter.chooser.ImportDialog;
@@ -560,8 +561,11 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 						cont.setInstruments(fileInstrumentList);
 						node.setContainer(cont);
 					}catch(Exception e) {
-					ImporterAgent.getRegistry().getLogger().error(this,"[MDE] Can't create new NodeContainer for saving content for "+node.getAbsolutePath());
-						e.printStackTrace();
+						String s = "[MDE] Can't create new NodeContainer for saving content for "+node.getAbsolutePath();
+						LogMessage msg = new LogMessage();
+						msg.print(s);
+						msg.print(e);
+						ImporterAgent.getRegistry().getLogger().error(this, msg);
 					}
 				}
 
@@ -870,8 +874,11 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 								loadDataForFile(selection );
 						}
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						String s = "[MDE] An error occurred when loading the file: ";
+						LogMessage msg = new LogMessage();
+						msg.print(s);
+						msg.print(e);
+						ImporterAgent.getRegistry().getLogger().error(this, msg);
 					}
 					showMDE(selection.getContainer(),null);
 				}
