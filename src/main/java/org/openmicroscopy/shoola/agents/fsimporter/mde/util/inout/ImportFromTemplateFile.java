@@ -18,6 +18,7 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
+import omero.log.LogMessage;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
@@ -84,7 +85,11 @@ public class ImportFromTemplateFile {
                 }
             }
         }catch(Exception e) {
-            e.printStackTrace();
+            String s = "[MDE] An error occurred when parsing file: ";
+            LogMessage msg = new LogMessage();
+            msg.print(s);
+            msg.print(e);
+            ImporterAgent.getRegistry().getLogger().error(this, msg);
         }
         return objectTypes;
     }
