@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2020 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -6348,9 +6348,10 @@ class OMEROGateway
 			if (scripts.size() > 0) {
 				Iterator<OriginalFile> i = scripts.iterator();
 				OriginalFile of;
-				StringBuffer buffer = new StringBuffer();
+				StringBuilder buffer = new StringBuilder();
 				RString v;
 				while (i.hasNext()) {
+					buffer.setLength(0); //clear buffer
 					of = i.next();
 					v = of.getPath();
 					if (v != null) buffer.append(v.getValue());
