@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee & Open Microscopy Environment.
+ *  Copyright (C) 2006-2020 University of Dundee & Open Microscopy Environment.
  *  All rights reserved.
  *
  *
@@ -180,12 +180,6 @@ public class DnDTree
             parent = (TreeImageDisplay) node.getParent();
         }
         Object ot = parent.getUserObject();
-        if (!canLink(ot)
-                && !(ot instanceof ExperimenterData || ot instanceof GroupData)) {
-            dropAllowed = false;
-            setCursor(createCursor());
-            return;
-        }
         // Now check that the src and target are compatible.
         try {
             List<TreeImageDisplay> nodes = new ArrayList<TreeImageDisplay>();
@@ -215,17 +209,7 @@ public class DnDTree
                     childCount++;
                 } else {
                     if (EditorUtil.isTransferable(ot, os, userID)) {
-                        if (ot instanceof GroupData) {
-                            if (os instanceof ExperimenterData && administrator)
-                                list.add(n);
-                            else {
-                                if (canLink(os))
-                                    list.add(n);
-                            }
-                        } else {
-                            if (canLink(os))
-                                list.add(n);
-                        }
+						list.add(n);
                     }
                 }
             }
@@ -238,24 +222,6 @@ public class DnDTree
             dropAllowed = false;
         }
     }
-	
-	/**
-	 * Returns <code>true</code> if the user currently logged in is the owner
-	 * of the object, <code>false</code> otherwise.
-	 * 
-	 * @param ho The object to handle.
-	 * @return See above.
-	 */
-	private boolean canLink(Object ho)
-	{
-		if (ho instanceof TreeImageTimeSet) {
-			TreeImageDisplay n = EditorUtil.getDataOwner((TreeImageDisplay) ho);
-			if (n == null) return true;
-			ExperimenterData exp = (ExperimenterData) n.getUserObject();
-			return (exp.getId() == userID);
-		}
-		return EditorUtil.isUserOwner(ho, userID);
-	}
 	
 	/**
 	 * Returns the cursor corresponding to the dragged action.
