@@ -20,6 +20,7 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
+ * Parse a {@link Element} element to a {@link ModuleContent} and vice-versa.
  * @author Susanne Kunis<susannekunis at gmail dot com>
  */
 public class ModuleContentParser {

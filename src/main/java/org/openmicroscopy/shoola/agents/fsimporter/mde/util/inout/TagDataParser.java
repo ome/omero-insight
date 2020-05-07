@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
+ * Parse a {@link TagData} element to an {@link Element} object and vice-versa.
  * @author Susanne Kunis<susannekunis at gmail dot com>
  */
 public class TagDataParser {

@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Dialog for MDE object selection to specify objects that should be saved/loaded.
+ * Part of save/load template functionality.
  * @author Susanne Kunis<susannekunis at gmail dot com>
  */
 public class TypeFilter_GUI extends JDialog implements ActionListener {
@@ -41,6 +43,11 @@ public class TypeFilter_GUI extends JDialog implements ActionListener {
     private JCheckBox btn_select_all;
     private List<String > filterList;
 
+    /**
+     * Generates selection dialog with mde objects available in given tree.
+     * @param parent pane
+     * @param root mde objecttree
+     */
     public TypeFilter_GUI(JFrame parent,DefaultMutableTreeNode root){
         super(parent,"Filter For Object Type");
         filterList=new ArrayList<>();
@@ -56,6 +63,11 @@ public class TypeFilter_GUI extends JDialog implements ActionListener {
         setVisible(true);
     }
 
+    /**
+     * Generates selection dialog with mde objects available in given file.
+     * @param parent pane
+     * @param path template file
+     */
     public TypeFilter_GUI(JFrame parent,String path){
         super(parent,"Filter For Object Type");
         filterList=new ArrayList<>();
@@ -93,6 +105,11 @@ public class TypeFilter_GUI extends JDialog implements ActionListener {
         getContentPane().add(btnPane,BorderLayout.SOUTH);
     }
 
+    /**
+     * Read out mde objects from file, added objects to filterList and creates
+     * object checkboxes
+     * @param path template file
+     */
     private void generateListFromFile(String path) {
         ImportFromTemplateFile importer=new ImportFromTemplateFile(path);
         List<String> list=importer.createTypeList();
@@ -107,6 +124,11 @@ public class TypeFilter_GUI extends JDialog implements ActionListener {
         }
     }
 
+    /**
+     * Read out mde objects from tree, added objects to filterList and creates
+     * object checkboxes
+     * @param root mde objecttree
+     */
     private void generateListFromTree(DefaultMutableTreeNode root) {
         List<String> list = MDEHelper.getTypes(root);
         if(list !=null) {
@@ -120,6 +142,9 @@ public class TypeFilter_GUI extends JDialog implements ActionListener {
         }
     }
 
+    /**
+     * @return list of strings of object types
+     */
     public List<String> getTypeFilter(){
         return filterList;
     }

@@ -19,11 +19,13 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.w3c.dom.Element;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
+ * Parse a {@link Element} element to a {@link ModuleTreeElement}.
  * @author Susanne Kunis<susannekunis at gmail dot com>
  */
 public class ModuleTreeParser {
