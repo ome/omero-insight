@@ -98,9 +98,7 @@ public class MDEParser {
 		for(Objective o:list) {
 			ModuleContent content= new ModuleContent((new ObjectiveConverter()).convertData(o,null),TagNames.OME_ELEM_OBJECTIVE,
 					TagNames.getParents(TagNames.OME_ELEM_OBJECTIVE));
-//			ModuleContent content = c.getContent(TagNames.OME_ELEM_OBJECTIVE);
 			if(content!=null) {
-//				content.setAttributes((new ObjectiveConverter()).convertData(o, null));
 				resultList.add(content);
 			}
 		}
@@ -114,9 +112,7 @@ public class MDEParser {
 		for(Detector o:list) {
 			ModuleContent content= new ModuleContent((new DetectorConverter()).convertData(o,null),TagNames.OME_ELEM_DETECTOR,
 					TagNames.getParents(TagNames.OME_ELEM_DETECTOR));
-//			ModuleContent content = c.getContent(TagNames.OME_ELEM_DETECTOR);
 			if(content!=null) {
-//			content.setAttributes((new DetectorConverter()).convertData(o, null));
 			resultList.add(content);
 			}
 		}
@@ -132,10 +128,8 @@ public class MDEParser {
 				content= new ModuleContent((new LaserConverter()).convertData((Laser)o,null),TagNames.OME_ELEM_LASER,
 					TagNames.getParents(TagNames.OME_ELEM_LASER));
 			}
-//			ModuleContent content = c.getContent(TagNames.OME_ELEM_LIGHTSOURCE);
 			if(content!=null) {
-//			content.setAttributes((new LightSourceConverter()).convertData(o, null));
-			resultList.add(content);
+				resultList.add(content);
 			}
 		}
 		return resultList;
@@ -150,10 +144,8 @@ public class MDEParser {
 				content= new ModuleContent((new ArcConverter()).convertData((Arc)o,null),TagNames.OME_ELEM_ARC,
 						TagNames.getParents(TagNames.OME_ELEM_ARC));
 			}
-//			ModuleContent content = c.getContent(TagNames.OME_ELEM_LIGHTSOURCE);
 			if(content!=null) {
-//			content.setAttributes((new LightSourceConverter()).convertData(o, null));
-			resultList.add(content);
+				resultList.add(content);
 			}
 		}
 		return resultList;
@@ -168,10 +160,8 @@ public class MDEParser {
 				content= new ModuleContent((new FilamentConverter()).convertData((Filament)o,null),TagNames.OME_ELEM_FILAMENT,
 						TagNames.getParents(TagNames.OME_ELEM_FILAMENT));
 			}
-//			ModuleContent content = c.getContent(TagNames.OME_ELEM_LIGHTSOURCE);
 			if(content!=null) {
-//			content.setAttributes((new LightSourceConverter()).convertData(o, null));
-			resultList.add(content);
+				resultList.add(content);
 			}
 		}
 		return resultList;
@@ -186,10 +176,8 @@ public class MDEParser {
 				content= new ModuleContent((new LEDConverter()).convertData((LightEmittingDiode)o,null),TagNames.OME_ELEM_LED,
 						TagNames.getParents(TagNames.OME_ELEM_LED));
 			}
-//			ModuleContent content = c.getContent(TagNames.OME_ELEM_LIGHTSOURCE);
 			if(content!=null) {
-//			content.setAttributes((new LightSourceConverter()).convertData(o, null));
-			resultList.add(content);
+				resultList.add(content);
 			}
 		}
 		return resultList;
@@ -204,9 +192,7 @@ public class MDEParser {
 				content= new ModuleContent((new GenericExcitationSourceConverter()).convertData((GenericExcitationSource)o,null),TagNames.OME_ELEM_GENERICEXCITATIONSOURCE,
 						TagNames.getParents(TagNames.OME_ELEM_GENERICEXCITATIONSOURCE));
 			}
-			//			ModuleContent content = c.getContent(TagNames.OME_ELEM_LIGHTSOURCE);
 			if(content!=null) {
-				//			content.setAttributes((new LightSourceConverter()).convertData(o, null));
 				resultList.add(content);
 			}
 		}
@@ -219,10 +205,8 @@ public class MDEParser {
 		for(Filter o:list) {
 			ModuleContent content= new ModuleContent((new FilterConverter()).convertData(o),TagNames.OME_ELEM_FILTER,
 					TagNames.getParents(TagNames.OME_ELEM_FILTER));
-//			ModuleContent content = c.getContent(TagNames.OME_ELEM_FILTER);
 			if(content!=null) {
-//			content.setAttributes((new FilterConverter()).convertData(o));
-			resultList.add(content);
+				resultList.add(content);
 			}
 		}
 		return resultList;
@@ -234,16 +218,10 @@ public class MDEParser {
 		for(Dichroic o:list) {
 			ModuleContent content= new ModuleContent((new DichroicConverter()).convertData(o),TagNames.OME_ELEM_DICHROIC,
 					TagNames.getParents(TagNames.OME_ELEM_DICHROIC));
-//			ModuleContent content = c.getContent(TagNames.OME_ELEM_LIGHTSOURCE);
 			if(content!=null) {
-//			content.setAttributes((new DichroicConverter()).convertData(o));
-			resultList.add(content);
+				resultList.add(content);
 			}
 		}
 		return resultList;
 	}
-	
-	
-	
-	
 }

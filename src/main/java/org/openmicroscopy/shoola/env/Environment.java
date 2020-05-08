@@ -157,6 +157,15 @@ public class Environment
 		return (String) 
 			container.getRegistry().lookup(LookupNames.USER_HOME_OMERO);
 	}
+	/**
+	 * Returns the location of the mde configuration file directory.
+	 * @return See above.
+	 */
+	public String getMDEConfigPath()
+	{
+		return (String)
+			container.getRegistry().lookup(LookupNames.USER_HOME_OMERO);
+	}
 	
 	/**
 	 * Returns the location of the <code>omero</code> directory 

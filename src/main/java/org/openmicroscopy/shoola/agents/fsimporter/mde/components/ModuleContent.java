@@ -50,7 +50,7 @@ public class ModuleContent {
 	
 	/**
 	 * Copy constructor
-	 * @param orig
+	 * @param orig input to copy
 	 */
 	public ModuleContent(ModuleContent orig) {
 		if(orig!=null) {
@@ -170,7 +170,7 @@ public class ModuleContent {
 	
 	/**
 	 * Replace element at i with given tagdata
-	 * @param i
+	 * @param key
 	 * @param tagData
 	 */
 	public void set(String key, TagData tagData) {
@@ -179,6 +179,21 @@ public class ModuleContent {
 		}
 	}
 
+	/**
+	 * Replace existing TagData in tagList. If tagList is null, tagList=newData.
+	 * @param newData
+	 */
+	public void setData(LinkedHashMap<String,TagData> newData){
+		if(newData==null)
+			return;
+		if(tagList==null){
+			setAttributes(newData);
+		}else{
+			for(Map.Entry<String, TagData> entry : newData.entrySet()) {
+				set(entry.getKey(),entry.getValue());
+			}
+		}
+	}
 
 	public String getAttributeValue(String id) {
 		if(tagList==null || !tagList.containsKey(id))

@@ -863,7 +863,7 @@ class ImporterUI extends TopWindow
 
 	public void setMapAnnotation(MapAnnotationObject o)
 	{
-		if(o==null || (o!=null && o.getMapAnnotationList().isEmpty())){
+		if(o==null || (o!=null && (o.getMapAnnotationList()==null || o.getMapAnnotationList().isEmpty()))){
 			return;
 		}
 

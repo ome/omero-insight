@@ -60,6 +60,9 @@ public class FNode extends DefaultMutableTreeNode
 		setUserObject(file);
 	}
 	
+	/**
+	 * @return file object associated with this node or null.
+	 */
 	public File getFile()
 	{
 		Object o=getUserObject();
@@ -75,7 +78,11 @@ public class FNode extends DefaultMutableTreeNode
 	}
 	
 
-	
+	/**
+	 * Returns the name of this node's user object and target informations like group and project name if the object is
+	 * a file, or this node's user object as String if the object is a dir.
+	 * @return a string representation of the FNode object.
+	 */
 	public String toString() {
 		String ad="";
 		if(importData!=null){
@@ -88,16 +95,18 @@ public class FNode extends DefaultMutableTreeNode
         return getFile().getName()+ad;
     } 
 	
+	/**
+	 * @return absolute path of given file. If given component is a dir return null.
+	 */
 	public String getAbsolutePath()
 	{
 		if(getFile()==null)
 			return null;
-		
 		return getFile().getAbsolutePath();
 	}
 	
 	/**
-	 * true if node is a directory or the root
+	 * @return true if node is a directory or the root, false if node is a file
 	 */
 	public boolean getAllowsChildren() {
 		if(getFile()==null)
@@ -118,21 +127,21 @@ public class FNode extends DefaultMutableTreeNode
 	
 
 	/**
-	 * A node can have a mapannotation (inherit from parent) but not a view.
-	 * If a node has a view, mapAnnotation of parent will be automated loaded to the view at creation time.
-	 * If input is still stored, overwrite same field with new input.
-	 * @param map
+	 * Set or merge given annotations to existing annotations.
+	 * @param input Map of annotations sort by mde object type
 	 */
-	public void setMapAnnotation(HashMap<String,List<TagData>> input)
+	public void setAnnotation(HashMap<String,List<TagData>> input)
 	{
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] save input as mapannotation");
 		if(input==null || input.isEmpty()) {
-			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] given input is empty");
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] merge map annotation: No");
 			return;
 	}
 		if(this.input==null) {
 			this.input=new HashMap<>();
 		}
-		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] merge input");
+		// merge with existing
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] merge map annotation: Yes");
 		for(Map.Entry<String, List<TagData>> entry:input.entrySet()) {
 			List<TagData> list1 = entry.getValue();
 			List<TagData> list2 = this.input.get(entry.getKey());
@@ -141,9 +150,10 @@ public class FNode extends DefaultMutableTreeNode
 	}
 	
 	/**
-	 * A node can have a mapannotation (inherit from parent) but not a view.
-	 * If a node has a view, mapAnnotation of parent will be automated loaded to the view at creation time.
-	 * @param map
+	 * Get annotations as MapAnnotationObject.
+	 * A node can have annotations (inherited from parent) although it does not yet have a view.
+	 * If a node has a view, annotation of parent will be automated loaded to the view at creation time.
+	 * @return a MapAnnotationObject representing the annotations for this node or null if no annotations exists.
 	 */
 	public MapAnnotationObject getMapAnnotation()
 	{
@@ -159,26 +169,28 @@ public class FNode extends DefaultMutableTreeNode
 		return null;
 	}
 	
-	
- 
 	public void setContainer(NodeContainer cont) {
+		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Replace Container");
 		this.container= cont;
 	}
 	
-	
+	/**
+	 * Reset node container and annotations (to null).
+	 */
 	public void reset() {
 		container=null;
 		input=null;
-		
 	}
+
 	public NodeContainer getContainer() {
 		return container;
 	}
+
+	/**
+	 * Get all previous stored annotations for this node as HashMap.
+	 * @return a list of TagData sorted by mde object type
+	 */
 	public HashMap<String, List<TagData>> getInput() {
 		return input;
 	}
-	
-	
-	
-
 }

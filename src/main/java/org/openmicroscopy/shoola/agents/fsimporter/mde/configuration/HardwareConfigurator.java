@@ -365,7 +365,7 @@ public class HardwareConfigurator extends JFrame implements ActionListener{
 			break;
 		case CMD_SAVE:
 			saveCurrentValues();
-			conf.writeToFile();
+			conf.writeToFile(dialog.getMDEConfigPath());
 			//TODO: repaint MDECONTENT
 			break;
 		case CMD_NEW_MIC:

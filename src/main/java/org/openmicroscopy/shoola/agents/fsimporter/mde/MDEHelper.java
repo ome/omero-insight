@@ -27,21 +27,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
 
-import ome.xml.model.LightPath;
 import ome.xml.model.Dichroic;
 import ome.xml.model.Filter;
 import ome.xml.model.enums.FilterType;
-import ome.xml.model.FilterSet;
 
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ImportUserData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 /**
@@ -50,7 +45,10 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
  *
  */
 public class MDEHelper {
-	
+
+	public static final String APPLICATION_NAME="MDE";
+	public static final String VERSION="1.1.0";
+
 	public static final String SELECTOR="#";
 
 	public static String printList(String string, Map<String,List<TagData>> list) {
@@ -113,10 +111,14 @@ public class MDEHelper {
 		
 	}
 	
+	/**
+	 * Reset input for all ModuleTreeElements
+	 * @param contentTree
+	 */
 	public static void resetInput(DefaultMutableTreeNode contentTree) {
 		if(contentTree==null)
 			return;
-		
+		ImporterAgent.getRegistry().getLogger().debug(null,"[MDE] reset input of object tree");
 		Enumeration e = contentTree.breadthFirstEnumeration();
 		while(e.hasMoreElements()) {
 			DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
@@ -125,52 +127,8 @@ public class MDEHelper {
 			}
 		}
 	}
-	
-	
-	/**
-	 * merge inTree into destTree.
-	 * @param inTree
-	 * @param destTree
-	 * @return destTree with data of inTree
-	 */
-	public static DefaultMutableTreeNode mergeTrees(DefaultMutableTreeNode tree1, DefaultMutableTreeNode tree2,int depth) {
+
 		
-		if(((ModuleTreeElement) tree1.getUserObject()).isContainer()) {
-			depth++;
-			for(int i = 0 ; i < tree1.getChildCount(); i++) {
-				String nodeName=((DefaultMutableTreeNode)tree1.getChildAt(i)).getUserObject().toString();
-				DefaultMutableTreeNode n1=findNode((DefaultMutableTreeNode) tree1.getChildAt(i),tree2);
-				
-				if(n1==null) {
-//					ImporterAgent.getRegistry().getLogger().debug(null, "-- Node "+nodeName+" doesn't exists, INSERT at depth "+depth));
-				}else {
-					DefaultMutableTreeNode p1=(DefaultMutableTreeNode) n1.getParent();
-					mergeTrees((DefaultMutableTreeNode) tree1.getChildAt(i),n1,depth);
-				}
-				
-			}
-			// iterate through children
-			// find first child node of same type in destTree
-			// save depth of inserted node
-			// get next child of inTree
-			// find this node at return depth or insert
-			
-			//recursive for childs of childs
-		}
-		return tree2;
-	}
-	
-	/**
-	 * 
-	 * @param tree
-	 * @param structure
-	 * @return tree with additional elements that are available in structure
-	 */
-	public static DefaultMutableTreeNode inheritTreeStructure(DefaultMutableTreeNode tree, DefaultMutableTreeNode structure) {
-		
-		return tree;
-	}
-	
 	/**
 	 * Trees are equal if all paths to leafs are equal
 	 * @param n1
@@ -245,7 +203,7 @@ public class MDEHelper {
 	
 	/**
 	 * Return list of direct childs of given tree with same type like child
-	 * @param child
+	 * @param type
 	 * @param tree
 	 * @return
 	 */
@@ -259,6 +217,8 @@ public class MDEHelper {
 				list.add((DefaultMutableTreeNode) tree.getChildAt(i));
 			}
 		}
+		if(list.isEmpty())
+			return null;
 		return list;
 	}
 	
@@ -302,7 +262,7 @@ public class MDEHelper {
 	
 	/**
 	 * Find MDETreeElement with type==mdeTreeElement.getType() and childIndex==mdeTreeElement.getchildIndex()
-	 * @param node
+	 * @param n
 	 * @param tree
 	 * @return
 	 */
@@ -325,7 +285,7 @@ public class MDEHelper {
 	 * @param name
 	 * @return child node as a {@link DefaultMutableTreeNode} or null if no child of this name exists.
 	 */
-	private static DefaultMutableTreeNode getChildByName(DefaultMutableTreeNode tree, String name) {
+	public static DefaultMutableTreeNode getChildByName(DefaultMutableTreeNode tree, String name) {
 		if(tree!=null) {
 			Enumeration e = tree.breadthFirstEnumeration();
 			while(e.hasMoreElements()) {
@@ -337,6 +297,22 @@ public class MDEHelper {
 		}
 		return null;
 	}
+	
+	public static List<DefaultMutableTreeNode> getChildsByType(DefaultMutableTreeNode tree, String type) {
+		if(tree!=null) {
+			List<DefaultMutableTreeNode> listOfChilds=new ArrayList<>();
+			Enumeration e = tree.breadthFirstEnumeration();
+			while(e.hasMoreElements()) {
+				DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
+				if(((ModuleTreeElement) node.getUserObject()).getType().trim().equals(type.trim())) {
+					listOfChilds.add(node);
+				}
+			}
+			return listOfChilds;
+		}
+		return null;
+	}
+
 	
 	/**
 	 * @param tree that holds the prospected node
@@ -490,7 +466,7 @@ public class MDEHelper {
 	}
 	
 	/**
-	 * Add data in tree with entries in input, marke it has data has change
+	 * Add data in tree with entries in input, mark it as data has change
 	 * @param tree
 	 * @param input list of nodepath,list(tagData)
 	 */
@@ -530,7 +506,7 @@ public class MDEHelper {
 	
 
 	/**
-	 * Set data of newC if newC(data)!=null and newC(data)!=""
+	 * Set data of newC if newC(data)!=null and newC(data)!="" and data is visible
 	 * @param currentC ModuleContent of type X
 	 * @param newC ModuleContent of type X
 	 * @return modified currentC
@@ -563,7 +539,7 @@ public class MDEHelper {
 				String key=entry.getKey();
 				TagData valIn=new TagData(entry.getValue());
 				if(valIn!=null && valIn.getTagValue()!=null && !valIn.getTagValue().equals("")) {
-					if(l1.containsKey(key)) {
+					if(l1.containsKey(key) && l1.get(key).isVisible()) {
 						valIn.dataHasChanged(true);
 						result.set(key, valIn);
 						ImporterAgent.getRegistry().getLogger().debug(null, "\t\t replace "+currentC.getType()+":"+key+"[replaceData]");
@@ -577,7 +553,7 @@ public class MDEHelper {
 	}
 	
 	/**
-	 * Set data of newC if newC(data)!=null and newC(data)!=""
+	 * Set data of newC if newC(data)!=null and newC(data)!="" and data is visible
 	 * @param currentC current ModuleContent of type X
 	 * @param newC new input ModuleContent of type X
 	 * @param origC content of object at init
@@ -765,38 +741,22 @@ public class MDEHelper {
 		return res;
 	}
 
+	
 	/**
-	 * Search for additional nodes in tree1 compare to tree2. 
-	 * @param tree1
-	 * @param tree2
-	 * @return
+	 *
+	 * @param tree
+	 * @return available activated types in given tree
 	 */
-	public static List<DefaultMutableTreeNode> getAdditionalNodes(DefaultMutableTreeNode tree1,
-			DefaultMutableTreeNode tree2) {
-		List<DefaultMutableTreeNode> list = new ArrayList<>();
-		
-		if(tree1.toString().equals(tree2.toString())) {
-			for(int i=0; i< tree1.getChildCount(); i++) {
-				DefaultMutableTreeNode child = (DefaultMutableTreeNode) tree1.getChildAt(i);
-				if(getChild(tree2,child)==null) {
-					list.add(child);
-				}else {
-					list.addAll(getAdditionalNodes(child, getChild(tree2,child)));
-				}
-			}
-			
+	public static List<String> getTypes(DefaultMutableTreeNode tree) {
+		List<String> typeList=new ArrayList<>();
+		Enumeration e = tree.breadthFirstEnumeration();
+		while(e.hasMoreElements()) {
+			DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
+			String type = ((ModuleTreeElement) node.getUserObject()).getType();
+			if(!typeList.contains(type) && ModuleController.getInstance().configurationExists(type)) {
+				typeList.add(type);
+}
 		}
-		return list;
+		return typeList;
 	}
-	
-	private static DefaultMutableTreeNode getChild(DefaultMutableTreeNode tree, DefaultMutableTreeNode child) {
-		for(int i=0; i<tree.getChildCount(); i++) {
-			if(tree.getChildAt(i).toString().equals(child.toString()))
-				return (DefaultMutableTreeNode) tree.getChildAt(i);
-		}
-		return null;
-	}
-	
-	
-	
 }

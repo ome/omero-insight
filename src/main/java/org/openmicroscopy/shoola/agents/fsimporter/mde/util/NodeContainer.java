@@ -23,35 +23,28 @@ import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.openmicroscopy.shoola.agents.fsimporter.mde.MetaDataDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 
 /**
- * Container holds view and modelobj for selection
+ * Container holds object tree and instruments that are stored in file.
  * @author Susanne Kunis<susannekunis at gmail dot com>
  *
  */
 public class NodeContainer 
 {
-//	private MDEModelManager modelManager;
 	private boolean isDir;
 	private String name;
 	private DefaultMutableTreeNode rootNode;
 	private ModuleList instrumentList;
-	private HashMap<String, List<TagData>> input;
 	
 	
 	 /**
-     * Container for modelManager and view.
+     * Container for node data like object tree, and instruments stored in associated file  .
      * @param objName file name
-	 * @param importData given import information for this data.
 	 * @param pTree given parent information for this data.
-	 * @param parentPanel parent JPanel of this component.
-	 * @param current existing container for selected node
 	 * @param isDir TODO
      */
-	public NodeContainer(String objName,ImportUserData importData,
-			DefaultMutableTreeNode pTree, MetaDataDialog parentPanel, NodeContainer current, boolean isDir) throws Exception
+	public NodeContainer(String objName, DefaultMutableTreeNode pTree, boolean isDir)
 	{
 		this.isDir=isDir;
 		this.name=objName;
@@ -68,16 +61,13 @@ public class NodeContainer
 		return isDir;
 	}
 	
-
 	public DefaultMutableTreeNode getTreeNode() {
 		return rootNode;
 	}
 	
-	
 	public void setTreeNode(DefaultMutableTreeNode treeNode) {
 		rootNode=treeNode;
 	}
-
 
 	public ModuleList getInstruments() {
 		return instrumentList;
@@ -86,6 +76,4 @@ public class NodeContainer
 	public void setInstruments(ModuleList list) {
 		this.instrumentList=list;
 	}
-
-	
 }

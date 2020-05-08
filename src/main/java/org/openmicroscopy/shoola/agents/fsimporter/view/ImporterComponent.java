@@ -340,13 +340,15 @@ class ImporterComponent
         }
         chooser.setSelectedGroup(getSelectedGroup());
 
-				String microscopeName = (String) ImporterAgent.getRegistry().lookup(LookupNames.MICROSCOPE_WORKSTATION);
 
+       
 				//MDE
+       String microscopeName = (String) ImporterAgent.getRegistry().lookup(LookupNames.MICROSCOPE_WORKSTATION);
+        String mdeConfigPath=ImporterAgent.getMDEPath();
 				if (metaDataChooser == null && ImporterAgent.isMDEImport()) {
 					metaDataChooser = new MetaDataDialog(view,model.getSupportedFormats(),type,
 				    controller.getAction(ImporterControl.CANCEL_BUTTON), this,
-				    chooser.getImportButton(),chooser.getCancelImportButton(), microscopeName);
+        			chooser.getImportButton(),chooser.getCancelImportButton(), microscopeName,mdeConfigPath);
 				    metaDataChooser.addPropertyChangeListener(controller);
 				    view.addMDComponent(metaDataChooser);
 				}

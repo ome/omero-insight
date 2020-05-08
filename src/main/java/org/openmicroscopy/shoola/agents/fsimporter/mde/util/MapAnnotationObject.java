@@ -30,6 +30,7 @@ import omero.model.MapAnnotationI;
 import omero.model.NamedValue;
 
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 
 /**
  * 
@@ -55,16 +56,19 @@ public class MapAnnotationObject {
 	}
 	
 	/**
-	 * Return {@link MapAnnotationObject} with key:= parent | node | tagName; value:= tagValue tagUnit
+	 * Return {@link MapAnnotationObject} with key:= parent | node | tagName; value:= tagValue tagUnit; null if given list is null or empty
 	 * @param input
 	 */
 	public MapAnnotationObject(HashMap<String, List<TagData>> input) {
+		if(input==null || input.isEmpty())
+			return;
 		MapAnnotation ma = new MapAnnotationI();
 		List<NamedValue> values = new ArrayList<NamedValue>();
 		//input->values
 		for(Map.Entry<String, List<TagData>> entry: input.entrySet()) {
 			if(entry.getValue()!=null) {
 				for(TagData t:entry.getValue()) {
+					if(t.getTagValue()!=null && !t.getTagValue().trim().isEmpty())
 					values.add(new NamedValue(entry.getKey()+" | "+t.getTagName(),t.getTagWholeValue()));
 				}
 			}
@@ -72,8 +76,8 @@ public class MapAnnotationObject {
 		
 		ma.setMapValue(values);
 		MapAnnotationData res=new MapAnnotationData(ma);
-		res.setDescription("MDE");
-		res.setNameSpace("MDE_v1.0");
+		res.setDescription(MDEHelper.APPLICATION_NAME);
+		res.setNameSpace(MDEHelper.APPLICATION_NAME+"_v"+MDEHelper.VERSION);
 		
 		this.mapAnnotation=new ArrayList<>();
 		this.mapAnnotation.add(res);
@@ -124,9 +128,10 @@ public class MapAnnotationObject {
 		ImporterAgent.getRegistry().getLogger().debug(null, "\t PRINT MAPANNOTATIONS: ");
 		
 		List<NamedValue> values=(List<NamedValue>) map.getContent();
+		if(values!=null){
 		for(NamedValue val:values){
 			ImporterAgent.getRegistry().getLogger().debug(null, "\t\t"+ val.name+": "+val.value);
-		}
+		}}
 	}
 	
 	static public void printMapAnnotations(Map<String,MapAnnotationObject> map)
@@ -147,10 +152,11 @@ public class MapAnnotationObject {
 		ImporterAgent.getRegistry().getLogger().debug(null, "\t file : "+o.getFileName());
 		List<MapAnnotationData> list=o.getMapAnnotationList();
 		int index=0;
+		if(list!=null){
 		for(MapAnnotationData m:list){
 			ImporterAgent.getRegistry().getLogger().debug(null, "\t Series_"+index++);
 			printMapAnnotation(m);
-		}
+		}}
 	}
 
 	public void printObject() {

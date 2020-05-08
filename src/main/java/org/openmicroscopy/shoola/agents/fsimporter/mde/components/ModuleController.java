@@ -77,6 +77,7 @@ public class ModuleController {
 
 	private MDEConfiguration mdeConf;
 	private String micName;
+	private String mdeConfigPath;
 	
 	/**
 	 * Constructor for dir element
@@ -97,11 +98,10 @@ public class ModuleController {
 	}
 
 	/**
-	 * Return a copy of tree. If no tree specify in configuration file, return standard tree
-	 * @return
+	 * Return a copy of "fresh" tree for selected setup.
+	 * @return DefaultMutableTreeNode as tree of objects.
 	 */
 	public DefaultMutableTreeNode getTree() {
-		
 		return ModuleTree.cloneTreeNode(mdeConf.getTree(micName));
 	}
 	
@@ -280,9 +280,10 @@ public class ModuleController {
 	}
 	
 	
-	public void initMDEConfiguration(String curMic) {
+	public void initMDEConfiguration(String curMic,String configPath) {
 		setCurrentMicName(curMic);
-		mdeConf=new MDEConfiguration();
+		mdeConfigPath=configPath;
+		mdeConf=new MDEConfiguration(configPath);
 	}
 	
 	
@@ -302,7 +303,7 @@ public class ModuleController {
 	
 	public MDEConfiguration getMDEConfiguration() {
 		if(mdeConf==null) {
-			initMDEConfiguration(getCurrentMicName());
+			initMDEConfiguration(getCurrentMicName(),mdeConfigPath);
 		}
 		return mdeConf;
 	}

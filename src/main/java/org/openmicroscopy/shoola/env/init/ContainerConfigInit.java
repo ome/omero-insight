@@ -153,6 +153,13 @@ public final class ContainerConfigInit
     		String omeroDir = System.getProperty("user.home")
     							+File.separator+name;
             reg.bind(LookupNames.USER_HOME_OMERO, omeroDir);
+            
+            String mdePath=(String) reg.lookup(LookupNames.MDE_CONFIG_PATH);
+            if(mdePath.equals(".")) {
+               	reg.bind(LookupNames.USER_MDE_PATH,new File(file).getParent());
+            }else {
+            	reg.bind(LookupNames.USER_MDE_PATH,omeroDir);
+            }
             String tmp = (String) reg.lookup(LookupNames.OMERO_FILES_HOME);
             File home = new File(omeroDir);
     		if (!home.exists()) home.mkdir();

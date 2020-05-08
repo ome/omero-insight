@@ -24,17 +24,13 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
-import java.util.stream.Stream;
-
-import javax.swing.ComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-//import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.ObjectConfigurator.JComboCheckBox.ComboBoxRenderer;
+
 /**
  * 
  * @author Susanne Kunis<susannekunis at gmail dot com>
@@ -44,12 +40,6 @@ public class CheckBoxCombo extends JComboBox {
 	JCheckBox[] items;
 	
 	public CheckBoxCombo() { addStuff(); }
-
-	public CheckBoxCombo(JCheckBox[] items) { super(items); this.items=items; addStuff(); }
-
-//	public CheckBoxCombo(Vector items) { super(items); addStuff(); }
-
-//	public CheckBoxCombo(ComboBoxModel aModel) { super(aModel); addStuff(); }
 
 	public CheckBoxCombo(String[] values) {
 		if(values==null)

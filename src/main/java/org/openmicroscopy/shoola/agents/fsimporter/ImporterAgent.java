@@ -118,6 +118,11 @@ public class ImporterAgent
         return mde != null && mde;
     }
     
+    public static String getMDEPath() {
+    	  Environment env = (Environment) registry.lookup(LookupNames.ENV);
+    	  return env.getMDEConfigPath();
+    }
+    
     /**
      * Returns <code>true</code> if the currently logged in user
      * is an administrator, <code>false</code> otherwise.
