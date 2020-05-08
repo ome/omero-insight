@@ -1,3 +1,11 @@
+5.5.11 (May 2020)
+-----------------
+
+- Fix DnD issue when moving other user's data [#133](https://github.com/ome/omero-insight/pull/133)
+- Allow to replace existing server-side script [#134](https://github.com/ome/omero-insight/pull/134)
+- New features in mde from @sukunis [#126](https://github.com/ome/omero-insight/pull/126)
+
+
 5.5.10 (April 2020)
 -------------------
 
