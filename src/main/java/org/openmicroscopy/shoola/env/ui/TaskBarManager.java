@@ -369,7 +369,6 @@ public class TaskBarManager
 			} else {
 				buffer.append("crop=false ");
 			}
-			IJ.log(buffer.toString());
 			IJ.runPlugIn("loci.plugins.LociImporter", buffer.toString());
 			ImagePlus img = IJ.getImage();
 			img.setTitle(img.getTitle() + "--" + "OMERO ID:" + id);
