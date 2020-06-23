@@ -153,10 +153,7 @@ public class ImportableFile
 	 */
 	public boolean isDatasetCreated()
 	{
-		if (dataset == null || dataset.getId() < 0) {
-			return false;
-		}
-		return  true;
+		return dataset != null && dataset.getId() >= 0;
 	}
 	
 	/**
