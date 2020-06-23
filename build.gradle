@@ -46,7 +46,10 @@ dependencies {
     implementation("org.openmicroscopy:omero-gateway:5.6.3") {
         // Conflicts with `net.java.dev.jna`
         exclude group: "com.sun.jna", module: "jna"
+        // Exclude Bio-Formats api
+        exclude group: "ome", module: "formats-api"
     }
+    implementation("ome:formats-api:6.5.0")
 }
 
 test {
