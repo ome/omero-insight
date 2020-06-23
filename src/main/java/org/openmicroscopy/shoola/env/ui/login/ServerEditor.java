@@ -419,7 +419,10 @@ public class ServerEditor
 
         // Workaround to load old preferences (remove again in next release):
 		Preferences oldPrefs = Preferences.userNodeForPackage(org.openmicroscopy.shoola.util.ui.login.ServerEditor.class);
-		servers.addAll(getServersFromPrefs(oldPrefs));
+		for (String s : getServersFromPrefs(oldPrefs)) {
+			if (!servers.contains(s))
+				servers.add(0, s);
+		}
 
 		return servers;
 	}
