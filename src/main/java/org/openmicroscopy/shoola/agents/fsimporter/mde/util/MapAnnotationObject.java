@@ -89,16 +89,18 @@ public class MapAnnotationObject {
 		this.mapAnnotation=new ArrayList<>();
 		// deep copy
 		List<MapAnnotationData> origList=orig.getMapAnnotationList();
-		for(MapAnnotationData m:origList){
-			List<NamedValue> valuesOrig=(List<NamedValue>) m.getContent();
-			MapAnnotation ma = new MapAnnotationI();
-			//copy values
-			List<NamedValue> values=new ArrayList<NamedValue>();
-			for(NamedValue val:valuesOrig){
-				values.add(new NamedValue(val.name, val.value));
+		if(origList!=null) {
+			for (MapAnnotationData m : origList) {
+				List<NamedValue> valuesOrig = (List<NamedValue>) m.getContent();
+				MapAnnotation ma = new MapAnnotationI();
+				//copy values
+				List<NamedValue> values = new ArrayList<NamedValue>();
+				for (NamedValue val : valuesOrig) {
+					values.add(new NamedValue(val.name, val.value));
+				}
+				ma.setMapValue(values);
+				this.mapAnnotation.add(new MapAnnotationData(ma));
 			}
-			ma.setMapValue(values);
-			this.mapAnnotation.add(new MapAnnotationData(ma));
 		}
 	}
 	
