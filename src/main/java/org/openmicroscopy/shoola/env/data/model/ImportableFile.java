@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2020 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -135,7 +135,8 @@ public class ImportableFile
     public FileObject getOriginalFile()
     {
         if (originalFile == null) return file;
-        return originalFile; }
+        return originalFile;
+    }
     
 	/**
 	 * Returns <code>true</code> to make the folder a container e.g. a dataset, 
@@ -152,7 +153,7 @@ public class ImportableFile
 	 */
 	public boolean isDatasetCreated()
 	{
-		return dataset.getId() >= 0;
+		return dataset != null && dataset.getId() >= 0;
 	}
 	
 	/**
