@@ -3,7 +3,7 @@
 
 - Provide error message if unsupported protocol was used [#113](https://github.com/ome/omero-insight/pull/113)
 - Handle the case when no dataset is set during the import process [#138](https://github.com/ome/omero-insight/pull/138)
-- Remove credentials from ImageJ log [#136](https://github.com/ome/omero-insight/issues/136)
+- Review logging output when used as ImageJ plugin [#136](https://github.com/ome/omero-insight/issues/136)
 - Modify build system to include Bio-Format api library 6.5.1 [#137](https://github.com/ome/omero-insight/issues/137)
 - Bump to omero-gateway-java 5.6.4
 
