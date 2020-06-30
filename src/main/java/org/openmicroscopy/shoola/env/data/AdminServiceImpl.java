@@ -405,9 +405,10 @@ class AdminServiceImpl
                         throw new IllegalArgumentException("No group to update.");
                 
                 RequestCallback cb = gateway.updateGroupPermissions(ctx, group, permissions);
-                cb.setAdapter(adapter);
+                if (cb != null)
+                	cb.setAdapter(adapter);
         }
-	
+
         /**
          * Implemented as specified by {@link AdminService}.
          * @see AdminService#reloadGroup(SecurityContext, GroupData)
