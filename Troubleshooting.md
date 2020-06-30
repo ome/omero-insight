@@ -1,8 +1,8 @@
 Finding log file
 ----------------
 
-Go to the OMERO.insight Help menu and select Show Log File.
-This will show you the location of the log file - omeroinsight.log.
+Go to ``Help > Show Log File``.
+This will show you the location of the log file - ``omeroinsight.log``.
 If there are other log files with _1 or _2 appended to the name, ignore them.
 Alternatively you can find the log file in your user folder:
  - Windows: ``C:\Users\you\omero\log\omeroinsight.log``
