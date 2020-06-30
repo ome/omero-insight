@@ -1,5 +1,5 @@
-Finding log file
-----------------
+Finding the log file
+--------------------
 
 Go to ``Help > Show Log File``.
 This will show you the location of the log file - ``omeroinsight.log``.
