@@ -697,17 +697,6 @@ public class ScreenLogin
 		login.setEnabled(enabled);
 		configButton.setEnabled(this.configurable);
 		if (enabled) {
-			ActionListener[] listeners = login.getActionListeners();
-			if (listeners != null) {
-				boolean set = false;
-				for (int i = 0; i < listeners.length; i++) {
-					if (listeners[i] == this) {
-						set = true;
-						break;
-					}
-				}
-				if (!set) login.addActionListener(this);
-			}
 			login.setForeground(defaultForeground);
 		} else {
 			login.setForeground(FOREGROUND_COLOR);
