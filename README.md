@@ -24,7 +24,7 @@
   ----------------------
 
   The compilation, testing, launch, and delivery of the application are
-  automated by means of a Gradle (https://gradle.org/) build file.
+  automated by means of a [Gradle](https://gradle.org/) build file.
   In order to perform a build, all you need is
   a JDK -- version 1.8 or later. From the command line, enter:
 
@@ -145,7 +145,7 @@
   Troubleshooting
   ---------------
 
-  See Troubleshooting.md
+  See [Troubleshooting.md](Troubleshooting.md)
 
   Licensing
   ---------
