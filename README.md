@@ -142,6 +142,11 @@
   ```
 
 
+  Troubleshooting
+  ---------------
+
+  See Troubleshooting.md
+
   Licensing
   ---------
 
