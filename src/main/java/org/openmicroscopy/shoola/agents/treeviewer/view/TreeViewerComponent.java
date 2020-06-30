@@ -4467,7 +4467,7 @@ class TreeViewerComponent
 	    if (!canLink(ot) && !(ot instanceof ExperimenterData ||
 	            ot instanceof GroupData)) {
 	        un.notifyInfo("DnD", 
-	                "You must be the owner of the container.");
+	                "You do not have the correct permissions.");
 	        browser.rejectTransfer();
 	        return;
 	    }
