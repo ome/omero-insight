@@ -142,10 +142,10 @@
   ```
 
 
-  Troubleshooting
-  ---------------
+  FAQ
+  ---
 
-  See [Troubleshooting.md](Troubleshooting.md)
+  See [FAQ.md](FAQ.md)
 
   Licensing
   ---------
