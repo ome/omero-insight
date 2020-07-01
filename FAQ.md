@@ -32,7 +32,7 @@ There is no need to do this if they are simply OMERO.insight update JARs.
 
 **Mac**:
 
- - Right-click or control-click on on the omero.insight app.
+ - Right-click or control-click on the OMERO.insight app.
  - Choose ``Show Package Contents`` from the contextual menu.
  - Navigate to the ``Contents`` folder.
  - Select ``Java > lib``.
