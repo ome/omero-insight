@@ -53,9 +53,6 @@ There is no need to do this if they are simply OMERO.insight update JARs.
  - Drag and drop, or copy, the third-party ``.jar`` file into the ``lib`` folder.
  - Start the application.
 
-
-Choose Show Package Contents from the contextual menu.
-
 Increasing Memory Allocation
 ----------------------------
 
