@@ -14,11 +14,14 @@
   This directory is the repository of the software artifacts of the
   OMERO.insight Project. Its contents are as follows:
 
-    + build: This directory contains the tools to compile, run, test and
-             deliver the application.
+    + build.gradle, settings.gradle: build for build system
     + src: Contains the application source files, various configuration
            files required by the application to run and the test code.
+    + buildSrc: source files to package the applications
     + README: This file.
+    + LICENSE.txt: The license covering this software.
+    + CHANGELOG.md: The release history
+    + FAQ.md: Commons questions
 
   Building OMERO.insight
   ----------------------
