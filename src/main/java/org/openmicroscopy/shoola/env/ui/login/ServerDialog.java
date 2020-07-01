@@ -1,5 +1,5 @@
 /*
- * org.openmicroscopy.shoola.util.ui.login.ServerDialog 
+ * org.openmicroscopy.shoola.env.ui.login.ServerDialog
  *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006 University of Dundee. All rights reserved.
@@ -20,7 +20,7 @@
  *
  *------------------------------------------------------------------------------
  */
-package org.openmicroscopy.shoola.util.ui.login;
+package org.openmicroscopy.shoola.env.ui.login;
 
 
 import java.awt.BorderLayout;

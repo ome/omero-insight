@@ -36,7 +36,6 @@ import javax.swing.Icon;
 import javax.swing.JFrame;
 
 
-import org.openmicroscopy.shoola.Main;
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.OMEROInfo;
@@ -44,8 +43,8 @@ import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.image.geom.Factory;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
-import org.openmicroscopy.shoola.util.ui.login.ScreenLogin;
-import org.openmicroscopy.shoola.util.ui.login.ScreenLogo;
+import org.openmicroscopy.shoola.env.ui.login.ScreenLogin;
+import org.openmicroscopy.shoola.env.ui.login.ScreenLogo;
 
 /** 
  * Manages the splash screen input, data and update.
@@ -169,7 +168,7 @@ class SplashScreenManager
 
         boolean serverAvailable = connectToServer();
     	view = new ScreenLogin(Container.TITLE, splashscreen, img, clientVersion,
-    			 serverAvailable);
+    			 serverAvailable, container.getRegistry());
     	view.setEncryptionConfiguration(info.isEncrypted(),
     			info.isEncryptedConfigurable());
     	view.setDefaultHostConfiguration(info, configurable);

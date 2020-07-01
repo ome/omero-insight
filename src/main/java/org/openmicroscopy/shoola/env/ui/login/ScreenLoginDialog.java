@@ -1,5 +1,5 @@
 /*
- * org.openmicroscopy.shoola.util.ui.login.ScreenLoginDialog 
+ * org.openmicroscopy.shoola.env.ui.login.ScreenLoginDialog
  *
  *------------------------------------------------------------------------------
  *  Copyright (C) 2006-2009 University of Dundee. All rights reserved.
@@ -20,7 +20,7 @@
  *
  *------------------------------------------------------------------------------
  */
-package org.openmicroscopy.shoola.util.ui.login;
+package org.openmicroscopy.shoola.env.ui.login;
 
 
 import org.openmicroscopy.shoola.env.config.OMEROInfo;

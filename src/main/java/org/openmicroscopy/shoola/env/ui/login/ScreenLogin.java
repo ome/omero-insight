@@ -18,7 +18,7 @@
  *
  *------------------------------------------------------------------------------
  */
-package org.openmicroscopy.shoola.util.ui.login;
+package org.openmicroscopy.shoola.env.ui.login;
 
 
 import java.awt.Color;
@@ -62,6 +62,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.openmicroscopy.shoola.env.config.OMEROInfo;
+import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
@@ -227,7 +228,10 @@ public class ScreenLogin
     private JButton helpButton;
 
     private boolean configurable = true;
-    
+
+    /** Reference to the Registry */
+    private Registry registry;
+
 	/** Quits the application. */
 	private void quit()
 	{
@@ -256,14 +260,27 @@ public class ScreenLogin
 		if (usr != null) usr = usr.trim();
 		if (s != null) s = s.trim();
 		setControlsEnabled(false);
-		UserCredentials lc= new UserCredentials(usr, psw, s, speedIndex);
-		lc.setEncrypted(encrypted);
-		setUserName(usr);
-		setEncrypted();
-		setControlsEnabled(false);
-		loginAttempt = true;
-		login.setEnabled(false);
-		firePropertyChange(LOGIN_PROPERTY, null, lc);
+		try {
+			UserCredentials lc = new UserCredentials(usr, psw, s, speedIndex);
+			lc.setEncrypted(encrypted);
+			setUserName(usr);
+			setEncrypted();
+			setControlsEnabled(false);
+			loginAttempt = true;
+			login.setEnabled(false);
+			firePropertyChange(LOGIN_PROPERTY, null, lc);
+		} catch (IllegalArgumentException e) {
+			// an unsuppported server URL has been specified
+			if (this.registry != null) {
+				this.registry.getUserNotifier().notifyError("Error",
+						"There is a problem with the server name or URL:\n"+e.getMessage());
+			} else {
+				JOptionPane.showMessageDialog(this, e.getMessage(),
+						"Error", JOptionPane.ERROR_MESSAGE);
+			}
+			setControlsEnabled(true);
+			requestFocusOnField();
+		}
 	}
 
 	/** 
@@ -680,17 +697,6 @@ public class ScreenLogin
 		login.setEnabled(enabled);
 		configButton.setEnabled(this.configurable);
 		if (enabled) {
-			ActionListener[] listeners = login.getActionListeners();
-			if (listeners != null) {
-				boolean set = false;
-				for (int i = 0; i < listeners.length; i++) {
-					if (listeners[i] == this) {
-						set = true;
-						break;
-					}
-				}
-				if (!set) login.addActionListener(this);
-			}
 			login.setForeground(defaultForeground);
 		} else {
 			login.setForeground(FOREGROUND_COLOR);
@@ -800,9 +806,10 @@ public class ScreenLogin
 	 * connect to a server, <code>false</code> otherwise.
 	 */
 	public ScreenLogin(String title, Icon logo, Image frameIcon, String version,
-			boolean serverAvailable)
+					   boolean serverAvailable, Registry registry)
 	{
 		super(title);
+		this.registry = registry;
 		setName("login window");
 		Dimension d;
 		if (logo != null)
@@ -845,7 +852,7 @@ public class ScreenLogin
 	 */
 	public ScreenLogin(String title, Icon logo, Image frameIcon, String version)
 	{
-		this(title, logo, frameIcon, version, true);
+		this(title, logo, frameIcon, version, true, null);
 	}
 
 	/**
