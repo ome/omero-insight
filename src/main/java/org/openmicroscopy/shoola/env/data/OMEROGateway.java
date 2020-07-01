@@ -3621,7 +3621,8 @@ class OMEROGateway
 	 * @param ctx The security context.
          * @param group The group to update.
          * @param permissions The new permissions.
-	 * @return
+	 * @return RequestCallback object or null if the group
+	 *         permissions are already the same
 	 * @throws DSOutOfServiceException
 	 * @throws DSAccessException
 	 */
