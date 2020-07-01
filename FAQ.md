@@ -44,7 +44,7 @@ There is no need to do this if they are simply OMERO.insight update JARs.
  - Select the executable in Explorer.
  - Select the ``lib`` folder.
  - Drag and drop, or copy, the third-party ``.jar`` file into the ``lib`` folder.
-  - Start the application.
+ - Start the application.
 
 **Linux**:
 
