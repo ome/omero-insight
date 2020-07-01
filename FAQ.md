@@ -24,7 +24,7 @@ OMERO.insight comes bundled with a number of standard Java Archives (JARs).
 However, functionality can be extended by adding JARs to OMERO.insight.
 An example of this is where some proprietary file formats require additional
 readers to enable OMERO to open and read the files. These readers can be provided
-by the owners of the formats as JARs, which need to be added to enable the functionality.
+by the owners of the formats as JARs, which need to be added to OMERO.insight to enable the functionality.
 
 If third-party JARs are related to the Bio-Formats import reader,
 they will also need to be added to the OMERO.server by your OMERO systems administrator.
