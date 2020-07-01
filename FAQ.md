@@ -11,7 +11,7 @@ Alternatively you can find the log file in your user folder:
 Submitting files
 ----------------
 
-If an error occurred during import you can upload the files using the submission dialog.
+If an error occurred during import you can upload the files using the submission dialog. Click on the ``Failed`` button next to the image whose import failed and then select ``Submit`` in the following menu. 
 Automatic uploading of files to OME QA will not work if the file size is greater than 2GB.
 Submission of smaller file sizes can also not work if you are uploading over a slow or
 unreliable network. If the file upload to OME QA fails, please contact the team using our
