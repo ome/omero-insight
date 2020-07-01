@@ -17,7 +17,7 @@ Submission of smaller file sizes can also not work if you are uploading over a s
 unreliable network. If the file upload to OME QA fails, please contact the team using our
 [support page](https://www.openmicroscopy.org/support/) to arrange an alternative mechanism to submit the files.
 
-Adding third parties JARS
+Adding third parties' JARs
 -------------------------
 
 OMERO.insight comes bundled with a number of standard Java Archives (JARs).
