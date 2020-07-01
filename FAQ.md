@@ -15,7 +15,7 @@ If an error occurred during import you can upload the files using the submission
 Automatic uploading of files to OME QA will not work if the file size is greater than 2GB.
 Submission of smaller file sizes can also not work if you are uploading over a slow or
 unreliable network. If the file upload to OME QA fails, please contact the team using our
-[support page](https://www.openmicroscopy.org/support/) to discuss alternative mechanism to submit the files.
+[support page](https://www.openmicroscopy.org/support/) to arrange an alternative mechanism to submit the files.
 
 Adding third parties JARS
 -------------------------
