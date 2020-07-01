@@ -31,6 +31,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,7 @@ import loci.formats.codec.CompressionType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
+import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -550,6 +552,8 @@ public class FileObject
                 parentFile = f.getParentFile();
                 if (parentFile == null)
                     return null;
+                if (parentFile.toPath().getNameCount() == 0)
+                    return UIUtilities.isWindowsOS() ? "\\\\" : "/";
                 return parentFile.getName();
             }
             return f.getName();
