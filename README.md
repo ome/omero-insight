@@ -14,17 +14,20 @@
   This directory is the repository of the software artifacts of the
   OMERO.insight Project. Its contents are as follows:
 
-    + build: This directory contains the tools to compile, run, test and
-             deliver the application.
+    + build.gradle, settings.gradle: build for build system
     + src: Contains the application source files, various configuration
            files required by the application to run and the test code.
+    + buildSrc: source files to package the applications
     + README: This file.
+    + LICENSE.txt: The license covering this software.
+    + CHANGELOG.md: The release history
+    + FAQ.md: Commons questions
 
   Building OMERO.insight
   ----------------------
 
   The compilation, testing, launch, and delivery of the application are
-  automated by means of a Gradle (https://gradle.org/) build file.
+  automated by means of a [Gradle](https://gradle.org/) build file.
   In order to perform a build, all you need is
   a JDK -- version 1.8 or later. From the command line, enter:
 
@@ -141,6 +144,11 @@
   <entry name="omero.client.import.mde.enabled" type="boolean">false</entry>
   ```
 
+
+  FAQ
+  ---
+
+  See [FAQ.md](FAQ.md)
 
   Licensing
   ---------
