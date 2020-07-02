@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleTre
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.HardwareConfigurator;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.*;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportAsCsv;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ImportFromTemplateFile;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportAsTemplateFile;
 
@@ -116,11 +118,10 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 	/** reset metadata to data from image file*/
 	private JButton resetFileDataButton;
-	/** save tags in view as json template*/
-	private JButton saveTemplate;
 
-	/** save tags in view as json template*/
-	private JButton loadTemplate;
+	/** pop up menue for further functionalities*/
+	private JPopupMenu popupMenu;
+	private JButton btn_menu;
 
 	private JComboBox<String> mics;
 
@@ -161,6 +162,8 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	private static final int SAVE_TEMPLATE=14;
 	private static final int LOAD_TEMPLATE=15;
 	private static final int CMD_HARDCONF=16;
+	private static final int EXPORT_DATA_CSV=17;
+	private static final int MENU=18;
 
 	private ModuleController controller;
 
@@ -259,17 +262,13 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		resetFileDataButton.addActionListener(this);
 		resetFileDataButton.setEnabled(false);
 
-		loadTemplate = new JButton("Load...");
-		loadTemplate.setBackground(UIUtilities.BACKGROUND);
-		loadTemplate.setActionCommand(""+ LOAD_TEMPLATE);
-		loadTemplate.addActionListener(this);
-		loadTemplate.setEnabled(true);
 
-		saveTemplate = new JButton("Save...");
-		saveTemplate.setBackground(UIUtilities.BACKGROUND);
-		saveTemplate.setActionCommand(""+ SAVE_TEMPLATE);
-		saveTemplate.addActionListener(this);
-		saveTemplate.setEnabled(true);
+		btn_menu = new JButton("Menu...");
+		btn_menu.setBackground(UIUtilities.BACKGROUND);
+		btn_menu.setActionCommand(""+ MENU);
+		btn_menu.addActionListener(this);
+		btn_menu.setEnabled(true);
+
 
 		initWorkstationList(microscope);
 
@@ -367,7 +366,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		barR.add(Box.createHorizontalStrut(2));
 		barR.add(mics);
 
-		JPanel barT = buildToolBarTemplate();
+		JPanel barT = buildMenu();
 
 		JButton btnHardwConf=new JButton("Configuration...");
 		btnHardwConf.setActionCommand("" + CMD_HARDCONF);
@@ -387,13 +386,51 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		return bar;
 	}
 
-	private JPanel buildToolBarTemplate() {
+
+	private JPanel buildMenu() {
+		/**Templates**/
+		JMenu template = new JMenu("Metadata Templates");
+		JMenuItem template_save = new JMenuItem("Save...");
+		template_save.setActionCommand("" + SAVE_TEMPLATE);
+		template_save.addActionListener(this);
+
+		JMenuItem template_load = new JMenuItem("Load...");
+		template_load.setActionCommand("" + LOAD_TEMPLATE);
+		template_load.addActionListener(this);
+
+		template.add(template_save);
+		template.add(template_load);
+
+		/**Exports**/
+		JMenu export = new JMenu("Metadata Export");
+		JMenuItem export_csv = new JMenuItem("To CSV...");
+		export_csv.setActionCommand("" + EXPORT_DATA_CSV);
+		export_csv.addActionListener(this);
+
+		export.add(export_csv);
+
+
+		popupMenu = new JPopupMenu();
+		popupMenu.add(template);
+		popupMenu.add(export);
+
 		JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		//      bar.add(Box.createHorizontalGlue());
-		bar.add(new JLabel("Metadata:"));
-		bar.add(loadTemplate);
-		bar.add(saveTemplate);
+		bar.add(btn_menu);
 		return bar;
+	}
+
+	private void showPopup(ActionEvent ae)
+	{
+		// Get the event source
+		Component b=(Component)ae.getSource();
+
+		// Get the location of the point 'on the screen'
+		Point p=b.getLocationOnScreen();
+
+		popupMenu.show(this,0,0);
+
+		// location is relative to the screen
+		popupMenu.setLocation(p.x,p.y+b.getHeight());
 	}
 
 
@@ -883,6 +920,27 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 					showMDE(selection.getContainer(),null);
 				}
 				break;
+
+			case EXPORT_DATA_CSV:
+
+				ExportDialog exportDialog = new ExportDialog(new JFrame());
+				File exportFile= exportDialog.getDestination();
+				boolean addPath=exportDialog.addPath();
+				boolean addUnitToKey=exportDialog.addUnitToKey();
+
+				if(exportFile !=null){
+					ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] Export to: " + exportFile.getAbsolutePath());
+					ExportAsCsv exporter = new ExportAsCsv(exportFile.getAbsolutePath());
+					try {
+						exporter.export(getCurrentModuleTreeRoot(), addPath,addUnitToKey);
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog (null, e.getMessage());
+						ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
+					}
+				} else {
+					ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
+				}
+				break;
 			case SAVE_TEMPLATE:
 
 				DefaultMutableTreeNode root = getCurrentModuleTreeRoot();
@@ -938,7 +996,13 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 			case CMD_HARDCONF:
 				HardwareConfigurator conf=new HardwareConfigurator(this);
 				break;
+			case MENU:
+				// Create an ActionListener which shows the popupMenue
+				// see: https://java-demos.blogspot.com/2013/10/show-popup-menu-on-jbutton-click.html
 
+				showPopup(evt);
+
+				break;
 			}
 		}
 	}
