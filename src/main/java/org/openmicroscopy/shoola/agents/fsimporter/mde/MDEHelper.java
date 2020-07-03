@@ -64,8 +64,43 @@ public class MDEHelper {
 		}
 		return result;
 	}
-	
-	
+
+
+	/**
+	 * Get all fields from given tree and generate key for key-value annotation.
+	 * @param contentTree
+	 */
+	public static HashMap<String,List<TagData>> getAllData(DefaultMutableTreeNode contentTree) {
+		if(contentTree==null)
+			return null;
+		HashMap<String,List<TagData>> result=new HashMap<>();
+
+		//root node?
+		if(((ModuleTreeElement) contentTree.getUserObject()).isContainer()) {
+			for(int i = 0 ; i < contentTree.getChildCount(); i++) {
+				HashMap r=getAllData((DefaultMutableTreeNode) contentTree.getChildAt(i));
+				if(r!=null && !r.isEmpty())
+					result.putAll(r);
+			}
+		}else {
+			Enumeration e = contentTree.breadthFirstEnumeration();
+			// input of subtree
+			while(e.hasMoreElements()) {
+				DefaultMutableTreeNode node =(DefaultMutableTreeNode)e.nextElement();
+				// search for node with input and generate key backward, skip container nodes
+				if(!(((ModuleTreeElement) node.getUserObject()).isContainer())) {
+					List<TagData> res=((ModuleTreeElement) node.getUserObject()).getData().getTagList();
+					if(res!=null && !res.isEmpty()) {
+						String id= generateTreePathForKey(node);
+						result.put(id, res);
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+
 	/**
 	 * Get input from given tree and generate key for key-value annotation.
 	 * @param contentTree

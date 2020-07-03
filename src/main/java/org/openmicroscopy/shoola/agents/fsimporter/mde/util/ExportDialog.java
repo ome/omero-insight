@@ -48,6 +48,7 @@ public class ExportDialog extends JDialog implements ActionListener {
     private JTextField txt_path;
     private JCheckBox ch_addPath;
     private JCheckBox ch_addUnitToKey;
+    private JCheckBox ch_exportAllData;
 
     private final String suffix=".csv";
     private DefaultMutableTreeNode tree;
@@ -91,6 +92,10 @@ public class ExportDialog extends JDialog implements ActionListener {
         ch_addUnitToKey=new JCheckBox("add unit to key");
         ch_addUnitToKey.setSelected(false);
         subPanel.add(ch_addUnitToKey);
+        ch_exportAllData=new JCheckBox("Export all metadata");
+        ch_exportAllData.setSelected(false);
+        ch_exportAllData.setToolTipText("Export also metadata that available in the image container");
+        subPanel.add(ch_exportAllData);
 
         /** main panel**/
         JPanel mainPanel=new JPanel();
@@ -154,6 +159,9 @@ public class ExportDialog extends JDialog implements ActionListener {
     }
     public boolean addUnitToKey(){
         return ch_addUnitToKey.isSelected();
+    }
+    public boolean exportAll(){
+        return ch_exportAllData.isSelected();
     }
     public Boolean isCancelled(){return cancel;}
 }

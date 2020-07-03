@@ -19,6 +19,7 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -52,24 +53,32 @@ public class ExportAsCsv {
      * @throws IOException
      */
     public void export(DefaultMutableTreeNode tree, boolean addPath,boolean addUnitToKey) throws IOException {
-        List<String[]> data=convertData(tree,addPath,addUnitToKey);
+        if(tree == null) {
+            return;
+        }
+        HashMap<String,List<TagData>> input= MDEHelper.getInput(tree);
+        List<String[]> data=convertData(input,addPath,addUnitToKey);
         createFile(data);
     }
 
+    public void exportAll(DefaultMutableTreeNode tree, boolean addPath,boolean addUnitToKey) throws IOException {
+        if (tree == null) {
+            return;
+        }
+        HashMap<String, List<TagData>> input = MDEHelper.getAllData(tree);
+        List<String[]> data=convertData(input,addPath,addUnitToKey);
+        createFile(data);
+    }
 
     /**
-     * read out input from given tree to a list of String arrays [key,value]
-     * @param tree input tree
+     * read out every not empty property to a list of String arrays [key,value]
+     * @param input hashmap of parentid:tagList
      * @param addPath true: use as key whole path to property (object#object|tagname)
      * @param addUnitToKey true: add to generated key unit in brackets : key (unit) : value
      * @return
      */
-    private List<String[]> convertData(DefaultMutableTreeNode tree,boolean addPath,boolean addUnitToKey) {
-        if(tree == null) {
-            return null;
-        }
+    private List<String[]> convertData(HashMap<String, List<TagData>> input, boolean addPath, boolean addUnitToKey) {
         List<String[]> data = new ArrayList<>();
-        HashMap<String,List<TagData>> input= MDEHelper.getInput(tree);
         for(Map.Entry<String, List<TagData>> entry: input.entrySet()) {
             if(entry.getValue()!=null) {
                 for(TagData t:entry.getValue()) {

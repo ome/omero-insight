@@ -27,6 +27,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.Point;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -35,6 +37,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.prefs.Preferences;
 
+import javax.swing.JOptionPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -419,18 +425,14 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		return bar;
 	}
 
-	private void showPopup(ActionEvent ae)
+	private void showPopupMenu(ActionEvent ae)
 	{
-		// Get the event source
-		Component b=(Component)ae.getSource();
-
-		// Get the location of the point 'on the screen'
-		Point p=b.getLocationOnScreen();
-
+		Component eventSource=(Component)ae.getSource();
+		// location of the point 'on the screen'
+		Point pt=eventSource.getLocationOnScreen();
 		popupMenu.show(this,0,0);
-
-		// location is relative to the screen
-		popupMenu.setLocation(p.x,p.y+b.getHeight());
+		// relative to the screen
+		popupMenu.setLocation(pt.x,pt.y+eventSource.getHeight());
 	}
 
 
@@ -927,12 +929,17 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				File exportFile= exportDialog.getDestination();
 				boolean addPath=exportDialog.addPath();
 				boolean addUnitToKey=exportDialog.addUnitToKey();
+				boolean exportAll=exportDialog.exportAll();
 
 				if(exportFile !=null){
 					ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] Export to: " + exportFile.getAbsolutePath());
 					ExportAsCsv exporter = new ExportAsCsv(exportFile.getAbsolutePath());
 					try {
-						exporter.export(getCurrentModuleTreeRoot(), addPath,addUnitToKey);
+						if(exportAll){
+							exporter.exportAll(getCurrentModuleTreeRoot(),addPath,addUnitToKey);
+						}else {
+							exporter.export(getCurrentModuleTreeRoot(), addPath, addUnitToKey);
+						}
 					} catch (IOException e) {
 						JOptionPane.showMessageDialog (null, e.getMessage());
 						ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
@@ -998,9 +1005,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				break;
 			case MENU:
 				// Create an ActionListener which shows the popupMenue
-				// see: https://java-demos.blogspot.com/2013/10/show-popup-menu-on-jbutton-click.html
-
-				showPopup(evt);
+				showPopupMenu(evt);
 
 				break;
 			}
