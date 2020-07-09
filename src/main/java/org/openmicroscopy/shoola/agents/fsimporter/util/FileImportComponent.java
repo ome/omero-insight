@@ -1525,7 +1525,7 @@ public class FileImportComponent
 			}
 		} else if (Status.UPLOAD_DONE_PROPERTY.equals(name)) {
 			Status sl = (Status) evt.getNewValue();
-			if (sl.equals(status)) { // && hasParent()) {
+			if (sl.equals(status)) { 
 				if (sl.isMarkedAsCancel()) cancel(true);
 				else {
 					formatResult();
