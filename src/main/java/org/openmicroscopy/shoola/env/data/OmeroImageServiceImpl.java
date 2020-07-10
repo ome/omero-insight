@@ -1212,6 +1212,7 @@ class OmeroImageServiceImpl
 				if (size == 0) {
 					Object o = status.getImportResult();
 					if (o instanceof ImportException) {
+						status.setCallback(o);
 						return o;
 					}
 					ImportException e = new ImportException(
@@ -1238,8 +1239,10 @@ class OmeroImageServiceImpl
 					if (isOfflineImport()) {
 					    return Boolean.valueOf(true);
 					}
-					return gateway.importImageFile(ctx, object, ioContainer,
+					Object cmd = gateway.importImageFile(ctx, object, ioContainer,
 							importIc, status, close, userName);
+					status.setCallback(cmd);
+					return cmd;
 				} else {
 				    if (isOfflineImport()) {
                         return Boolean.valueOf(true);
@@ -1274,10 +1277,13 @@ class OmeroImageServiceImpl
 				if (icContainers.size() == 0) {
 					Object o = status.getImportResult();
 					if (o instanceof ImportException) {
+						status.setCallback(o);
 						return o;
 					}
-					return new ImportException(
+					ImportException e = new ImportException(
 							ImportException.FILE_NOT_VALID_TEXT);
+					status.setCallback(e);
+					return e;
 				}
 				importIc = icContainers.get(0);
 				importIc.setCustomAnnotationList(customAnnotationList);
@@ -1288,8 +1294,10 @@ class OmeroImageServiceImpl
 				if (isOfflineImport()) {
                     return Boolean.valueOf(true);
                 }
-				return gateway.importImageFile(ctx, object, ioContainer,
+				Object cmd = gateway.importImageFile(ctx, object, ioContainer,
 						importIc, status, close, userName);
+				status.setCallback(cmd);
+				return cmd;
 			}
 		} //file import ends.
 		//Checks folder import.
