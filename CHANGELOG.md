@@ -4,7 +4,14 @@
 - Provide error message if unsupported protocol was used [#113](https://github.com/ome/omero-insight/pull/113)
 - Handle the case when no dataset is set during the import process [#138](https://github.com/ome/omero-insight/pull/138)
 - Review logging output when used as ImageJ plugin [#136](https://github.com/ome/omero-insight/issues/136)
-- Modify build system to include Bio-Format api library 6.5.1 [#137](https://github.com/ome/omero-insight/issues/137)
+- Return root folder 'name' instead of empty string [#145](https://github.com/ome/omero-insight/issues/145)
+- Remove files no longer needed [#144](https://github.com/ome/omero-insight/pull/144)
+- Improve error message [#144](https://github.com/ome/omero-insight/pull/144)
+- Add FAQ from help.openmicroscopy.org [#142](https://github.com/ome/omero-insight/pull/142)
+- Handle case when callback is not returned [#143](https://github.com/ome/omero-insight/pull/143)
+- Fix bug when no project is selected for a single file import [#149](https://github.com/ome/omero-insight/pull/149)
+- Add feature export to csv in mde from @sukunis [#147](https://github.com/ome/omero-insight/pull/147)
+- Fix bug in MapAnnotationObject in mde from @sukunis [#140](https://github.com/ome/omero-insight/pull/140)
 - Bump to omero-gateway-java 5.6.4
 
 
