@@ -501,15 +501,21 @@ public class ImportableObject
 					List<MapAnnotationData> mapValue = new ArrayList<>();
 					Iterator<MapAnnotationData> iterAnnot=entry.getValue().iterator();
 					while(iterAnnot.hasNext()) {
-						List<NamedValue> valuesOrig=(List<NamedValue>) iterAnnot.next().getContent();
+						MapAnnotationData mapdata=iterAnnot.next();
+						List<NamedValue> valuesOrig=(List<NamedValue>) mapdata.getContent();
 						MapAnnotation ma = new MapAnnotationI();
 						//copy values
 						List<NamedValue> values=new ArrayList<NamedValue>();
-						for(NamedValue val:valuesOrig){
-							values.add(new NamedValue(val.name, val.value));
+						if(valuesOrig!=null) {
+							for (NamedValue val : valuesOrig) {
+								values.add(new NamedValue(val.name, val.value));
+							}
 						}
 						ma.setMapValue(values);
-						mapValue.add(new MapAnnotationData(ma));
+						MapAnnotationData newdata = new MapAnnotationData(ma);
+						newdata.setNameSpace(mapdata.getNameSpace());
+						newdata.setDescription(mapdata.getDescription());
+						mapValue.add(newdata);
 					}
 					mdeMap.put(entry.getKey(), mapValue);
 				}

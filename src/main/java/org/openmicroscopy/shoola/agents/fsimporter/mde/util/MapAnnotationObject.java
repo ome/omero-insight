@@ -76,8 +76,8 @@ public class MapAnnotationObject {
 		
 		ma.setMapValue(values);
 		MapAnnotationData res=new MapAnnotationData(ma);
-		res.setDescription(MDEHelper.APPLICATION_NAME);
-		res.setNameSpace(MDEHelper.APPLICATION_NAME+"_v"+MDEHelper.VERSION);
+		res.setDescription(MDEHelper.APPLICATION_NAME+"_v"+MDEHelper.VERSION);
+		res.setNameSpace(MDEHelper.APPLICATION_NAME);
 		
 		this.mapAnnotation=new ArrayList<>();
 		this.mapAnnotation.add(res);
@@ -89,16 +89,21 @@ public class MapAnnotationObject {
 		this.mapAnnotation=new ArrayList<>();
 		// deep copy
 		List<MapAnnotationData> origList=orig.getMapAnnotationList();
-		for(MapAnnotationData m:origList){
-			List<NamedValue> valuesOrig=(List<NamedValue>) m.getContent();
-			MapAnnotation ma = new MapAnnotationI();
-			//copy values
-			List<NamedValue> values=new ArrayList<NamedValue>();
-			for(NamedValue val:valuesOrig){
-				values.add(new NamedValue(val.name, val.value));
+		if(origList!=null) {
+			for (MapAnnotationData m : origList) {
+				List<NamedValue> valuesOrig = (List<NamedValue>) m.getContent();
+				MapAnnotation ma = new MapAnnotationI();
+				//copy values
+				List<NamedValue> values = new ArrayList<NamedValue>();
+				for (NamedValue val : valuesOrig) {
+					values.add(new NamedValue(val.name, val.value));
+				}
+				ma.setMapValue(values);
+				MapAnnotationData newdata=new MapAnnotationData(ma);
+				newdata.setDescription(m.getDescription());
+				newdata.setNameSpace(m.getNameSpace());
+				this.mapAnnotation.add(new MapAnnotationData(ma));
 			}
-			ma.setMapValue(values);
-			this.mapAnnotation.add(new MapAnnotationData(ma));
 		}
 	}
 	
@@ -125,7 +130,7 @@ public class MapAnnotationObject {
 	{
 		if(map==null)
 			return;
-		ImporterAgent.getRegistry().getLogger().debug(null, "\t PRINT MAPANNOTATIONS: ");
+		ImporterAgent.getRegistry().getLogger().debug(null, "\t PRINT MAPANNOTATIONS:  ns="+map.getNameSpace()+", desc="+map.getDescription());
 		
 		List<NamedValue> values=(List<NamedValue>) map.getContent();
 		if(values!=null){
