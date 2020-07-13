@@ -75,7 +75,15 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.DynamicMo
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.view.ModuleTree;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.HardwareConfigurator;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.*;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.EditorFileBrowser;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ExceptionDialog;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ExportDialog;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.FNode;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.ImportUserData;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.NodeContainer;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TemplateDialog;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportAsCsv;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ImportFromTemplateFile;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportAsTemplateFile;
