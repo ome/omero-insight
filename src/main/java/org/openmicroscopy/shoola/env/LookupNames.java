@@ -435,6 +435,7 @@ public class LookupNames
 
     /** Lookup name for the path where the mdeConfig file is located (. = config dir,omero = cuser omero dir) .*/
     public static final String MDE_CONFIG_PATH="omero.client.import.mde.path";
-    public static final String USER_MDE_PATH = "/user/home/omero";
 
+    /** Lookup name for the user mde path **/
+    public static final String USER_MDE_PATH = "/user/home/mde";
 }
