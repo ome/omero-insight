@@ -169,9 +169,6 @@ public class LookupNames
     /** Field to access the users contained in the group. */
     public static final String USERS_DETAILS = "/users/details";
 
-    /** Field to access the LDAP user information. */
-    public static final String USER_AUTHENTICATION = "/user/authentication";
-
     /** Field indicating if the user is an administrator. */
     public static final String USER_ADMINISTRATOR = "/users/administrator";
 
@@ -258,7 +255,7 @@ public class LookupNames
      * <code>Low</code>.
      */
     public static final String THUMBNAIL_FETCH_LOW_SPEED =
-            "/services/Thumbnailing/fetchSz";
+            "/services/Thumbnailing/fetchLowSz";
 
     /**
      * Field to access the Factor by which the maximum number of thumbnails
@@ -279,11 +276,6 @@ public class LookupNames
      */
     public static final String RE_TIMEOUT = "/services/RE/timeout";
 
-    public static final String RE_STACK_BUF_SZ = "/services/RE/stackBufSz";
-    public static final String RE_STACK_BLOCK_SZ = "/services/RE/stackBlockSz";
-
-    public static final String RE_MAX_PRE_FETCH = "/services/RE/maxPreFetch";
-
     public static final String CMD_PROCESSOR = "/services/CmdProcessor";
 
     public static final String MONITOR_FACTORY =
@@ -303,11 +295,6 @@ public class LookupNames
 
     /** Field to access the <code>Log service</code> information. */
     public static final String LOGIN = "/services/Login";
-
-    /**
-     * Field to access the <code>Log service configuration</code> information.
-     */
-    public static final String LOGIN_CFG = "/services/Login/config";
 
     /**
      * Field to access the maximum number of tries in order to connect to the
@@ -355,7 +342,7 @@ public class LookupNames
 
     //For blitz
     /** The value to replace in the FS configuration file. */
-    public static final String FS_HOSTNAME = "/services/FS/defaultDirectory";
+    public static final String FS_HOSTNAME = "/services/FS/hostname";
 
     /** The value to replace in the FS configuration file. */
     public static final String FS_DEFAUL_DIR = "/services/FS/defaultDirectory";
