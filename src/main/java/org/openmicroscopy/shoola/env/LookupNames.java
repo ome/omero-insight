@@ -169,6 +169,10 @@ public class LookupNames
     /** Field to access the users contained in the group. */
     public static final String USERS_DETAILS = "/users/details";
 
+    /** Field to access the LDAP user information. */
+    @Deprecated
+    public static final String USER_AUTHENTICATION = "/user/authentication";
+
     /** Field indicating if the user is an administrator. */
     public static final String USER_ADMINISTRATOR = "/users/administrator";
 
@@ -276,6 +280,15 @@ public class LookupNames
      */
     public static final String RE_TIMEOUT = "/services/RE/timeout";
 
+    @Deprecated
+    public static final String RE_STACK_BUF_SZ = "/services/RE/stackBufSz";
+
+    @Deprecated
+    public static final String RE_STACK_BLOCK_SZ = "/services/RE/stackBlockSz";
+
+    @Deprecated
+    public static final String RE_MAX_PRE_FETCH = "/services/RE/maxPreFetch";
+
     public static final String CMD_PROCESSOR = "/services/CmdProcessor";
 
     public static final String MONITOR_FACTORY =
@@ -295,6 +308,12 @@ public class LookupNames
 
     /** Field to access the <code>Log service</code> information. */
     public static final String LOGIN = "/services/Login";
+
+    /**
+     * Field to access the <code>Log service configuration</code> information.
+     */
+    @Deprecated
+    public static final String LOGIN_CFG = "/services/Login/config";
 
     /**
      * Field to access the maximum number of tries in order to connect to the
