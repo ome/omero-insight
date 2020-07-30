@@ -1,3 +1,8 @@
+5.5.13 (July 2020)
+------------------
+
+- Bugfix: Insight picked up wrong user home directory [#156](https://github.com/ome/omero-insight/pull/156), which caused issues with viewing log files and running scripts: [#153](https://github.com/ome/omero-insight/issues/153) and [#154](https://github.com/ome/omero-insight/issues/154)
+
 5.5.12 (July 2020)
 ------------------
 
