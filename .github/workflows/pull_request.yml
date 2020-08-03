@@ -1,0 +1,13 @@
+name: "Pull Request Workflow"
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+
+jobs:
+
+  # test action works running from the graph
+  enforce-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ./
