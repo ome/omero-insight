@@ -103,6 +103,12 @@ public class UserNotifierImpl implements UserNotifier, PropertyChangeListener {
 	 * @return See above.
 	 */
 	private boolean canWriteInFolder(File folder) {
+		if (folder == null) {
+			notifyInfo("Download file",
+					"The selected folder does not exist.\nPlease"
+							+ " select a different one.");
+			return false;
+		}
 		if (!folder.canWrite()) {
 			notifyInfo("Download file",
 					"The selected folder is write protected.\nPlease"
