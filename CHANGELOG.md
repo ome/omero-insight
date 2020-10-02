@@ -1,3 +1,9 @@
+5.5.14 (October 2020)
+---------------------
+
+- Fix bug with null folders [#163](https://github.com/ome/omero-insight/issues/163)
+- Bump to omero-gateway-java 5.6.5 [#164](https://github.com/ome/omero-insight/issues/164)
+
 5.5.13 (July 2020)
 ------------------
 
