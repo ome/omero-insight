@@ -155,8 +155,8 @@
   - Push the tag. The various executables will be automatically created and attached to the tag
   - Revert the version to ``SNAPSHOT`` in [build.gradle](build.gradle).
   - Push changes to master.
-  - Open a PR against https://github.com/ome/www.openmicroscopy.org after bumping the version in
-  [_config.yml](https://github.com/ome/www.openmicroscopy.org/blob/master/_config.yml)
+  - Open a PR against https://github.com/ome/www.openmicroscopy.org after bumping the version of OMERO.insight in
+  [_config.yml](https://github.com/ome/www.openmicroscopy.org/blob/master/_config.yml).
 
   FAQ
   ---
