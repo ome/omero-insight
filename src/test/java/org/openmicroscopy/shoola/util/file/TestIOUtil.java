@@ -151,7 +151,6 @@ public class TestIOUtil
             clean(zip);
             clean(destDir);
         } catch (Exception e) {
-            e.printStackTrace();
             fail(e.getMessage());
         }
     }
