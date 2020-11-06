@@ -1,5 +1,5 @@
 ---
-name: Build with Gradle and run the tests
+name: Build
 
 on: [push]
 
