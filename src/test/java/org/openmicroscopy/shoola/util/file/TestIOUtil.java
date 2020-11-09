@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -80,16 +82,16 @@ public class TestIOUtil
                     dir.mkdir();
                 } else {
                     // if the entry is a file, extracts it
-                    String[] values = entry.getName().split(File.separator);
-                    if (values.length > 1) {
+                    Path path = Paths.get(entry.getName());
+                    if (path.getNameCount() > 1) {
                         File parent = destDir;
-                        int n = values.length-1;
+                        int n = path.getNameCount()-1;
                         for (int i = 0; i < n; i++) {
-                            File f = new File(destDir + File.separator + values[i]);
+                            File f = new File(destDir + File.separator + path.getName(i));
                             f.mkdir();
                             parent = f.getAbsoluteFile();
                         }
-                        filePath = parent + File.separator + values[n];
+                        filePath = parent + File.separator + path.getName(n);
                     }
                     extractFile(zipIn, filePath);
                 }
