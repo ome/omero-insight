@@ -1,7 +1,11 @@
 ---
-name: Build
+name: Gradle
 
-on: [push]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 0'
 
 jobs:
   build:
@@ -10,6 +14,9 @@ jobs:
         java: [1.8, 11]
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    env:
+      gradle_version: 5.2.1 # set to empty to build with most recent version of gradle
+      gradle_commands: build # default is build
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java }}
@@ -22,5 +29,11 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
-      - name: Build with Gradle
-        run: gradle build
+      - name: Wrap with specified version
+        run: gradle wrapper --gradle-version=${{ env.gradle_version }}
+        if: ${{ env.gradle_version != '' }}
+      - name: Wrap without version
+        run: gradle wrapper
+        if: ${{ env.gradle_version == '' }}
+      - name: Run commands
+        run: ./gradlew ${{ env.gradle_commands }}
