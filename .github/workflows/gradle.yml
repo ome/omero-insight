@@ -37,3 +37,54 @@ jobs:
         if: ${{ env.gradle_version == '' }}
       - name: Run commands
         run: ./gradlew ${{ env.gradle_commands }}
+      - name: Build Executable
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        run: |
+          choco uninstall innosetup
+          choco install innosetup --version=5.6.1
+          ./gradlew packageApplicationExe
+          ./gradlew packageImporterApplicationExe
+      - name: Build Dmg
+        if: startsWith(matrix.os, 'macos') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        run: |
+          brew cask install zulu8
+          export JAVA_HOME='/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home'
+          export PATH=$JAVA_HOME/bin:$PATH
+          ./gradlew packageApplicationDmg
+          ./gradlew packageImporterApplicationDmg
+      - name: Upload zip
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/distributions/OMERO*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+      - name: Upload jar
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/libs/omero_*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+      - name: Upload insight artifacts
+        if: startsWith(matrix.os, 'ubuntu') != true && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file:  build/packaged/main/bundles/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+      - name: Upload importer artifacts
+        if: startsWith(matrix.os, 'ubuntu') != true && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file:  build/packaged/installImporterDist/bundles/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
