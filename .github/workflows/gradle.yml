@@ -37,6 +37,10 @@ jobs:
         if: ${{ env.gradle_version == '' }}
       - name: Run commands
         run: ./gradlew ${{ env.gradle_commands }}
+      - name: Prepare PATH
+        if: startsWith(matrix.os, 'windows')
+        shell: bash
+        run: echo "$WIX\\bin" >> $GITHUB_PATH
       - name: Build Executable
         if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
         run: |
@@ -44,6 +48,8 @@ jobs:
           choco install innosetup --version=5.6.1
           ./gradlew packageApplicationExe
           ./gradlew packageImporterApplicationExe
+          ./gradlew packageApplicationMsi
+          ./gradlew packageImporterApplicationMsi
       - name: Build Dmg
         if: startsWith(matrix.os, 'macos') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
         run: |
