@@ -1,5 +1,5 @@
 ---
-name: Gradle
+name: Gradle build and publish on tag
 
 on:
   push:
