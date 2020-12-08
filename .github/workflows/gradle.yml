@@ -1,5 +1,6 @@
+# Gradle build and publish on tag
 ---
-name: Gradle build and publish on tag
+name: Build
 
 on:
   push:
