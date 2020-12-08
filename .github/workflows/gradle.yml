@@ -50,6 +50,18 @@ jobs:
           ./gradlew packageImporterApplicationExe
           ./gradlew packageApplicationMsi
           ./gradlew packageImporterApplicationMsi
+      - name: Check MSI
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        run: |
+          msi=(`find build/packaged/installImporterDist/bundles -maxdepth 1 -name "*.msi"`)
+          if [ ${#msi[@]} == 0 ]; then
+              exit 1
+          fi
+          msi=(`find build/packaged/main/bundles -maxdepth 1 -name "*.msi"`)
+          if [ ${#msi[@]} == 0 ]; then
+              exit 1
+          fi
+        shell: bash
       - name: Build Dmg
         if: startsWith(matrix.os, 'macos') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
         run: |
