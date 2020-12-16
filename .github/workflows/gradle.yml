@@ -1,0 +1,118 @@
+# Gradle build and publish on tag
+---
+name: Build
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java: [1.8, 11]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      gradle_version: 5.2.1 # set to empty to build with most recent version of gradle
+      gradle_commands: build # default is build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+      - name: Wrap with specified version
+        run: gradle wrapper --gradle-version=${{ env.gradle_version }}
+        if: ${{ env.gradle_version != '' }}
+      - name: Wrap without version
+        run: gradle wrapper
+        if: ${{ env.gradle_version == '' }}
+      - name: Run commands
+        run: ./gradlew ${{ env.gradle_commands }}
+      - name: Prepare PATH
+        if: startsWith(matrix.os, 'windows')
+        shell: bash
+        run: echo "$WIX\\bin" >> $GITHUB_PATH
+      - name: Build Executable
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        run: |
+          choco uninstall innosetup
+          choco install innosetup --version=5.6.1
+          ./gradlew packageApplicationExe
+          ./gradlew packageImporterApplicationExe
+          ./gradlew packageApplicationMsi
+          ./gradlew packageImporterApplicationMsi
+      - name: Check MSI
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        run: |
+          msi=(`find build/packaged/installImporterDist/bundles -maxdepth 1 -name "*.msi"`)
+          if [ ${#msi[@]} == 0 ]; then
+              exit 1
+          fi
+          msi=(`find build/packaged/main/bundles -maxdepth 1 -name "*.msi"`)
+          if [ ${#msi[@]} == 0 ]; then
+              exit 1
+          fi
+        shell: bash
+      - name: Build Dmg
+        if: startsWith(matrix.os, 'macos') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        run: |
+          brew cask install zulu8
+          export JAVA_HOME='/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home'
+          export PATH=$JAVA_HOME/bin:$PATH
+          ./gradlew packageApplicationDmg
+          ./gradlew packageImporterApplicationDmg
+      - name: Upload zip and jar
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        uses: actions/upload-artifact@v2
+        with:
+            name: artifacts
+            path: build/distributions/OMERO*
+            if-no-files-found: error
+      - name: Upload jar
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts
+          path: build/libs/omero_*
+          if-no-files-found: error
+      - name: Upload insight artifacts
+        if: startsWith(matrix.os, 'ubuntu') != true && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts
+          path: build/packaged/main/bundles/*
+          if-no-files-found: error
+      - name: Upload importer artifacts
+        if: startsWith(matrix.os, 'ubuntu') != true && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts
+          path: build/packaged/installImporterDist/bundles/*
+
+  release:
+    if: startsWith(github.ref, 'refs/tags')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts from build
+        uses: actions/download-artifact@v2
+      - name: List artifacts
+        run: ls -R
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: artifacts/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
