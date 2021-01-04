@@ -307,33 +307,46 @@ public class ModuleTree extends JPanel implements ActionListener{
 		if(confMap!=null) {
 			for (Map.Entry<String, ModuleConfiguration> entry : confMap.entrySet()) {
 				if(entry.getValue()!=null ) {
-					if (MDEHelper.getChildByName(cTree, entry.getKey()) == null) {
-						if(entry.getValue().isInsertInTree()) {
-							String pType = entry.getValue().getInsertPoint();
-							List<DefaultMutableTreeNode> insertAtNodeList=MDEHelper.getChildsByType(cTree,pType);
-							if(insertAtNodeList!=null){
-								for(DefaultMutableTreeNode insertAtNode:insertAtNodeList) {
-									// Test if this kind of child still exists
-									if(MDEHelper.getListOfChilds(entry.getKey(),insertAtNode)==null ) {
-										ModuleContent c = controller.getContentOfType(entry.getKey());
-										ModuleTreeElement choice = null;
-										if (c != null && c.getList() == null) {
-											choice = new ModuleTreeElement(c, insertAtNode);
-										} else {
-											choice = new ModuleTreeElement(entry.getKey(), null, "", c, insertAtNode);
-										}
-
-										addNode(insertAtNode, new DefaultMutableTreeNode(choice));
-									}
-								}
-							}
-						}
-					}
+					insertCustomizeNode(entry.getKey(),entry.getValue(),cTree,confMap);
 				}
 			}
 		}
 	}
 
+	private void insertCustomizeNode(String nodeType,ModuleConfiguration nodeConf, DefaultMutableTreeNode cTree,HashMap<String,ModuleConfiguration> confMap){
+		// test auf element ist bereits child of root
+		if (MDEHelper.getChildByName(cTree, nodeType) == null) {
+			// soll element sichtbar sein
+			if(nodeConf.isInsertInTree()) {
+				// parent node
+				String pType = nodeConf.getInsertPoint();
+				List<DefaultMutableTreeNode> insertAtNodeList=MDEHelper.getChildsByType(cTree,pType);
+				if(insertAtNodeList!=null){
+					for(DefaultMutableTreeNode insertAtNode:insertAtNodeList) {
+						// Test if this kind of child still exists
+						if(MDEHelper.getListOfChilds(nodeType,insertAtNode)==null ) {
+							ModuleContent c = controller.getContentOfType(nodeType);
+							ModuleTreeElement choice = null;
+							if (c != null && c.getList() == null) {
+								choice = new ModuleTreeElement(c, insertAtNode);
+							} else {
+								choice = new ModuleTreeElement(nodeType, null, "", c, insertAtNode);
+							}
+
+							addNode(insertAtNode, new DefaultMutableTreeNode(choice));
+						}
+					}
+				}else{
+					if(confMap.containsKey(pType) && confMap.get(pType)!=null){
+						// insert first parent before child
+						insertCustomizeNode(pType,confMap.get(pType),cTree,confMap);
+						insertCustomizeNode(nodeType,nodeConf,cTree,confMap);
+					}
+
+				}
+			}
+		}
+	}
 
 
 	public void removeNodeFromParent(DefaultMutableTreeNode current) {
