@@ -39,6 +39,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.con
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
 
 import ome.model.units.UnitEnum;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.GetLabels_ncbo;
 
 /**
  * holds MDE configuration parse from xml file or use standard implement OME configuration. 
@@ -430,6 +431,8 @@ public class MDEConfiguration {
 	}
 	
 	public void parse(String configPath) {
+		GetLabels_ncbo ncbo_parser= new GetLabels_ncbo();
+		ncbo_parser.parse();
 		XMLWriter writer=new XMLWriter();
 		writer.parseConfiguration(configPath);
 		hConfiguration=writer.getHardwareConfiguration();
