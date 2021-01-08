@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -1845,4 +1845,8 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		showMDEButton.setEnabled(enable);
 	}
 
+	@Override
+	public boolean isClosable() {
+		return false;
+	}
 }
