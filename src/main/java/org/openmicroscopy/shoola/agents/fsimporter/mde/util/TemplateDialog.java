@@ -105,6 +105,7 @@ public class TemplateDialog extends JDialog implements ActionListener{
 		subPanel.setBorder(titleBorder);
 
 		btn_filter_load = new JButton("Filter by objects: data to load...");
+		btn_filter_load.setEnabled(false);
 		btn_filter_load.addActionListener(this);
 		subPanel.add(btn_filter_load);
 
@@ -129,6 +130,8 @@ public class TemplateDialog extends JDialog implements ActionListener{
 		txt_path.setToolTipText("Source template file");
 		if(tempFile!=null)
 			txt_path.setText(tempFile.getAbsolutePath());
+		if(txt_path.getText()!=null && !txt_path.getText().isEmpty())
+			btn_filter_load.setEnabled(true);
 		btn_browse_load =new JButton("Browse");
 		btn_browse_load.addActionListener(this);
 		JPanel destP=new JPanel();
@@ -242,6 +245,7 @@ public class TemplateDialog extends JDialog implements ActionListener{
         	if(returnValOpen == JFileChooser.APPROVE_OPTION) {
         		tempFile = fcOpen.getSelectedFile();
         		txt_path.setText(tempFile.getAbsolutePath());
+        		btn_filter_load.setEnabled(true);
         	}
 		}
 		
