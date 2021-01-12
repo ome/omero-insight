@@ -21,6 +21,7 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +36,7 @@ import java.util.ArrayList;
  * @author Susanne Kunis<susannekunis at gmail dot com>
  **/
 public abstract class OntologyParser {
-    String REST_URL;
+    //String REST_URL;
     static final ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -47,13 +48,20 @@ public abstract class OntologyParser {
     public ArrayList<String> getSubLabels(String ontology_acronym,String termID_href){
 
         JsonNode ontology_node = getNode(formatURL(ontology_acronym,termID_href));
-        ArrayList<String> labels=getLabels(ontology_node,"");
-//        if(labels!=null) {
-//            // Print out all the labels
-//            for (String label : labels) {
-//                System.out.println(label);
-//            }
-//        }
+        ArrayList<String> labels= getSubClassLabelsWithParents(ontology_node,"");
+        if(labels!=null) {
+            // Print out all the labels
+            for (String label : labels) {
+                System.out.println(label);
+            }
+        }
+        labels=getSubClassLabels(ontology_node);
+        if(labels!=null) {
+            // Print out all the labels
+            for (String label : labels) {
+                System.out.println(label);
+            }
+        }
         return labels;
     }
 
@@ -63,17 +71,17 @@ public abstract class OntologyParser {
      * @return
      */
     JsonNode getNode(String url){
-        String ontology_string=get(url);
-        JsonNode ontology=jsonToNode(ontology_string);
+        String ontology_string= get_inputStreamAsStringFromURL(url);
+        JsonNode ontology= stringToJsonNode(ontology_string);
         //System.out.println("Json onto : "+ontology);
         if(ontology==null){
-            System.out.println("Can't parse ontology from "+ontology_string);
+            ImporterAgent.getRegistry().getLogger().info(this,"Can't parse ontology from "+ontology_string);
             return null;
         }
         return ontology;
     }
 
-    static JsonNode jsonToNode(String json) {
+    static JsonNode stringToJsonNode(String json) {
         JsonNode root = null;
         try {
             root = mapper.readTree(json);
@@ -85,7 +93,7 @@ public abstract class OntologyParser {
         return root;
     }
 
-    private  String get(String urlToGet) {
+    private  String get_inputStreamAsStringFromURL(String urlToGet) {
         URL url;
         HttpURLConnection conn;
         BufferedReader rd;
@@ -94,7 +102,6 @@ public abstract class OntologyParser {
         try {
             url = new URL(urlToGet);
             conn = initURLConnection(url);
-            //System.out.println("URL: "+conn.getURL());
             rd = new BufferedReader(
                     new InputStreamReader(conn.getInputStream()));
             while ((line = rd.readLine()) != null) {
@@ -108,6 +115,7 @@ public abstract class OntologyParser {
     }
 
     protected abstract String formatURL(String ontology_acronym, String termID_href);
-    protected abstract ArrayList<String> getLabels(JsonNode ontology_node,String parentLabel);
+    protected abstract ArrayList<String> getSubClassLabels(JsonNode ontology_node);
+    protected abstract ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel);
     protected abstract HttpURLConnection initURLConnection(URL url) throws Exception;
 }
