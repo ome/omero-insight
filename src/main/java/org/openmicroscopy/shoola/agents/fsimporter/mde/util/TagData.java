@@ -123,7 +123,7 @@ public class TagData
 	// kind of inputfields
 	public static final String TEXTFIELD="TextField";
 	public static final String COMBOBOX="ComboBox";
-	public static final String CHECK_COMBOBOX="CheckBoxComboBox";
+	public static final String CHECK_COMBOBOX="CheckComboBox";
 	public static final String TEXTPANE="TextPane"; //unused?
 	public static final String CHECKBOX="CheckBox"; //unused?
 	public static final String ARRAYFIELDS="ArrayField";
@@ -536,7 +536,7 @@ public class TagData
 		case CHECK_COMBOBOX:
 			inputField =initCheckComboBox();
 			setValCheckComboBox(inputField);
-			((CheckBoxCombo) inputField).addActionListener(fieldActionListener);
+			((CheckedComboBox) inputField).addActionListener(fieldActionListener);
 			inputField.addFocusListener(listener);
 			inputField.addKeyListener(listenerKey);
 			inputField.setToolTipText(tagInfo);
@@ -614,11 +614,11 @@ public class TagData
 
 	private JComponent initCheckComboBox()
 	{
-		CheckBoxCombo field;
+		CheckedComboBox field;
 		if(defaultValue!=null) {
-			field = new CheckBoxCombo(defaultValue);
+			field = new CheckedComboBox(defaultValue);
 		}else {
-			field= new CheckBoxCombo();
+			field= new CheckedComboBox();
 		}
 		return field;
 	}
@@ -868,7 +868,9 @@ public class TagData
 				val[0]= ((JCheckBox)source).isSelected()? "true" : "false";
 				break;
 			case CHECK_COMBOBOX:
-				val = ((CheckBoxCombo) source).getSelectedVal();
+				val=new String[1];
+				val[0] = ((CheckedComboBox) source).getSelectedItemsAsString();
+
 				break;
 			default:
 				break;
@@ -1251,7 +1253,7 @@ public class TagData
 	}
 	
 	private void setValCheckComboBox(JComponent inputField) {
-		((CheckBoxCombo) inputField).init(value);
+		((CheckedComboBox) inputField).init_selectedValues(value);
 	}
 
 	private void setValTextField(JComponent inputField) {
