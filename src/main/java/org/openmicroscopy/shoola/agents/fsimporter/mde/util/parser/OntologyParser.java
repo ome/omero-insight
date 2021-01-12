@@ -45,24 +45,19 @@ public abstract class OntologyParser {
      * @param termID_href href
      * @return labels of all subclasses of given termID
      */
-    public ArrayList<String> getSubLabels(String ontology_acronym,String termID_href){
-
+    public String[] getSubLabels(String ontology_acronym,String termID_href){
+        if(ontology_acronym==null || ontology_acronym.isEmpty() || termID_href==null || termID_href.isEmpty()){
+            return null;
+        }
         JsonNode ontology_node = getNode(formatURL(ontology_acronym,termID_href));
-        ArrayList<String> labels= getSubClassLabelsWithParents(ontology_node,"");
+
+        ArrayList<String> labels=getSubClassLabels(ontology_node);
+        String[] result=null;
         if(labels!=null) {
-            // Print out all the labels
-            for (String label : labels) {
-                System.out.println(label);
-            }
+            result = (String[]) labels.toArray(new String[0]);
         }
-        labels=getSubClassLabels(ontology_node);
-        if(labels!=null) {
-            // Print out all the labels
-            for (String label : labels) {
-                System.out.println(label);
-            }
-        }
-        return labels;
+
+        return result;
     }
 
     /**
@@ -73,7 +68,6 @@ public abstract class OntologyParser {
     JsonNode getNode(String url){
         String ontology_string= get_inputStreamAsStringFromURL(url);
         JsonNode ontology= stringToJsonNode(ontology_string);
-        //System.out.println("Json onto : "+ontology);
         if(ontology==null){
             ImporterAgent.getRegistry().getLogger().info(this,"Can't parse ontology from "+ontology_string);
             return null;

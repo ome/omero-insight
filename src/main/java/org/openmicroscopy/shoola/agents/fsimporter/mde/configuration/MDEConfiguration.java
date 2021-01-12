@@ -18,16 +18,7 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.configuration;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-
+import ome.model.units.UnitEnum;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleConfiguration;
@@ -36,10 +27,14 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleControll
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.XMLWriter;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
 
-import ome.model.units.UnitEnum;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.GetLabels_ncbo;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 
 /**
  * holds MDE configuration parse from xml file or use standard implement OME configuration. 
@@ -431,8 +426,6 @@ public class MDEConfiguration {
 	}
 	
 	public void parse(String configPath) {
-		GetLabels_ncbo ncbo_parser= new GetLabels_ncbo();
-		ncbo_parser.parse();
 		XMLWriter writer=new XMLWriter();
 		writer.parseConfiguration(configPath);
 		hConfiguration=writer.getHardwareConfiguration();
