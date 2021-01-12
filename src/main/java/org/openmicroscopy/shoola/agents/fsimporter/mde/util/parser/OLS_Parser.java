@@ -93,7 +93,7 @@ public class OLS_Parser extends OntologyParser {
                 // get childs
                 if (!cls.get("has_children").isNull() && cls.get("has_children").asBoolean()) {
                     String childId = cls.get("_links").get("children").get("href").asText();
-                    labels.addAll(getSubClassLabels(getNode(childId),parentLabel + cls.get("label").asText() + ":"));
+                    labels.addAll(getSubClassLabelsWithParents(getNode(childId),parentLabel + cls.get("label").asText() + ":"));
                 }
             }
         }

@@ -95,13 +95,16 @@ public class BioPortal_Parser extends OntologyParser {
         // When we hit the last page, the while loop will exit
         while (nextPage.length() != 0) {
             for (JsonNode cls : ontology_node.get("collection")) {
-
+                ArrayList subNodes_label = null;
                 if(!cls.get("links").get("children").isNull()){
-                    labels.addAll(getSubClassLabels(getNode(cls.get("links").get("children").asText())));
-                }else{
+                    subNodes_label = getSubClassLabels(getNode(cls.get("links").get("children").asText()));
+                }
+                if(subNodes_label== null || subNodes_label.isEmpty()) {
                     if (!cls.get("prefLabel").isNull()) {
                         labels.add(cls.get("prefLabel").asText());
                     }
+                }else{
+                    labels.addAll(subNodes_label);
                 }
             }
 

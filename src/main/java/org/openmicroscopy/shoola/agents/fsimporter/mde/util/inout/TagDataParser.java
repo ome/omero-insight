@@ -19,6 +19,8 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.BioPortal_Parser;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.OLS_Parser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,6 +38,8 @@ public class TagDataParser {
     final String ATTR_VISIBLE="Visible";
     final String ATTR_UNIT="Unit";
     final String ATTR_TYPE="Type";
+    final String ATTR_ONTO_ACRO="OntoAcronym";
+    final String ATTR_ONTO_REF="OntoID_href";
 
     /**
      * Builds {@link TagData} element with his properties as attributes.
@@ -82,6 +86,27 @@ public class TagDataParser {
             String defaultVal = eElement.getAttribute(ATTR_DEFAULT_VAL);
             String tagType = eElement.getAttribute(ATTR_TYPE);
 
+            String[] defaultValList=null;
+
+            if(eElement.hasAttribute(ATTR_ONTO_ACRO) && eElement.hasAttribute(ATTR_ONTO_REF)) {
+                String ontologyAcronym = eElement.getAttribute(ATTR_ONTO_ACRO);
+                String ontologyRef = eElement.getAttribute(ATTR_ONTO_REF);
+
+                // defaultValues load from ontologyref?
+                if (ontologyRef != null) {
+                    BioPortal_Parser oParser = new BioPortal_Parser();
+                    defaultValList = oParser.getSubLabels(ontologyAcronym, ontologyRef);
+                    if (defaultValList == null) {
+                        OLS_Parser olsParser = new OLS_Parser();
+                        defaultValList= olsParser.getSubLabels(ontologyAcronym, ontologyRef);
+                    }
+                }
+            }
+            if (defaultValList == null) {
+                defaultValList=defaultVal.split(",");
+            }
+
+
             boolean standardConstr=true;
             if (tagType.equals(TagData.ARRAYFIELDS) ){
                 if(tagVal!=null && tagVal.length()>0) {
@@ -94,7 +119,7 @@ public class TagDataParser {
                 }
             }
             if(standardConstr){
-                t = new TagData(parent, tagName, tagVal, tagUnit, false, tagType, defaultVal.split(","));
+                t = new TagData(parent, tagName, tagVal, tagUnit, false, tagType, defaultValList);
             }
             t.setVisible(Boolean.parseBoolean(tagVis));
 
