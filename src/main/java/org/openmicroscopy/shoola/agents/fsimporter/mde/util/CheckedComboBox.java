@@ -64,11 +64,13 @@ public class CheckedComboBox<E extends CheckableItem> extends JComboBox<E> {
         if(values==null || values.length==0)
             return;
         List<String> t;
-        if(values.length==1)
-            t=Arrays.asList(values[0].split(ITEM_DELIMETER+" "));
-        else
-            t=Arrays.asList(values);
-
+        if(values.length==1) {
+            System.out.println("init_selectedValues string CheckedComboBox: " + values[0]);
+            t = Arrays.asList(values[0].split(ITEM_DELIMETER + " "));
+        }else {
+            System.out.println("init_selectedValues array CheckedComboBox: "+Arrays.toString(values));
+            t = Arrays.asList(values);
+        }
         for (int i = 0; i < getItemCount(); i++) {
             if(t.contains(getItemAt(i).toString())){
                 getItemAt(i).setSelected(true);
@@ -76,6 +78,9 @@ public class CheckedComboBox<E extends CheckableItem> extends JComboBox<E> {
         }
     }
 
+    @Override public Dimension getPreferredSize() {
+        return new Dimension(200, 20);
+    }
 
     @Override
     public void updateUI() {
