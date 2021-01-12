@@ -52,7 +52,7 @@ public class BioPortal_Parser extends OntologyParser {
     }
 
     @Override
-    protected ArrayList<String> getLabels(JsonNode ontology_node, String parentLabel) {
+    protected ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) {
         if(ontology_node==null){
             return null;
         }
@@ -68,7 +68,40 @@ public class BioPortal_Parser extends OntologyParser {
                     labels.add(parentLabel+cls.get("prefLabel").asText());
                 }
                 if(!cls.get("links").get("children").isNull()){
-                    labels.addAll(getLabels(getNode(cls.get("links").get("children").asText()),parentLabel+cls.get("prefLabel").asText()+":"));
+                    labels.addAll(getSubClassLabelsWithParents(getNode(cls.get("links").get("children").asText()),parentLabel+cls.get("prefLabel").asText()+":"));
+                }
+            }
+
+            if (ontology_node.get("totalCount").asLong()>0 && !ontology_node.get("links").get("nextPage").isNull()) {
+                nextPage = ontology_node.get("links").get("nextPage").asText();
+                ontology_node = getNode(nextPage);
+            } else {
+                nextPage = "";
+            }
+        }
+        return labels;
+    }
+
+    @Override
+    protected ArrayList<String> getSubClassLabels(JsonNode ontology_node) {
+        if(ontology_node==null){
+            return null;
+        }
+        ArrayList<String> labels = new ArrayList<String>();
+        // From the returned page, get the hypermedia link to the next page
+        String nextPage = ontology_node.get("links").get("nextPage").asText();
+
+        // Iterate over the available pages adding labels from all classes
+        // When we hit the last page, the while loop will exit
+        while (nextPage.length() != 0) {
+            for (JsonNode cls : ontology_node.get("collection")) {
+
+                if(!cls.get("links").get("children").isNull()){
+                    labels.addAll(getSubClassLabels(getNode(cls.get("links").get("children").asText())));
+                }else{
+                    if (!cls.get("prefLabel").isNull()) {
+                        labels.add(cls.get("prefLabel").asText());
+                    }
                 }
             }
 

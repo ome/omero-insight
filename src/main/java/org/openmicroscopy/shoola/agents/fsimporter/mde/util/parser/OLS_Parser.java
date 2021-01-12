@@ -50,7 +50,7 @@ public class OLS_Parser extends OntologyParser {
     }
 
     @Override
-    protected ArrayList<String> getLabels(JsonNode ontology_node, String parentLabel) {
+    protected ArrayList<String> getSubClassLabels(JsonNode ontology_node) {
         if(ontology_node==null){
             return null;
         }
@@ -58,6 +58,31 @@ public class OLS_Parser extends OntologyParser {
         // From the returned page, get the hypermedia link to the next page
         JsonNode embedded_node = ontology_node.get("_embedded");
 
+        // Iterate over the available terms
+        if(embedded_node!=null) {
+            for (JsonNode cls : embedded_node.get("terms")) {
+                // get childs
+                if (!cls.get("has_children").isNull() && cls.get("has_children").asBoolean()) {
+                    String childId = cls.get("_links").get("children").get("href").asText();
+                    labels.addAll(getSubClassLabels(getNode(childId)));
+                }else{
+                    if(!cls.get("label").isNull()) {
+                        labels.add(cls.get("label").asText());
+                    }
+                }
+            }
+        }
+        return labels;
+    }
+
+    @Override
+    protected ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) {
+        if(ontology_node==null){
+            return null;
+        }
+        ArrayList<String> labels = new ArrayList<String>();
+        // From the returned page, get the hypermedia link to the next page
+        JsonNode embedded_node = ontology_node.get("_embedded");
 
         // Iterate over the available terms
         if(embedded_node!=null) {
@@ -68,7 +93,7 @@ public class OLS_Parser extends OntologyParser {
                 // get childs
                 if (!cls.get("has_children").isNull() && cls.get("has_children").asBoolean()) {
                     String childId = cls.get("_links").get("children").get("href").asText();
-                    labels.addAll(getLabels(getNode(childId),parentLabel + cls.get("label").asText() + ":"));
+                    labels.addAll(getSubClassLabels(getNode(childId),parentLabel + cls.get("label").asText() + ":"));
                 }
             }
         }
