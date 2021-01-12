@@ -65,10 +65,8 @@ public class CheckedComboBox<E extends CheckableItem> extends JComboBox<E> {
             return;
         List<String> t;
         if(values.length==1) {
-            System.out.println("init_selectedValues string CheckedComboBox: " + values[0]);
             t = Arrays.asList(values[0].split(ITEM_DELIMETER + " "));
         }else {
-            System.out.println("init_selectedValues array CheckedComboBox: "+Arrays.toString(values));
             t = Arrays.asList(values);
         }
         for (int i = 0; i < getItemCount(); i++) {
