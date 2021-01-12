@@ -30,6 +30,8 @@
                          Unit="mm" Value="millimeter value" Visible="true" />
                 <TagData DefaultValues="Value1,Value2,Value3" Name="Tag of Type ComboBox" Type="ComboBox"
                          Unit="" Value="Value1" Visible="true" />
+                <TagData DefaultValues="Value1,Value2,Value3" Name="Tag of Type CheckComboBox" Type="CheckComboBox"
+                         Unit="" Value="Value1" Visible="true" />
                 <TagData DefaultValues="" Name="Tag of Type TimeStamp" Type="TimeStamp"
                          Unit="" Value="2020-01-01" Visible="true" />
             </ObjectPre>
@@ -380,6 +382,8 @@
                          Unit="nm" Value="" Visible="true" />
                 <TagData DefaultValues="Value1,Value2,Value3" Name="Tag of Type ComboBox" Type="ComboBox"
                          Unit="" Value="Value1" Visible="true" />
+                <TagData DefaultValues="Value1,Value2,Value3" Name="Tag of Type CheckComboBox" Type="CheckComboBox"
+                         Unit="" Value="" Visible="true" />
                 <TagData DefaultValues="" Name="Tag of Type TimeStamp" Type="TimeStamp"
                          Unit="" Value="" Visible="true" />
                 <Parents Values="OME-Model" />
