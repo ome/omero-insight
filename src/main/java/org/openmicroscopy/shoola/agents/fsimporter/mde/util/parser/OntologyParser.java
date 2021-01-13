@@ -18,13 +18,11 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -45,7 +43,7 @@ public abstract class OntologyParser {
      * @param termID_href href
      * @return labels of all subclasses of given termID
      */
-    public String[] getSubLabels(String ontology_acronym,String termID_href){
+    public String[] getSubLabels(String ontology_acronym,String termID_href) throws Exception {
         if(ontology_acronym==null || ontology_acronym.isEmpty() || termID_href==null || termID_href.isEmpty()){
             return null;
         }
@@ -65,25 +63,19 @@ public abstract class OntologyParser {
      * @param url
      * @return
      */
-    JsonNode getNode(String url){
+    JsonNode getNode(String url) throws Exception {
         String ontology_string= get_inputStreamAsStringFromURL(url);
         JsonNode ontology= stringToJsonNode(ontology_string);
+
         if(ontology==null){
-            ImporterAgent.getRegistry().getLogger().info(this,"Can't parse ontology from "+ontology_string);
+            ImporterAgent.getRegistry().getLogger().info(this,"[MDE] Can't parse ontology from "+url);
             return null;
         }
         return ontology;
     }
 
-    static JsonNode stringToJsonNode(String json) {
-        JsonNode root = null;
-        try {
-            root = mapper.readTree(json);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    static JsonNode stringToJsonNode(String json) throws Exception {
+        JsonNode root = mapper.readTree(json);
         return root;
     }
 
@@ -103,13 +95,13 @@ public abstract class OntologyParser {
             }
             rd.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't create url connection to "+urlToGet);
         }
         return result;
     }
 
     protected abstract String formatURL(String ontology_acronym, String termID_href);
-    protected abstract ArrayList<String> getSubClassLabels(JsonNode ontology_node);
-    protected abstract ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel);
+    protected abstract ArrayList<String> getSubClassLabels(JsonNode ontology_node) throws Exception;
+    protected abstract ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) throws Exception;
     protected abstract HttpURLConnection initURLConnection(URL url) throws Exception;
 }
