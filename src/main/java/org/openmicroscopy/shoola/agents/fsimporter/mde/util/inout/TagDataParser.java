@@ -18,6 +18,7 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.BioPortal_Parser;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.OLS_Parser;
@@ -95,10 +96,16 @@ public class TagDataParser {
                 // defaultValues load from ontologyref?
                 if (ontologyRef != null) {
                     BioPortal_Parser oParser = new BioPortal_Parser();
-                    defaultValList = oParser.getSubLabels(ontologyAcronym, ontologyRef);
-                    if (defaultValList == null) {
-                        OLS_Parser olsParser = new OLS_Parser();
-                        defaultValList= olsParser.getSubLabels(ontologyAcronym, ontologyRef);
+                    try {
+                        defaultValList = oParser.getSubLabels(ontologyAcronym, ontologyRef);
+
+                        if (defaultValList == null) {
+                            OLS_Parser olsParser = new OLS_Parser();
+                            defaultValList= olsParser.getSubLabels(ontologyAcronym, ontologyRef);
+                        }
+                    } catch (Exception e) {
+                        ImporterAgent.getRegistry().getLogger().warn(this,
+                                "MDE: can't parse given ontology item ["+ontologyAcronym+", "+ontologyRef+"]");
                     }
                 }
             }

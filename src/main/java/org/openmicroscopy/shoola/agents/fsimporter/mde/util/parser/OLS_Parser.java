@@ -50,7 +50,7 @@ public class OLS_Parser extends OntologyParser {
     }
 
     @Override
-    protected ArrayList<String> getSubClassLabels(JsonNode ontology_node) {
+    protected ArrayList<String> getSubClassLabels(JsonNode ontology_node) throws Exception {
         if(ontology_node==null){
             return null;
         }
@@ -76,7 +76,7 @@ public class OLS_Parser extends OntologyParser {
     }
 
     @Override
-    protected ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) {
+    protected ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) throws Exception {
         if(ontology_node==null){
             return null;
         }
