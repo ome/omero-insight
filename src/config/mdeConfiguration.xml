@@ -31,7 +31,9 @@
                 <TagData DefaultValues="Value1,Value2,Value3" Name="Tag of Type ComboBox" Type="ComboBox"
                          Unit="" Value="Value1" Visible="true" />
                 <TagData DefaultValues="" Name="Tag of Type ComboBox val from ontology href" Type="ComboBox"
-                         Unit="" Value="" Visible="true" OntoAcronym="BAO" OntoID_href="http://www.bioassayontology.org/bao#BAO_0150008" />
+                         Unit="" Value="" Visible="true">
+                    <Ontology URL_restapi="http://data.bioontology.org" Acronym="BAO" ID_href="http://www.bioassayontology.org/bao#BAO_0150008" />
+                </TagData>
                 <TagData DefaultValues="" Name="Tag of Type TimeStamp" Type="TimeStamp"
                          Unit="" Value="2020-01-01" Visible="true" />
             </ObjectPre>
@@ -384,6 +386,10 @@
                          Unit="" Value="Value1" Visible="true" />
                 <TagData DefaultValues="" Name="Tag of Type TimeStamp" Type="TimeStamp"
                          Unit="" Value="" Visible="true" />
+                <TagData DefaultValues="" Name="Tag of Type ComboBox val from ontology href" Type="ComboBox"
+                         Unit="" Value="" Visible="true">
+                    <Ontology URL_restapi="http://data.bioontology.org" Acronym="BAO" ID_href="http://www.bioassayontology.org/bao#BAO_0150008" />
+                </TagData>
                 <Parents Values="OME-Model" />
             </ObjectDef>
             <ObjectDef Type="MyCustomObject">

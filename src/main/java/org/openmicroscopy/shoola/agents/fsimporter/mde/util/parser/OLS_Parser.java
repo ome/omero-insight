@@ -34,7 +34,11 @@ import java.util.ArrayList;
  *  doc: https://www.ebi.ac.uk/ols/docs/api
  **/
 public class OLS_Parser extends OntologyParser {
-    static final String REST_URL = "https://www.ebi.ac.uk/ols";
+    //static final String REST_URL = "https://www.ebi.ac.uk/ols";
+
+    public OLS_Parser(String ontology_restapi_url) {
+        super(ontology_restapi_url);
+    }
 
     @Override
     protected String formatURL(String ontology_acronym, String termID_href) {

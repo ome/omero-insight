@@ -34,8 +34,12 @@ import java.util.ArrayList;
  * @author Susanne Kunis<susannekunis at gmail dot com>
  **/
 public abstract class OntologyParser {
-    //String REST_URL;
+    String REST_URL;
     static final ObjectMapper mapper = new ObjectMapper();
+
+    public OntologyParser(String ontology_restapi_url) {
+        this.REST_URL=ontology_restapi_url;
+    }
 
     /**
      *
