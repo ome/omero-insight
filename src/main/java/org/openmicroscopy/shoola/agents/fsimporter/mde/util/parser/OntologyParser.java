@@ -41,7 +41,7 @@ public abstract class OntologyParser {
      *
      * @param ontology_acronym acronym of ontology that the term is part of
      * @param termID_href href
-     * @return labels of all subclasses of given termID
+     * @return labels of all subclasses of given termID, if subclass is a leaf
      */
     public String[] getSubLabels(String ontology_acronym,String termID_href) throws Exception {
         if(ontology_acronym==null || ontology_acronym.isEmpty() || termID_href==null || termID_href.isEmpty()){
@@ -101,7 +101,22 @@ public abstract class OntologyParser {
     }
 
     protected abstract String formatURL(String ontology_acronym, String termID_href);
+
+    /**
+     *
+     * @param ontology_node
+     * @return labels of all subclasses of given termID, if subclass is a leaf
+     * @throws Exception
+     */
     protected abstract ArrayList<String> getSubClassLabels(JsonNode ontology_node) throws Exception;
+
+    /**
+     *
+     * @param ontology_node
+     * @param parentLabel
+     * @return tree path labels of all subclasses of given termID, delimeter= ":"
+     * @throws Exception
+     */
     protected abstract ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) throws Exception;
     protected abstract HttpURLConnection initURLConnection(URL url) throws Exception;
 }
