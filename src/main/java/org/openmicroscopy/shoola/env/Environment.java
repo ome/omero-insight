@@ -164,7 +164,7 @@ public class Environment
 	public String getMDEConfigPath()
 	{
 		return (String)
-			container.getRegistry().lookup(LookupNames.USER_HOME_OMERO);
+			container.getRegistry().lookup(LookupNames.USER_MDE_PATH);
 	}
 	
 	/**
