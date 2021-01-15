@@ -580,6 +580,13 @@ public class TagData
 //			inputField.setPreferredSize(new Dimension(250,20));
 			break;
 		default:
+			ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] Unknown type for inputField "+getTagName()+"-> generate Textfield instead");
+			inputField=new JTextField(10);
+			setValTextField(inputField);
+			((JTextField) inputField).addActionListener(fieldActionListener);
+			inputField.addFocusListener(listener);
+			inputField.addKeyListener(listenerKey);
+			inputField.setToolTipText(tagInfo);
 			break;
 		}
 		setTagValue(value);
