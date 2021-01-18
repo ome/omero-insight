@@ -210,6 +210,8 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		this.importer = importer;
 		this.mdeConfigPath=mdeConfigPath+File.separator+"mdeConfiguration.xml";
 
+		ImporterAgent.getRegistry().getLogger().info(this,"MetadataDialog: Use mdeConfiguration file at "+this.mdeConfigPath);
+
 		addImportButtonLink(importBtn);
 		addCancelImportButtonLink(cancelImportBtn);
 		setClosable(false);
