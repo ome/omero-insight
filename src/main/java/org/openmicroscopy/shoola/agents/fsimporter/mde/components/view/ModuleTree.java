@@ -314,9 +314,8 @@ public class ModuleTree extends JPanel implements ActionListener{
 	}
 
 	private void insertCustomizeNode(String nodeType,ModuleConfiguration nodeConf, DefaultMutableTreeNode cTree,HashMap<String,ModuleConfiguration> confMap){
-		// test auf element ist bereits child of root
 		if (MDEHelper.getChildByName(cTree, nodeType) == null) {
-			// soll element sichtbar sein
+			// element visible?
 			if(nodeConf.isInsertInTree()) {
 				// parent node
 				String pType = nodeConf.getInsertPoint();
