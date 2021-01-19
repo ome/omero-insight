@@ -536,7 +536,7 @@ public class TagData
 		case CHECK_COMBOBOX:
 			inputField =initCheckComboBox();
 			setValCheckComboBox(inputField);
-			((CheckedComboBox) inputField).addActionListener(fieldActionListener);
+			((CheckComboBox) inputField).addActionListener(fieldActionListener);
 			inputField.addFocusListener(listener);
 			inputField.addKeyListener(listenerKey);
 			inputField.setToolTipText(tagInfo);
@@ -614,11 +614,11 @@ public class TagData
 
 	private JComponent initCheckComboBox()
 	{
-		CheckedComboBox field;
+		CheckComboBox field;
 		if(defaultValue!=null) {
-			field = new CheckedComboBox(defaultValue);
+			field = new CheckComboBox(defaultValue);
 		}else {
-			field= new CheckedComboBox();
+			field= new CheckComboBox();
 		}
 		return field;
 	}
@@ -869,7 +869,7 @@ public class TagData
 				break;
 			case CHECK_COMBOBOX:
 				val=new String[1];
-				val[0] = ((CheckedComboBox) source).getSelectedItemsAsString();
+				val[0] = ((CheckComboBox) source).getSelectedItemsAsString();
 
 				break;
 			default:
@@ -1253,7 +1253,7 @@ public class TagData
 	}
 	
 	private void setValCheckComboBox(JComponent inputField) {
-		((CheckedComboBox) inputField).init_selectedValues(value);
+		((CheckComboBox) inputField).init_selectedValues(value);
 	}
 
 	private void setValTextField(JComponent inputField) {

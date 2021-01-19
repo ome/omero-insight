@@ -37,21 +37,21 @@ import java.util.stream.IntStream;
  * @author Susanne Kunis<susannekunis at gmail dot com>
  *     see: https://github.com/aterai/java-swing-tips/blob/master/CheckedComboBox/src/java/example/MainPanel.java
  **/
-public class CheckedComboBox<E extends CheckableItem> extends JComboBox<E> {
+public class CheckComboBox<E extends CheckableItem> extends JComboBox<E> {
 
     private static String ITEM_DELIMETER=";";
     private boolean keepOpen;
     private transient ActionListener listener;
 
-    protected CheckedComboBox() {
+    protected CheckComboBox() {
         super();
     }
 
-    protected CheckedComboBox(ComboBoxModel<E> model) {
+    protected CheckComboBox(ComboBoxModel<E> model) {
         super(model);
     }
 
-    protected CheckedComboBox(String[] values){
+    protected CheckComboBox(String[] values){
         super();
         CheckableItem[] m = new CheckableItem[values.length];
         for(int i=0;i<values.length; i++) {
