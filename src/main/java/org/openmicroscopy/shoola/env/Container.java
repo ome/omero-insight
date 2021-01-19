@@ -1,7 +1,7 @@
 /*
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -101,18 +101,39 @@ public final class Container
 	private static Container singleton;
 
 	/**
+	 * Entry point to launch the container and bring up the whole client.
+	 * <p>The absolute path to the installation directory is obtained from
+	 * <code>home</code>.  If this parameter doesn't specify an absolute path,
+	 * then it'll be translated into an absolute path.  Translation is system
+	 * dependent &#151; in many cases, the path is resolved against the user
+	 * directory (typically the directory in which the JVM was invoked).</p>
+	 * <p>This method rolls back all executed tasks and terminates the program
+	 * if an error occurs during the initialization procedure.</p>
+	 *
+	 * @param home		Path to the installation directory.
+	 * 					If <code>null<code> or
+	 * 					empty, then the user directory is assumed.
+	 * @param configFile The configuration file.
+	 */
+	public static void startup(final String home, final String configFile)
+	{
+		startup(home, configFile, null);
+	}
+
+	/**
 	 * Performs the start up procedure.
 	 * 
 	 * @param home	Path to the installation directory.  If <code>null<code> or
 	 * 				empty, then the user directory is assumed.
 	 * @param configFile The configuration file.
+	 * @param cmdLineArgs Additional command line arguments
 	 */
-	private static void runStartupProcedure(String home, String configFile)
+	private static void runStartupProcedure(String home, String configFile, List<String> cmdLineArgs)
 	{
 		AbnormalExitHandler.configure();
 		Initializer initManager = null;
 		try {
-			singleton = new Container(home, configFile, null);
+			singleton = new Container(home, configFile, null, cmdLineArgs);
 			initManager = new Initializer(singleton);
 			initManager.configure();
 			initManager.doInit();
@@ -156,12 +177,12 @@ public final class Container
 	 * 					empty, then the user directory is assumed.
 	 * @param configFile The configuration file.
 	 */
-	public static void startup(final String home, final String configFile)
+	public static void startup(final String home, final String configFile, final List<String> cmdLineArgs)
 	{
 		if (singleton != null)	return;
 		ThreadGroup root = new RootThreadGroup();
 		Runnable r = new Runnable() {
-			public void run() { runStartupProcedure(home, configFile); }
+			public void run() { runStartupProcedure(home, configFile, cmdLineArgs); }
 		};
 		Thread t = new Thread(root, r, "Initializer");
         t.start();
@@ -186,6 +207,27 @@ public final class Container
 	/** All managed agents. */
 	private Set<Agent>	agentsPool;
 
+	/**
+	 * Initializes the member fields.
+	 * <p>The absolute path to the installation directory is obtained from
+	 * <code>home</code>.  If this parameter doesn't specify an absolute path,
+	 * then it'll be translated into an absolute path.  Translation is system
+	 * dependent -- in many cases, the path is resolved against the user
+	 * directory (typically the directory in which the JVM was invoked).</p>
+	 *
+	 * @param home	Path to the installation directory.  If <code>null</code> or
+	 * 				empty, then the user directory is assumed.
+	 * @param configFile The configuration file.
+	 * @param pluginDir location of the plugins. Only to be set in plugin mode
+	 * @throws StartupException	If <code>home</code> can't be resolved to a
+	 * 			valid and existing directory.
+	 */
+	private Container(String home, String configFile, String pluginDir)
+			throws StartupException
+	{
+		this(home, configFile, pluginDir, null);
+	}
+
 	/** 
 	 * Initializes the member fields. 
 	 * <p>The absolute path to the installation directory is obtained from
@@ -198,10 +240,11 @@ public final class Container
 	 * 				empty, then the user directory is assumed.
 	 * @param configFile The configuration file.
 	 * @param pluginDir location of the plugins. Only to be set in plugin mode
+	 * @param cmdLineArgs Additional command line arguments (optional)
 	 * @throws StartupException	If <code>home</code> can't be resolved to a
 	 * 			valid and existing directory. 				
 	 */
-	private Container(String home, String configFile, String pluginDir)
+	private Container(String home, String configFile, String pluginDir, List<String> cmdLineArgs)
 		throws StartupException
 	{
 	    if (CommonsLangUtils.isBlank(configFile) || !FilenameUtils.isExtension(configFile, "xml")) {
@@ -225,6 +268,9 @@ public final class Container
 		
 		agentsPool = new HashSet<Agent>();
 		registry = RegistryFactory.makeNew();
+
+		if (cmdLineArgs != null && !cmdLineArgs.isEmpty())
+			registry.addCmdLineArgs(cmdLineArgs);
 	}
 
 	/**
@@ -240,7 +286,7 @@ public final class Container
 	 * @return	See above.
 	 */
 	public String getHomeDir() { return homeDir; }
-	
+
 	/**
 	 * Returns the relative path to the container's configuration file.
 	 * 

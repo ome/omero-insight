@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.Main
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2010 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,10 @@ package org.openmicroscopy.shoola;
 
 //Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /** 
  * Application entry point.
@@ -64,9 +68,11 @@ public class Main
 	{
 		String homeDir = "";
 		String configFile = null;//Container.CONFIG_FILE;
-		if (args.length > 0) configFile = args[0];
-		if (args.length > 1) homeDir = args[1];
-		Container.startup(homeDir, configFile);
+		List<String> addArgs = Arrays.stream(args).filter(a -> a.startsWith("--")).collect(Collectors.toList());
+		List<String> posArgs = Arrays.stream(args).filter(a -> !a.startsWith("--")).collect(Collectors.toList());
+		if (posArgs.size() > 0) configFile = posArgs.get(0);
+		if (posArgs.size() > 1) homeDir = posArgs.get(1);
+		Container.startup(homeDir, configFile, addArgs);
 	}
 	
 }
