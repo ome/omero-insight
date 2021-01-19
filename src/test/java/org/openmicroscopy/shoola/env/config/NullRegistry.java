@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.env.config.NullRegistry
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,8 @@ import omero.log.Logger;
 import org.openmicroscopy.shoola.env.ui.TaskBar;
 import org.openmicroscopy.shoola.env.ui.UserNotifier;
 
+import java.util.Collection;
+
 /** 
  * No-op implementation.
  *
@@ -73,5 +75,7 @@ public class NullRegistry
     public AdminService getAdminService() { return null; }
 	public String lookupRemote(String name) { return null; }
     public Gateway getGateway() { return null;}
-    
+    public Collection<String> getCmdLineArgs() { return null; }
+    public void addCmdLineArgs(Collection<String> args) {}
+
 }
