@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2014-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2014-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -138,11 +138,11 @@ public class SearchResultTableModel extends DefaultTableModel {
      * @param obj The object to handle.
      * @return Returns the date or <code>null</code>.
      */
-    private Date getADate(DataObject obj) {
+    private String getADate(DataObject obj) {
         if (obj instanceof ImageData) {
             Timestamp time = EditorUtil.getAcquisitionTime((ImageData) obj);
-            if (time == null) return null;
-            return new Date(time.getTime());
+            if (time == null) return "--";
+            return UIUtilities.formatDefaultDate(new Date(time.getTime()));
         }
         return null;
     }
@@ -153,10 +153,10 @@ public class SearchResultTableModel extends DefaultTableModel {
      * @param obj The object to handle.
      * @return Returns the date or <code>null</code>.
      */
-    private Object getIDate(DataObject obj) {
+    private String getIDate(DataObject obj) {
         Timestamp time = obj.getCreated();
-        if (time == null) return null; //in case it is not loaded.
-        return new Date(time.getTime());
+        if (time == null) return "--"; //in case it is not loaded.
+        return UIUtilities.formatDefaultDate(new Date(time.getTime()));
     }
 
     /**
@@ -217,14 +217,6 @@ public class SearchResultTableModel extends DefaultTableModel {
         switch (column) {
             case 0:
                 return Icon.class;
-            case 1:
-                return String.class;
-            case 2:
-                return String.class;
-            case 3:
-                return String.class;
-            case 4:
-                return String.class;
             case 5:
                 return DataObject.class;
             default:
