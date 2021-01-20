@@ -109,6 +109,13 @@ public class ModuleTreeElement {
 	{
 		return type;
 	}
+
+	public boolean hasRequiredData(){
+		if(data!=null)
+			return data.hasRequiredData();
+		else
+			return false;
+	}
 	
 	public boolean isContainer() {
 		return data==null || data.getList()==null;

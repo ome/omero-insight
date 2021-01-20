@@ -280,4 +280,14 @@ public class ModuleContent {
 		return false;
 	}
 
+    public boolean hasRequiredData() {
+		if(tagList!=null) {
+			for(Entry<String, TagData> entry: tagList.entrySet()) {
+				if(entry.getValue().getTagProp()){
+					return true;
+				}
+			}
+		}
+		return false;
+    }
 }

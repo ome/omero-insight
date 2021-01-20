@@ -138,7 +138,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	private JButton btn_menu;
 
 	private JComboBox<String> mics;
-
+    private JCheckBox filterCB;
 	private EditorFileBrowser fileTree;
 
 	private JPanel metaPanel;
@@ -389,6 +389,9 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		btnHardwConf.addActionListener(this);
 		btnHardwConf.setEnabled(false);
 
+		filterCB = new JCheckBox("show only required");
+		filterCB.setSelected(false);
+
 
 		bar.add(barR);
 		bar.add(new JSeparator(SwingConstants.VERTICAL));
@@ -396,6 +399,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		bar.add(new JSeparator(SwingConstants.VERTICAL));
 		//		bar.add(btnObjConf);
 		bar.add(new JSeparator(SwingConstants.VERTICAL));
+		bar.add(filterCB);
 		bar.add(barT);
 		bar.add(new JSeparator(SwingConstants.VERTICAL));
 		bar.add(buildToolbar_right());
@@ -1191,6 +1195,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		fileInstrumentList=content.getInstrumentList();
 		// load user input
 		metaPanel.add(content,BorderLayout.CENTER);
+		filterCB.addItemListener(content);
 		revalidate();
 		repaint();
 	}
