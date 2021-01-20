@@ -229,7 +229,7 @@
             </ObjectDef>
             <ObjectDef Type="OME:ImagingEnvironment">
                 <TagData DefaultValues="" Name="Temperature"
-                         Type="TextField" Unit="°C" Value="" Visible="true" />
+                         Type="TextField" Unit="°C" Value="" Visible="true" Required="true"/>
                 <TagData DefaultValues="" Name="Air Pressure"
                          Type="TextField" Unit="Mbar" Value="" Visible="true" />
                 <TagData DefaultValues="" Name="Humidity %" Type="TextField"
@@ -300,7 +300,7 @@
             </ObjectDef>
             <ObjectDef Type="OME:Experiment">
                 <TagData DefaultValues="" Name="Description" Type="TextArea"
-                         Unit="" Value="" Visible="true" />
+                         Unit="" Value="" Visible="true" Required="true"/>
                 <TagData
                         DefaultValues="FP,FRET,TimeLapse,FourDPlus,Screen,Immunocytochemistry,Immunofluorescence,FISH,Electrophysiology,IonImaging,Colocalization,PGIDocumentation,FluorescenceLifetime,SpectralImaging,Photobleaching,SPIM,Other"
                         Name="ExperimentType" Type="ComboBox" Unit="" Value=""
@@ -348,7 +348,7 @@
             </ObjectDef>
             <ObjectDef Type="OME:Image">
                 <TagData DefaultValues="" Name="Name" Type="TextField"
-                         Unit="" Value="" Visible="true" />
+                         Unit="" Value="" Visible="true" Required="true"/>
                 <TagData DefaultValues="" Name="Description"
                          Type="TextField" Unit="" Value="" Visible="true" />
                 <TagData DefaultValues="" Name="Acquisition Time"
