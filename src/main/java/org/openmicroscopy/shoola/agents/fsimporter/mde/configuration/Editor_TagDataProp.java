@@ -19,27 +19,20 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.configuration;
 
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagDataProp;
 
 
 /**
@@ -141,7 +134,7 @@ public class Editor_TagDataProp extends JPanel
 				//c4
 				c.weightx = 0.5;
 				JCheckBox cb2=new JCheckBox();
-				cb2.setSelected(t.getTagProp()); 
+				cb2.setSelected(t.isRequired());
 				addGB(cb2,2,y,c);
 				
 				y++;

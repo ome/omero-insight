@@ -283,7 +283,7 @@ public class ModuleContent {
     public boolean hasRequiredData() {
 		if(tagList!=null) {
 			for(Entry<String, TagData> entry: tagList.entrySet()) {
-				if(entry.getValue().getTagProp()){
+				if(entry.getValue().isRequired()){
 					return true;
 				}
 			}

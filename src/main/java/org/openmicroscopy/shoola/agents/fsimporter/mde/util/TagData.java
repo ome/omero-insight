@@ -319,7 +319,7 @@ public class TagData
 		this.parent=parent;
 		
 		tagInfo="";
-		setTagProp(prop);
+		setValueRequired(prop);
 		setVisible(true);
 		status=EMPTY;
 		
@@ -1019,14 +1019,14 @@ public class TagData
 	public void setTagValue(String val, boolean property)
 	{
 		setTagValue(val);
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 	}
 
 	public void setTagValue(String val, int index, boolean property)
 	{
 		setTagValue(val,index);
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 	}
 	
@@ -1037,14 +1037,14 @@ public class TagData
 		}else {
 			setTagValue("",index);
 		}
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 	}
 
 	public void setTagValue(String[] val, boolean property)
 	{
 		setTagValue(val);
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 		
 	}
@@ -1272,11 +1272,11 @@ public class TagData
 	 * TODO: test before start import
 	 * @return if TagData value is required for import
 	 */
-	public boolean getTagProp() {
+	public boolean isRequired() {
 		return prop;
 	}
 	
-	public void setTagProp(boolean prop) {
+	public void setValueRequired(boolean prop) {
 		this.prop = prop;
 	}
 	

@@ -99,7 +99,7 @@ public class TagDataParser {
                 t = new TagData(parent, tagName, tagVal, tagUnit, false, tagType, defaultVal.split(","));
             }
             t.setVisible(Boolean.parseBoolean(tagVis));
-            t.setTagProp(Boolean.parseBoolean(tagReq));
+            t.setValueRequired(Boolean.parseBoolean(tagReq));
 
         }
         return t;
