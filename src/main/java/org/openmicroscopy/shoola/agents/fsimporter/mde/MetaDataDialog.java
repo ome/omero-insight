@@ -392,6 +392,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 		filterCB = new JCheckBox("show only required");
 		filterCB.setSelected(false);
+		filterCB.setToolTipText("Show only objects with required tag input");
 
 
 		bar.add(barR);
