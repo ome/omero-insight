@@ -179,7 +179,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener, ItemLis
 	public void valueChanged(TreeSelectionEvent e) {
 		
 		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) moduleTree.getLastSelectedPathComponent();
-		if(selectedNode == null || !controller.configurationExists(((ModuleTreeElement)selectedNode.getUserObject()).getType()))
+		if(selectedNode == null )
 			return;
 		try {
 			selectModuleAction(selectedNode);
@@ -536,8 +536,10 @@ public class MDEContent extends JPanel implements TreeSelectionListener, ItemLis
 			this.filterRequired=false;
 		}
 		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) moduleTree.getLastSelectedPathComponent();
-		if(selectedNode == null || !controller.configurationExists(((ModuleTreeElement)selectedNode.getUserObject()).getType()))
+
+		if(selectedNode == null ) {
 			return;
+		}
 		try {
 			selectModuleAction(selectedNode);
 		}catch(Exception ex) {

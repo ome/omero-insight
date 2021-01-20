@@ -159,7 +159,14 @@ public class ModuleContentGUI extends JPanel {
 		}else {
 			addLeafContent(parent,node);
 		}
-	}
+	}else{
+			for(int i = 0 ; i < node.getChildCount(); i++) {
+				String type=((ModuleTreeElement) ((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject()).getType();
+				if(controller.configurationExists(type)) {
+					addContent(parent,(DefaultMutableTreeNode)node.getChildAt(i));
+				}
+			}
+		}
 	}
 	
 	private void addLeafContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
