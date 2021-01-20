@@ -366,7 +366,8 @@ public class TagData
 		JPanel labelPane=new JPanel(new BorderLayout());
 		// define size of label panel
 		labelPane.setPreferredSize(new Dimension(SIZE_LABEL_W,SIZE_LABEL_H));
-		JTextField labelName=new JTextField(""+name+": ");
+		String labelRequired=isRequired()?"*":"";
+		JTextField labelName=new JTextField(""+name+labelRequired+": ");
 		labelName.setEditable(false);
 		
 		if(getTagUnitString().equals("")) {
