@@ -36,7 +36,6 @@ public class TagDataParser {
     final String ATTR_VISIBLE="Visible";
     final String ATTR_UNIT="Unit";
     final String ATTR_TYPE="Type";
-    final String ATTR_REQUIRED="Required";
 
     /**
      * Builds {@link TagData} element with his properties as attributes.
@@ -82,7 +81,6 @@ public class TagDataParser {
             String tagVis = eElement.getAttribute(ATTR_VISIBLE);
             String defaultVal = eElement.getAttribute(ATTR_DEFAULT_VAL);
             String tagType = eElement.getAttribute(ATTR_TYPE);
-            String tagReq = eElement.getAttribute(ATTR_REQUIRED);
 
             boolean standardConstr=true;
             if (tagType.equals(TagData.ARRAYFIELDS) ){
@@ -99,7 +97,6 @@ public class TagDataParser {
                 t = new TagData(parent, tagName, tagVal, tagUnit, false, tagType, defaultVal.split(","));
             }
             t.setVisible(Boolean.parseBoolean(tagVis));
-            t.setValueRequired(Boolean.parseBoolean(tagReq));
 
         }
         return t;

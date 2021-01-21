@@ -78,6 +78,7 @@ public class ModuleController {
 	private MDEConfiguration mdeConf;
 	private String micName;
 	private String mdeConfigPath;
+	private boolean filterRequired;
 	
 	/**
 	 * Constructor for dir element
@@ -278,6 +279,10 @@ public class ModuleController {
 	public void setCurrentMicName(String micName) {
 		this.micName=micName;
 	}
+
+	public void setFilterRequired(boolean filterval){this.filterRequired=filterval;}
+
+	public boolean shouldFilterRequired(){return this.filterRequired;}
 	
 	
 	public void initMDEConfiguration(String curMic,String configPath) {

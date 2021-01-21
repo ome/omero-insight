@@ -81,7 +81,6 @@ public class MDEContent extends JPanel implements TreeSelectionListener, ItemLis
 	// copy of initial file object tree
 	private DefaultMutableTreeNode fileObjectTree;
 
-	private boolean filterRequired;
 	
 	/**
 	 * Build  module tree from given file
@@ -92,7 +91,6 @@ public class MDEContent extends JPanel implements TreeSelectionListener, ItemLis
 		super(new BorderLayout());
 		
 		this.controller = controller;
-		this.filterRequired=false;
 //		controller.printObjects();
 		
 		if(ome!=null) {
@@ -167,7 +165,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener, ItemLis
 	private void showModuleContent(DefaultMutableTreeNode object) {
 		//remove former content
 		moduleContentPanel.removeAll();
-		moduleContentPanel.add(new ModuleContentGUI(object,hardwareTables, this.filterRequired),BorderLayout.CENTER);
+		moduleContentPanel.add(new ModuleContentGUI(object,hardwareTables, controller.shouldFilterRequired()),BorderLayout.CENTER);
 		moduleContentPanel.revalidate();
 		moduleContentPanel.repaint();
 		revalidate();
@@ -530,10 +528,10 @@ public class MDEContent extends JPanel implements TreeSelectionListener, ItemLis
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		if(e.getStateChange()==1){
-			this.filterRequired=true;
+			controller.setFilterRequired(true);
 
 		}else{
-			this.filterRequired=false;
+			controller.setFilterRequired(false);
 		}
 		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) moduleTree.getLastSelectedPathComponent();
 

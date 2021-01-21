@@ -319,7 +319,7 @@ public class TagData
 		this.parent=parent;
 		
 		tagInfo="";
-		setValueRequired(prop);
+		setValueRequired(false);
 		setVisible(true);
 		status=EMPTY;
 		
@@ -1531,10 +1531,11 @@ public class TagData
 	public void setProperties(TagDataProp prop) {
 		setVisible(prop.isVisible());
 		setTagUnit(prop.getUnitSymbol());
+		setValueRequired(prop.isRequired());
 	}
 
 	public TagDataProp getProperties() {
-		return new TagDataProp(getTagName(),getTagUnitString(),isVisible());
+		return new TagDataProp(getTagName(),getTagUnitString(),isVisible(),isRequired());
 	}
 	
 
