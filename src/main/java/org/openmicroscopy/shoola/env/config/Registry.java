@@ -42,7 +42,6 @@ import org.openmicroscopy.shoola.env.ui.TaskBar;
 import org.openmicroscopy.shoola.env.ui.UserNotifier;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * Declares the operations to be used to access configuration entries and 
