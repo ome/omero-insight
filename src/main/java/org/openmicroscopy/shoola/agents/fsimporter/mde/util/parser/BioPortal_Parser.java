@@ -19,6 +19,7 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -53,7 +54,8 @@ public class BioPortal_Parser extends OntologyParser {
         try{
             id_utf8= URLEncoder.encode(termID_href, "UTF-8");
         }catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] Encoding error for ID_href");
+            return null;
         }
         return REST_URL+"/ontologies/"+ontology_acronym+"/classes/"+id_utf8+"/children";
     }
