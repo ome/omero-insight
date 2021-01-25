@@ -38,10 +38,12 @@ import java.util.ArrayList;
  **/
 public class BioPortal_Parser extends OntologyParser {
     //static final String REST_URL = "http://data.bioontology.org";
-    static final String API_KEY = "c6ae1b27-9f86-4e3c-9dcf-087e1156eabe";
+    String API_KEY = "c6ae1b27-9f86-4e3c-9dcf-087e1156eabe";
 
-    public BioPortal_Parser(String ontology_restapi_url) {
+    public BioPortal_Parser(String ontology_restapi_url, String api_key) {
         super(ontology_restapi_url);
+        if(api_key!=null && !api_key.isEmpty())
+            this.API_KEY=api_key;
     }
 
 

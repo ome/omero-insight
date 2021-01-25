@@ -42,6 +42,7 @@ public class TagDataParser {
     final String ATTR_TYPE="Type";
     final String ELEM_ONTOLOGY="Ontology";
     final String ATTR_RESTURL="URL_restapi";
+    final String ATTR_API_KEY = "API_key";
     final String ATTR_ONTO_ACRO="Acronym";
     final String ATTR_ONTO_REF="ID_href";
 
@@ -130,6 +131,10 @@ public class TagDataParser {
             }
 
             String ontology_RESTAPI_url=eElement.getAttribute(ATTR_RESTURL);
+            String api_key = "";
+            if(eElement.hasAttribute(ATTR_API_KEY)){
+                api_key=eElement.getAttribute(ATTR_API_KEY);
+            }
             String ontologyAcronym = eElement.getAttribute(ATTR_ONTO_ACRO);
             String ontologyRef = eElement.getAttribute(ATTR_ONTO_REF);
 
@@ -139,7 +144,7 @@ public class TagDataParser {
                 return null;
             }
 
-            BioPortal_Parser oParser = new BioPortal_Parser(ontology_RESTAPI_url);
+            BioPortal_Parser oParser = new BioPortal_Parser(ontology_RESTAPI_url,api_key);
             try {
                 labelList = oParser.getSubLabels(ontologyAcronym, ontologyRef);
 

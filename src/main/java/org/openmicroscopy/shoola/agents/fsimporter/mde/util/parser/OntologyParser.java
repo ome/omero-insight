@@ -99,6 +99,7 @@ public abstract class OntologyParser {
             }
             rd.close();
         } catch (Exception e) {
+            // to check if exception: url_restapi and api_key
             ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't create url connection to "+urlToGet);
         }
         return result;
