@@ -123,7 +123,7 @@ public class TagData
 	// kind of inputfields
 	public static final String TEXTFIELD="TextField";
 	public static final String COMBOBOX="ComboBox";
-	public static final String CHECK_COMBOBOX="CheckBoxComboBox";
+	public static final String CHECK_COMBOBOX="CheckComboBox";
 	public static final String TEXTPANE="TextPane"; //unused?
 	public static final String CHECKBOX="CheckBox"; //unused?
 	public static final String ARRAYFIELDS="ArrayField";
@@ -319,7 +319,7 @@ public class TagData
 		this.parent=parent;
 		
 		tagInfo="";
-		setTagProp(prop);
+		setValueRequired(false);
 		setVisible(true);
 		status=EMPTY;
 		
@@ -366,7 +366,8 @@ public class TagData
 		JPanel labelPane=new JPanel(new BorderLayout());
 		// define size of label panel
 		labelPane.setPreferredSize(new Dimension(SIZE_LABEL_W,SIZE_LABEL_H));
-		JTextField labelName=new JTextField(""+name+": ");
+		String labelRequired=isRequired()?"*":"";
+		JTextField labelName=new JTextField(""+name+labelRequired+": ");
 		labelName.setEditable(false);
 		
 		if(getTagUnitString().equals("")) {
@@ -536,7 +537,7 @@ public class TagData
 		case CHECK_COMBOBOX:
 			inputField =initCheckComboBox();
 			setValCheckComboBox(inputField);
-			((CheckBoxCombo) inputField).addActionListener(fieldActionListener);
+			((CheckComboBox) inputField).addActionListener(fieldActionListener);
 			inputField.addFocusListener(listener);
 			inputField.addKeyListener(listenerKey);
 			inputField.setToolTipText(tagInfo);
@@ -614,11 +615,11 @@ public class TagData
 
 	private JComponent initCheckComboBox()
 	{
-		CheckBoxCombo field;
+		CheckComboBox field;
 		if(defaultValue!=null) {
-			field = new CheckBoxCombo(defaultValue);
+			field = new CheckComboBox(defaultValue);
 		}else {
-			field= new CheckBoxCombo();
+			field= new CheckComboBox();
 		}
 		return field;
 	}
@@ -868,7 +869,9 @@ public class TagData
 				val[0]= ((JCheckBox)source).isSelected()? "true" : "false";
 				break;
 			case CHECK_COMBOBOX:
-				val = ((CheckBoxCombo) source).getSelectedVal();
+				val=new String[1];
+				val[0] = ((CheckComboBox) source).getSelectedItemsAsString();
+
 				break;
 			default:
 				break;
@@ -1019,14 +1022,14 @@ public class TagData
 	public void setTagValue(String val, boolean property)
 	{
 		setTagValue(val);
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 	}
 
 	public void setTagValue(String val, int index, boolean property)
 	{
 		setTagValue(val,index);
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 	}
 	
@@ -1037,14 +1040,14 @@ public class TagData
 		}else {
 			setTagValue("",index);
 		}
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 	}
 
 	public void setTagValue(String[] val, boolean property)
 	{
 		setTagValue(val);
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 		
 	}
@@ -1251,7 +1254,7 @@ public class TagData
 	}
 	
 	private void setValCheckComboBox(JComponent inputField) {
-		((CheckBoxCombo) inputField).init(value);
+		((CheckComboBox) inputField).init_selectedValues(value);
 	}
 
 	private void setValTextField(JComponent inputField) {
@@ -1272,11 +1275,11 @@ public class TagData
 	 * TODO: test before start import
 	 * @return if TagData value is required for import
 	 */
-	public boolean getTagProp() {
+	public boolean isRequired() {
 		return prop;
 	}
 	
-	public void setTagProp(boolean prop) {
+	public void setValueRequired(boolean prop) {
 		this.prop = prop;
 	}
 	
@@ -1530,10 +1533,11 @@ public class TagData
 	public void setProperties(TagDataProp prop) {
 		setVisible(prop.isVisible());
 		setTagUnit(prop.getUnitSymbol());
+		setValueRequired(prop.isRequired());
 	}
 
 	public TagDataProp getProperties() {
-		return new TagDataProp(getTagName(),getTagUnitString(),isVisible());
+		return new TagDataProp(getTagName(),getTagUnitString(),isVisible(),isRequired());
 	}
 	
 

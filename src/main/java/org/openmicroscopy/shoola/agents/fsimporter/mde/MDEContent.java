@@ -20,9 +20,9 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -34,8 +34,6 @@ import javax.swing.JSplitPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 
 import ome.xml.model.*;
 
@@ -51,7 +49,6 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.con
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ExperimentConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilamentConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilterConverter;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.FilterSetConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.GenericExcitationSourceConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ImageConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.ImagingEnvConverter;
@@ -73,7 +70,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
  * @author Susanne Kunis<susannekunis at gmail dot com>
  *
  */
-public class MDEContent extends JPanel implements TreeSelectionListener{
+public class MDEContent extends JPanel implements TreeSelectionListener, ItemListener {
 	
 	private DynamicModuleTree moduleTree;
 	private JPanel moduleContentPanel;
@@ -83,7 +80,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	
 	// copy of initial file object tree
 	private DefaultMutableTreeNode fileObjectTree;
-	
+
 	
 	/**
 	 * Build  module tree from given file
@@ -168,7 +165,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	private void showModuleContent(DefaultMutableTreeNode object) {
 		//remove former content
 		moduleContentPanel.removeAll();
-		moduleContentPanel.add(new ModuleContentGUI(object,hardwareTables),BorderLayout.CENTER);
+		moduleContentPanel.add(new ModuleContentGUI(object,hardwareTables, controller.shouldFilterRequired()),BorderLayout.CENTER);
 		moduleContentPanel.revalidate();
 		moduleContentPanel.repaint();
 		revalidate();
@@ -180,7 +177,7 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 	public void valueChanged(TreeSelectionEvent e) {
 		
 		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) moduleTree.getLastSelectedPathComponent();
-		if(selectedNode == null || !controller.configurationExists(((ModuleTreeElement)selectedNode.getUserObject()).getType()))
+		if(selectedNode == null )
 			return;
 		try {
 			selectModuleAction(selectedNode);
@@ -523,4 +520,28 @@ public class MDEContent extends JPanel implements TreeSelectionListener{
 				}
 			}
 		}
+
+	/**
+	 * Listener for checkbox "show only objects with required fields
+ 	 * @param e
+	 */
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		if(e.getStateChange()==1){
+			controller.setFilterRequired(true);
+
+		}else{
+			controller.setFilterRequired(false);
+		}
+		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) moduleTree.getLastSelectedPathComponent();
+
+		if(selectedNode == null ) {
+			return;
+		}
+		try {
+			selectModuleAction(selectedNode);
+		}catch(Exception ex) {
+			ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] Filter required failed");
+		}
 	}
+}

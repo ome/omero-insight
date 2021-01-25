@@ -21,7 +21,6 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.components.view;
 import javax.swing.table.DefaultTableModel;
 
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.MDEConfiguration;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
@@ -63,7 +62,7 @@ public class TagDataTableModel extends DefaultTableModel{
 			o[4]=c.isVisible();
 			o[5]=c.getDefaultValuesAsString();
 			o[6]=c.getTagType();
-			o[7]=c.getTagProp();
+			o[7]=c.isRequired();
 		}
 		return o;
 	}

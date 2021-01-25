@@ -20,18 +20,8 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.components.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.Font;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -40,12 +30,9 @@ import omero.log.LogMessage;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleContent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleList;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.redesign.ObjectTable;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
-import org.openmicroscopy.shoola.util.ui.JXTaskPaneContainerSingle;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -65,10 +52,10 @@ public class ModuleContentGUI extends JPanel {
 //	private String name;
 	
 	public ModuleContentGUI() {
-		this(null,null);
+		this(null,null, false);
 	}
 	
-	public ModuleContentGUI(DefaultMutableTreeNode root,LinkedHashMap<String, ObjectTable> hardwareTables) {
+	public ModuleContentGUI(DefaultMutableTreeNode root, LinkedHashMap<String, ObjectTable> hardwareTables, boolean filterRequired) {
 		setLayout(new BorderLayout());
 		this.controller=ModuleController.getInstance();
 		this.hardwareTables=hardwareTables;
@@ -80,14 +67,62 @@ public class ModuleContentGUI extends JPanel {
 				vl.setGap(2);
 			}
 			panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-			
-			addContent(panel,root);
+
+			if(!filterRequired)
+				addContent(panel,root);
+			else
+				addFilteredContent(panel,root);
+
 			add(panel,BorderLayout.CENTER);
 			
 		}else {
 			add(new JLabel("NO Content"),BorderLayout.CENTER);
 		}
 		
+	}
+
+	private void addFilteredContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
+		String typec=((ModuleTreeElement) node.getUserObject()).getType();
+		if(controller.configurationExists(typec) && ((ModuleTreeElement) node.getUserObject()).hasRequiredData()) {
+			if(node.getChildCount()>0) {
+				JXTaskPaneContainer nodeContent = new JXTaskPaneContainer();
+				nodeContent.setBackground(UIUtilities.BACKGROUND);
+				if (nodeContent.getLayout() instanceof VerticalLayout) {
+					VerticalLayout vl = (VerticalLayout) nodeContent.getLayout();
+					vl.setGap(2);
+				}
+				nodeContent.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+				//add this content
+				try {
+					JXTaskPane taskPane=new ContentViewer(node.getUserObject().toString(),
+							getHardwareTable(((ModuleTreeElement) node.getUserObject()).getType()), ((ModuleTreeElement)node.getUserObject()).getData());
+					for(int i = 0 ; i < node.getChildCount(); i++) {
+						String type=((ModuleTreeElement) ((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject()).getType();
+						if(controller.configurationExists(type)) {
+							addFilteredContent(nodeContent,(DefaultMutableTreeNode)node.getChildAt(i));
+						}
+					}
+					taskPane.add(nodeContent);
+					parent.add(taskPane);
+				}catch(Exception e) {
+					String s = "[MDE] can't load content of "+node.getUserObject().toString();
+					LogMessage msg = new LogMessage();
+					msg.print(s);
+					msg.print(e);
+					ImporterAgent.getRegistry().getLogger().error(this, msg);
+				}
+
+			}else {
+				addLeafContent(parent,node);
+			}
+		}else{
+			for(int i = 0 ; i < node.getChildCount(); i++) {
+				String type=((ModuleTreeElement) ((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject()).getType();
+				if(controller.configurationExists(type)) {
+					addFilteredContent(parent,(DefaultMutableTreeNode)node.getChildAt(i));
+				}
+			}
+		}
 	}
 	
 	private void addContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {
@@ -124,7 +159,14 @@ public class ModuleContentGUI extends JPanel {
 		}else {
 			addLeafContent(parent,node);
 		}
-	}
+	}else{
+			for(int i = 0 ; i < node.getChildCount(); i++) {
+				String type=((ModuleTreeElement) ((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject()).getType();
+				if(controller.configurationExists(type)) {
+					addContent(parent,(DefaultMutableTreeNode)node.getChildAt(i));
+				}
+			}
+		}
 	}
 	
 	private void addLeafContent(JXTaskPaneContainer parent,DefaultMutableTreeNode node) {

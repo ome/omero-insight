@@ -27,11 +27,13 @@ public class TagDataProp {
 	String name;
 	Boolean visible;
 	String unitSymbol;
+	boolean required;
 	
-	public TagDataProp(String name, String unitSymbol, Boolean vis) {
+	public TagDataProp(String name, String unitSymbol, Boolean vis,Boolean req) {
 		this.name = name;
 		this.visible=vis;
 		this.unitSymbol=unitSymbol;
+		this.required=req;
 	}
 
 	public TagDataProp(TagDataProp orig) {
@@ -40,6 +42,7 @@ public class TagDataProp {
 		this.name=orig.name;
 		this.visible=orig.visible;
 		this.unitSymbol=orig.unitSymbol;
+		this.required=orig.required;
 	}
 
 	public String getName() {
@@ -54,4 +57,5 @@ public class TagDataProp {
 	public String getUnitSymbol() {
 		return unitSymbol;
 	}
+	public Boolean isRequired(){return required;}
 }

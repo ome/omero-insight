@@ -84,6 +84,7 @@ public class XMLWriter {
 
 	final String ATTR_NAME="Name";
 	final String ATTR_VISIBLE="Visible";
+	final String ATTR_REQUIRED="Required";
 	final String ATTR_UNIT="Unit";
 	final String ATTR_TYPE="Type";
 	final String ATTR_INSERT="Insert";
@@ -551,7 +552,8 @@ public class XMLWriter {
 				String tagName=eElement.getAttribute(ATTR_NAME);
 				String tagUnit=eElement.getAttribute(ATTR_UNIT);
 				String tagVis=eElement.getAttribute(ATTR_VISIBLE);
-				TagDataProp t= new TagDataProp(tagName, tagUnit,Boolean.parseBoolean(tagVis));
+				String tagReq=eElement.getAttribute(ATTR_REQUIRED);
+				TagDataProp t= new TagDataProp(tagName, tagUnit,Boolean.parseBoolean(tagVis), Boolean.parseBoolean(tagReq));
  				list.put(tagName,t);
 			}
 		}

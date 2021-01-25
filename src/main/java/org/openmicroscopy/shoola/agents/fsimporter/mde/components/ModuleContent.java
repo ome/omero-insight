@@ -137,6 +137,7 @@ public class ModuleContent {
 	
 	/**
 	 * set properties like visible, unit in given list according the setting in current tagList
+	 * and if field is required.
 	 * @param list data for object
 	 */
 	private void takeOverProperties(LinkedHashMap<String, TagData> list) {
@@ -150,6 +151,7 @@ public class ModuleContent {
 					//TODO umrechnen:
 					data.setTagUnit(entry.getValue().getTagUnitString());
 				}
+				data.setValueRequired(entry.getValue().isRequired());
 			}
 		}
 	}
@@ -280,4 +282,14 @@ public class ModuleContent {
 		return false;
 	}
 
+    public boolean hasRequiredData() {
+		if(tagList!=null) {
+			for(Entry<String, TagData> entry: tagList.entrySet()) {
+				if(entry.getValue().isRequired()){
+					return true;
+				}
+			}
+		}
+		return false;
+    }
 }
