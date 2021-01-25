@@ -332,7 +332,13 @@ public class MDEHelper {
 		}
 		return null;
 	}
-	
+
+	/**
+	 *
+	 * @param tree
+	 * @param type
+	 * @return null or list of objects with given type in the given tree
+	 */
 	public static List<DefaultMutableTreeNode> getChildsByType(DefaultMutableTreeNode tree, String type) {
 		if(tree!=null) {
 			List<DefaultMutableTreeNode> listOfChilds=new ArrayList<>();
@@ -343,7 +349,7 @@ public class MDEHelper {
 					listOfChilds.add(node);
 				}
 			}
-			return listOfChilds;
+			return listOfChilds.size()>0 ? listOfChilds:null;
 		}
 		return null;
 	}
