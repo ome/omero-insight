@@ -319,7 +319,7 @@ public class TagData
 		this.parent=parent;
 		
 		tagInfo="";
-		setTagProp(prop);
+		setValueRequired(false);
 		setVisible(true);
 		status=EMPTY;
 		
@@ -366,7 +366,8 @@ public class TagData
 		JPanel labelPane=new JPanel(new BorderLayout());
 		// define size of label panel
 		labelPane.setPreferredSize(new Dimension(SIZE_LABEL_W,SIZE_LABEL_H));
-		JTextField labelName=new JTextField(""+name+": ");
+		String labelRequired=isRequired()?"*":"";
+		JTextField labelName=new JTextField(""+name+labelRequired+": ");
 		labelName.setEditable(false);
 		
 		if(getTagUnitString().equals("")) {
@@ -1021,14 +1022,14 @@ public class TagData
 	public void setTagValue(String val, boolean property)
 	{
 		setTagValue(val);
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 	}
 
 	public void setTagValue(String val, int index, boolean property)
 	{
 		setTagValue(val,index);
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 	}
 	
@@ -1039,14 +1040,14 @@ public class TagData
 		}else {
 			setTagValue("",index);
 		}
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 	}
 
 	public void setTagValue(String[] val, boolean property)
 	{
 		setTagValue(val);
-		setTagProp(property);
+		setValueRequired(property);
 		valChanged=false;
 		
 	}
@@ -1274,11 +1275,11 @@ public class TagData
 	 * TODO: test before start import
 	 * @return if TagData value is required for import
 	 */
-	public boolean getTagProp() {
+	public boolean isRequired() {
 		return prop;
 	}
 	
-	public void setTagProp(boolean prop) {
+	public void setValueRequired(boolean prop) {
 		this.prop = prop;
 	}
 	
@@ -1532,10 +1533,11 @@ public class TagData
 	public void setProperties(TagDataProp prop) {
 		setVisible(prop.isVisible());
 		setTagUnit(prop.getUnitSymbol());
+		setValueRequired(prop.isRequired());
 	}
 
 	public TagDataProp getProperties() {
-		return new TagDataProp(getTagName(),getTagUnitString(),isVisible());
+		return new TagDataProp(getTagName(),getTagUnitString(),isVisible(),isRequired());
 	}
 	
 
