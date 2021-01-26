@@ -26,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 1/8/2021
@@ -39,12 +40,12 @@ import java.util.ArrayList;
  **/
 public class BioPortal_Parser extends OntologyParser {
     //static final String REST_URL = "http://data.bioontology.org";
-    String API_KEY = "c6ae1b27-9f86-4e3c-9dcf-087e1156eabe";
+    private String api_key = "c6ae1b27-9f86-4e3c-9dcf-087e1156eabe";
 
     public BioPortal_Parser(String ontology_restapi_url, String api_key) {
         super(ontology_restapi_url);
-        if(api_key!=null && !api_key.isEmpty())
-            this.API_KEY=api_key;
+        if (api_key!=null && !api_key.isEmpty())
+            this.api_key=api_key;
     }
 
 
@@ -61,11 +62,11 @@ public class BioPortal_Parser extends OntologyParser {
     }
 
     @Override
-    protected ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) throws Exception {
+    protected List<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) throws Exception {
         if(ontology_node==null){
             return null;
         }
-        ArrayList<String> labels = new ArrayList<String>();
+        List<String> labels = new ArrayList<String>();
         // From the returned page, get the hypermedia link to the next page
         String nextPage = ontology_node.get("links").get("nextPage").asText();
 
@@ -92,11 +93,11 @@ public class BioPortal_Parser extends OntologyParser {
     }
 
     @Override
-    protected ArrayList<String> getSubClassLabels(JsonNode ontology_node) throws Exception {
+    protected List<String> getSubClassLabels(JsonNode ontology_node) throws Exception {
         if(ontology_node==null){
             return null;
         }
-        ArrayList<String> labels = new ArrayList<String>();
+        List<String> labels = new ArrayList<String>();
         // From the returned page, get the hypermedia link to the next page
         String nextPage = ontology_node.get("links").get("nextPage").asText();
 
@@ -104,7 +105,7 @@ public class BioPortal_Parser extends OntologyParser {
         // When we hit the last page, the while loop will exit
         while (nextPage.length() != 0) {
             for (JsonNode cls : ontology_node.get("collection")) {
-                ArrayList subNodes_label = null;
+                List subNodes_label = null;
                 if(!cls.get("links").get("children").isNull()){
                     subNodes_label = getSubClassLabels(getNode(cls.get("links").get("children").asText()));
                 }
@@ -131,7 +132,7 @@ public class BioPortal_Parser extends OntologyParser {
     protected HttpURLConnection initURLConnection(URL url) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
-        conn.setRequestProperty("Authorization", "apikey token=" + API_KEY);
+        conn.setRequestProperty("Authorization", "apikey token=" + this.api_key);
         conn.setRequestProperty("Accept", "application/json");
         return conn;
     }

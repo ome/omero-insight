@@ -26,7 +26,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 1/8/2021
@@ -53,7 +53,7 @@ public abstract class OntologyParser {
         }
         JsonNode ontology_node = getNode(formatURL(ontology_acronym,termID_href));
 
-        ArrayList<String> labels=getSubClassLabels(ontology_node);
+        List<String> labels=getSubClassLabels(ontology_node);
         String[] result=null;
         if(labels!=null) {
             result = (String[]) labels.toArray(new String[0]);
@@ -113,7 +113,7 @@ public abstract class OntologyParser {
      * @return labels of all subclasses of given termID, if subclass is a leaf
      * @throws Exception
      */
-    protected abstract ArrayList<String> getSubClassLabels(JsonNode ontology_node) throws Exception;
+    protected abstract List<String> getSubClassLabels(JsonNode ontology_node) throws Exception;
 
     /**
      *
@@ -122,6 +122,6 @@ public abstract class OntologyParser {
      * @return tree path labels of all subclasses of given termID, delimeter= ":"
      * @throws Exception
      */
-    protected abstract ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) throws Exception;
+    protected abstract List<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) throws Exception;
     protected abstract HttpURLConnection initURLConnection(URL url) throws Exception;
 }

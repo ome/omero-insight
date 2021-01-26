@@ -26,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 1/8/2021
@@ -56,11 +57,11 @@ public class OLS_Parser extends OntologyParser {
     }
 
     @Override
-    protected ArrayList<String> getSubClassLabels(JsonNode ontology_node) throws Exception {
+    protected List<String> getSubClassLabels(JsonNode ontology_node) throws Exception {
         if(ontology_node==null){
             return null;
         }
-        ArrayList<String> labels = new ArrayList<String>();
+        List<String> labels = new ArrayList<String>();
         // From the returned page, get the hypermedia link to the next page
         JsonNode embedded_node = ontology_node.get("_embedded");
 
@@ -82,11 +83,11 @@ public class OLS_Parser extends OntologyParser {
     }
 
     @Override
-    protected ArrayList<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) throws Exception {
+    protected List<String> getSubClassLabelsWithParents(JsonNode ontology_node, String parentLabel) throws Exception {
         if(ontology_node==null){
             return null;
         }
-        ArrayList<String> labels = new ArrayList<String>();
+        List<String> labels = new ArrayList<String>();
         // From the returned page, get the hypermedia link to the next page
         JsonNode embedded_node = ontology_node.get("_embedded");
 
