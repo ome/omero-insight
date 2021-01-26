@@ -1,3 +1,14 @@
+5.6.0 (January 2021)
+--------------------
+
+- MDE Feature: Display the content of objects that contain required tags [#191](https://github.com/ome/omero-insight/issues/191)
+- MDE Feature: Add multiselection combobox as available inputfield type [#183](https://github.com/ome/omero-insight/issues/183)
+- MDE Bugfix: Use correct LookupName for mde path  [#187](https://github.com/ome/omero-insight/issues/187)
+- MDE Bugfix: Fix error in creation of fields from objectDef  [#186](https://github.com/ome/omero-insight/issues/186)
+- MDE Bugfix: Create textfield if given type for inputField is unknown [#185](https://github.com/ome/omero-insight/issues/185)
+- MDE Bugfix: Disable filtering when no template is loaded [#179](https://github.com/ome/omero-insight/issues/179)
+- Replace Travis by GitHub actions [#173](https://github.com/ome/omero-insight/issues/173) and [#176](https://github.com/ome/omero-insight/issues/176)
+
 5.5.14 (October 2020)
 ---------------------
 
