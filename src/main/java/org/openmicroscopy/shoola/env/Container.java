@@ -140,7 +140,27 @@ public final class Container
 	{
 		return singleton;
 	}
-	
+
+	/**
+	 * Entry point to launch the container and bring up the whole client.
+	 * <p>The absolute path to the installation directory is obtained from
+	 * <code>home</code>.  If this parameter doesn't specify an absolute path,
+	 * then it'll be translated into an absolute path.  Translation is system
+	 * dependent &#151; in many cases, the path is resolved against the user
+	 * directory (typically the directory in which the JVM was invoked).</p>
+	 * <p>This method rolls back all executed tasks and terminates the program
+	 * if an error occurs during the initialization procedure.</p>
+	 *
+	 * @param home		Path to the installation directory.
+	 * 					If <code>null<code> or
+	 * 					empty, then the user directory is assumed.
+	 * @param configFile The configuration file.
+	 */
+	public static void startup(final String home, final String configFile)
+	{
+		startup(home, configFile, null);
+	}
+
 	/**
 	 * Entry point to launch the container and bring up the whole client.
 	 * <p>The absolute path to the installation directory is obtained from
@@ -155,6 +175,7 @@ public final class Container
 	 * 					If <code>null<code> or
 	 * 					empty, then the user directory is assumed.
 	 * @param configFile The configuration file.
+	 * @param cmdLineArgs Additional command line arguments
 	 */
 	public static void startup(final String home, final String configFile, final List<String> cmdLineArgs)
 	{
