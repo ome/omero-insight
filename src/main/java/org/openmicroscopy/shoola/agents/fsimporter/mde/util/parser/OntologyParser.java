@@ -86,7 +86,7 @@ public abstract class OntologyParser {
     private  String get_inputStreamAsStringFromURL(String urlToGet) {
         URL url;
         HttpURLConnection conn;
-        BufferedReader rd;
+        BufferedReader rd = null;
         String line;
         String result = "";
         try {
@@ -97,10 +97,13 @@ public abstract class OntologyParser {
             while ((line = rd.readLine()) != null) {
                 result += line;
             }
-            rd.close();
         } catch (Exception e) {
             // to check if exception: url_restapi and api_key
             ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't create url connection to "+urlToGet);
+        } finally {
+            try {
+                if (rd != null) rd.close();
+            } catch (Exception e) {}
         }
         return result;
     }
