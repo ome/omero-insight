@@ -18,10 +18,14 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
+import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.BioPortal_Parser;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.OLS_Parser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Parse a {@link TagData} element to an {@link Element} object and vice-versa.
@@ -36,6 +40,11 @@ public class TagDataParser {
     final String ATTR_VISIBLE="Visible";
     final String ATTR_UNIT="Unit";
     final String ATTR_TYPE="Type";
+    final String ELEM_ONTOLOGY="Ontology";
+    final String ATTR_RESTURL="URL_restapi";
+    final String ATTR_API_KEY = "API_key";
+    final String ATTR_ONTO_ACRO="Acronym";
+    final String ATTR_ONTO_REF="ID_href";
 
     /**
      * Builds {@link TagData} element with his properties as attributes.
@@ -82,6 +91,15 @@ public class TagDataParser {
             String defaultVal = eElement.getAttribute(ATTR_DEFAULT_VAL);
             String tagType = eElement.getAttribute(ATTR_TYPE);
 
+            String[] defaultValList=null;
+            if(eElement.hasChildNodes()){
+                defaultValList=parseOntology(eElement);
+            }
+
+            if (defaultValList == null) {
+                defaultValList=defaultVal.split(",");
+            }
+
             boolean standardConstr=true;
             if (tagType.equals(TagData.ARRAYFIELDS) ){
                 if(tagVal!=null && tagVal.length()>0) {
@@ -94,11 +112,51 @@ public class TagDataParser {
                 }
             }
             if(standardConstr){
-                t = new TagData(parent, tagName, tagVal, tagUnit, false, tagType, defaultVal.split(","));
+                t = new TagData(parent, tagName, tagVal, tagUnit, false, tagType, defaultValList);
             }
             t.setVisible(Boolean.parseBoolean(tagVis));
 
         }
         return t;
+    }
+
+    private String[] parseOntology(Element eElement) {
+        String[] labelList=null;
+
+        NodeList nodeList= (NodeList) eElement.getElementsByTagName(ELEM_ONTOLOGY);
+        if(nodeList!=null && nodeList.getLength()>0){
+            Node n=nodeList.item(0);
+            if(n.getNodeName().equals(ELEM_ONTOLOGY) && n.getNodeType()==Node.ELEMENT_NODE) {
+                eElement = (Element) n;
+            }
+
+            String ontology_RESTAPI_url=eElement.getAttribute(ATTR_RESTURL);
+            String api_key = "";
+            if(eElement.hasAttribute(ATTR_API_KEY)){
+                api_key=eElement.getAttribute(ATTR_API_KEY);
+            }
+            String ontologyAcronym = eElement.getAttribute(ATTR_ONTO_ACRO);
+            String ontologyRef = eElement.getAttribute(ATTR_ONTO_REF);
+
+            if(ontology_RESTAPI_url==null || ontology_RESTAPI_url.isEmpty() ||
+                ontologyAcronym==null || ontologyAcronym.isEmpty() ||
+                ontologyRef==null || ontologyRef.isEmpty()){
+                return null;
+            }
+
+            BioPortal_Parser oParser = new BioPortal_Parser(ontology_RESTAPI_url,api_key);
+            try {
+                labelList = oParser.getSubLabels(ontologyAcronym, ontologyRef);
+
+                if (labelList == null) {
+                    OLS_Parser olsParser = new OLS_Parser(ontology_RESTAPI_url);
+                    labelList= olsParser.getSubLabels(ontologyAcronym, ontologyRef);
+                }
+            } catch (Exception e) {
+                ImporterAgent.getRegistry().getLogger().warn(this,
+                        "MDE: can't parse given ontology item [" + ontologyAcronym + ", " + ontologyRef + "]");
+            }
+        }
+        return labelList;
     }
 }
