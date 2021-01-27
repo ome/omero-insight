@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -216,7 +216,7 @@ public class ThumbnailLoader extends BatchCallTree {
                         try {
                             store = getThumbnailStore(pxd);
                             handleBatchCall(store, pxd, userId);
-                        } catch (DSAccessException | ServerError e) {
+                        } catch (Exception e) {
                             currentThumbnail = new ThumbnailData(pxd.getImage().getId(),
                                     getErrorIcon(), userId, false);
 
