@@ -123,7 +123,8 @@ public class TagData
 	// kind of inputfields
 	public static final String TEXTFIELD="TextField";
 	public static final String COMBOBOX="ComboBox";
-	public static final String CHECK_COMBOBOX="CheckComboBox";
+	public static final String CHECK_COMBOBOX_NEW="CheckComboBox";
+	public static final String CHECK_COMBOBOX="CheckBoxComboBox";
 	public static final String TEXTPANE="TextPane"; //unused?
 	public static final String CHECKBOX="CheckBox"; //unused?
 	public static final String ARRAYFIELDS="ArrayField";
@@ -440,6 +441,7 @@ public class TagData
 		case COMBOBOX:
 			setValComboBox(inputField);
 			break;
+		case CHECK_COMBOBOX_NEW:
 		case CHECK_COMBOBOX:
 			setValCheckComboBox(inputField);
 			break;
@@ -534,6 +536,7 @@ public class TagData
 			inputField.setToolTipText(tagInfo);
 //			inputField.setPreferredSize(new Dimension(250,20));
 			break;
+		case CHECK_COMBOBOX_NEW:
 		case CHECK_COMBOBOX:
 			inputField =initCheckComboBox();
 			setValCheckComboBox(inputField);
