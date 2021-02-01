@@ -1,5 +1,5 @@
-5.6.0 (January 2021)
---------------------
+5.5.15 (February 2021)
+----------------------
 
 - MDE Feature: Display the content of objects that contain required tags [#191](https://github.com/ome/omero-insight/issues/191)
 - MDE Feature: Add multiselection combobox as available inputfield type [#183](https://github.com/ome/omero-insight/issues/183)
