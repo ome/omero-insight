@@ -66,8 +66,9 @@ jobs:
       - name: Build Dmg
         if: startsWith(matrix.os, 'macos') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
         run: |
-          brew cask install zulu8
-          export JAVA_HOME='/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home'
+          brew tap bell-sw/liberica
+          brew install --cask liberica-jdk8-full
+          export JAVA_HOME='/Library/Java/JavaVirtualMachines/liberica-jdk-8-full.jdk/Contents/Home'
           export PATH=$JAVA_HOME/bin:$PATH
           ./gradlew packageApplicationDmg
           ./gradlew packageImporterApplicationDmg

@@ -74,7 +74,8 @@
   which comes bundled with JavaFX.
   To install run:
 
-      brew cask install zulu8
+      brew tap bell-sw/liberica
+      brew install --cask liberica-jdk8-full
 
   ### Windows
 
