@@ -85,10 +85,6 @@
 
       scoop install zulufx8
 
-  #### Chocolatey:
-
-      choco install zulu8
-
   #### Manually:
 
   To set up a build environment with Windows without using a package manager such as [Scoop](https://scoop.sh) or
