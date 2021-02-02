@@ -70,7 +70,7 @@
 
   ### OSX
 
-  If you are using [Homebrew](https://brew.sh/), you can install, for example, [OpenJDK 8](https://www.azul.com/downloads/zulu/)
+  If you are using [Homebrew](https://brew.sh/), you can install, for example, [OpenJDK 8](https://bell-sw.com/pages/downloads/)
   which comes bundled with JavaFX.
   To install run:
 
