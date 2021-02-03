@@ -12,7 +12,7 @@ jobs:
   build:
     strategy:
       matrix:
-        java: [1.8, 11]
+        java: [8.0.275, 11]
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: echo "$WIX\\bin" >> $GITHUB_PATH
       - name: Build Executable
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
         run: |
           choco uninstall innosetup
           choco install innosetup --version=5.6.1
@@ -52,7 +52,7 @@ jobs:
           ./gradlew packageApplicationMsi
           ./gradlew packageImporterApplicationMsi
       - name: Check MSI
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
         run: |
           msi=(`find build/packaged/installImporterDist/bundles -maxdepth 1 -name "*.msi"`)
           if [ ${#msi[@]} == 0 ]; then
@@ -64,36 +64,35 @@ jobs:
           fi
         shell: bash
       - name: Build Dmg
-        if: startsWith(matrix.os, 'macos') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        if: startsWith(matrix.os, 'macos') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
         run: |
-          brew cask install zulu8
-          export JAVA_HOME='/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home'
+          export JAVA_HOME='/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home'
           export PATH=$JAVA_HOME/bin:$PATH
           ./gradlew packageApplicationDmg
           ./gradlew packageImporterApplicationDmg
       - name: Upload zip and jar
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
         uses: actions/upload-artifact@v2
         with:
             name: artifacts
             path: build/distributions/OMERO*
             if-no-files-found: error
       - name: Upload jar
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
         uses: actions/upload-artifact@v2
         with:
           name: artifacts
           path: build/libs/omero_*
           if-no-files-found: error
       - name: Upload insight artifacts
-        if: startsWith(matrix.os, 'ubuntu') != true && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        if: startsWith(matrix.os, 'ubuntu') != true && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
         uses: actions/upload-artifact@v2
         with:
           name: artifacts
           path: build/packaged/main/bundles/*
           if-no-files-found: error
       - name: Upload importer artifacts
-        if: startsWith(matrix.os, 'ubuntu') != true && startsWith(github.ref, 'refs/tags') && matrix.java == '1.8'
+        if: startsWith(matrix.os, 'ubuntu') != true && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
         uses: actions/upload-artifact@v2
         with:
           name: artifacts
