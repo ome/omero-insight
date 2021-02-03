@@ -7,7 +7,7 @@
 - MDE Bugfix: Fix error in creation of fields from objectDef  [#186](https://github.com/ome/omero-insight/issues/186)
 - MDE Bugfix: Create textfield if given type for inputField is unknown [#185](https://github.com/ome/omero-insight/issues/185)
 - MDE Bugfix: Disable filtering when no template is loaded [#179](https://github.com/ome/omero-insight/issues/179)
-- Replace Travis by GitHub actions [#173](https://github.com/ome/omero-insight/issues/173) and [#176](https://github.com/ome/omero-insight/issues/176)
+- Replace Travis by GitHub actions [#173](https://github.com/ome/omero-insight/issues/173), [#176](https://github.com/ome/omero-insight/issues/176) and [#200](https://github.com/ome/omero-insight/pull/200)
 
 5.5.14 (October 2020)
 ---------------------
