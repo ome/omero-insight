@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -382,7 +382,8 @@ public class ScriptingDialog
 
             public void mouseReleased(MouseEvent e) {
                 Object src = e.getSource();
-                if (src instanceof Component) {
+                if (src instanceof Component &&
+                        ((Component)src).isVisible()) {
                     Point p = e.getPoint();
                     createOptionMenu().show((Component) src, p.x, p.y);
                 }
