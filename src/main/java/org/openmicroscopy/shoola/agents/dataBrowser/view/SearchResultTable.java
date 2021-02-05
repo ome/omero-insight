@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2014-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2014-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -103,6 +103,7 @@ public class SearchResultTable extends JXTable {
         setDefaultRenderer(DataObject.class, defaultRenderer);
         setDefaultRenderer(String.class, defaultRenderer);
         setDefaultRenderer(Icon.class, defaultRenderer);
+        setDefaultRenderer(Date.class, defaultRenderer);
 
         setDefaultEditor(DataObject.class, new DataObjectEditor());
 
