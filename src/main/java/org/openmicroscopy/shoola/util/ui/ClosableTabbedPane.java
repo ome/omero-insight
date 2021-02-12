@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.ClosableTabbedPane 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2008 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -168,6 +168,8 @@ public class ClosableTabbedPane
 	{
 		Component c = getComponentAt(index);
 		if (c instanceof ClosableTabbedPaneComponent) {
+			if (!((ClosableTabbedPaneComponent) c).isClosable())
+				return;
 			firePropertyChange(CLOSE_TAB_PROPERTY, null, c);
 		}
 		if (ui instanceof ClosableTabbedPaneUI) {
