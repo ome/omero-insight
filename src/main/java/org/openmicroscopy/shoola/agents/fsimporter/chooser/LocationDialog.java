@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2017 University of Dundee & Open Microscopy Environment.
+ *  Copyright (C) 2006-2021 University of Dundee & Open Microscopy Environment.
  *  All rights reserved.
  *
  *
@@ -39,6 +39,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -302,7 +303,7 @@ class LocationDialog extends JDialog implements ActionListener,
 	private Collection<GroupData> groups;
 
 	/** The current possible import location nodes. */
-	private Collection<TreeImageDisplay> objects;
+	private Collection<TreeImageDisplay> objects = new HashSet<>();
 
 	/** The list of currently available Projects */
 	private List<DataNode> projects = new ArrayList<DataNode>();
@@ -356,7 +357,8 @@ class LocationDialog extends JDialog implements ActionListener,
 		super(parent);
 		this.container = selectedContainer;
 		this.dataType = importDataType;
-		this.objects = objects;
+		if (objects != null)
+			this.objects.addAll(objects);
 		this.groups = model.getAvailableGroups();
 		this.model = model;
 		setModal(true);
@@ -1700,7 +1702,9 @@ class LocationDialog extends JDialog implements ActionListener,
 			   long userID)
 	{
 		this.dataType = type;
-		this.objects = objects;
+		this.objects.clear();
+		if (objects != null)
+			this.objects.addAll(objects);
 		this.container = container;
 		this.busyLabel.setBusy(false);
 		this.busyLabel.setVisible(false);
