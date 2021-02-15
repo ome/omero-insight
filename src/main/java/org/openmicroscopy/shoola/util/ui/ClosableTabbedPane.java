@@ -150,6 +150,10 @@ public class ClosableTabbedPane
         int tabCount = getTabCount();
         while (tabCount-- > 0)
             removeTabAt(tabCount);
+        if (getTabCount() > 0)
+        	// in case there are non-closable tabs,
+        	// set the last tab as selected
+			setSelectedIndex(getTabCount()-1);
     }
     
     /**
