@@ -153,7 +153,7 @@ public class ClosableTabbedPane
         if (getTabCount() > 0)
         	// in case there are non-closable tabs,
         	// set the last tab as selected
-			setSelectedIndex(getTabCount()-1);
+        	setSelectedIndex(getTabCount()-1);
     }
     
     /**
