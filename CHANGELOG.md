@@ -1,3 +1,15 @@
+5.5.16 (February 2021)
+----------------------
+
+- Allow to pass through commandline arguments [#197](https://github.com/ome/omero-insight/pull/197)
+- Build using Gradle 6 [#201](https://github.com/ome/omero-insight/pull/201)
+- BugFix: Avoid potential NPEs [#202](https://github.com/ome/omero-insight/pull/202)
+- BugFix: Prevent potential IllegalComponentStateException[#194](https://github.com/ome/omero-insight/pull/194)
+- BugFix: Prevent to close the ImportDialog tab [#195](https://github.com/ome/omero-insight/pull/195)
+- BugFix: Convert the Date column to String in the search result table [#196](https://github.com/ome/omero-insight/pull/196)
+- BugFix: Catch all exceptions and use the error icon as thumbnails [#198](https://github.com/ome/omero-insight/pull/198)
+
+
 5.5.15 (February 2021)
 ----------------------
 
