@@ -351,7 +351,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	private TreeImageDisplay selectedContainer;
 
 	/** The possible nodes. */
-	private Collection<TreeImageDisplay> objects;
+	private Collection<TreeImageDisplay> objects = new HashSet<>();
 
 	/** The component displaying the table, options etc. */
 	private JTabbedPane tabbedPane;
@@ -1332,7 +1332,8 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	{
 		super(0, TITLE, TITLE);
 		this.owner = owner;
-		this.objects = objects;
+		if (objects != null)
+			this.objects.addAll(objects);
 		this.type = type;
 		this.model = model;
 		this.selectedContainer = checkContainer(selectedContainer);
@@ -1479,7 +1480,9 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	{
 		canvas.setVisible(true);
 		this.selectedContainer = checkContainer(selectedContainer);
-		this.objects = objects;
+		this.objects.clear();
+		if (objects != null)
+			this.objects.addAll(objects);
 		this.type = type;
 
 		File[] files = chooser.getSelectedFiles();
