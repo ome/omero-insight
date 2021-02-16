@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.ClosableTabbedPane 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2008 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -150,6 +150,10 @@ public class ClosableTabbedPane
         int tabCount = getTabCount();
         while (tabCount-- > 0)
             removeTabAt(tabCount);
+        if (getTabCount() > 0)
+        	// in case there are non-closable tabs,
+        	// set the last tab as selected
+        	setSelectedIndex(getTabCount()-1);
     }
     
     /**
@@ -168,6 +172,8 @@ public class ClosableTabbedPane
 	{
 		Component c = getComponentAt(index);
 		if (c instanceof ClosableTabbedPaneComponent) {
+			if (!((ClosableTabbedPaneComponent) c).isClosable())
+				return;
 			firePropertyChange(CLOSE_TAB_PROPERTY, null, c);
 		}
 		if (ui instanceof ClosableTabbedPaneUI) {

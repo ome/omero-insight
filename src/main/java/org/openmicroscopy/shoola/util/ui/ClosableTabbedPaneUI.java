@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.ClosableTabbedPaneUI 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2008 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -161,6 +161,22 @@ class ClosableTabbedPaneUI
 			{
 				super.mousePressed(e);
 				if (e.isPopupTrigger()) {
+					int x = e.getX();
+					int y = e.getY();
+					int tabIndex = -1;
+					int tabCount = tabPane.getTabCount();
+					for (int i = 0; i < tabCount; i++) {
+						if (rects[i].contains(x, y)) {
+							tabIndex = i;
+							break;
+						}
+					}
+
+					Component c = tabPane.getComponentAt(tabIndex);
+					if (c instanceof ClosableTabbedPaneComponent &&
+							!((ClosableTabbedPaneComponent)c).isClosable())
+						return;
+
 					Object source = e.getSource();
 		    		if (source instanceof Component)
 		    			showMenu((Component) source, e.getX(), e.getY());
