@@ -24,6 +24,7 @@ package org.openmicroscopy.shoola.env.ui.login;
 
 
 import org.openmicroscopy.shoola.env.config.OMEROInfo;
+import org.openmicroscopy.shoola.env.config.Registry;
 
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
@@ -113,7 +114,23 @@ public class ScreenLoginDialog
 	public ScreenLoginDialog(String title, Icon logo, Image frameIcon, 
 			String version)
 	{
-		view = new ScreenLogin(title, logo, frameIcon, version);
+		this(title, logo, frameIcon, version, null);
+	}
+
+	/**
+	 * Creates a new instance.
+	 *
+	 * @param title		 The frame's title.
+	 * @param logo		 The frame's background logo.
+	 * 					 Mustn't be <code>null</code>.
+	 * @param frameIcon  The image icon for the window.
+	 * @param version	 The version of the software.
+	 * @param registry   Reference to the registry
+	 */
+	public ScreenLoginDialog(String title, Icon logo, Image frameIcon,
+							 String version, Registry registry)
+	{
+		view = new ScreenLogin(title, logo, frameIcon, version, true, registry);
 		view.addPropertyChangeListener(this);
 		setProperties();
 		getContentPane().add(view.getContentPane().getComponent(0));
