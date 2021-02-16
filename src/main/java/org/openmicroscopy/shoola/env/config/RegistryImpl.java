@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.env.config.RegistryImpl
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,12 @@
 package org.openmicroscopy.shoola.env.config;
 
 //Java imports
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 //Third-party libraries
 
@@ -96,8 +101,12 @@ class RegistryImpl
     
     /** Reference to the Administration service. */
     private AdminService			admin;
-    
+
+    /** Reference to the Gateway */
     private Gateway gateway;
+
+	/** Additional command line arguments */
+	private Set<String> cmdLineArgs = new HashSet<>();
     
     /* may be constructed only by classes in this package */
     RegistryImpl() { }
@@ -248,12 +257,35 @@ class RegistryImpl
      */
     void setOS(OmeroDataService os) { this.os = os; }
 
-    public Gateway getGateway() {
+	/**
+	 * Get the reference to the Gateway
+	 * @return See above.
+	 */
+	public Gateway getGateway() {
         return gateway;
     }
 
-    void setGateway(Gateway gateway) {
+	/**
+	 * Set reference to the Gateway
+	 * @param gateway The Gateway
+	 */
+	void setGateway(Gateway gateway) {
         this.gateway = gateway;
     }
-    
+
+	/**
+	 * Get additional command line arguments
+	 * @return See above.
+	 */
+	public Collection<String> getCmdLineArgs() {
+		return cmdLineArgs;
+	}
+
+	/**
+	 * Add additional command line arguments
+	 * @param args The arguments
+	 */
+	public void addCmdLineArgs(Collection<String> args) {
+		this.cmdLineArgs.addAll(args);
+	}
 }

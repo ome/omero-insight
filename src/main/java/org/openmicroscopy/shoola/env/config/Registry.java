@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.env.config.Registry
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,9 @@ import omero.gateway.Gateway;
 
 import org.openmicroscopy.shoola.env.ui.TaskBar;
 import org.openmicroscopy.shoola.env.ui.UserNotifier;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Declares the operations to be used to access configuration entries and 
@@ -167,6 +170,22 @@ public interface Registry
      *          supported {@link DataServicesView} interfaces.
      */
     public DataServicesView getDataServicesView(Class<?> view);
-    
+
+	/**
+	 * Get the reference to the Gateway
+	 * @return See above.
+	 */
     public Gateway getGateway();
+
+	/**
+	 * Get additional command line arguments
+	 * @return See above.
+	 */
+	public Collection<String> getCmdLineArgs();
+
+	/**
+	 * Add additional command line arguments
+	 * @param args The arguments
+	 */
+	public void addCmdLineArgs(Collection<String> args);
 }
