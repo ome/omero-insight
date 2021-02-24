@@ -260,6 +260,8 @@ public class FileObject
             //prepare command
             ImagePlus img = (ImagePlus) file;
             generated = true;
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
             try {
                 String baseName = CommonsLangUtils.deleteWhitespace(img.getTitle());
                 String n = baseName+".ome.tif";
@@ -279,9 +281,17 @@ public class FileObject
                     }
                 }
                 f = new File(p, n);
-                f.deleteOnExit();
             } catch (Exception e) {
+                e.printStackTrace(pw);
+                IJ.log(sw.toString());
                 return null;
+            } finally {
+                try {
+                    sw.close();
+                } catch (IOException e) {
+                    IJ.log("I/O Exception:" + e.getMessage());
+                }
+                pw.close();
             }
             StringBuffer buffer = new StringBuffer();
             buffer.append("outfile="+f.getAbsolutePath());
