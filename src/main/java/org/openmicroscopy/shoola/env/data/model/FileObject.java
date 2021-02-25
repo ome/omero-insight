@@ -264,9 +264,11 @@ public class FileObject
             PrintWriter pw = new PrintWriter(sw);
             try {
                 String baseName = CommonsLangUtils.deleteWhitespace(img.getTitle());
+                baseName = baseName.replaceAll("\\.", "_");
+                baseName = baseName.replaceAll(":", "_");
                 String n = baseName+".ome.tif";
-                f = File.createTempFile(baseName, ".ome.tif");
-                File p = f.getParentFile();
+                File ff = File.createTempFile(baseName, ".ome.tif");
+                File p = ff.getParentFile();
                 File[] list = p.listFiles();
                 if (list != null) {
                     File toDelete = null;
@@ -281,6 +283,8 @@ public class FileObject
                     }
                 }
                 f = new File(p, n);
+                f.deleteOnExit();
+                ff.deleteOnExit();
             } catch (Exception e) {
                 e.printStackTrace(pw);
                 IJ.log(sw.toString());
