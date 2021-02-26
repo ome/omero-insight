@@ -260,11 +260,15 @@ public class FileObject
             //prepare command
             ImagePlus img = (ImagePlus) file;
             generated = true;
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
             try {
                 String baseName = CommonsLangUtils.deleteWhitespace(img.getTitle());
+                baseName = baseName.replaceAll("\\.", "_");
+                baseName = baseName.replaceAll(":", "_");
                 String n = baseName+".ome.tif";
-                f = File.createTempFile(baseName, ".ome.tif");
-                File p = f.getParentFile();
+                File ff = File.createTempFile(baseName, ".ome.tif");
+                File p = ff.getParentFile();
                 File[] list = p.listFiles();
                 if (list != null) {
                     File toDelete = null;
@@ -280,8 +284,18 @@ public class FileObject
                 }
                 f = new File(p, n);
                 f.deleteOnExit();
+                ff.deleteOnExit();
             } catch (Exception e) {
+                e.printStackTrace(pw);
+                IJ.log(sw.toString());
                 return null;
+            } finally {
+                try {
+                    sw.close();
+                } catch (IOException e) {
+                    IJ.log("I/O Exception:" + e.getMessage());
+                }
+                pw.close();
             }
             StringBuffer buffer = new StringBuffer();
             buffer.append("outfile="+f.getAbsolutePath());
