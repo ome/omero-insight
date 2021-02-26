@@ -70,6 +70,8 @@ jobs:
           export PATH=$JAVA_HOME/bin:$PATH
           ./gradlew packageApplicationDmg
           ./gradlew packageImporterApplicationDmg
+          ./gradlew packageApplicationPkg
+          ./gradlew packageImporterApplicationPkg
       - name: Upload zip and jar
         if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
         uses: actions/upload-artifact@v2
