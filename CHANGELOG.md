@@ -1,3 +1,8 @@
+5.5.17 (March 2021)
+-------------------
+
+- BugFix: Fiji: import image not saved on disk when used on Windows [#207](https://github.com/ome/omero-insight/pull/207)
+
 5.5.16 (February 2021)
 ----------------------
 
