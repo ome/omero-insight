@@ -155,7 +155,7 @@ The ``MyBrowserAgent`` handles the event
 Creating an agent's view
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-See :doc:`/developers/Insight/HowTo/BuildAgentView`
+See :doc:`BuildAgentView`
 
 Declaring the agent
 -------------------
@@ -163,7 +163,7 @@ Declaring the agent
 The ``MyBrowserAgent`` needs to be declared in the :file:`container.xml`.
 
 -  Open the :file:`container.xml` located in the ``config`` folder (see
-   :doc:`/developers/Insight/DirectoryContents`).
+   :doc:`../DirectoryContents`).
 -  Add the following:
 
    ::
@@ -225,5 +225,5 @@ The ``MyBrowserAgent`` needs to be declared in the :file:`container.xml`.
    parameters.
 
 .. seealso:: 
-    :doc:`/developers/Insight/ImplementationView`,
-    :doc:`/developers/Insight/HowTo/RetrieveData`
+    :doc:`../ImplementationView`,
+    :doc:`RetrieveData`

@@ -270,4 +270,4 @@ configuration entries are private to each agent. However, the container
 configures all ``RegistryImpl`` objects with the same references to its
 services.
 
-.. seealso:: :doc:`/developers/Insight/DirectoryContents`
+.. seealso:: :doc:`DirectoryContents`

@@ -200,4 +200,4 @@ be created in ``env.data.views`` and declared in
 ``DataViewsFactory.makeNew(Class)``. The method returns an
 implementation of the corresponding view.
 
-.. seealso:: :doc:`/developers/Insight/DirectoryContents`
+.. seealso:: :doc:`../DirectoryContents`

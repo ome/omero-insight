@@ -30,7 +30,7 @@ functionality:
 
 .. note::
 
-    If you want to add a new agent, go to :doc:`/developers/Insight/HowTo/BuildAgent`.
+    If you want to add a new agent, go to :doc:`HowTo/BuildAgent`.
 
 These agents are internally organized according to the MVC
 (` Model-View-Controller <https://en.wikipedia.org/wiki/Model-view-controller>`_)
@@ -43,15 +43,15 @@ The **Container** layer manages the agents life-cycle and provides them
 with services to:
 
 -  Communicate without having to know each other 
-   (:doc:`/developers/Insight/EventBus`).
+   (:doc:`EventBus`).
 -  Access the OMERO Server (data management and image services).
 -  Transform entries in configuration files into objects and then access
-   them (:doc:`/developers/Insight/Configuration`).
+   them (:doc:`Configuration`).
 -  Log messages (log service) and notify the user (user notification
    service) of runtime errors.
 -  Cache data (cache service).
 -  Provide a common top level window to plug their GUI's 
-   (:doc:`/developers/Insight/TaskBar`).
+   (:doc:`TaskBar`).
 
 Initialization of Agents
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +93,7 @@ Interaction among Agents
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Interactions among agents are event-driven. Agents communicate by using
-a shared :doc:`/developers/Insight/EventBus` provided by the
+a shared :doc:`EventBus` provided by the
 container. The event bus is an event propagation mechanism loosely based
 on the
 ` Publisher-Subscriber <https://en.wikipedia.org/wiki/Publish/subscribe>`_
@@ -107,9 +107,9 @@ Process view
 All agents run synchronously within the *Swing* dispatching thread. All
 container’s services are called within Swing event handlers and thus run
 within the *Swing* dispatching thread. To see how to retrieve data from
-an OMERO server, go to the :doc:`/developers/Insight/HowTo/RetrieveData` page.
+an OMERO server, go to the :doc:`HowTo/RetrieveData` page.
 
 .. seealso::
 
-    :doc:`/developers/Insight/ImplementationView`, 
-    :doc:`/developers/Insight/EventBus`
+    :doc:`ImplementationView`,
+    :doc:`EventBus`
