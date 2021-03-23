@@ -115,7 +115,7 @@ public class ModuleTree extends JPanel implements ActionListener{
 		tree.setEditable(false);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.addMouseListener(new MouseAdapter() {
-			// triggers opoup event under linux
+			// triggers popup event under linux
 			public void mousePressed(MouseEvent e) {
 				showPopup(e);
 			}
