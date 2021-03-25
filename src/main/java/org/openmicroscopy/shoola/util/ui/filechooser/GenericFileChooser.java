@@ -24,6 +24,7 @@ package org.openmicroscopy.shoola.util.ui.filechooser;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import javax.swing.JComboBox;
@@ -64,11 +65,17 @@ public class GenericFileChooser
 	private void handleFileSelection(File f)
 	{
 		if (box == null || f == null) return;
-		if (Files.isSymbolicLink(Paths.get(f.getAbsolutePath())) || f.getName().endsWith(".lnk")) {
-			JOptionPane.showMessageDialog(null, "Cannot use shortcut " +
-					"from selection box.");
-			box.setSelectedItem(f.getParentFile());
+		URL url = getClass().getResource(f.getAbsolutePath());
+		try {
+			if (Files.isSymbolicLink(Paths.get(url.toURI())) || f.getName().endsWith(".lnk")) {
+				JOptionPane.showMessageDialog(null, "Cannot use shortcut " +
+						"from selection box.");
+				box.setSelectedItem(f.getParentFile());
+			}
+		} catch (Exception e) {
+			box.setSelectedItem(false);
 		}
+
 	}
 
 	/** Initializes the component.*/
