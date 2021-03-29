@@ -1,3 +1,10 @@
+5.5.18 (April 2021)
+-------------------
+
+- MDE BugFix: correction of mdeConfiguration.xml example for required field [#215](https://github.com/ome/omero-insight/pull/215)
+- MDE BugFix: trigger the mouse event linux [#213](https://github.com/ome/omero-insight/pull/213)
+
+
 5.5.17 (March 2021)
 -------------------
 
