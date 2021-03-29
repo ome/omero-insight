@@ -407,7 +407,7 @@
         <Configurations>
             <SetupConf Name="Example Setup: Fields">
                 <ObjectConf Type="OME:Image">
-                    <TagDataProp Name="Name" Unit="" Visible="true" Required="true"/>
+                    <TagDataProp Name="Name" Unit="" Visible="true" />
                     <TagDataProp Name="Description" Unit="" Visible="true" />
                     <TagDataProp Name="Acquisition Time" Unit=""
                                  Visible="false" />
@@ -444,12 +444,14 @@
                              Type="TextField" Unit="µm" Value="" Visible="false" />
                     <TagDataProp DefaultValues="" Name="Iris" Type="TextField"
                              Unit="" Value="" Visible="false" />
-                    <TagDataProp Name="User::Refraction Index" Unit=""  Visible="true" Required="true"/>
+                    <TagDataProp Name="User::Refraction Index" Unit=""  Visible="true" />
                     <TagDataProp Name="User::Medium"  Unit="" Visible="true" />
                     <TagDataProp Name="User::Correction Collar" Unit="" Visible="true" />
                 </ObjectConf>
 
                 <ObjectConf Type="Available InputFields" Insert="true" InsertPoint="OME-Model">
+                    <TagDataProp Name="Tag of Type TextField" Unit="" Visible="true" Required="true"/>
+
                     <TagDataProp Name="Tag of Type ArrayField"	Unit=""  Visible="false" />
                     <TagDataProp Name="Tag of Type ArrayField with Unit" Unit="s"  Visible="true" />
                     <TagDataProp Name="Tag of Type TextArea" Unit="" Visible="false" />
