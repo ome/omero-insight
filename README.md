@@ -8,6 +8,7 @@
   client for the visualization and manipulation of both image data and metadata
   maintained at an OMERO server site.
   OMERO.insight is completely written in Java.
+  Technical documentation can be found [here](https://omero-insight.readthedocs.io/en/latest/).
 
 
   Directory Contents
