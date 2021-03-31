@@ -38,3 +38,4 @@ gradle-local.properties
 *.bak
 *.swp
 *~.nib
+*_build
