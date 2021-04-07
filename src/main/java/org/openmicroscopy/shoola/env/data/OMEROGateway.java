@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2020 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -3143,8 +3143,6 @@ class OMEROGateway
 		String folderPath = null;
 		folderPath = file.getAbsolutePath();
 		Iterator<Entry<OriginalFile, Fileset>> entries = values.entrySet().iterator();
-
-		Map<Fileset, String> filesetPaths = new HashMap<Fileset, String>();
 		
 		while (entries.hasNext()) {
 		    Entry<OriginalFile, Fileset> entry = entries.next();
@@ -3154,25 +3152,10 @@ class OMEROGateway
 			
             String path = null;
             if (keepOriginalPaths && set != null && set.sizeOfUsedFiles() > 1) {
-                // this will store multi file images within a subdirectory with
-                // the same name as the main image file
-                path = filesetPaths.get(set);
-                if (path == null) {
-                    path = folderPath.endsWith("/") ? folderPath : folderPath + "/";
-                    String imgFilename = set.getFilesetEntry(0).getOriginalFile()
-                            .getName().getValue();
-                    path += imgFilename;
-                    path = generateUniquePathname(path, false);
-                    // path should now be in the form
-                    // DOWNLOAD_FOLDER/IMAGE_NAME[(N)]
-                    // where N is a consecutive number if the folder IMAGE_NAME
-                    // already exists
-                    filesetPaths.put(set, path);
-                }
                 String repoPath = set.getTemplatePrefix().getValue();
-                path = path +"/"+ (of.getPath().getValue().replace(repoPath, ""));
+                path = folderPath +"/"+ (of.getPath().getValue().replace(repoPath, ""));
                 // path should now be in the form
-                // DOWNLOAD_FOLDER/IMAGE_NAME[(N)]/X/Y/Z
+                // DOWNLOAD_FOLDER/X/Y/Z
                 // where X, Y, Z are image specific subdirectories
                 // for the single image/data files
                 File origPath = new File(path);
