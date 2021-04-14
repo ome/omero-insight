@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -290,8 +290,11 @@ public interface Editor
      * @param override
      *            Flag indicating to override the existing file if it exists,
      *            <code>false</code> otherwise.
+	 * @param createMFIDirectory
+	 *      	  Put multifile images into own directories
      */
-    public void downloadOriginal(String path, boolean override);
+    public void downloadOriginal(String path, boolean override,
+								 boolean createMFIDirectory);
 	
 	/**
 	 * Sets the parent of the root object. This will be taken into account

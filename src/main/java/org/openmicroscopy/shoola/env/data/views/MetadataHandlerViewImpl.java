@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -247,14 +247,14 @@ class MetadataHandlerViewImpl
      * Implemented as specified by the view interface.
      * 
      * @see MetadataHandlerView#loadArchivedImage(SecurityContext , List, File ,
-     *      boolean , boolean , boolean , AgentEventListener )
+     *      boolean , boolean , boolean , boolean, AgentEventListener )
      */
     public CallHandle loadArchivedImage(SecurityContext ctx,
             List<DataObject> objects, File location,
             boolean override, boolean zip, boolean keepOriginalPaths,
-            AgentEventListener observer) {
+            boolean createMFIDirectory, AgentEventListener observer) {
         BatchCallTree cmd = new ArchivedImageLoader(ctx, objects, location,
-                override, zip, keepOriginalPaths);
+                override, zip, createMFIDirectory, keepOriginalPaths);
         return cmd.exec(observer);
     }
     

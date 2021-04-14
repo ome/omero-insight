@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.filechooser.FileSaverUI 
  *
   *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2007 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -128,6 +128,8 @@ class FileSaverUI
 	 */
 	private JButton						newFolderButton;
 
+	private JCheckBox mfiDirCheckbox;
+
 	/** The panel hosting the buttons. */
 	private JPanel						buttonPanel;
 	
@@ -159,6 +161,11 @@ class FileSaverUI
     			UIUtilities.formatToolTipText("Create a new folder"));
 		newFolderButton.addActionListener(this);
 		newFolderButton.setActionCommand(""+NEW_FOLDER);
+		mfiDirCheckbox = new JCheckBox("Create directory");
+		mfiDirCheckbox.setToolTipText(UIUtilities.formatToolTipText("Put multifile images" +
+				"into a directory."));
+		mfiDirCheckbox.setSelected(true);
+		mfiDirCheckbox.setVisible(false);
 		approveButton = new JButton();
 		switch (model.getChooserType()) {
 			case FileChooser.SAVE:
@@ -246,6 +253,8 @@ class FileSaverUI
     	if (type != FileChooser.LOAD && type != FileChooser.IMPORT) {
     		controls.add(Box.createRigidArea(new Dimension(20, 5)));
         	controls.add(newFolderButton);
+			controls.add(Box.createRigidArea(new Dimension(20, 5)));
+			controls.add(mfiDirCheckbox);
     	}
     	
     	JPanel p = UIUtilities.buildComponentPanelRight(buttonPanel);
@@ -349,6 +358,22 @@ class FileSaverUI
 	{
 		chooser.setOriginalName(file.getName());
 		chooser.setSelectedFile(file);
+	}
+
+	/**
+	 * Checks if the mfiDirCheckbox is checked.
+	 * @return See above.
+	 */
+	boolean createMFIDirectory() {
+		return mfiDirCheckbox.isSelected();
+	}
+
+	void enableMFICheckbox(boolean enable) {
+		if (enable) {
+			mfiDirCheckbox.setVisible(true);
+		} else {
+			mfiDirCheckbox.setVisible(false);
+		}
 	}
 
 	/**

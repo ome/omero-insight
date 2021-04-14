@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -299,7 +299,8 @@ public interface OmeroDataService
 	 * retrieve data from OMERO service.
 	 */
 	public Map<Boolean, Object> getArchivedImage(SecurityContext ctx,
-			File location, long imageID, boolean keepOriginalPath)
+			File location, long imageID, boolean keepOriginalPath,
+			boolean createMFIDirectory)
 		throws DSOutOfServiceException, DSAccessException;
 
 	/**

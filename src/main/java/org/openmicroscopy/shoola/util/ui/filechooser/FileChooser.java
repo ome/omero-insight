@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.filechooser.FileSaver 
  *
   *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -25,14 +25,10 @@ package org.openmicroscopy.shoola.util.ui.filechooser;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -429,6 +425,14 @@ public class FileChooser
     }
 
     /**
+     * Checks if the mfiDirCheckbox is checked.
+     * @return See above.
+     */
+    public boolean createMFIDirectory() {
+        return uiDelegate.createMFIDirectory();
+    }
+
+    /**
      * Sets the name of the file to save.
      * 
      * @param name The name to set.
@@ -550,6 +554,9 @@ public class FileChooser
         uiDelegate.setApproveButtonText(text);
     }
 
+    public void enableMFICheckbox(boolean enable) {
+        uiDelegate.enableMFICheckbox(enable);
+    }
     /**
      * Sets the text displayed in the tool tip of the <code>Approve</code>
      * button.

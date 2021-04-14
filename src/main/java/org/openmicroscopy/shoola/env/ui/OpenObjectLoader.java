@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -125,7 +125,7 @@ public class OpenObjectLoader
     		    objects.add(image);
     		    f = new File(folderPath);
     		    handle = mhView.loadArchivedImage(ctx, objects, f, false, false,
-    	                false, this);
+    	                false, false,this);
     		} else {
     		    String name = image.getName();
                 name += image.getName();

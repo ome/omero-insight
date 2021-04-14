@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2017 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -3096,8 +3096,11 @@ class EditorModel
      * @param override
      *            Flag indicating to override the existing file if it exists,
      *            <code>false</code> otherwise.
+	 * @param createMFIDirectory
+	 *            Put multifile images into own directories
+	 *
      */
-    void downloadOriginal(String path, boolean override) {
+    void downloadOriginal(String path, boolean override, boolean createMFIDirectory) {
         if (!(refObject instanceof ImageData || refObject instanceof PlateData
                 || refObject instanceof WellData
                 || refObject instanceof WellSampleData || refObject instanceof PlateAcquisitionData))
@@ -3167,6 +3170,7 @@ class EditorModel
             SecurityContext ctx = getSecurityContext();
             p = new DownloadArchivedActivityParam(new File(path), images, icon);
             p.setOverride(override);
+            p.setCreateMFIDirectory(createMFIDirectory);
             p.setZip(false);
             p.setKeepOriginalPaths(true);
             un.notifyActivity(ctx, p);

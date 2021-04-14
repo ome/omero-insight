@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -302,13 +302,14 @@ class EditorControl
         chooser.setTitleIcon(icons.getIcon(IconManager.DOWNLOAD_48));
         chooser.setApproveButtonText(FileChooser.DOWNLOAD_TEXT);
         chooser.setCheckOverride(true);
+		chooser.enableMFICheckbox(true);
         chooser.addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
                 String name = evt.getPropertyName();
                 FileChooser src = (FileChooser) evt.getSource();
                 if (FileChooser.APPROVE_SELECTION_PROPERTY.equals(name)) {
                     String path = (String) evt.getNewValue();
-                    model.downloadOriginal(path, src.isOverride());
+                    model.downloadOriginal(path, src.isOverride(), src.createMFIDirectory());
                 }
             }
         });

@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,9 @@ public class DownloadArchivedActivityParam
     /** Flag indicating to override or not the files when saving.*/
     private boolean override;
 
+    /** Flag indicating to put multifile images into own directories.*/
+    private boolean createMFIDirectory;
+
     /** Flag for zipping the downloaded images */
     private boolean zip = false;
     
@@ -71,6 +74,7 @@ public class DownloadArchivedActivityParam
     	this.images = images;
     	this.icon = icon;
     	this.override = false;
+    	this.createMFIDirectory = false;
     }
 
     /**
@@ -82,12 +86,29 @@ public class DownloadArchivedActivityParam
     public void setOverride(boolean override) { this.override = override; }
 
     /**
+     * Sets to <code>true</code> to override the files when saving,
+     * <code>false</code> otherwise. Default is <code>false</code>.
+     *
+     * @param createMFIDirectory The value to set.
+     */
+    public void setCreateMFIDirectory(boolean createMFIDirectory) {
+        this.createMFIDirectory = createMFIDirectory;
+    }
+
+    /**
      * Returns <code>true</code> to override the files when saving,
      * <code>false</code> otherwise. Default is <code>false</code>.
      *
      * @return See above.
      */
     public boolean isOverride() { return override; }
+
+    /**
+     * Returns <code>true</code> to put multifile images into own directories
+     *
+     * @return See above.
+     */
+    public boolean createMFIDirectory() { return createMFIDirectory; }
 
     /**
      * Returns the icon.

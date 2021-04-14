@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.env.data.views.calls.ArchivedImageLoader 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,9 @@ public class ArchivedImageLoader
     
     /** Flag for preserving the original folder structure */
     private boolean keepOriginalPaths = false;
-    
+
+    /** Flag indicating to put multifile images into own directories.*/
+    private boolean createMFIDirectory = false;
     /**
      * Copies the specified file to the folder.
      * 
@@ -171,7 +173,8 @@ public class ArchivedImageLoader
                     
                     for (Long imageID : imageIDs) {
                         Map<Boolean, Object> r = os.getArchivedImage(ctx,
-                                tmpFolder, imageID, keepOriginalPaths);
+                                tmpFolder, imageID, keepOriginalPaths,
+                                createMFIDirectory);
                         files.addAll((List<File>) r.get(Boolean.TRUE));
                     }
                     
@@ -253,13 +256,15 @@ public class ArchivedImageLoader
      * @param keepOriginalPaths Pass <code>true</code> to preserve the original folder structure
      */
     public ArchivedImageLoader(SecurityContext ctx, List<DataObject> objects,
-            File folderPath, boolean override, boolean zip, boolean keepOriginalPaths)
+            File folderPath, boolean override, boolean zip, boolean keepOriginalPaths,
+            boolean createMFIDirectory)
     {
         if (CollectionUtils.isEmpty(objects))
              throw new IllegalArgumentException("No objects provided.");
         this.override = override;
         this.zip = zip;
         this.keepOriginalPaths = keepOriginalPaths;
+        this.createMFIDirectory = createMFIDirectory;
         loadCall = makeBatchCall(ctx, objects, folderPath);
     }
 }

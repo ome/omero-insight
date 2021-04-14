@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.env.ui.DownloadArchivedActivity 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -102,7 +102,7 @@ public class DownloadArchivedActivity
 	    File f = parameters.getLocation();
 		loader = new ArchivedLoader(viewer, registry, ctx,
 		        parameters.getImages(), f, parameters.isOverride(), parameters.isZip(), 
-		        parameters.isKeepOriginalPaths(), this);
+		        parameters.isKeepOriginalPaths(), parameters.createMFIDirectory(), this);
 		return loader;
 	}
 

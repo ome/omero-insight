@@ -3055,10 +3055,11 @@ class OMEROGateway
 	 * retrieve data from OMERO service.
 	 */
 	Map<Boolean, Object> getArchivedFiles(
-			SecurityContext ctx, File file, ImageData image, boolean keepOriginalPaths)
+			SecurityContext ctx, File file, ImageData image, boolean keepOriginalPaths,
+			boolean createMFIDirectory)
 		throws DSAccessException, DSOutOfServiceException
 	{
-		return retrieveArchivedFiles(ctx, file, image, keepOriginalPaths);
+		return retrieveArchivedFiles(ctx, file, image, keepOriginalPaths, createMFIDirectory);
 	}
 	
 	/**
@@ -3069,13 +3070,15 @@ class OMEROGateway
 	 * @param image The image to retrieve.
 	 * @param keepOriginalPaths Pass <code>true</code> to preserve the original folder
 	 *               structure.
+	 * @param createMFIDirectory Flag indicating to put multifile images into own directories
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
 	 */
 	private Map<Boolean, Object> retrieveArchivedFiles(
-			SecurityContext ctx, File file, ImageData image, boolean keepOriginalPaths)
+			SecurityContext ctx, File file, ImageData image, boolean keepOriginalPaths,
+			boolean createMFIDirectory)
 		throws DSAccessException, DSOutOfServiceException
 	{
 		List<?> files = null;
@@ -3142,6 +3145,9 @@ class OMEROGateway
 		List<String> notDownloaded = new ArrayList<String>();
 		String folderPath = null;
 		folderPath = file.getAbsolutePath();
+
+		Map<Fileset, String> filesetPaths = new HashMap<Fileset, String>();
+
 		Iterator<Entry<OriginalFile, Fileset>> entries = values.entrySet().iterator();
 		
 		while (entries.hasNext()) {
@@ -3152,15 +3158,39 @@ class OMEROGateway
 			
             String path = null;
             if (keepOriginalPaths && set != null && set.sizeOfUsedFiles() > 1) {
-                String repoPath = set.getTemplatePrefix().getValue();
-                path = folderPath +"/"+ (of.getPath().getValue().replace(repoPath, ""));
-                // path should now be in the form
-                // DOWNLOAD_FOLDER/X/Y/Z
-                // where X, Y, Z are image specific subdirectories
-                // for the single image/data files
-                File origPath = new File(path);
-                if (!origPath.exists())
-                    origPath.mkdirs();
+            	if (createMFIDirectory) {
+					// this will store multi file images within a subdirectory with
+					// the same name as the main image file
+					path = filesetPaths.get(set);
+					if (path == null) {
+						path = folderPath.endsWith("/") ? folderPath : folderPath + "/";
+						String imgFilename = set.getFilesetEntry(0).getOriginalFile()
+								.getName().getValue();
+						path += imgFilename;
+						path = generateUniquePathname(path, false);
+						// path should now be in the form
+						// DOWNLOAD_FOLDER/IMAGE_NAME[(N)]
+						// where N is a consecutive number if the folder IMAGE_NAME
+						// already exists
+						filesetPaths.put(set, path);
+					}
+					String repoPath = set.getTemplatePrefix().getValue();
+					path = path + "/" + (of.getPath().getValue().replace(repoPath, ""));
+					// path should now be in the form
+					// DOWNLOAD_FOLDER/IMAGE_NAME[(N)]/X/Y/Z
+					// where X, Y, Z are image specific subdirectories
+					// for the single image/data files
+					File origPath = new File(path);
+					if (!origPath.exists())
+						origPath.mkdirs();
+				} else {
+					String repoPath = set.getTemplatePrefix().getValue();
+					path = folderPath +"/"+ (of.getPath().getValue().replace(repoPath, ""));
+					// path should now be in the form
+					// DOWNLOAD_FOLDER/X/Y/Z
+					// where X, Y, Z are image specific subdirectories
+					// for the single image/data files
+				}
             } else {
                 path = folderPath;
             }

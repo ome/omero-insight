@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -635,11 +635,11 @@ class EditorComponent
      * 
      * @see Editor#downloadOriginal(String, boolean)
      */
-    public void downloadOriginal(String path, boolean override) {
+    public void downloadOriginal(String path, boolean override, boolean createMFIDirectory) {
         if (CommonsLangUtils.isEmpty(path))
             return;
 
-        model.downloadOriginal(path, override);
+        model.downloadOriginal(path, override, createMFIDirectory);
     }
 
 	/** 

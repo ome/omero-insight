@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,10 @@ public class ArchivedLoader
     
     /** Flag for preserving the original folder structure */
     private boolean keepOriginalPaths = true;
-    
+
+    /** Flag indicating to put multifile images into own directories.*/
+    private boolean createMFIDirectory = false;
+
     /**
      * Notifies that an error occurred.
      * @see UserNotifierLoader#onException(String, Throwable)
@@ -92,11 +95,13 @@ public class ArchivedLoader
      *                 exists, <code>false</code> otherwise.
      * @param zip Pass <code>true</code> to create a zip file
      * @param keepOriginalPaths Pass <code>true</code> to preserve the original folder structure
+     * @param createMFIDirectory  Flag indicating to put multifile images into own directories
      * @param activity The activity associated to this loader.
      */
 	public ArchivedLoader(UserNotifier viewer, Registry registry,
 			SecurityContext ctx, List<DataObject> objects, File file,
-			boolean override, boolean zip, boolean keepOriginalPaths, ActivityComponent activity)
+			boolean override, boolean zip, boolean keepOriginalPaths, boolean createMFIDirectory,
+            ActivityComponent activity)
 	{
 		super(viewer, registry, ctx, activity);
 		if (objects == null)
@@ -106,6 +111,7 @@ public class ArchivedLoader
 		this.override = override;
 		this.zip = zip;
 		this.keepOriginalPaths = keepOriginalPaths;
+		this.createMFIDirectory = createMFIDirectory;
 	}
     
     /**
@@ -118,7 +124,7 @@ public class ArchivedLoader
             return;
 
         handle = mhView.loadArchivedImage(ctx, objects, file, override, zip,
-                keepOriginalPaths, this);
+                keepOriginalPaths, createMFIDirectory, this);
     }
 
 	/**

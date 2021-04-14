@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2017 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -497,13 +497,14 @@ class OmeroDataServiceImpl
 	 * @see OmeroDataService#getArchivedFiles(SecurityContext, File, long, boolean)
 	 */
 	public Map<Boolean, Object> getArchivedImage(SecurityContext ctx,
-			File file, long imageID, boolean keepOriginalPath)
+			File file, long imageID, boolean keepOriginalPath,
+			boolean createMFIDirectory)
 		throws DSOutOfServiceException, DSAccessException
 	{
 		context.getLogger().debug(this, file.getAbsolutePath());
 		//Check the image is archived.
 		ImageData image = gateway.getImage(ctx, imageID, null);
-		return gateway.getArchivedFiles(ctx, file, image, keepOriginalPath);
+		return gateway.getArchivedFiles(ctx, file, image, keepOriginalPath, createMFIDirectory);
 	}
 
 	/**
