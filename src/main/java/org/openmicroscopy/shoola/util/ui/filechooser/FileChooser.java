@@ -25,10 +25,14 @@ package org.openmicroscopy.shoola.util.ui.filechooser;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.collections4.CollectionUtils;

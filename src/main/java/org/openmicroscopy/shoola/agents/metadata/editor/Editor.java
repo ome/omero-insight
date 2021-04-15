@@ -294,7 +294,7 @@ public interface Editor
 	 *      	  Put multifile images into own directories
      */
     public void downloadOriginal(String path, boolean override,
-								 boolean createMFIDirectory);
+					boolean createMFIDirectory);
 	
 	/**
 	 * Sets the parent of the root object. This will be taken into account

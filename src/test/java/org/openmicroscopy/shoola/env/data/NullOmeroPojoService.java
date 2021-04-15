@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2014 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -190,7 +190,7 @@ public class NullOmeroPojoService
      * @see OmeroDataService#getArchivedFiles(String, long)
      */
 	public Map getArchivedImage(SecurityContext ctx, File location,
-			long pixelsID, boolean keepOriginalPath) 
+			long pixelsID, boolean keepOriginalPath, boolean createMFIDirectory)
 		throws DSOutOfServiceException, DSAccessException
 	{
 		return null;
