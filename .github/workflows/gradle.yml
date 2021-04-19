@@ -16,7 +16,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
-      gradle_version:  # set to empty to build with most recent version of gradle
+      gradle_version: 6.8.3 # set to empty to build with most recent version of gradle
       gradle_commands: build # default is build
     steps:
       - uses: actions/checkout@v2
