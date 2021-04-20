@@ -76,7 +76,7 @@ class DistributePlugin implements Plugin<Project> {
 
         // Skip tar tasks
         project.tasks.withType(Tar).configureEach {
-            it.setEnabled(false)
+            ((Task) it).setEnabled(false)
         }
 
     }
@@ -102,14 +102,14 @@ class DistributePlugin implements Plugin<Project> {
     private void configureMainDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
         // Configure "main" distribution to create OMERO.insight
         Distribution main = distributionContainer.getByName(DistributionPlugin.MAIN_DISTRIBUTION_NAME)
-        main.baseName = DISTRIBUTION_NAME_INSIGHT
+        main.getDistributionBaseName().set(DISTRIBUTION_NAME_INSIGHT)
         main.contents.with(configSpec)
     }
 
     private void createImporterDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
         // Create and configure importer distribution
         distributionContainer.create(DISTRIBUTION_IMPORTER) { Distribution importer ->
-            importer.baseName = DISTRIBUTION_NAME_IMPORTER
+            importer.getDistributionBaseName().set(DISTRIBUTION_NAME_IMPORTER)
             importer.contents.with(configSpec)
 
             CopySpec libChildSpec =
@@ -130,7 +130,7 @@ class DistributePlugin implements Plugin<Project> {
         // Create and configure imageJ distribution
 
         distributionContainer.create(DISTRIBUTION_IMAGEJ) { Distribution imageJ ->
-            imageJ.baseName = DISTRIBUTION_NAME_IMAGEJ
+            imageJ.getDistributionBaseName().set(DISTRIBUTION_NAME_IMAGEJ)
 
             CopySpec mainSpec = project.copySpec()
             mainSpec.into("")
