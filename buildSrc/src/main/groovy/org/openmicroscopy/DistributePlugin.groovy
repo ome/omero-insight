@@ -99,17 +99,32 @@ class DistributePlugin implements Plugin<Project> {
         })
     }
 
+    private boolean isSupported() {
+        String[] version = project.getGradle().getGradleVersion().split("\\.")
+        return version[0].toInteger() >= 6
+    }
+
+    @groovy.transform.TypeChecked(groovy.transform.TypeCheckingMode.SKIP)
     private void configureMainDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
         // Configure "main" distribution to create OMERO.insight
         Distribution main = distributionContainer.getByName(DistributionPlugin.MAIN_DISTRIBUTION_NAME)
-        main.getDistributionBaseName().set(DISTRIBUTION_NAME_INSIGHT)
+        if (isSupported()) {
+            main.getDistributionBaseName().set(DISTRIBUTION_NAME_INSIGHT)
+        } else {
+            main.baseName = DISTRIBUTION_NAME_INSIGHT
+        }
         main.contents.with(configSpec)
     }
 
+    @groovy.transform.TypeChecked(groovy.transform.TypeCheckingMode.SKIP)
     private void createImporterDistribution(DistributionContainer distributionContainer, CopySpec configSpec) {
         // Create and configure importer distribution
         distributionContainer.create(DISTRIBUTION_IMPORTER) { Distribution importer ->
-            importer.getDistributionBaseName().set(DISTRIBUTION_NAME_IMPORTER)
+            if (isSupported()) {
+                importer.getDistributionBaseName().set(DISTRIBUTION_NAME_IMPORTER)
+            } else {
+                importer.baseName = DISTRIBUTION_NAME_IMPORTER
+            }
             importer.contents.with(configSpec)
 
             CopySpec libChildSpec =
@@ -126,12 +141,16 @@ class DistributePlugin implements Plugin<Project> {
         }
     }
 
+    @groovy.transform.TypeChecked(groovy.transform.TypeCheckingMode.SKIP)
     private void createImageJFatJarPluginDistribution(DistributionContainer distributionContainer) {
         // Create and configure imageJ distribution
 
         distributionContainer.create(DISTRIBUTION_IMAGEJ) { Distribution imageJ ->
-            imageJ.getDistributionBaseName().set(DISTRIBUTION_NAME_IMAGEJ)
-
+            if (isSupported()) {
+                imageJ.getDistributionBaseName().set(DISTRIBUTION_NAME_IMAGEJ)
+            } else {
+                imageJ.baseName = DISTRIBUTION_NAME_IMAGEJ
+            }
             CopySpec mainSpec = project.copySpec()
             mainSpec.into("")
             mainSpec.from(project.tasks.named(InsightBasePlugin.TASK_OMERO_IMAGEJ_FAT_JAR))
