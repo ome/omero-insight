@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,6 @@ import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.config.OMEROInfo;
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.login.UserCredentials;
@@ -264,7 +263,6 @@ public class ScreenLogin
 		try {
 			UserCredentials lc = new UserCredentials(usr, psw, s, speedIndex);
 			lc.setEncrypted(encrypted);
-			lc.addCmdLineArgs(registry.getCmdLineArgs());
 			setUserName(usr);
 			setEncrypted();
 			setControlsEnabled(false);

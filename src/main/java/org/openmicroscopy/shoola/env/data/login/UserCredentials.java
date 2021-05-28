@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,7 @@
  */
 package org.openmicroscopy.shoola.env.data.login;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -78,10 +73,7 @@ public class UserCredentials extends LoginCredentials
 	 * This map should only be used to change ownership status.
 	 */
 	private Map<GroupData, Boolean> groupsOwner;
-
-	/** Additional command line arguments */
-	private Set<String> cmdLineArgs = new HashSet<>();
-
+	
     /** 
      * Controls if the passed speed index is supported.
      * 
@@ -311,33 +303,5 @@ public class UserCredentials extends LoginCredentials
 				buf.append('*');
         return buf.toString();
     }
-
-	/**
-	 * Add additional command line args as "some.arg=somevalue"
-	 * or "--some.arg=somevalue"
-	 * @param args The arguments
-	 */
-	public void addCmdLineArgs(Collection<String> args) {
-    	this.cmdLineArgs.addAll(args);
-	}
-
-	@Override
-	public List<String> getArguments() {
-		// Args login has precedence. By overriding this method
-		// and making sure it's not null/empty the gateway will
-		// use this argument list for login and additional command
-		// line arguments can be passed through.
-		List<String> res = new ArrayList<>();
-		res.add("--omero.user="+getUser().getUsername());
-		res.add("--omero.pass="+getUser().getPassword());
-		res.add("--omero.host="+getServer().getHost());
-		res.add("--omero.port="+getServer().getPort());
-		for (String arg : cmdLineArgs) {
-			if (arg.startsWith("--"))
-				res.add(arg);
-			else
-				res.add("--"+arg);
-		}
-		return res;
-	}
+    
 }
