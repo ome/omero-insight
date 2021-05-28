@@ -536,7 +536,7 @@ public class TaskBarManager
 				LookupNames.SPLASH_SCREEN_LOGO);
 
 		reconnectDialog = new ScreenLoginDialog(Container.TITLE,
-				getSplashScreen(Factory.createIcon(n, f)), img, v, container.getRegistry());
+				getSplashScreen(Factory.createIcon(n, f)), img, v);
 		reconnectDialog.setStatusVisible(false);
 		reconnectDialog.showConnectionSpeed(true);
 		reconnectDialog.addPropertyChangeListener(new PropertyChangeListener() {
@@ -548,7 +548,6 @@ public class TaskBarManager
 				else if (ScreenLogin.LOGIN_PROPERTY.equals(name)) {
 					UserCredentials lc = (UserCredentials) evt.getNewValue();
 					if (lc != null) {
-						lc.addCmdLineArgs(container.getRegistry().getCmdLineArgs());
 						collectCredentials(lc,
 								(ScreenLoginDialog) evt.getSource());
 					}
