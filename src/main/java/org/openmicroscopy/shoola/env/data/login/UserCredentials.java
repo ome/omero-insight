@@ -22,7 +22,6 @@ package org.openmicroscopy.shoola.env.data.login;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -81,6 +80,9 @@ public class UserCredentials extends LoginCredentials
 
 	/** Additional command line arguments */
 	private Set<String> cmdLineArgs = new HashSet<>();
+
+	/** Characters which need to be escaped for the login username / password */
+	private String escapeChars = null;
 
     /** 
      * Controls if the passed speed index is supported.
@@ -328,8 +330,8 @@ public class UserCredentials extends LoginCredentials
 		// use this argument list for login and additional command
 		// line arguments can be passed through.
 		List<String> res = new ArrayList<>();
-		res.add("--omero.user="+getUser().getUsername());
-		res.add("--omero.pass="+getUser().getPassword());
+		res.add("--omero.user="+escape(getUser().getUsername()));
+		res.add("--omero.pass="+escape(getUser().getPassword()));
 		res.add("--omero.host="+getServer().getHost());
 		res.add("--omero.port="+getServer().getPort());
 		for (String arg : cmdLineArgs) {
@@ -339,5 +341,25 @@ public class UserCredentials extends LoginCredentials
 				res.add("--"+arg);
 		}
 		return res;
+	}
+
+	/**
+	 * Set characters which need to escaped for the login username / password
+	 * @param escapeChars See above.
+	 */
+	public void setEscapeChars(String escapeChars) {
+		this.escapeChars = escapeChars;
+	}
+
+	/**
+	 * Escape characters, if escapeChars is set.
+	 * @param arg The string to escape
+	 * @return See above.
+	 */
+	private String escape(String arg) {
+		if (escapeChars != null && escapeChars.length()>0) {
+			return arg.replaceAll("([" + escapeChars + "])", "\\\\$1");
+		}
+		return arg;
 	}
 }
