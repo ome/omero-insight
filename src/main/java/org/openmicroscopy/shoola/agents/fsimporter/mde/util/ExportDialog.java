@@ -173,6 +173,9 @@ public class ExportDialog extends JDialog implements ActionListener {
         }
     }
 
+    /**
+     * @return a suggestion for a filename with extensions depending on the selected delimeter (default: metadata_export_mde.txt)
+     */
     private String getFormatExtensionName() {
         if(ch_csv.isSelected()) return "metadata_export_mde.csv";
         if(ch_tsv.isSelected()) return "metadata_export_mde.tsv";
@@ -194,6 +197,10 @@ public class ExportDialog extends JDialog implements ActionListener {
     public boolean exportAll(){
         return ch_exportAllData.isSelected();
     }
+
+    /**
+     * @return selected delimeter (default: space)
+     */
     public String getDelimeter(){
         if(ch_csv.isSelected()) return ",";
         if(ch_tsv.isSelected()) return "\t";

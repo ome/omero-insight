@@ -422,13 +422,13 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		template.add(template_save);
 		template.add(template_load);
 
-		/**Exports**/
+		/**Export**/
 		JMenu export = new JMenu("Metadata Export");
-		JMenuItem export_csv = new JMenuItem("To file...");
-		export_csv.setActionCommand("" + EXPORT_DATA);
-		export_csv.addActionListener(this);
+		JMenuItem export_txt_format = new JMenuItem("To txt format...");
+		export_txt_format.setActionCommand("" + EXPORT_DATA);
+		export_txt_format.addActionListener(this);
 
-		export.add(export_csv);
+		export.add(export_txt_format);
 
 		popupMenu = new JPopupMenu();
 		popupMenu.add(template);
@@ -1006,7 +1006,6 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	}
 
 	private void export(){
-
 		ExportDialog exportDialog = new ExportDialog(new JFrame());
 		File exportFile= exportDialog.getDestination();
 		boolean addPath=exportDialog.addPath();
