@@ -85,9 +85,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.NodeContainer;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TemplateDialog;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportAsCsv;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ImportFromTemplateFile;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportAsTemplateFile;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.*;
 
 import org.openmicroscopy.shoola.agents.fsimporter.view.Importer;
 import org.openmicroscopy.shoola.env.data.model.ImportableFile;
@@ -177,7 +175,8 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	private static final int SAVE_TEMPLATE=14;
 	private static final int LOAD_TEMPLATE=15;
 	private static final int CMD_HARDCONF=16;
-	private static final int EXPORT_DATA_CSV=17;
+	private static final int EXPORT_DATA=17;
+
 	private static final int MENU=18;
 
 	private ModuleController controller;
@@ -425,12 +424,11 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 
 		/**Exports**/
 		JMenu export = new JMenu("Metadata Export");
-		JMenuItem export_csv = new JMenuItem("To CSV...");
-		export_csv.setActionCommand("" + EXPORT_DATA_CSV);
+		JMenuItem export_csv = new JMenuItem("To file...");
+		export_csv.setActionCommand("" + EXPORT_DATA);
 		export_csv.addActionListener(this);
 
 		export.add(export_csv);
-
 
 		popupMenu = new JPopupMenu();
 		popupMenu.add(template);
@@ -939,31 +937,10 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				}
 				break;
 
-			case EXPORT_DATA_CSV:
-
-				ExportDialog exportDialog = new ExportDialog(new JFrame());
-				File exportFile= exportDialog.getDestination();
-				boolean addPath=exportDialog.addPath();
-				boolean addUnitToKey=exportDialog.addUnitToKey();
-				boolean exportAll=exportDialog.exportAll();
-
-				if(exportFile !=null){
-					ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] Export to: " + exportFile.getAbsolutePath());
-					ExportAsCsv exporter = new ExportAsCsv(exportFile.getAbsolutePath());
-					try {
-						if(exportAll){
-							exporter.exportAll(getCurrentModuleTreeRoot(),addPath,addUnitToKey);
-						}else {
-							exporter.export(getCurrentModuleTreeRoot(), addPath, addUnitToKey);
-						}
-					} catch (IOException e) {
-						JOptionPane.showMessageDialog (null, e.getMessage());
-						ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
-					}
-				} else {
-					ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
-				}
+			case EXPORT_DATA:
+				export();
 				break;
+
 			case SAVE_TEMPLATE:
 
 				DefaultMutableTreeNode root = getCurrentModuleTreeRoot();
@@ -1028,6 +1005,33 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		}
 	}
 
+	private void export(){
+
+		ExportDialog exportDialog = new ExportDialog(new JFrame());
+		File exportFile= exportDialog.getDestination();
+		boolean addPath=exportDialog.addPath();
+		boolean addUnitToKey=exportDialog.addUnitToKey();
+		boolean exportAll=exportDialog.exportAll();
+		String delimeter = exportDialog.getDelimeter();
+
+		if(exportFile !=null){
+			ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] Export to: " + exportFile.getAbsolutePath());
+			ExportToTextFormat exporter= new ExportToTextFormat(exportFile.getAbsolutePath(),delimeter);
+
+			try {
+				if(exportAll){
+					exporter.exportAll(getCurrentModuleTreeRoot(),addPath,addUnitToKey);
+				}else {
+					exporter.export(getCurrentModuleTreeRoot(), addPath, addUnitToKey);
+				}
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog (null, e.getMessage());
+				ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
+			}
+		} else {
+			ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
+		}
+	}
 	
 	/**
 	 * Update current object tree with objec configuration for selected setup.

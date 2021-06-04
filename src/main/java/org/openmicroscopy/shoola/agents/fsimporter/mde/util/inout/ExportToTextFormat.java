@@ -34,15 +34,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Export user input as key,value to csv file.
- * 7/2/2020
+ * Export user input as key,value to txt like file (Basis class for csv and tsv exports).
+ * 6/2/2021
  * @author Susanne Kunis<susannekunis at gmail dot com>
  **/
-public class ExportAsCsv {
+public class ExportToTextFormat {
     String fName;
+    String delimeter;
 
-    public ExportAsCsv(String fileName){
+    public ExportToTextFormat(String fileName, String delimeter){
         this.fName=fileName;
+        this.delimeter=delimeter;
     }
 
     /**
@@ -111,14 +113,15 @@ public class ExportAsCsv {
             File csvOutputFile = new File(fName);
             try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
                 data.stream()
-                        .map(this::convertToCSVString)
+                        .map(this::convertToLineString)
                         .forEach(pw::println);
             }
         }
 
     }
-    private String convertToCSVString(String[] data) {
+
+    private String convertToLineString(String[] data) {
         return Stream.of(data)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(delimeter));
     }
 }

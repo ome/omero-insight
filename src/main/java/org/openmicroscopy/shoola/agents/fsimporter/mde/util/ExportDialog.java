@@ -49,15 +49,17 @@ public class ExportDialog extends JDialog implements ActionListener {
     private JCheckBox ch_addPath;
     private JCheckBox ch_addUnitToKey;
     private JCheckBox ch_exportAllData;
+    private JRadioButton ch_tsv;
+    private JRadioButton ch_csv;
+    private JRadioButton ch_txt;
 
-    private final String suffix=".csv";
     private DefaultMutableTreeNode tree;
     private boolean cancel;
 
     private File exportfile;
 
     public ExportDialog(JFrame parent){
-        super(parent,"Export to csv file");
+        super(parent,"Export to file");
         this.exportfile=null;
         cancel=false;
         buildGUI();
@@ -97,6 +99,28 @@ public class ExportDialog extends JDialog implements ActionListener {
         ch_exportAllData.setToolTipText("Export also metadata that available in the image container");
         subPanel.add(ch_exportAllData);
 
+        /** configuration format */
+        JPanel subPanel_format= new JPanel();
+        Border titleBorder_format = BorderFactory.createTitledBorder("Format:");
+        subPanel_format.setLayout(new BoxLayout(subPanel_format, BoxLayout.Y_AXIS));
+        subPanel_format.setBorder(titleBorder_format);
+        ch_tsv = new JRadioButton("text format seperated by tabs");
+        ch_tsv.setSelected(true);
+        ch_csv = new JRadioButton("text format seperated by commas");
+        ch_csv.setSelected(false);
+        ch_txt = new JRadioButton("text format seperated by spaces");
+        ch_txt.setSelected(false);
+        ButtonGroup btnGroup = new ButtonGroup();
+        btnGroup.add(ch_tsv);
+        btnGroup.add(ch_csv);
+        btnGroup.add(ch_txt);
+        subPanel_format.add(ch_tsv);
+        subPanel_format.add(ch_csv);
+        subPanel_format.add(ch_txt);
+
+        subPanel.add(subPanel_format);
+
+
         /** main panel**/
         JPanel mainPanel=new JPanel();
         mainPanel.setLayout(new BorderLayout(5,5));
@@ -107,7 +131,7 @@ public class ExportDialog extends JDialog implements ActionListener {
         JLabel destPath_Lbl=new JLabel("Destination");
         txt_path =new JTextField(50);
         txt_path.setEditable(false);
-        txt_path.setToolTipText("Destination to store csv file");
+        txt_path.setToolTipText("Destination to store file");
         if(exportfile!=null)
             txt_path.setText(exportfile.getAbsolutePath());
         btn_browse_save =new JButton("Browse");
@@ -133,22 +157,29 @@ public class ExportDialog extends JDialog implements ActionListener {
             setVisible(false);
             dispose();
         }else if(e.getSource()== btn_browse_save) {
-            FileFilter filter = new FileNameExtensionFilter("CSV file", "csv");
+            //FileFilter filter = new FileNameExtensionFilter("CSV file", "csv");
+            String formatExtFileName = getFormatExtensionName();
             JFileChooser fcSave =new JFileChooser();
-            fcSave.addChoosableFileFilter(filter);
-            fcSave.setFileFilter(filter);
+            fcSave.setSelectedFile(new File(fcSave.getCurrentDirectory(), formatExtFileName));
+            //fcSave.addChoosableFileFilter(filter);
+            //fcSave.setFileFilter(filter);
             if(exportfile!=null)
                 fcSave.setCurrentDirectory(new File(exportfile.getParent()));
             int returnValSave=fcSave.showSaveDialog(this);
             if(returnValSave==JFileChooser.APPROVE_OPTION) {
                 exportfile=fcSave.getSelectedFile();
-                if(!fcSave.getSelectedFile().getAbsolutePath().endsWith(suffix)){
-                    exportfile = new File(fcSave.getSelectedFile() + suffix);
-                }
                 txt_path.setText(exportfile.getAbsolutePath());
             }
         }
     }
+
+    private String getFormatExtensionName() {
+        if(ch_csv.isSelected()) return "metadata_export_mde.csv";
+        if(ch_tsv.isSelected()) return "metadata_export_mde.tsv";
+        if(ch_txt.isSelected()) return "metadata_export_mde.txt";
+        return "metadata_export_mde.txt";
+    }
+
     public File getDestination()
     {
         return exportfile;
@@ -162,6 +193,13 @@ public class ExportDialog extends JDialog implements ActionListener {
     }
     public boolean exportAll(){
         return ch_exportAllData.isSelected();
+    }
+    public String getDelimeter(){
+        if(ch_csv.isSelected()) return ",";
+        if(ch_tsv.isSelected()) return "\t";
+        if(ch_txt.isSelected()) return " ";
+
+        return " ";
     }
     public Boolean isCancelled(){return cancel;}
 }
