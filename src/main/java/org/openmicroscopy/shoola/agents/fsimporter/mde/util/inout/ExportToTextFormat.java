@@ -24,6 +24,7 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -41,10 +42,12 @@ import java.util.stream.Stream;
 public class ExportToTextFormat {
     String fName;
     String delimeter;
+    boolean appendToFile;
 
-    public ExportToTextFormat(String fileName, String delimeter){
+    public ExportToTextFormat(String fileName, String delimeter, boolean appendToFile){
         this.fName=fileName;
         this.delimeter=delimeter;
+        this.appendToFile=appendToFile;
     }
 
     /**
@@ -104,14 +107,15 @@ public class ExportToTextFormat {
     }
 
     /**
-     * Create csv file and writes key,value
+     * Create file and writes key,value
      * @param data list of string arrays [key,value]
      * @throws IOException
      */
     private void createFile(List<String[]> data) throws IOException {
         if(data!=null) {
-            File csvOutputFile = new File(fName);
-            try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
+           // File outputFile = new File(fName);
+            FileWriter writer = new FileWriter(fName,appendToFile);
+            try (PrintWriter pw = new PrintWriter(writer)) {
                 data.stream()
                         .map(this::convertToLineString)
                         .forEach(pw::println);

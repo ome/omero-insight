@@ -1012,10 +1012,11 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		boolean addUnitToKey=exportDialog.addUnitToKey();
 		boolean exportAll=exportDialog.exportAll();
 		String delimeter = exportDialog.getDelimeter();
+		boolean appendToFile= exportDialog.getWritingMode();
 
 		if(exportFile !=null){
 			ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] Export to: " + exportFile.getAbsolutePath());
-			ExportToTextFormat exporter= new ExportToTextFormat(exportFile.getAbsolutePath(),delimeter);
+			ExportToTextFormat exporter= new ExportToTextFormat(exportFile.getAbsolutePath(),delimeter,appendToFile);
 
 			try {
 				if(exportAll){

@@ -56,6 +56,8 @@ public class ExportDialog extends JDialog implements ActionListener {
     private DefaultMutableTreeNode tree;
     private boolean cancel;
 
+    private Boolean appendToFile;
+
     private File exportfile;
 
     public ExportDialog(JFrame parent){
@@ -150,19 +152,21 @@ public class ExportDialog extends JDialog implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == btn_OK){
+            this.appendToFile=getWriteMode(exportfile);
+            if(this.appendToFile==null){
+                return;
+            }
             setVisible(false);
             dispose();
         }else if(e.getSource()== btn_cancel) {
+            exportfile=null;
             cancel =true;
             setVisible(false);
             dispose();
         }else if(e.getSource()== btn_browse_save) {
-            //FileFilter filter = new FileNameExtensionFilter("CSV file", "csv");
             String formatExtFileName = getFormatExtensionName();
             JFileChooser fcSave =new JFileChooser();
             fcSave.setSelectedFile(new File(fcSave.getCurrentDirectory(), formatExtFileName));
-            //fcSave.addChoosableFileFilter(filter);
-            //fcSave.setFileFilter(filter);
             if(exportfile!=null)
                 fcSave.setCurrentDirectory(new File(exportfile.getParent()));
             int returnValSave=fcSave.showSaveDialog(this);
@@ -171,6 +175,31 @@ public class ExportDialog extends JDialog implements ActionListener {
                 txt_path.setText(exportfile.getAbsolutePath());
             }
         }
+    }
+
+    private Boolean getWriteMode(File outputFile) {
+        Object[] options = {"Overwrite file",
+                "Append to file",
+                "Cancel"};
+        if (outputFile.exists()) {
+            int result = JOptionPane.showOptionDialog(
+                    btn_browse_save.getParent(),
+                    "File exists!", "File exists",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+            switch (result) {
+                case 1:
+                   return true;
+                case 2:
+                    return null;
+                default:
+                    return false;
+            }
+        }
+        return null;
     }
 
     /**
@@ -207,6 +236,11 @@ public class ExportDialog extends JDialog implements ActionListener {
         if(ch_txt.isSelected()) return " ";
 
         return " ";
+    }
+    public boolean getWritingMode(){
+        if(appendToFile==null)
+            return false;
+        return appendToFile.booleanValue();
     }
     public Boolean isCancelled(){return cancel;}
 }
