@@ -186,9 +186,9 @@
     <entry name="omero.client.import.offline.url">http://localhost:8000/ome/import</entry>
     <entry name="omero.client.import.offline.enabled" type="boolean">false</entry>
     <!-- mde on/off -->
-    <entry name="omero.client.import.mde.enabled" type="boolean">false</entry>
+    <entry name="omero.client.import.mde.enabled" type="boolean">true</entry>
     <!-- mde config file location (. for in config dir; omero for local user omero dir) -->
-    <entry name="omero.client.import.mde.path">.</entry>
+    <entry name="omero.client.import.mde.path">omero</entry>
   </services>
 
   <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
