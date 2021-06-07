@@ -42,6 +42,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
+
 
 /**
  * TODO: file browser type -> select attachment files, tag type -> tag image
@@ -156,6 +158,8 @@ public class TagData
 	private String[] defaultValue;
 	// default unit
 	private String[] unitSymbol;
+
+	private List<OntologyElement> ontoElems;
 	
 	
 	private ActionListener fieldActionListener;
@@ -192,6 +196,9 @@ public class TagData
 		fieldBorder=orig.fieldBorder;
 		inputField=null;
 		if(orig.defaultValue!=null) defaultValue=orig.defaultValue.clone();
+		if(orig.ontoElems!=null){
+			ontoElems=orig.ontoElems.stream().collect(toList());
+		}
 	}
 	
 	/**
@@ -1541,6 +1548,40 @@ public class TagData
 
 	public TagDataProp getProperties() {
 		return new TagDataProp(getTagName(),getTagUnitString(),isVisible(),isRequired());
+	}
+
+	public void setOntologyRef(List<OntologyElement> ontoElems){
+		this.ontoElems=ontoElems;
+	}
+	public boolean isOntoElement(){return this.ontoElems!=null;}
+
+	/**
+	 * @param name
+	 * @return String[]{name,id,onto_name,uri} or null
+	 */
+	public String[] getOntologyRef(String name){
+		if(isOntoElement()){
+			OntologyElement elem=this.ontoElems.stream().filter(n->n.getName().equals(name)).findAny().orElse(null);
+			if(elem!=null){
+				return new String[]{elem.getName(),elem.getId(),elem.getOntologyName(),elem.getUri()};
+			}
+		}
+		return null;
+	}
+
+	public OntologyElement getOntologyRefElem(String name){
+		if(isOntoElement()) {
+			OntologyElement match = null;//this.ontoElems.stream().filter(n -> n.getName().equals(name)).findAny().orElse(null);
+			for(OntologyElement o:this.ontoElems){
+				if(o.getName().trim().equals(name.trim())){
+					match=o;
+				}
+			}
+			if(match==null)
+				ImporterAgent.getRegistry().getLogger().debug(null,"[MDE] ATTENTION: no ontology elem matched");
+			return match;
+		}
+		 return null;
 	}
 	
 

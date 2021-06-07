@@ -18,6 +18,7 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util;
 
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportToTextFormat;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.TypeFilter_GUI;
 
 import javax.swing.*;
@@ -52,6 +53,8 @@ public class ExportDialog extends JDialog implements ActionListener {
     private JRadioButton ch_tsv;
     private JRadioButton ch_csv;
     private JRadioButton ch_txt;
+    private JRadioButton ch_idr;
+
 
     private DefaultMutableTreeNode tree;
     private boolean cancel;
@@ -112,13 +115,20 @@ public class ExportDialog extends JDialog implements ActionListener {
         ch_csv.setSelected(false);
         ch_txt = new JRadioButton("text format seperated by spaces");
         ch_txt.setSelected(false);
+        ch_idr = new JRadioButton("IDR submission format");
+        ch_idr.setSelected(false);
+
         ButtonGroup btnGroup = new ButtonGroup();
         btnGroup.add(ch_tsv);
         btnGroup.add(ch_csv);
         btnGroup.add(ch_txt);
+        btnGroup.add(ch_idr);
+
         subPanel_format.add(ch_tsv);
         subPanel_format.add(ch_csv);
         subPanel_format.add(ch_txt);
+        subPanel_format.add(ch_idr);
+
 
         subPanel.add(subPanel_format);
 
@@ -199,7 +209,7 @@ public class ExportDialog extends JDialog implements ActionListener {
                     return false;
             }
         }
-        return null;
+        return false;
     }
 
     /**
@@ -209,6 +219,8 @@ public class ExportDialog extends JDialog implements ActionListener {
         if(ch_csv.isSelected()) return "metadata_export_mde.csv";
         if(ch_tsv.isSelected()) return "metadata_export_mde.tsv";
         if(ch_txt.isSelected()) return "metadata_export_mde.txt";
+        if(ch_idr.isSelected()) return "idr_study.txt";
+
         return "metadata_export_mde.txt";
     }
 
@@ -218,7 +230,10 @@ public class ExportDialog extends JDialog implements ActionListener {
     }
 
     public boolean addPath() {
+        //if(getFormatMode()==ExportToTextFormat.MODE_IDR)
+         //   return false;
         return ch_addPath.isSelected();
+
     }
     public boolean addUnitToKey(){
         return ch_addUnitToKey.isSelected();
@@ -234,9 +249,17 @@ public class ExportDialog extends JDialog implements ActionListener {
         if(ch_csv.isSelected()) return ",";
         if(ch_tsv.isSelected()) return "\t";
         if(ch_txt.isSelected()) return " ";
+        if(ch_idr.isSelected()) return "\t";
+
 
         return " ";
     }
+    public int getFormatMode(){
+        if(ch_idr.isSelected()) return ExportToTextFormat.MODE_IDR;
+
+        return ExportToTextFormat.MODE_DEFAULT;
+    }
+
     public boolean getWritingMode(){
         if(appendToFile==null)
             return false;

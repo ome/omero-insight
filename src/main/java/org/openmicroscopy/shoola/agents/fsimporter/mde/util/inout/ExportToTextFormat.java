@@ -20,6 +20,7 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.OntologyElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -40,13 +41,21 @@ import java.util.stream.Stream;
  * @author Susanne Kunis<susannekunis at gmail dot com>
  **/
 public class ExportToTextFormat {
+    public static final int MODE_DEFAULT=0;
+    public static final int MODE_IDR=1;
+    public static final int MODE_ISA=2;
+
+
     String fName;
     String delimeter;
+    int mode;
     boolean appendToFile;
+    Map<String,List<String>> appendix;
 
-    public ExportToTextFormat(String fileName, String delimeter, boolean appendToFile){
+    public ExportToTextFormat(String fileName, String delimeter, boolean appendToFile,int mode){
         this.fName=fileName;
         this.delimeter=delimeter;
+        this.mode=mode;
         this.appendToFile=appendToFile;
     }
 
@@ -88,8 +97,10 @@ public class ExportToTextFormat {
             if(entry.getValue()!=null) {
                 for(TagData t:entry.getValue()) {
                     if(t.getTagValue()!=null && !t.getTagValue().trim().isEmpty()) {
+
                         String key = entry.getKey() + " | " + t.getTagName();
                         String value = t.getTagWholeValue();
+
                         if (!addPath) {
                             key = t.getTagName();
                         }
@@ -98,12 +109,56 @@ public class ExportToTextFormat {
                             value = t.getTagValue();
                         }
                         data.add(new String[]{key,value});
+
+                        if(t.isOntoElement()){
+                            List<String[]> refAnnot=ontologyRef(t.getOntologyRefElem(value),t.getTagName());
+                            if(refAnnot!=null) data.addAll(refAnnot);
+                        }
                     }
                 }
             }
         }
 
         return data;
+    }
+
+    private List<String[]> ontologyRef(OntologyElement ontologyRefElem, String name) {
+        if(ontologyRefElem!=null){
+            List<String[]> strList=new ArrayList<>();
+            switch(mode){
+                case MODE_IDR:
+                    strList.add(new String[]{name+" Term Source REF",ontologyRefElem.getOntologyName()});
+                    strList.add(new String[]{name+" Term Accession",ontologyRefElem.getAccession()});
+                    if(appendix==null)
+                        appendix=new HashMap<>();
+
+                    List<String> strArr = appendix.get("Term Source Name");
+                    if(strArr==null){
+                        strArr=new ArrayList<String>();
+                    }
+                    strArr.add(ontologyRefElem.getOntologyName().equals("")?"--":ontologyRefElem.getOntologyName());
+                    appendix.put("Term Source Name",strArr);
+
+                    strArr = appendix.get("Term Source URI");
+                    if(strArr==null){
+                        strArr=new ArrayList<String>();
+                    }
+                    strArr.add(ontologyRefElem.getUri());
+                    appendix.put("Term Source URI",strArr);
+                    break;
+
+                default:
+
+                    strList.add(new String[]{name+" Ontology Ref",
+                            String.format("%s (%s)",ontologyRefElem.getAccession(),ontologyRefElem.getUri())});
+
+                    /*strList.add(new String[]{"onto id",ontologyRefElem.getId()});
+                    strList.add(new String[]{"onto uri",ontologyRefElem.getUri()});
+                    strList.add(new String[]{"onto name",ontologyRefElem.getOntologyName()});*/
+            }
+            return strList;
+        }
+        return null;
     }
 
     /**
@@ -119,6 +174,13 @@ public class ExportToTextFormat {
                 data.stream()
                         .map(this::convertToLineString)
                         .forEach(pw::println);
+                if(appendix!=null){
+                    for (Map.Entry<String,List<String>> entry : appendix.entrySet()){
+                        String value = entry.getValue().stream()
+                                .collect(Collectors.joining(" "));
+                        pw.println(entry.getKey()+delimeter+value);
+                    }
+                }
             }
         }
 

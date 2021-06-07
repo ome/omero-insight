@@ -955,7 +955,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 						ExportAsTemplateFile exporter = new ExportAsTemplateFile(tempFile.getAbsolutePath());
 						exporter.export(root, selectedModules);
 					} else {
-						ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
+						ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export template failed !");
 					}
 				}
 				break;
@@ -1012,11 +1012,12 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 		boolean addUnitToKey=exportDialog.addUnitToKey();
 		boolean exportAll=exportDialog.exportAll();
 		String delimeter = exportDialog.getDelimeter();
+		int mode = exportDialog.getFormatMode();
 		boolean appendToFile= exportDialog.getWritingMode();
 
 		if(exportFile !=null){
 			ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] Export to: " + exportFile.getAbsolutePath());
-			ExportToTextFormat exporter= new ExportToTextFormat(exportFile.getAbsolutePath(),delimeter,appendToFile);
+			ExportToTextFormat exporter= new ExportToTextFormat(exportFile.getAbsolutePath(),delimeter,appendToFile,mode);
 
 			try {
 				if(exportAll){
@@ -1027,6 +1028,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog (null, e.getMessage());
 				ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
+				e.printStackTrace();
 			}
 		} else {
 			ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");

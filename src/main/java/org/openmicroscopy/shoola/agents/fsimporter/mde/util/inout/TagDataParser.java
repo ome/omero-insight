@@ -19,6 +19,7 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.OntologyElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.BioPortal_Parser;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser.OLS_Parser;
@@ -26,6 +27,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Parse a {@link TagData} element to an {@link Element} object and vice-versa.
@@ -92,8 +97,11 @@ public class TagDataParser {
             String tagType = eElement.getAttribute(ATTR_TYPE);
 
             String[] defaultValList=null;
+            List<OntologyElement> ontoList=null;
             if(eElement.hasChildNodes()){
-                defaultValList=parseOntology(eElement);
+                ontoList =parseOntology(eElement);
+
+                defaultValList=listToStringArray(ontoList);
             }
 
             if (defaultValList == null) {
@@ -115,13 +123,20 @@ public class TagDataParser {
                 t = new TagData(parent, tagName, tagVal, tagUnit, false, tagType, defaultValList);
             }
             t.setVisible(Boolean.parseBoolean(tagVis));
+            if(ontoList!=null)t.setOntologyRef(ontoList);
 
         }
         return t;
     }
 
-    private String[] parseOntology(Element eElement) {
-        String[] labelList=null;
+    private String[] listToStringArray(List<OntologyElement> list) {
+        if(list!=null)
+            return (list.stream().map(x -> x.getName()).collect(Collectors.toList())).toArray(new String[0]);
+        return null;
+    }
+
+    private List<OntologyElement> parseOntology(Element eElement) {
+        List<OntologyElement> labelList=null;
 
         NodeList nodeList= (NodeList) eElement.getElementsByTagName(ELEM_ONTOLOGY);
         if(nodeList!=null && nodeList.getLength()>0){
@@ -138,25 +153,34 @@ public class TagDataParser {
             String ontologyAcronym = eElement.getAttribute(ATTR_ONTO_ACRO);
             String ontologyRef = eElement.getAttribute(ATTR_ONTO_REF);
 
+            ImporterAgent.getRegistry().getLogger().debug(null,"[MDE]"+
+                    String.format("Parse Ontology: {acronym:%s,id:%s}",ontologyAcronym,ontologyRef));
+
             if(ontology_RESTAPI_url==null || ontology_RESTAPI_url.isEmpty() ||
                 ontologyAcronym==null || ontologyAcronym.isEmpty() ||
                 ontologyRef==null || ontologyRef.isEmpty()){
                 return null;
             }
 
-            BioPortal_Parser oParser = new BioPortal_Parser(ontology_RESTAPI_url,api_key);
+            BioPortal_Parser oParser = new BioPortal_Parser(ontology_RESTAPI_url,api_key,ontologyAcronym);
             try {
                 labelList = oParser.getSubLabels(ontologyAcronym, ontologyRef);
 
                 if (labelList == null) {
-                    OLS_Parser olsParser = new OLS_Parser(ontology_RESTAPI_url);
+                    OLS_Parser olsParser = new OLS_Parser(ontology_RESTAPI_url,ontologyAcronym);
                     labelList= olsParser.getSubLabels(ontologyAcronym, ontologyRef);
+                }
+                if (labelList ==null){
+                    ImporterAgent.getRegistry().getLogger().debug(null,"[MDE] "+String.format("Ontology element at %s has no childs",ontologyRef));
                 }
             } catch (Exception e) {
                 ImporterAgent.getRegistry().getLogger().warn(this,
-                        "MDE: can't parse given ontology item [" + ontologyAcronym + ", " + ontologyRef + "]");
+                        "[MDE] can't parse given ontology item [" + ontologyAcronym + ", " + ontologyRef + "]");
+                e.printStackTrace();
             }
         }
         return labelList;
     }
+
+
 }

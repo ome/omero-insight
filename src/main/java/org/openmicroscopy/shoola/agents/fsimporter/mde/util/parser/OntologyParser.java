@@ -21,12 +21,15 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.OntologyElement;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * 1/8/2021
@@ -35,9 +38,11 @@ import java.util.List;
  **/
 public abstract class OntologyParser {
     String REST_URL;
+    String acronym;
     static final ObjectMapper mapper = new ObjectMapper();
 
-    public OntologyParser(String ontology_restapi_url) {
+    public OntologyParser(String ontology_restapi_url,String acronym) {
+        this.acronym=acronym;
         this.REST_URL=ontology_restapi_url;
     }
 
@@ -47,19 +52,18 @@ public abstract class OntologyParser {
      * @param termID_href href
      * @return labels of all subclasses of given termID, if subclass is a leaf
      */
-    public String[] getSubLabels(String ontology_acronym,String termID_href) throws Exception {
+    public List<OntologyElement> getSubLabels(String ontology_acronym, String termID_href) throws Exception {
+        List<OntologyElement> labels=null;
         if(ontology_acronym==null || ontology_acronym.isEmpty() || termID_href==null || termID_href.isEmpty()){
             return null;
         }
-        JsonNode ontology_node = getNode(formatURL(ontology_acronym,termID_href));
-
-        List<String> labels=getSubClassLabels(ontology_node);
-        String[] result=null;
-        if(labels!=null) {
-            result = (String[]) labels.toArray(new String[0]);
+        try {
+            JsonNode ontology_node = getNode(formatURL(ontology_acronym, termID_href));
+            labels = getSubClassLabels(ontology_node);
+        }catch(Exception e){
+            e.printStackTrace();
         }
-
-        return result;
+        return labels;
     }
 
     /**
@@ -71,10 +75,9 @@ public abstract class OntologyParser {
         String ontology_string= get_inputStreamAsStringFromURL(url);
         JsonNode ontology= stringToJsonNode(ontology_string);
 
-        if(ontology==null){
-            ImporterAgent.getRegistry().getLogger().info(this,"[MDE] Can't parse ontology from "+url);
-            return null;
-        }
+        /*if(ontology==null){
+            throw new NoSuchElementException(String.format("Exception while fetching url: %s",url));
+        }*/
         return ontology;
     }
 
@@ -99,7 +102,8 @@ public abstract class OntologyParser {
             }
         } catch (Exception e) {
             // to check if exception: url_restapi and api_key
-            ImporterAgent.getRegistry().getLogger().warn(this,"[MDE] can't create url connection to "+urlToGet);
+            //throw new MalformedURLException(String.format("Exception while creating url for %s",urlToGet));
+            // Parse from OLS produce always at first children parsing an Error - However, this has no effect on the result.
         } finally {
             try {
                 if (rd != null) rd.close();
@@ -116,7 +120,7 @@ public abstract class OntologyParser {
      * @return labels of all subclasses of given termID, if subclass is a leaf
      * @throws Exception
      */
-    protected abstract List<String> getSubClassLabels(JsonNode ontology_node) throws Exception;
+    protected abstract List<OntologyElement> getSubClassLabels(JsonNode ontology_node) throws Exception;
 
     /**
      *
