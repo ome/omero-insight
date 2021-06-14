@@ -564,7 +564,7 @@ public class DataServicesFactory
         if (!canCreate && LookupNames.MASTER_IMPORTER.equals(name)) {
             registry.getUserNotifier().notifyError("Read-only server",
                     "Cannot import on a read-only server!");
-            exitApplication(true, true);
+            //exitApplication(true, true);
         }
 
         try {

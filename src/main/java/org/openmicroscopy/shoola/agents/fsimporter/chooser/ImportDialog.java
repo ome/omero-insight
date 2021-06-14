@@ -78,6 +78,9 @@ import javax.swing.filechooser.FileFilter;
 
 import loci.formats.gui.ComboFileFilter;
 
+import omero.gateway.Gateway;
+import omero.gateway.SecurityContext;
+import omero.gateway.exception.DSOutOfServiceException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jdesktop.swingx.JXTaskPane;
 import org.openmicroscopy.shoola.agents.fsimporter.IconManager;
@@ -1843,9 +1846,26 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		return mdeCancelImportButton;
 	}
 	private void enablesButtons(boolean enable) {
-		importButton.setEnabled(enable);
-		mdeImportButton.setEnabled(enable);
+		// imports only possible if server is not a read-only server
+		importButton.setEnabled(enable && canCreate());
+		mdeImportButton.setEnabled(enable && canCreate());
+
 		showMDEButton.setEnabled(enable);
+	}
+
+	/**
+	 * Helper function to use OMERO.importer with an server address of a read-only server (e.g. idr).
+	 * Check if users group is a non-read-only group.
+	 * @return
+	 */
+	private boolean canCreate() {
+		Gateway gw = ImporterAgent.getRegistry().getGateway();
+		SecurityContext ctx = new SecurityContext(gw.getLoggedInUser().getGroupId());
+		try {
+			return gw.canCreate(ctx);
+		} catch (DSOutOfServiceException e) {
+			return false;
+		}
 	}
 
 	@Override
