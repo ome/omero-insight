@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2017 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -444,4 +444,7 @@ public class LookupNames
 
     /** Lookup name for the user mde path **/
     public static final String USER_MDE_PATH = "/user/home/mde";
+
+    /** Lookup name for characters which need to escaped for the login username / password */
+    public static final String LOGIN_ESCAPE_CHARACTERS="omero.client.login_escape_characters";
 }

@@ -189,6 +189,8 @@
     <entry name="omero.client.import.mde.enabled" type="boolean">false</entry>
     <!-- mde config file location (. for in config dir; omero for local user omero dir) -->
     <entry name="omero.client.import.mde.path">.</entry>
+    <!-- escape ice special characters, see https://doc.zeroc.com/ice/3.6/properties-and-configuration/configuration-file-syntax -->
+    <entry name="omero.client.login_escape_characters">#=\s\\</entry>
   </services>
 
   <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
