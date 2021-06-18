@@ -2,7 +2,7 @@
 ------------------
 
 - BugFix: Escape ice special characters for login [#227](https://github.com/ome/omero-insight/pull/227) (regression introduced in [#197](https://github.com/ome/omero-insight/pull/197))
-- Bump omero-gateway-java 5.6.6 [#232](https://github.com/ome/omero-insight/issues/232)
+- Bump omero-gateway-java to 5.6.6 [#232](https://github.com/ome/omero-insight/issues/232)
 
 
 5.5.18 (April 2021)
@@ -44,7 +44,7 @@
 ---------------------
 
 - Fix bug with null folders [#163](https://github.com/ome/omero-insight/issues/163)
-- Bump to omero-gateway-java 5.6.5 [#164](https://github.com/ome/omero-insight/issues/164)
+- Bump omero-gateway-java to 5.6.5 [#164](https://github.com/ome/omero-insight/issues/164)
 
 5.5.13 (July 2020)
 ------------------
@@ -65,7 +65,7 @@
 - Fix bug when no project is selected for a single file import [#149](https://github.com/ome/omero-insight/pull/149)
 - Add feature export to csv in mde from @sukunis [#147](https://github.com/ome/omero-insight/pull/147)
 - Fix bug in MapAnnotationObject in mde from @sukunis [#140](https://github.com/ome/omero-insight/pull/140)
-- Bump to omero-gateway-java 5.6.4
+- Bump omero-gateway-java to 5.6.4
 
 
 5.5.11 (May 2020)
@@ -84,7 +84,7 @@
 - Add CSV to the list of the supported formats for the attachments dialog [#118](https://github.com/ome/omero-insight/pull/118)
 - Build Windows executable using Travis [#115](https://github.com/ome/omero-insight/pull/115)
 - Fiji plugin, use the Bio-Formats crop option when opening a large image in Fiji [#114](https://github.com/ome/omero-insight/pull/114)
-- Bump to omero-gateway-java 5.6.3
+- Bump omero-gateway-java to 5.6.3
 
 5.5.9 (January 2020)
 --------------------
@@ -95,14 +95,14 @@
 5.5.8 (December 2019)
 ---------------------
 
-- Bump to omero-gateway-java 5.6.1 with units fix
+- Bump tomero-gateway-java to 5.6.1 with units fix
 
 5.5.7 (December 2019)
 ---------------------
 
 - Major new metadata feature from @sukunis [#69](https://github.com/ome/omero-insight/pull/69)
 - Enable login via web sockets [#66](https://github.com/ome/omero-insight/pull/66)
-- Bump to omero-gateway-java 5.6.0 with support for OMERO 5.6
+- Bump omero-gateway-java to 5.6.0 with support for OMERO 5.6
 
 5.5.6 (September 2019)
 ----------------------
@@ -112,7 +112,7 @@
 5.5.5 (August 2019)
 -------------------
 
-- Bump to omero-gateway-java 5.5.4
+- Bump omero-gateway-java to 5.5.4
 
 5.5.4 (August 2019)
 -------------------
@@ -128,7 +128,7 @@
 
 - Fix SSL cipher issue to allow Insight to be used from Fedora 30
 - Fix stack overflow exception
-- Bump to omero-gateway-java 5.5.3
+- Bump omero-gateway-java to 5.5.3
 
 5.5.2 (June 2019)
 -----------------
