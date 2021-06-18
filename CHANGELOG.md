@@ -1,3 +1,10 @@
+5.5.19 (June 2021)
+------------------
+
+- BugFix: Escape ice special characters for login [#227](https://github.com/ome/omero-insight/pull/227) (regression introduced in [#197](https://github.com/ome/omero-insight/pull/197))
+- Bump omero-gateway-java 5.6.6 [#232](https://github.com/ome/omero-insight/issues/232)
+
+
 5.5.18 (April 2021)
 -------------------
 
