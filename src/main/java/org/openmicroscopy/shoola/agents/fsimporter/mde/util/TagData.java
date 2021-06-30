@@ -29,18 +29,38 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleControll
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.OMEValueConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.UIManager;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
 
 import static java.util.stream.Collectors.toList;
 
