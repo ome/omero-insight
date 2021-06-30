@@ -19,19 +19,28 @@
 package org.openmicroscopy.shoola.agents.fsimporter.mde.util;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportToTextFormat;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.TypeFilter_GUI;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.List;
 
 /**
  * Dialog to export form input to file.
@@ -230,8 +239,6 @@ public class ExportDialog extends JDialog implements ActionListener {
     }
 
     public boolean addPath() {
-        //if(getFormatMode()==ExportToTextFormat.MODE_IDR)
-         //   return false;
         return ch_addPath.isSelected();
 
     }
