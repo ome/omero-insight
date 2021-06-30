@@ -41,6 +41,10 @@ public abstract class OntologyParser {
     String acronym;
     static final ObjectMapper mapper = new ObjectMapper();
 
+    public OntologyParser(String ontology_restapi_url) {
+        this(ontology_restapi_url, "");
+    }
+
     public OntologyParser(String ontology_restapi_url,String acronym) {
         this.acronym=acronym;
         this.REST_URL=ontology_restapi_url;

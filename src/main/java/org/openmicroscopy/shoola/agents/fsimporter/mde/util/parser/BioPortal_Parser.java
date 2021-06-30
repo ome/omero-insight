@@ -43,6 +43,10 @@ public class BioPortal_Parser extends OntologyParser {
     //static final String REST_URL = "http://data.bioontology.org";
     private String api_key = "c6ae1b27-9f86-4e3c-9dcf-087e1156eabe";
 
+    public BioPortal_Parser(String ontology_restapi_url, String api_key) {
+        this(ontology_restapi_url, api_key, "");
+    }
+
     public BioPortal_Parser(String ontology_restapi_url, String api_key,String acronym) {
         super(ontology_restapi_url,acronym);
         if (api_key!=null && !api_key.isEmpty())

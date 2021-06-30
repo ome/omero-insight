@@ -39,6 +39,10 @@ import java.util.List;
 public class OLS_Parser extends OntologyParser {
     //static final String REST_URL = "https://www.ebi.ac.uk/ols";
 
+    public OLS_Parser(String ontology_restapi_url) {
+        this(ontology_restapi_url, "");
+    }
+
     public OLS_Parser(String ontology_restapi_url,String acronym) {
         super(ontology_restapi_url,acronym);
     }
@@ -130,4 +134,5 @@ public class OLS_Parser extends OntologyParser {
         conn.setRequestProperty("Accept", "application/json");
         return conn;
     }
+
 }
