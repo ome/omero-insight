@@ -20,16 +20,15 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.OntologyElement;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.NoSuchElementException;
+
+import omero.log.LogMessage;
 
 /**
  * 1/8/2021
@@ -65,7 +64,9 @@ public abstract class OntologyParser {
             JsonNode ontology_node = getNode(formatURL(ontology_acronym, termID_href));
             labels = getSubClassLabels(ontology_node);
         }catch(Exception e){
-            e.printStackTrace();
+            LogMessage msg = new LogMessage();
+            msg.print(String.format("Exception while getting sub labels for %s", termID_href));
+            msg.print(e);
         }
         return labels;
     }
@@ -105,6 +106,9 @@ public abstract class OntologyParser {
                 result += line;
             }
         } catch (Exception e) {
+            LogMessage msg = new LogMessage();
+            msg.print(String.format("Exception while creating url for %s",urlToGet));
+            msg.print(e);
             // to check if exception: url_restapi and api_key
             //throw new MalformedURLException(String.format("Exception while creating url for %s",urlToGet));
             // Parse from OLS produce always at first children parsing an Error - However, this has no effect on the result.
