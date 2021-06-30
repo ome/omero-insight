@@ -85,7 +85,9 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.MapAnnotationObject;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.NodeContainer;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TemplateDialog;
-import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.*;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportAsTemplateFile;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ExportToTextFormat;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout.ImportFromTemplateFile;
 
 import org.openmicroscopy.shoola.agents.fsimporter.view.Importer;
 import org.openmicroscopy.shoola.env.data.model.ImportableFile;
@@ -1006,7 +1008,7 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	}
 
 	private void export(){
-		ExportDialog exportDialog = new ExportDialog(new JFrame());
+		ExportDialog exportDialog = new ExportDialog(ImporterAgent.getRegistry().getTaskBar().getFrame());
 		File exportFile= exportDialog.getDestination();
 		boolean addPath=exportDialog.addPath();
 		boolean addUnitToKey=exportDialog.addUnitToKey();
@@ -1027,8 +1029,10 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				}
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog (null, e.getMessage());
-				ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
-				e.printStackTrace();
+				LogMessage msg = new LogMessage();
+				msg.print("[MDE] WARN: Export failed !");
+				msg.print(e);
+				ImporterAgent.getRegistry().getLogger().debug(this, msg);
 			}
 		} else {
 			ImporterAgent.getRegistry().getLogger().debug(this, "[MDE] WARN: Export failed !");
