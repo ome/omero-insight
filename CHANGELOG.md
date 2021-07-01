@@ -1,3 +1,11 @@
+5.6.0 (July 2021)
+-----------------
+
+- MDE enabled by default [#229](https://github.com/ome/omero-insight/pull/229)
+- MDE feature: Allow access to read-only server [#230](https://github.com/ome/omero-insight/pull/230)
+- MDE feature: Add export extension in terms of formats and ontology content [#228](https://github.com/ome/omero-insight/pull/228)
+
+
 5.5.19 (June 2021)
 ------------------
 
