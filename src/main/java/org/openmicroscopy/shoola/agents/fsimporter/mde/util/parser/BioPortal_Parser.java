@@ -20,6 +20,7 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.OntologyElement;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -43,7 +44,11 @@ public class BioPortal_Parser extends OntologyParser {
     private String api_key = "c6ae1b27-9f86-4e3c-9dcf-087e1156eabe";
 
     public BioPortal_Parser(String ontology_restapi_url, String api_key) {
-        super(ontology_restapi_url);
+        this(ontology_restapi_url, api_key, "");
+    }
+
+    public BioPortal_Parser(String ontology_restapi_url, String api_key,String acronym) {
+        super(ontology_restapi_url,acronym);
         if (api_key!=null && !api_key.isEmpty())
             this.api_key=api_key;
     }
@@ -93,40 +98,94 @@ public class BioPortal_Parser extends OntologyParser {
     }
 
     @Override
-    protected List<String> getSubClassLabels(JsonNode ontology_node) throws Exception {
+    protected List<OntologyElement> getSubClassLabels(JsonNode ontology_node) throws Exception {
         if(ontology_node==null){
-            return null;
+           return null;
         }
-        List<String> labels = new ArrayList<String>();
-        // From the returned page, get the hypermedia link to the next page
-        String nextPage = ontology_node.get("links").get("nextPage").asText();
+        List<OntologyElement> labels = new ArrayList<OntologyElement>();
+        try {
 
-        // Iterate over the available pages adding labels from all classes
-        // When we hit the last page, the while loop will exit
-        while (nextPage.length() != 0) {
-            for (JsonNode cls : ontology_node.get("collection")) {
-                List subNodes_label = null;
-                if(!cls.get("links").get("children").isNull()){
-                    subNodes_label = getSubClassLabels(getNode(cls.get("links").get("children").asText()));
-                }
-                if(subNodes_label== null || subNodes_label.isEmpty()) {
-                    if (!cls.get("prefLabel").isNull()) {
-                        labels.add(cls.get("prefLabel").asText());
+            // From the returned page, get the hypermedia link to the next page
+            String nextPage = ontology_node.get("links").get("nextPage").asText();
+
+            // Iterate over the available pages adding labels from all classes
+            // When we hit the last page, the while loop will exit
+            while (nextPage.length() != 0) {
+                for (JsonNode cls : ontology_node.get("collection")) {
+
+                    List subNodes_label = null;
+                    if (!cls.get("links").get("children").isNull()) {
+                        subNodes_label = getSubClassLabels(getNode(cls.get("links").get("children").asText()));
                     }
-                }else{
-                    labels.addAll(subNodes_label);
+                    if (subNodes_label == null || subNodes_label.isEmpty()) {
+
+                        try {
+                            String[] id_term = splitOntologyURI(cls.get("@id").asText());
+                            OntologyElement oElem = new OntologyElement(cls.get("prefLabel").asText(), id_term[1], id_term[0]);
+                            labels.add(oElem);
+                        } catch (Exception e) {
+                            throw new UnsupportedEncodingException("Error while parsing from Bioportal: " + cls.get("label").asText());
+                        }
+                    } else {
+                        labels.addAll(subNodes_label);
+                    }
+                }
+
+                if (ontology_node.get("totalCount").asLong() > 0 && !ontology_node.get("links").get("nextPage").isNull()) {
+                    nextPage = ontology_node.get("links").get("nextPage").asText();
+                    ontology_node = getNode(nextPage);
+                } else {
+                    nextPage = "";
                 }
             }
-
-            if (ontology_node.get("totalCount").asLong()>0 && !ontology_node.get("links").get("nextPage").isNull()) {
-                nextPage = ontology_node.get("links").get("nextPage").asText();
-                ontology_node = getNode(nextPage);
-            } else {
-                nextPage = "";
-            }
+        }catch(Exception e){
+            throw new UnsupportedEncodingException(
+                    String.format("Exception while parsing from %s: %s",this.REST_URL,this.acronym));
         }
         return labels;
     }
+
+
+
+    /**
+     * see also: https://github.com/EBIBioSamples/bioportal-client/blob/master/src/main/java/uk/ac/ebi/bioportal/webservice/client/BioportalClient.java
+     * @param id_term == uri/accession
+     * @return String[]{uri,id}
+     */
+    private String[] splitOntologyURI(String id_term) throws UnsupportedEncodingException {
+        String uri="";
+        String id="";
+        try{
+            if(id_term ==null) throw new IllegalArgumentException(
+                    "Bioportal reader: The term @id is not valid for given ontology element");
+
+            if(id_term.startsWith("http://") || id_term.startsWith("https://")){
+                // We try to resolve unspecified acronym by means of some heuristics, and using known ontologies.
+                // The degree of success varies and it's outrageous that look services demand this parameter, which
+                // doesn't even make sense.
+                //
+                int brkIdx = -1;
+
+                if ( id_term.startsWith ( "http://purl.obolibrary.org/obo/" ) ){
+
+                    brkIdx = id_term.lastIndexOf ( '/' );
+                }
+                if ( brkIdx == -1 )	brkIdx = id_term.lastIndexOf ( '#' );
+                if ( brkIdx == -1 )	brkIdx = id_term.lastIndexOf ( '/' );
+                if ( brkIdx != -1 )
+                {
+                    uri = id_term.substring(0,brkIdx+1);
+                    id = id_term.substring(brkIdx+1,id_term.length());
+                }
+            }
+        }catch(Exception ex){
+            throw new UnsupportedEncodingException("Error while trying parse bioontology term  "+id_term);
+        }
+
+        return new String[]{uri,id};
+    }
+
+
 
     @Override
     protected HttpURLConnection initURLConnection(URL url) throws Exception {

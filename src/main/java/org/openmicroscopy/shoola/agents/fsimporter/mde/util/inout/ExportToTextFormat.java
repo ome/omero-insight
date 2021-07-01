@@ -20,10 +20,12 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.util.inout;
 
 import org.openmicroscopy.shoola.agents.fsimporter.mde.MDEHelper;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleTreeElement;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.OntologyElement;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.util.TagData;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -34,16 +36,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Export user input as key,value to csv file.
- * 7/2/2020
+ * Export user input as key,value to txt like file (Basis class for csv and tsv exports).
+ * 6/2/2021
  * @author Susanne Kunis<susannekunis at gmail dot com>
  **/
-@Deprecated
-public class ExportAsCsv {
-    String fName;
+public class ExportToTextFormat {
+    public static final int MODE_DEFAULT=0;
+    public static final int MODE_IDR=1;
+    public static final int MODE_ISA=2;
 
-    public ExportAsCsv(String fileName){
+
+    String fName;
+    String delimeter;
+    int mode;
+    boolean appendToFile;
+    Map<String,List<String>> appendix;
+
+    public ExportToTextFormat(String fileName, String delimeter, boolean appendToFile,int mode){
         this.fName=fileName;
+        this.delimeter=delimeter;
+        this.mode=mode;
+        this.appendToFile=appendToFile;
     }
 
     /**
@@ -84,8 +97,10 @@ public class ExportAsCsv {
             if(entry.getValue()!=null) {
                 for(TagData t:entry.getValue()) {
                     if(t.getTagValue()!=null && !t.getTagValue().trim().isEmpty()) {
+
                         String key = entry.getKey() + " | " + t.getTagName();
                         String value = t.getTagWholeValue();
+
                         if (!addPath) {
                             key = t.getTagName();
                         }
@@ -94,6 +109,11 @@ public class ExportAsCsv {
                             value = t.getTagValue();
                         }
                         data.add(new String[]{key,value});
+
+                        if(t.isOntoElement()){
+                            List<String[]> refAnnot=ontologyRef(t.getOntologyRefElem(value),t.getTagName());
+                            if(refAnnot!=null) data.addAll(refAnnot);
+                        }
                     }
                 }
             }
@@ -102,24 +122,72 @@ public class ExportAsCsv {
         return data;
     }
 
+    private List<String[]> ontologyRef(OntologyElement ontologyRefElem, String name) {
+        if(ontologyRefElem!=null){
+            List<String[]> strList=new ArrayList<>();
+            switch(mode){
+                case MODE_IDR:
+                    strList.add(new String[]{name+" Term Source REF",ontologyRefElem.getOntologyName()});
+                    strList.add(new String[]{name+" Term Accession",ontologyRefElem.getAccession()});
+                    if(appendix==null)
+                        appendix=new HashMap<>();
+
+                    List<String> strArr = appendix.get("Term Source Name");
+                    if(strArr==null){
+                        strArr=new ArrayList<String>();
+                    }
+                    strArr.add(ontologyRefElem.getOntologyName().equals("")?"--":ontologyRefElem.getOntologyName());
+                    appendix.put("Term Source Name",strArr);
+
+                    strArr = appendix.get("Term Source URI");
+                    if(strArr==null){
+                        strArr=new ArrayList<String>();
+                    }
+                    strArr.add(ontologyRefElem.getUri());
+                    appendix.put("Term Source URI",strArr);
+                    break;
+
+                default:
+
+                    strList.add(new String[]{name+" Ontology Ref",
+                            String.format("%s (%s)",ontologyRefElem.getAccession(),ontologyRefElem.getUri())});
+
+                    /*strList.add(new String[]{"onto id",ontologyRefElem.getId()});
+                    strList.add(new String[]{"onto uri",ontologyRefElem.getUri()});
+                    strList.add(new String[]{"onto name",ontologyRefElem.getOntologyName()});*/
+            }
+            return strList;
+        }
+        return null;
+    }
+
     /**
-     * Create csv file and writes key,value
+     * Create file and writes key,value
      * @param data list of string arrays [key,value]
      * @throws IOException
      */
     private void createFile(List<String[]> data) throws IOException {
         if(data!=null) {
-            File csvOutputFile = new File(fName);
-            try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
+           // File outputFile = new File(fName);
+            FileWriter writer = new FileWriter(fName,appendToFile);
+            try (PrintWriter pw = new PrintWriter(writer)) {
                 data.stream()
-                        .map(this::convertToCSVString)
+                        .map(this::convertToLineString)
                         .forEach(pw::println);
+                if(appendix!=null){
+                    for (Map.Entry<String,List<String>> entry : appendix.entrySet()){
+                        String value = entry.getValue().stream()
+                                .collect(Collectors.joining(" "));
+                        pw.println(entry.getKey()+delimeter+value);
+                    }
+                }
             }
         }
 
     }
-    private String convertToCSVString(String[] data) {
+
+    private String convertToLineString(String[] data) {
         return Stream.of(data)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(delimeter));
     }
 }

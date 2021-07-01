@@ -20,6 +20,7 @@ package org.openmicroscopy.shoola.agents.fsimporter.mde.util.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
+import org.openmicroscopy.shoola.agents.fsimporter.mde.util.OntologyElement;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -39,7 +40,11 @@ public class OLS_Parser extends OntologyParser {
     //static final String REST_URL = "https://www.ebi.ac.uk/ols";
 
     public OLS_Parser(String ontology_restapi_url) {
-        super(ontology_restapi_url);
+        this(ontology_restapi_url, "");
+    }
+
+    public OLS_Parser(String ontology_restapi_url,String acronym) {
+        super(ontology_restapi_url,acronym);
     }
 
     @Override
@@ -57,27 +62,42 @@ public class OLS_Parser extends OntologyParser {
     }
 
     @Override
-    protected List<String> getSubClassLabels(JsonNode ontology_node) throws Exception {
+    protected List<OntologyElement> getSubClassLabels(JsonNode ontology_node) throws Exception {
         if(ontology_node==null){
             return null;
         }
-        List<String> labels = new ArrayList<String>();
-        // From the returned page, get the hypermedia link to the next page
-        JsonNode embedded_node = ontology_node.get("_embedded");
 
-        // Iterate over the available terms
-        if(embedded_node!=null) {
-            for (JsonNode cls : embedded_node.get("terms")) {
-                // get childs
-                if (!cls.get("has_children").isNull() && cls.get("has_children").asBoolean()) {
-                    String childId = cls.get("_links").get("children").get("href").asText();
-                    labels.addAll(getSubClassLabels(getNode(childId)));
-                }else{
-                    if(!cls.get("label").isNull()) {
-                        labels.add(cls.get("label").asText());
+        List<OntologyElement> labels = new ArrayList<OntologyElement>();
+        try{
+            // From the returned page, get the hypermedia link to the next page
+            JsonNode embedded_node = ontology_node.get("_embedded");
+
+            // Iterate over the available terms
+            if(embedded_node!=null) {
+                for (JsonNode cls : embedded_node.get("terms")) {
+
+                    // get childs
+                    if (!cls.get("has_children").isNull() && cls.get("has_children").asBoolean()) {
+                        String childId = cls.get("_links").get("children").get("href").asText();
+                        labels.addAll(getSubClassLabels(getNode(childId)));
+                    }else {
+                        try {
+                            if (cls != null) {
+                                OntologyElement oElem = new OntologyElement(cls.get("label").asText(),
+                                        cls.get("short_form").asText(),
+                                        cls.get("ontology_iri").asText());
+                                labels.add(oElem);
+
+                            }
+                        }catch(Exception e){
+                            throw new UnsupportedEncodingException("Error while parsing from OLS: "+cls.get("label").asText());
+                        }
                     }
                 }
             }
+        }catch(Exception e){
+            throw new UnsupportedEncodingException(
+                    String.format("Exception while parsing from %s: %s",this.REST_URL,this.acronym));
         }
         return labels;
     }
@@ -114,4 +134,5 @@ public class OLS_Parser extends OntologyParser {
         conn.setRequestProperty("Accept", "application/json");
         return conn;
     }
+
 }

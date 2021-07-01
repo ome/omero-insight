@@ -29,18 +29,40 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleControll
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.OMEValueConverter;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.configuration.TagNames;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.UIManager;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+
+import static java.util.stream.Collectors.toList;
 
 
 /**
@@ -156,6 +178,8 @@ public class TagData
 	private String[] defaultValue;
 	// default unit
 	private String[] unitSymbol;
+
+	private List<OntologyElement> ontoElems;
 	
 	
 	private ActionListener fieldActionListener;
@@ -192,6 +216,9 @@ public class TagData
 		fieldBorder=orig.fieldBorder;
 		inputField=null;
 		if(orig.defaultValue!=null) defaultValue=orig.defaultValue.clone();
+		if(orig.ontoElems!=null){
+			ontoElems=orig.ontoElems.stream().collect(toList());
+		}
 	}
 	
 	/**
@@ -1541,6 +1568,40 @@ public class TagData
 
 	public TagDataProp getProperties() {
 		return new TagDataProp(getTagName(),getTagUnitString(),isVisible(),isRequired());
+	}
+
+	public void setOntologyRef(List<OntologyElement> ontoElems){
+		this.ontoElems=ontoElems;
+	}
+	public boolean isOntoElement(){return this.ontoElems!=null;}
+
+	/**
+	 * @param name
+	 * @return String[]{name,id,onto_name,uri} or null
+	 */
+	public String[] getOntologyRef(String name){
+		if(isOntoElement()){
+			OntologyElement elem=this.ontoElems.stream().filter(n->n.getName().equals(name)).findAny().orElse(null);
+			if(elem!=null){
+				return new String[]{elem.getName(),elem.getId(),elem.getOntologyName(),elem.getUri()};
+			}
+		}
+		return null;
+	}
+
+	public OntologyElement getOntologyRefElem(String name){
+		if(isOntoElement()) {
+			OntologyElement match = null;//this.ontoElems.stream().filter(n -> n.getName().equals(name)).findAny().orElse(null);
+			for(OntologyElement o:this.ontoElems){
+				if(o.getName().trim().equals(name.trim())){
+					match=o;
+				}
+			}
+			if(match==null)
+				ImporterAgent.getRegistry().getLogger().debug(null,"[MDE] ATTENTION: no ontology elem matched");
+			return match;
+		}
+		 return null;
 	}
 	
 
