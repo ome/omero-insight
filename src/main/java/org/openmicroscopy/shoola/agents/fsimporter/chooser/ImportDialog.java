@@ -1843,8 +1843,10 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		return mdeCancelImportButton;
 	}
 	private void enablesButtons(boolean enable) {
-		importButton.setEnabled(enable);
-		mdeImportButton.setEnabled(enable);
+		// imports only possible if server is not a read-only server
+		importButton.setEnabled(enable && ImporterAgent.canCreate());
+		mdeImportButton.setEnabled(enable && ImporterAgent.canCreate());
+
 		showMDEButton.setEnabled(enable);
 	}
 
