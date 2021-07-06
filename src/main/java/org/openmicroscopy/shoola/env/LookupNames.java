@@ -447,4 +447,11 @@ public class LookupNames
 
     /** Lookup name for characters which need to escaped for the login username / password */
     public static final String LOGIN_ESCAPE_CHARACTERS="omero.client.login_escape_characters";
+
+    /** Lookup name for read-only status of server.*/
+    public static final String SERVER_DB = "omero.cluster.read_only.runtime.db";
+
+    /** Lookup name for read-only status of server.*/
+    public static final String SERVER_REPO = "omero.cluster.read_only.runtime.repo";
+
 }
