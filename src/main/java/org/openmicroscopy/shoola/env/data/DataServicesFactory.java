@@ -552,6 +552,27 @@ public class DataServicesFactory
             msg = new LogMessage("Could not load omero client properties from the server", e1);
             registry.getLogger().warn(this, msg);
         }
+
+        try {
+            // Load the omero server properties from the server
+            List agents = (List) registry.lookup(LookupNames.AGENTS);
+            Map<String, String> props = omeroGateway.getServerProperties(exp.getGroupId());
+            for (String key : props.keySet()) {
+                if (registry.lookup(key) == null)
+                    registry.bind(key, props.get(key));
+
+                Registry agentReg;
+                for (Object agent : agents) {
+                    agentReg = ((AgentInfo) agent).getRegistry();
+                    if (agentReg != null && agentReg.lookup(key) == null)
+                        agentReg.bind(key, props.get(key));
+                }
+            }
+        } catch (DSAccessException e1) {
+            msg = new LogMessage("Could not load omero client properties from the server", e1);
+            registry.getLogger().warn(this, msg);
+        }
+
         
         Collection<GroupData> groups;
         Set<GroupData> available;
