@@ -1,3 +1,8 @@
+5.6.1 (July 2021)
+-----------------
+
+- BugFix: Load thumbnails when read-only [#235](https://github.com/ome/omero-insight/pull/235)
+
 5.6.0 (July 2021)
 -----------------
 
