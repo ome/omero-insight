@@ -46,6 +46,7 @@ import org.openmicroscopy.shoola.util.ui.IconManager;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.lang.StackTraceElement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -112,6 +113,16 @@ public class ThumbnailLoader extends BatchCallTree {
      */
     private boolean asImage = false;
 
+    private boolean readOnly = false;
+
+    private boolean isReadOnly() {
+        String b = (String) context.lookup(LookupNames.SERVER_DB);
+        if (b != null) {
+            return Boolean.valueOf(b).booleanValue();
+        }
+        return false;
+    }
+
     /**
      * Creates a new instance.
      * If bad arguments are passed, we throw a runtime exception so to fail
@@ -146,6 +157,7 @@ public class ThumbnailLoader extends BatchCallTree {
         this.userIDs = userIDs;
         this.ctx = ctx;
         this.service = context.getImageService();
+        this.readOnly = isReadOnly();
     }
 
     public ThumbnailLoader(SecurityContext ctx, Collection<DataObject> imgs, long userID) {
@@ -335,6 +347,9 @@ public class ThumbnailLoader extends BatchCallTree {
                 store.setRenderingDefId(rndDefId);
         }
 
+        if (readOnly) {
+            return store.getThumbnail(omero.rtypes.rint(sizeX), omero.rtypes.rint(sizeY));
+        }
         return store.getThumbnailWithoutDefault(omero.rtypes.rint(sizeX),
                 omero.rtypes.rint(sizeY));
     }

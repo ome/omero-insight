@@ -1448,13 +1448,33 @@ class OMEROGateway
             throws DSOutOfServiceException, DSAccessException {
         if (isConnected()) {
             try {
-                return gw.getConfigService(new SecurityContext(groupId)).getClientConfigValues();
+				return gw.getConfigService(new SecurityContext(groupId)).getClientConfigValues();
             } catch (Exception e) {
                 handleException(e, "Cannot access config service. ");
             }
         }
         return null;
     }
+
+	/**
+	 * Get the server properties from the server
+	 * @param The groupId for the {@link SecurityContext}
+	 * @return See above.
+	 * @throws DSAccessException
+	 * @throws DSOutOfServiceException
+	 */
+    Map<String, String> getServerProperties(long groupId)
+			throws DSOutOfServiceException, DSAccessException {
+		if (isConnected()) {
+			try {
+				String regex = "^omero\\.cluster";
+				return gw.getConfigService(new SecurityContext(groupId)).getConfigValues(regex);
+			} catch (Exception e) {
+				handleException(e, "Cannot access config service. ");
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Retrieves the system view hosting the repositories.
