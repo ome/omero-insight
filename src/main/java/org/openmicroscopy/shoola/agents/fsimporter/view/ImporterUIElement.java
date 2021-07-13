@@ -1021,6 +1021,8 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
      * @return See above.
      */
     boolean hasToRefreshTree() {
+        if (components == null || components.size() == 0)
+            return false;
         Entry<String, FileImportComponentI> entry;
         Iterator<Entry<String, FileImportComponentI>> i = components
                 .entrySet().iterator();
