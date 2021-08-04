@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.graphutils.HistogramPlot 
  *
   *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -109,17 +109,18 @@ public class HistogramPlot
 			double minValue, double maxValue)
 	{
 		super(title);
-		if (newLegends == null || newData == null || newColours == null || 
-			newLegends.size() != newData.size() || 
-			newLegends.size() != newColours.size())
-			throw new IllegalArgumentException("Mismatch between argument " +
-						"length");
 		initialize();
+		setDefaultAxis();
+		domainAxis.setRange(minValue, maxValue);
+
+		if (newLegends == null || newData == null || newColours == null ||
+				newLegends.size() != newData.size() ||
+				newLegends.size() != newColours.size())
+			return;
+
 		for (int i = 0 ; i < newLegends.size(); i++)
 			addSeries(newLegends.get(i), newData.get(i), newColours.get(i), 
 						bins);
-		setDefaultAxis();
-		domainAxis.setRange(minValue, maxValue);
 	}
 
 	/**
