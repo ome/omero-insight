@@ -56,6 +56,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -73,6 +74,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
@@ -333,7 +335,7 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	 * The fields hosting the pixels size. First is for the size along the
 	 * X-axis, then Y-axis, finally Z-axis
 	 */
-	private List<NumericalTextField> pixelsSize;
+	private List<JTextField> pixelsSize;
 
 	/** Components hosting the tags. */
 	private JPanel tagsPane;
@@ -795,12 +797,34 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		showMDEButton.addActionListener(this);
 		showMDEButton.setEnabled(false);
 
-		pixelsSize = new ArrayList<NumericalTextField>();
-		NumericalTextField field;
+		pixelsSize = new ArrayList<JTextField>();
+		JTextField field;
 		for (int i = 0; i < 3; i++) {
-			field = new NumericalTextField();
-			field.setNumberType(Double.class);
+			field = new JTextField();
 			field.setColumns(2);
+			field.setToolTipText("Pixel size in micrometer, must be > 0");
+			field.setInputVerifier(new InputVerifier() {
+				@Override
+				public boolean verify(JComponent jComponent) {
+					String input = ((JTextField) jComponent).getText();
+					if (input == null || input.trim().length() == 0)
+						return true;
+					try {
+						double value = Double.parseDouble(input);
+						return value > 0;
+					} catch (NumberFormatException e) {
+						return false;
+					}
+				}
+
+				@Override
+				public boolean shouldYieldFocus(JComponent input) {
+					if (!super.shouldYieldFocus(input)) {
+						((JTextField) input).setText("");
+					}
+					return true;
+				}
+			});
 			pixelsSize.add(field);
 		}
 
@@ -1222,20 +1246,23 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 			if (number != null && number >= 0)
 				object.setDepthForName(number);
 		}
-		NumericalTextField nf;
-		Iterator<NumericalTextField> ij = pixelsSize.iterator();
-		Number n;
+		JTextField nf;
+		Iterator<JTextField> ij = pixelsSize.iterator();
 		double[] size = new double[3];
 		int index = 0;
 		int count = 0;
 		while (ij.hasNext()) {
 			nf = ij.next();
-			n = nf.getValueAsNumber();
-			if (n != null) {
+			try {
+				double n = Double.parseDouble(nf.getText());
+				if (n > 0)
+					size[index] = n;
+				else
+					size[index] = 1;
 				count++;
-				size[index] = n.doubleValue();
-			} else
+			} catch (Exception e) {
 				size[index] = 1;
+			}
 			index++;
 		}
 		if (count > 0)
