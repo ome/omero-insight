@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -53,6 +53,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
@@ -893,88 +894,92 @@ public class FileImportComponent
 	@Override
     public void setStatus(Object image)
 	{
-		busyLabel.setVisible(false);
-		busyLabel.setBusy(false);
-		cancelButton.setVisible(false);
-		this.image = image;
-		if (image instanceof PlateData) {
-			menu = null;
-			imageLabel.setData((PlateData) image);
-			fileNameLabel.addMouseListener(adapter);
-			formatResultTooltip();
-		}
-		else if (image instanceof Collection){
-		    Collection<?> c = (Collection)image;
-		    if(!c.isEmpty()) {
-		        Object obj = c.iterator().next();
-		        if(obj instanceof ThumbnailData) {
-		            List<ThumbnailData> list = new ArrayList<ThumbnailData>((Collection) image);
-		            int m = list.size();
-		            ThumbnailData data = list.get(0);
-		            imageLabel.setData(data);
-		            list.remove(0);
-		            if (list.size() > 0) {
-		                ThumbnailLabel label = imageLabels.get(0);
-		                label.setVisible(true);
-		                label.setData(list.get(0));
-		                list.remove(0);
-		                if (list.size() > 0) {
-		                    label = imageLabels.get(1);
-		                    label.setVisible(true);
-		                    label.setData(list.get(0));
-		                    list.remove(0);
-		                    int n = status.getNumberOfImportedFiles()-m;
-		                    if (n > 0) {
-		                        label = imageLabels.get(2);
-		                        label.setVisible(true);
-		                        StringBuffer buf = new StringBuffer("... ");
-		                        buf.append(n);
-		                        buf.append(" more");
-		                        label.setText(buf.toString());
-		                    }
-		                }
-		            }
-		        }
-		        else if (obj instanceof PixelsData) {
-		           //Result from the import itself
-		            this.image = null;
-		            Iterator i = c.iterator();
-		            FileObject f;
-		            while (i.hasNext()) {
-		                Object object = i.next();
-		                if (object instanceof PixelsData) {
-		                    PixelsData pix = (PixelsData) object;
-		                    if (hasAssociatedFiles()) {
-		                        int series = pix.getImage().getSeries();
-		                        f = getAssociatedFile(series);
-		                        if (f != null) {
-		                            f.setImageID(pix.getImage().getId());
-		                        }
-		                    } else {
-		                        f = getOriginalFile();
-		                        f.setImageID(pix.getImage().getId());
-		                    }
-		                }
-		            }
-		            formatResult();
-		        }
-		    }
-		} else if (image instanceof ImportException) {
-			if (getFile().isDirectory()) {
-				this.image = null;
-			} else formatResult();
-		} else if (image instanceof Boolean) {
-			busyLabel.setBusy(false);
-			busyLabel.setVisible(false);
-			cancelButton.setVisible(false);
-			if (status.isMarkedAsCancel() ||
-					status.isMarkedAsDuplicate()) {
-				resultIndex = ImportStatus.IGNORED;
-				this.image = null;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				busyLabel.setVisible(false);
+				busyLabel.setBusy(false);
+				cancelButton.setVisible(false);
+				FileImportComponent.this.image = image;
+				if (image instanceof PlateData) {
+					menu = null;
+					imageLabel.setData((PlateData) image);
+					fileNameLabel.addMouseListener(adapter);
+					formatResultTooltip();
+				}
+				else if (image instanceof Collection){
+					Collection<?> c = (Collection)image;
+					if(!c.isEmpty()) {
+						Object obj = c.iterator().next();
+						if(obj instanceof ThumbnailData) {
+							List<ThumbnailData> list = new ArrayList<ThumbnailData>((Collection) image);
+							int m = list.size();
+							ThumbnailData data = list.get(0);
+							imageLabel.setData(data);
+							list.remove(0);
+							if (list.size() > 0) {
+								ThumbnailLabel label = imageLabels.get(0);
+								label.setVisible(true);
+								label.setData(list.get(0));
+								list.remove(0);
+								if (list.size() > 0) {
+									label = imageLabels.get(1);
+									label.setVisible(true);
+									label.setData(list.get(0));
+									list.remove(0);
+									int n = status.getNumberOfImportedFiles()-m;
+									if (n > 0) {
+										label = imageLabels.get(2);
+										label.setVisible(true);
+										StringBuffer buf = new StringBuffer("... ");
+										buf.append(n);
+										buf.append(" more");
+										label.setText(buf.toString());
+									}
+								}
+							}
+						}
+						else if (obj instanceof PixelsData) {
+							//Result from the import itself
+							FileImportComponent.this.image = null;
+							Iterator i = c.iterator();
+							FileObject f;
+							while (i.hasNext()) {
+								Object object = i.next();
+								if (object instanceof PixelsData) {
+									PixelsData pix = (PixelsData) object;
+									if (hasAssociatedFiles()) {
+										int series = pix.getImage().getSeries();
+										f = getAssociatedFile(series);
+										if (f != null) {
+											f.setImageID(pix.getImage().getId());
+										}
+									} else {
+										f = getOriginalFile();
+										f.setImageID(pix.getImage().getId());
+									}
+								}
+							}
+							formatResult();
+						}
+					}
+				} else if (image instanceof ImportException) {
+					if (getFile().isDirectory()) {
+						FileImportComponent.this.image = null;
+					} else formatResult();
+				} else if (image instanceof Boolean) {
+					busyLabel.setBusy(false);
+					busyLabel.setVisible(false);
+					cancelButton.setVisible(false);
+					if (status.isMarkedAsCancel() ||
+							status.isMarkedAsDuplicate()) {
+						resultIndex = ImportStatus.IGNORED;
+						FileImportComponent.this.image = null;
+					}
+				}
+				FileImportComponent.this.invalidate();
 			}
-		}
-		revalidate();
-		repaint();
+		});
 	}
 
 	/* (non-Javadoc)
