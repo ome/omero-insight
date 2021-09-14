@@ -1,3 +1,12 @@
+5.6.2 (September 2021)
+----------------------
+
+- Don't throw Exception if there's no data to show [#249](https://github.com/ome/omero-insight/pull/249)
+- Point to image.sc forum [#244](https://github.com/ome/omero-insight/pull/244) and [#247](https://github.com/ome/omero-insight/pull/247)
+- Move UI update code in Swing thread [#240](https://github.com/ome/omero-insight/pull/240)
+- Fix NPE when components is null [#238](https://github.com/ome/omero-insight/pull/238)
+- Bump omero-gateway-java to 5.6.7
+
 5.6.1 (July 2021)
 -----------------
 
