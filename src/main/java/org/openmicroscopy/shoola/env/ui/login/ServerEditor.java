@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.env.ui.login.ServerEditor
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2019 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -170,6 +170,7 @@ public class ServerEditor
 			@Override
 			public void valueChanged(ListSelectionEvent listSelectionEvent) {
 				fireEditProperty(true);
+				editButton.setEnabled(table.getSelectedIndex() >= 0);
 			}
 		});
 		removeButton = new JButton(icons.getIcon(IconManager.REMOVE));
