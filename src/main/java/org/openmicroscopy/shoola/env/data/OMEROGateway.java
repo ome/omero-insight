@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2020 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -3078,30 +3078,27 @@ class OMEROGateway
 			SecurityContext ctx, File file, ImageData image, boolean keepOriginalPaths)
 		throws DSAccessException, DSOutOfServiceException
 	{
-		return retrieveArchivedFiles(ctx, file, image, keepOriginalPaths);
+		return retrieveArchivedFiles(ctx, file, image);
 	}
-	
+
 	/**
 	 * Retrieves the archived files if any for the specified set of pixels.
 	 *
 	 * @param ctx The security context.
 	 * @param file The location where to save the files.
 	 * @param image The image to retrieve.
-	 * @param keepOriginalPaths Pass <code>true</code> to preserve the original folder
-	 *               structure.
 	 * @return See above.
-	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
 	 */
 	private Map<Boolean, Object> retrieveArchivedFiles(
-			SecurityContext ctx, File file, ImageData image, boolean keepOriginalPaths)
-		throws DSAccessException, DSOutOfServiceException
+			SecurityContext ctx, File file, ImageData image)
+			throws DSAccessException
 	{
 		List<?> files = null;
 		String query;
 		try {
-		    IQueryPrx service = gw.getQueryService(ctx);
+			IQueryPrx service = gw.getQueryService(ctx);
 			ParametersI param = new ParametersI();
 			long id;
 			if (image.isFSImage()) {
@@ -3131,134 +3128,79 @@ class OMEROGateway
 
 		Map<Boolean, Object> result = new HashMap<Boolean, Object>();
 		if (CollectionUtils.isEmpty(files)) return result;
-		Iterator<?> i;
-		Map<OriginalFile, Fileset> values = new HashMap<OriginalFile, Fileset>();
-		if (image.isFSImage()) {
-			i = files.iterator();
-			Fileset set;
-			List<FilesetEntry> entries;
-			Iterator<FilesetEntry> j;
-			while (i.hasNext()) {
-				set = (Fileset) i.next();
-				entries = set.copyUsedFiles();
-				j = entries.iterator();
-				while (j.hasNext()) {
-					FilesetEntry fs = j.next();
-					values.put(fs.getOriginalFile(), set);
-				}
-			}
-		} else {
-		    for(Object f : files)
-		        values.put((OriginalFile)f, null);
-		}
-
-		RawFileStorePrx store = null;
-		OriginalFile of;
-		long size;
-		FileOutputStream stream = null;
-		long offset = 0;
-		File f = null;
-		List<File> results = new ArrayList<File>();
+		List<File> downloaded = new ArrayList<File>();
 		List<String> notDownloaded = new ArrayList<String>();
-		String folderPath = null;
-		folderPath = file.getAbsolutePath();
-		Iterator<Entry<OriginalFile, Fileset>> entries = values.entrySet().iterator();
+		result.put(Boolean.valueOf(true), downloaded);
+		result.put(Boolean.valueOf(false), notDownloaded);
 
-		Map<Fileset, String> filesetPaths = new HashMap<Fileset, String>();
-		
-		while (entries.hasNext()) {
-		    Entry<OriginalFile, Fileset> entry = entries.next();
-		    
-			of = entry.getKey();
-			Fileset set = entry.getValue();
-			
-            String path = null;
-            if (keepOriginalPaths && set != null && set.sizeOfUsedFiles() > 1) {
-                // this will store multi file images within a subdirectory with
-                // the same name as the main image file
-                path = filesetPaths.get(set);
-                if (path == null) {
-                    path = folderPath.endsWith("/") ? folderPath : folderPath + "/";
-                    String imgFilename = set.getFilesetEntry(0).getOriginalFile()
-                            .getName().getValue();
-                    path += imgFilename;
-                    path = generateUniquePathname(path, false);
-                    // path should now be in the form
-                    // DOWNLOAD_FOLDER/IMAGE_NAME[(N)]
-                    // where N is a consecutive number if the folder IMAGE_NAME
-                    // already exists
-                    filesetPaths.put(set, path);
-                }
-                String repoPath = set.getTemplatePrefix().getValue();
-                path = path +"/"+ (of.getPath().getValue().replace(repoPath, ""));
-                // path should now be in the form
-                // DOWNLOAD_FOLDER/IMAGE_NAME[(N)]/X/Y/Z
-                // where X, Y, Z are image specific subdirectories
-                // for the single image/data files
-                File origPath = new File(path);
-                if (!origPath.exists())
-                    origPath.mkdirs();
-            } else {
-                path = folderPath;
-            }
-			
-			try {
-			    store = gw.getRawFileService(ctx);
-				store.setFileId(of.getId().getValue());
-				
-				if (path != null) 
-				    f = new File(path, of.getName().getValue());
-				else
-				    f = file;
-				
-                if (f.exists()) {
-                    String newFileName = generateUniquePathname(f.getPath(),
-                            true);
-                    f = new File(newFileName);
-                }
-				
-				results.add(f);
-
-				stream = new FileOutputStream(f);
-				size = of.getSize().getValue();
-				try {
-					try {
-						for (offset = 0; (offset+INC) < size;) {
-							stream.write(store.read(offset, INC));
-							offset += INC;
-						}
-					} finally {
-						stream.write(store.read(offset, (int) (size-offset)));
-						stream.close();
-					}
-				} catch (Exception e) {
-					if (stream != null) stream.close();
-					if (f != null) {
-						f.delete();
-						results.remove(f);
-					}
-					notDownloaded.add(of.getName().getValue());
-					handleConnectionException(e);
+		if (image.isFSImage()) {
+			for (Object tmp : files) {
+				Fileset fs = (Fileset) tmp;
+				String repoPath = fs.getTemplatePrefix().getValue();
+				for (FilesetEntry fse: fs.copyUsedFiles()) {
+					OriginalFile of = fse.getOriginalFile();
+					String dir = of.getPath().getValue().replace(repoPath, "");
+					File outDir = new File(file.getAbsolutePath()+"/"+dir);
+					outDir.mkdirs();
+					File saved = saveOriginalFile(ctx, of, outDir);
+					if (saved != null)
+						downloaded.add(saved);
+					else
+						notDownloaded.add(of.getName().getValue());
 				}
-			} catch (IOException e) {
-				if (f != null) {
-					f.delete();
-					results.remove(f);
-				}
-				notDownloaded.add(of.getName().getValue());
-				throw new DSAccessException("Cannot create file in folderPath",
-						e);
-			} catch (ServerError sr) {
-			    throw new DSAccessException("ServerError on retrieveArchived", sr);
-			} finally {
-			    gw.closeService(ctx, store);
 			}
 		}
-		result.put(Boolean.valueOf(true), results);
-		result.put(Boolean.valueOf(false), notDownloaded);
+		else {
+			for (Object tmp : files) {
+				OriginalFile of = (OriginalFile) tmp;
+				File outDir = new File(file.getAbsolutePath());
+				File saved = saveOriginalFile(ctx, of, outDir);
+				if (saved != null)
+					downloaded.add(saved);
+				else
+					notDownloaded.add(of.getName().getValue());
+			}
+		}
+
 		return result;
 	}
-	
+
+	/**
+	 * Save an OriginalFile of into directory dir
+	 * @param ctx The SecurityContext
+	 * @param of The OriginalFile
+	 * @param dir The output directory
+	 * @return The File if the operation was successfull, null if it wasn't.
+	 */
+	private File saveOriginalFile(SecurityContext ctx, OriginalFile of, File dir) {
+		File out = new File(dir, of.getName().getValue());
+		if (out.exists())
+			return null;
+
+		try {
+			RawFileStorePrx store = gw.getRawFileService(ctx);
+			store.setFileId(of.getId().getValue());
+
+			FileOutputStream stream = new FileOutputStream(out);
+			long size = of.getSize().getValue();
+
+			long offset = 0;
+			try {
+				for (offset = 0; (offset+INC) < size;) {
+					stream.write(store.read(offset, INC));
+					offset += INC;
+				}
+			} finally {
+				stream.write(store.read(offset, (int) (size-offset)));
+				stream.close();
+			}
+		} catch (Exception e) {
+			handleConnectionException(e);
+			return null;
+		}
+		return out;
+	}
+
     /**
      * Checks if the given path already exists and if so, generates a new path
      * name path(N), where N is a consecutive number
