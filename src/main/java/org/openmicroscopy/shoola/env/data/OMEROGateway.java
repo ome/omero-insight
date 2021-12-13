@@ -3140,7 +3140,7 @@ class OMEROGateway
 				for (FilesetEntry fse: fs.copyUsedFiles()) {
 					OriginalFile of = fse.getOriginalFile();
 					String dir = of.getPath().getValue().replace(repoPath, "");
-					File outDir = new File(file.getAbsolutePath()+"/"+dir);
+					File outDir = new File(file.getAbsolutePath()+File.separator+dir);
 					outDir.mkdirs();
 					File saved = saveOriginalFile(ctx, of, outDir);
 					if (saved != null)
@@ -3181,18 +3181,15 @@ class OMEROGateway
 			RawFileStorePrx store = gw.getRawFileService(ctx);
 			store.setFileId(of.getId().getValue());
 
-			FileOutputStream stream = new FileOutputStream(out);
 			long size = of.getSize().getValue();
-
 			long offset = 0;
-			try {
+			try (FileOutputStream stream = new FileOutputStream(out))
+			{
 				for (offset = 0; (offset+INC) < size;) {
 					stream.write(store.read(offset, INC));
 					offset += INC;
 				}
-			} finally {
 				stream.write(store.read(offset, (int) (size-offset)));
-				stream.close();
 			}
 		} catch (Exception e) {
 			handleConnectionException(e);
