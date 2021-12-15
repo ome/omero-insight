@@ -3134,6 +3134,7 @@ class OMEROGateway
 		result.put(Boolean.valueOf(false), notDownloaded);
 
 		if (image.isFSImage()) {
+			Map<File, Fileset> filesetDirs = new HashMap<>();
 			for (Object tmp : files) {
 				Fileset fs = (Fileset) tmp;
 				String repoPath = fs.getTemplatePrefix().getValue();
@@ -3141,7 +3142,22 @@ class OMEROGateway
 					OriginalFile of = fse.getOriginalFile();
 					String dir = of.getPath().getValue().replace(repoPath, "");
 					File outDir = new File(file.getAbsolutePath()+File.separator+dir);
-					outDir.mkdirs();
+					if (!dir.isEmpty()) {
+						// skip if directories already exists or overlap with other filesets
+						if (filesetDirs.containsKey(outDir)) {
+							if (filesetDirs.get(outDir) != fs) {
+								log(outDir.getAbsolutePath()+" is already part of another Fileset.");
+								break;
+							}
+						} else if (outDir.exists()) {
+							log(outDir.getAbsolutePath()+" already exists.");
+							break;
+						}
+						else {
+							outDir.mkdirs();
+							filesetDirs.put(outDir, fs);
+						}
+					}
 					File saved = saveOriginalFile(ctx, of, outDir);
 					if (saved != null)
 						downloaded.add(saved);
@@ -3174,8 +3190,10 @@ class OMEROGateway
 	 */
 	private File saveOriginalFile(SecurityContext ctx, OriginalFile of, File dir) {
 		File out = new File(dir, of.getName().getValue());
-		if (out.exists())
+		if (out.exists()) {
+			log(out.getAbsolutePath()+" already exists.");
 			return null;
+		}
 
 		try {
 			RawFileStorePrx store = gw.getRawFileService(ctx);
