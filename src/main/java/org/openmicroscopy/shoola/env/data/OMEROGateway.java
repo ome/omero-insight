@@ -3085,14 +3085,14 @@ class OMEROGateway
 	 * Retrieves the archived files if any for the specified set of pixels.
 	 *
 	 * @param ctx The security context.
-	 * @param file The location where to save the files.
+	 * @param dir The location where to save the files.
 	 * @param image The image to retrieve.
 	 * @return See above.
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
 	 */
 	private Map<Boolean, Object> retrieveArchivedFiles(
-			SecurityContext ctx, File file, ImageData image)
+			SecurityContext ctx, File dir, ImageData image)
 			throws DSAccessException
 	{
 		List<?> files = null;
@@ -3107,7 +3107,7 @@ class OMEROGateway
 				l.add(omero.rtypes.rlong(id));
 				param.add("imageIds", omero.rtypes.rlist(l));
 				query = createFileSetQuery();
-			} else {//Prior to FS
+			} else { //Prior to FS
 				if (image.isArchived()) {
 					StringBuffer buffer = new StringBuffer();
 					id = image.getDefaultPixels().getId();
@@ -3134,30 +3134,16 @@ class OMEROGateway
 		result.put(Boolean.valueOf(false), notDownloaded);
 
 		if (image.isFSImage()) {
-			Map<File, Fileset> filesetDirs = new HashMap<>();
 			for (Object tmp : files) {
 				Fileset fs = (Fileset) tmp;
+				File filesetDir = new File(dir.getAbsolutePath()+File.separator+"Fileset_"+fs.getId().getValue());
+				filesetDir.mkdir();
 				String repoPath = fs.getTemplatePrefix().getValue();
 				for (FilesetEntry fse: fs.copyUsedFiles()) {
 					OriginalFile of = fse.getOriginalFile();
-					String dir = of.getPath().getValue().replace(repoPath, "");
-					File outDir = new File(file.getAbsolutePath()+File.separator+dir);
-					if (!dir.isEmpty()) {
-						// skip if directories already exists or overlap with other filesets
-						if (filesetDirs.containsKey(outDir)) {
-							if (filesetDirs.get(outDir) != fs) {
-								log(outDir.getAbsolutePath()+" is already part of another Fileset.");
-								break;
-							}
-						} else if (outDir.exists()) {
-							log(outDir.getAbsolutePath()+" already exists.");
-							break;
-						}
-						else {
-							outDir.mkdirs();
-							filesetDirs.put(outDir, fs);
-						}
-					}
+					String ofDir = of.getPath().getValue().replace(repoPath, "");
+					File outDir = new File(filesetDir.getAbsolutePath()+File.separator+ofDir);
+					outDir.mkdirs();
 					File saved = saveOriginalFile(ctx, of, outDir);
 					if (saved != null)
 						downloaded.add(saved);
@@ -3166,10 +3152,10 @@ class OMEROGateway
 				}
 			}
 		}
-		else {
+		else { //Prior to FS
 			for (Object tmp : files) {
 				OriginalFile of = (OriginalFile) tmp;
-				File outDir = new File(file.getAbsolutePath());
+				File outDir = new File(dir.getAbsolutePath());
 				File saved = saveOriginalFile(ctx, of, outDir);
 				if (saved != null)
 					downloaded.add(saved);
