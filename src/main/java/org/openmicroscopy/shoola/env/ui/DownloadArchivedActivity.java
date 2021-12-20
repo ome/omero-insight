@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.env.ui.DownloadArchivedActivity 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,9 @@ package org.openmicroscopy.shoola.env.ui;
 
 //Java imports
 import java.io.File;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //Third-party libraries
 
@@ -51,7 +53,7 @@ public class DownloadArchivedActivity
 {
 
 	/** The description of the activity when finished. */
-	private static final String DESCRIPTION_CREATED = "Original Image " +
+	private static final String DESCRIPTION_CREATED = "Original Image(s) " +
 			"downloaded";
 	
 	/** The description of the activity when cancelled. */
@@ -59,12 +61,10 @@ public class DownloadArchivedActivity
 			"Image cancelled";
 	
 	/** The description of the activity when no archived files found. */
-	private static final String DESCRIPTION_NO_ARCHIVED = "No Original " +
-			"Image available";
+	private static final String DESCRIPTION_NO_ARCHIVED = "No Image downloaded";
 	
 	/** The description of the activity when no archived files found. */
-	private static final String OPTION_NO_ARCHIVED = "You can download the " +
-			"Image as OME-TIFF";
+	private static final String OPTION_NO_ARCHIVED = "Check logs for details";
 	
 	/** The parameters to download. */
 	private DownloadArchivedActivityParam parameters;
@@ -86,7 +86,7 @@ public class DownloadArchivedActivity
 		if (parameters == null)
 			throw new IllegalArgumentException("No parameters");
 		this.parameters = parameters;
-		initialize("Downloading Original Image", parameters.getIcon());
+		initialize("Downloading Original Image(s)", parameters.getIcon());
 		File f = parameters.getLocation();
 		if (f.isFile() || !f.exists()) f = f.getParentFile();
 		messageLabel.setText("in "+f.getAbsolutePath());
@@ -130,9 +130,25 @@ public class DownloadArchivedActivity
 	    }
 	    type.setText(DESCRIPTION_CREATED);
 	    StringBuffer buffer = new StringBuffer();
-	    buffer.append("as ");
-	    buffer.append(files.get(0).getAbsolutePath());
-	    messageLabel.setText(buffer.toString());
+	    buffer.append("<html>into ");
+		Set<String> locations = new HashSet<>();
+		Pattern p = Pattern.compile("(.+Fileset_\\d+).*");
+		for (File f : files) {
+			Matcher m = p.matcher(f.getAbsolutePath());
+			if (m.matches()) {
+				locations.add(m.group(1));
+			}
+			else {
+				locations.add(f.getAbsolutePath());
+			}
+		}
+		List<String> sorted = new ArrayList<>(locations);
+		Collections.sort(sorted);
+		for (String loc : sorted) {
+			buffer.append(loc+ "<br/>");
+		}
+		buffer.append("</html>");
+		messageLabel.setText(buffer.toString());
 	}
 
 	/** 
