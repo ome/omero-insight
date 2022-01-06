@@ -186,6 +186,9 @@ public class RefreshExperimenterDataLoader
     private void formatSmartFolderResult(SecurityContext ctx, List result)
     {
         RefreshExperimenterDef node = expNodes.get(ctx);
+        if (node == null) {
+            return;
+        }
         List nodes = node.getExpandedNodes();
         int n = nodes.size();
         TreeImageSet display;
