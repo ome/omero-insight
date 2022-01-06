@@ -1104,7 +1104,7 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
                 if (parent.getId() <= 0) { // new project or screen
                     data = getObject(parent, result);
                     r = null;
-                    if (dataset != null) {
+                    if (dataset != null && data != null) {
                         if (dataset.getId() <= 0) {
                             // data is a project
                             r = dataset;
