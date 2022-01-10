@@ -74,7 +74,7 @@ the memory allocation to the clients as outlined below.
 
 **Windows**:
 
-You must edit the config file `app\OMERO.insight.cfg` stored in application folder. JVMOptions are availablit in the `[JVMOptions]` block, e.g.:
+You must edit the config file `app\OMERO.insight.cfg` stored in application folder. JVMOptions are available in the `[JVMOptions]` block, e.g.:
 
 ```
 [JVMOptions]
