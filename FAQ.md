@@ -74,10 +74,13 @@ the memory allocation to the clients as outlined below.
 
 **Windows**:
 
-You must add an optional parameter file to the same folder as the application.
-Create a file called ``OMERO.insight.vmoptions`` in the same directory as your ``OMERO.insight.exe`` file and
-add the new JVM options.
+You must edit the config file `app\OMERO.insight.cfg` stored in application folder. JVMOptions are available in the `[JVMOptions]` block, e.g.:
 
+```
+[JVMOptions]
+-Xms256m
+-Xmx1024m
+```
 
 **Linux**:
 
