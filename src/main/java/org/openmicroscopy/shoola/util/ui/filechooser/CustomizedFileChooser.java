@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.filechooser.CustomizedFileChooser 
  *
   *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -24,10 +24,12 @@ package org.openmicroscopy.shoola.util.ui.filechooser;
 
 
 //Java imports
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.List;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -134,6 +136,13 @@ class CustomizedFileChooser
 					label.setText(FOLDER_LABEL);
 				setFileSelectionMode(DIRECTORIES_ONLY);
 				setCurrentDirectory(getFileSystemView().getHomeDirectory());
+				// Workaround to disable the (empty) file formats dropdown box:
+				List<Component> comps = UIUtilities.findComponents(this, JComboBox.class);
+				for (Component comp : comps) {
+					JComboBox box = (JComboBox)comp;
+					if (box.getItemCount() <= 0)
+						box.setEnabled(false);
+				}
 		}
 	}
 	
