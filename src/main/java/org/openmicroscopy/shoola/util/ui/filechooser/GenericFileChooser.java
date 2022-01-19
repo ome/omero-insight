@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2011 University of Dundee & Open Microscopy Environment.
+ *  Copyright (C) 2006-2022 University of Dundee & Open Microscopy Environment.
  *  All rights reserved.
  *
  *
@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -63,11 +64,16 @@ public class GenericFileChooser
 	 */
 	private void handleFileSelection(File f)
 	{
-		if (box == null || f == null) return;
-		if (Files.isSymbolicLink(Paths.get(f.getAbsolutePath())) || f.getName().endsWith(".lnk")) {
-			JOptionPane.showMessageDialog(null, "Cannot use shortcut " +
-					"from selection box.");
-			box.setSelectedItem(f.getParentFile());
+		if (box == null || f == null)
+			return;
+		try {
+			if (Files.isSymbolicLink(Paths.get(f.getAbsolutePath())) || f.getName().endsWith(".lnk")) {
+				JOptionPane.showMessageDialog(null, "Cannot use shortcut " +
+						"from selection box.");
+				box.setSelectedItem(f.getParentFile());
+			}
+		} catch (InvalidPathException e) {
+			// this is thrown on Windows 10 when "This PC" selected, just ignore.
 		}
 	}
 
