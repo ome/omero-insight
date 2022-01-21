@@ -136,13 +136,13 @@ class CustomizedFileChooser
 					label.setText(FOLDER_LABEL);
 				setFileSelectionMode(DIRECTORIES_ONLY);
 				setCurrentDirectory(getFileSystemView().getHomeDirectory());
-				// Workaround to disable the (empty) file formats dropdown box:
-				List<Component> comps = UIUtilities.findComponents(this, JComboBox.class);
-				for (Component comp : comps) {
-					JComboBox box = (JComboBox)comp;
-					if (box.getItemCount() <= 1)
-						box.setEnabled(false);
-				}
+		}
+		// Workaround to disable useless file formats dropdown box:
+		List<Component> comps = UIUtilities.findComponents(this, JComboBox.class);
+		for (Component comp : comps) {
+			JComboBox box = (JComboBox)comp;
+			if (box.getItemCount() <= 1)
+				box.setEnabled(false);
 		}
 	}
 	
