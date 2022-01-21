@@ -140,7 +140,7 @@ class CustomizedFileChooser
 				List<Component> comps = UIUtilities.findComponents(this, JComboBox.class);
 				for (Component comp : comps) {
 					JComboBox box = (JComboBox)comp;
-					if (box.getItemCount() <= 0)
+					if (box.getItemCount() <= 1)
 						box.setEnabled(false);
 				}
 		}
