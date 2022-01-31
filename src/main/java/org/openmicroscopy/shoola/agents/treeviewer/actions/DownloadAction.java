@@ -101,6 +101,10 @@ public class DownloadAction
             setEnabled(true);
         } else {
             Browser browser = model.getSelectedBrowser();
+            if (browser == null) {
+                setEnabled(false);
+                return;
+            }
             List<DataObject> list = browser.getSelectedDataObjects();
             Iterator<DataObject> i = list.iterator();
             DataObject data;
