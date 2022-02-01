@@ -967,13 +967,14 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 				DefaultMutableTreeNode thisroot = getCurrentModuleTreeRoot();
 				TemplateDialog openF=new TemplateDialog(new JFrame(),tempFile,true,thisroot);
 				if(!openF.isCancelled()) {
+					tempFile= openF.getDestination();
+					if (tempFile == null)
+						return;
 					ImportFromTemplateFile tempImporter = new ImportFromTemplateFile(tempFile.getAbsolutePath());
 					List<String> availableTypelist=tempImporter.createTypeList();
 					List<String> selectedModulesO = openF.getSelectionLoad(availableTypelist);
 
-					tempFile= openF.getDestination();
-					if (tempFile == null)
-						return;
+
 					Boolean loadTreeStructure = openF.loadTreeStructure();
 
 					setTemplateName(tempFile);
