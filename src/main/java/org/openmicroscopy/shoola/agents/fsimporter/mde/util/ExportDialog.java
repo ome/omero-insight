@@ -200,7 +200,7 @@ public class ExportDialog extends JDialog implements ActionListener {
         Object[] options = {"Overwrite file",
                 "Append to file",
                 "Cancel"};
-        if (outputFile.exists()) {
+        if (outputFile!= null && outputFile.exists()) {
             int result = JOptionPane.showOptionDialog(
                     btn_browse_save.getParent(),
                     "File exists!", "File exists",
