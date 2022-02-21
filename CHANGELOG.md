@@ -1,3 +1,16 @@
+5.7.0 (February 2022)
+---------------------
+
+- Simply download the OriginalFiles [#264](https://github.com/ome/omero-insight/pull/264)
+- Remove loci_tools [#265](https://github.com/ome/omero-insight/pull/265)
+- Update FAQ.md JVM Options for Windows [#261](https://github.com/ome/omero-insight/pull/261)
+- BugFix: Use toURI method to handle [#268](https://github.com/ome/omero-insight/pull/268)
+- BugFix: Handle possible null object[#267](https://github.com/ome/omero-insight/pull/267)
+- BugFix: Fix NPE if no user is displayed [#266](https://github.com/ome/omero-insight/pull/266)
+- BugFix: Fix potential ArrayIndexOutOfBoundsException [#257](https://github.com/ome/omero-insight/pull/257)
+- MDE BugFix: Catching non-valid filehandle [#279](https://github.com/ome/omero-insight/pull/279)
+- MDE BugFix: Handle empty file selection [#278](https://github.com/ome/omero-insight/pull/278)
+
 5.6.2 (September 2021)
 ----------------------
 
