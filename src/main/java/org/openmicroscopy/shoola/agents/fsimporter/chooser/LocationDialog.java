@@ -1590,7 +1590,9 @@ class LocationDialog extends JDialog implements ActionListener,
 				if (owner != null) {
 					map.put(owner.getId(), node);
 				} else {
-					map.put(exp.getId(), node);
+					if (exp != null) {
+                        map.put(exp.getId(), node);
+					}
 				}
 			}
 		}
