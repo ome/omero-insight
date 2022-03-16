@@ -1007,7 +1007,7 @@ class ToolBar
                 so = i.next();
                 value = "";
                 path = so.getPath();
-                if (path != null) {
+                if (path != null && path.length() > 1) {
                     sep = FilenameUtils.getPrefix(path);
                     if (path.startsWith(sep))
                         path = path.substring(1, path.length());
