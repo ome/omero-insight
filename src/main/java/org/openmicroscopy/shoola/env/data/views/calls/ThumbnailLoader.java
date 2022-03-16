@@ -215,6 +215,7 @@ public class ThumbnailLoader extends BatchCallTree {
             int k = 0;
             for (DataObject image : images) {
                 // Cast our image to pixels object
+                final ImageData pxd = image
                 final PixelsData pxd = dataObjectToPixelsData(image);
 
                 // Flag to check if we've iterated to the last image
@@ -229,12 +230,12 @@ public class ThumbnailLoader extends BatchCallTree {
                             store = getThumbnailStore(pxd);
                             handleBatchCall(store, pxd, userId);
                         } catch (Exception e) {
-                            currentThumbnail = new ThumbnailData(pxd.getImage().getId(),
+                            currentThumbnail = new ThumbnailData(img.getId(),
                                     getErrorIcon(), userId, false);
 
                             LogMessage msg = new LogMessage(
-                                    "Couldn't initialize the ThumbnailStore for pixels id "
-                                            + pxd.getId(), e);
+                                    "Couldn't initialize the ThumbnailStore for image id "
+                                            + img.getId(), e);
 
                             context.getLogger().warn(this, msg);
                         } finally {
