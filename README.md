@@ -162,4 +162,4 @@
   Copyright
   ---------
 
-  Copyright (C) 2006-2020 University of Dundee. All rights reserved.
+  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
