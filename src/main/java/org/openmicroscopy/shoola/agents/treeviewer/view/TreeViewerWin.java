@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.agents.treeviewer.view.TreeViewerWin
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2014 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -775,7 +775,7 @@ class TreeViewerWin
      */
     void showPopup(int index, Component c, Point p)
     { 
-    	if (c == null) return;
+    	if (c == null || !c.isShowing()) return;
     	if (p == null) p = new Point(0, 0);
     	switch (index) {
 			case TreeViewer.FULL_POP_UP_MENU:
