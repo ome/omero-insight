@@ -1,3 +1,9 @@
+5.7.1 (April 2022)
+------------------
+
+- BugFix: Make sure component is showing [#290](https://github.com/ome/omero-insight/pull/290)
+- Bump omero-gateway-java to 5.6.9 [#291](https://github.com/ome/omero-insight/pull/291)
+
 5.7.0 (February 2022)
 ---------------------
 
