@@ -29,6 +29,7 @@ package org.openmicroscopy.shoola;
 
 //Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
+//import org.openmicroscopy.shoola.util.CheckThreadViolationRepaintManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -72,6 +73,10 @@ public class Main
 		List<String> posArgs = Arrays.stream(args).filter(a -> !a.startsWith("--")).collect(Collectors.toList());
 		if (posArgs.size() > 0) configFile = posArgs.get(0);
 		if (posArgs.size() > 1) homeDir = posArgs.get(1);
+
+		// For debugging Swing thread exceptions:
+		//RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
+
 		Container.startup(homeDir, configFile, addArgs);
 	}
 	
