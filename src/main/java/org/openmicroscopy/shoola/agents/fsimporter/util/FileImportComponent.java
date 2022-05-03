@@ -410,44 +410,46 @@ public class FileImportComponent
 				((CmdCallbackI) callback).close(true);
 			} catch (Exception e) {}
 		}
-		if (namePane.getPreferredSize().width > LENGTH)
-			fileNameLabel.setText(EditorUtil.getPartialName(
-					getFile().getName()));
-		resultLabel.setVisible(true);
-		busyLabel.setVisible(false);
-		busyLabel.setBusy(false);
-		remove(refLabel);
-		remove(refButton);
-		refLabel = resultLabel;
-		refButton = actionMenuButton;
-		addControlsToDisplay();
-		IconManager icons = IconManager.getInstance();
-		Object result = status.getImportResult();
-		if (image instanceof ImportException) result = image;
-		if (result instanceof ImportException) {
-			ImportException e = (ImportException) result;
-			resultLabel.setIcon(icons.getIcon(IconManager.DELETE));
-			resultLabel.setToolTipText(
-					UIUtilities.formatExceptionForToolTip(e));
-			actionMenuButton.setVisible(true);
-			actionMenuButton.setForeground(UIUtilities.REQUIRED_FIELDS_COLOR);
-			actionMenuButton.setText("Failed");
-			int status = e.getStatus();
-			if (status == ImportException.CHECKSUM_MISMATCH)
-				resultIndex = ImportStatus.UPLOAD_FAILURE;
-			else if (status == ImportException.MISSING_LIBRARY)
-			    resultIndex = ImportStatus.FAILURE_LIBRARY;
-			else resultIndex = ImportStatus.FAILURE;
-		} else if (result instanceof CmdCallback) {
-			callback = (CmdCallback) result;
-		} else {
-			formatResultTooltip();
-			resultLabel.setIcon(icons.getIcon(IconManager.APPLY));
-			actionMenuButton.setVisible(true);
-			actionMenuButton.setForeground(UIUtilities.HYPERLINK_COLOR);
-			actionMenuButton.setText("View");
-			resultIndex = ImportStatus.SUCCESS;
-		}
+		SwingUtilities.invokeLater(() -> {
+			if (namePane.getPreferredSize().width > LENGTH)
+				fileNameLabel.setText(EditorUtil.getPartialName(
+						getFile().getName()));
+			resultLabel.setVisible(true);
+			busyLabel.setVisible(false);
+			busyLabel.setBusy(false);
+			remove(refLabel);
+			remove(refButton);
+			refLabel = resultLabel;
+			refButton = actionMenuButton;
+			addControlsToDisplay();
+			IconManager icons = IconManager.getInstance();
+			Object result = status.getImportResult();
+			if (image instanceof ImportException) result = image;
+			if (result instanceof ImportException) {
+				ImportException e = (ImportException) result;
+				resultLabel.setIcon(icons.getIcon(IconManager.DELETE));
+				resultLabel.setToolTipText(
+						UIUtilities.formatExceptionForToolTip(e));
+				actionMenuButton.setVisible(true);
+				actionMenuButton.setForeground(UIUtilities.REQUIRED_FIELDS_COLOR);
+				actionMenuButton.setText("Failed");
+				int status = e.getStatus();
+				if (status == ImportException.CHECKSUM_MISMATCH)
+					resultIndex = ImportStatus.UPLOAD_FAILURE;
+				else if (status == ImportException.MISSING_LIBRARY)
+					resultIndex = ImportStatus.FAILURE_LIBRARY;
+				else resultIndex = ImportStatus.FAILURE;
+			} else if (result instanceof CmdCallback) {
+				callback = (CmdCallback) result;
+			} else {
+				formatResultTooltip();
+				resultLabel.setIcon(icons.getIcon(IconManager.APPLY));
+				actionMenuButton.setVisible(true);
+				actionMenuButton.setForeground(UIUtilities.HYPERLINK_COLOR);
+				actionMenuButton.setText("View");
+				resultIndex = ImportStatus.SUCCESS;
+			}
+		});
 	}
 
 	/** Submits the error.*/
@@ -1509,76 +1511,80 @@ public class FileImportComponent
     public void propertyChange(PropertyChangeEvent evt)
 	{
 		String name = evt.getPropertyName();
-		if (Status.FILES_SET_PROPERTY.equals(name)) {
-			if (isCancelled()) {
-				busyLabel.setBusy(false);
-				busyLabel.setVisible(false);
-				return;
-			}
-			Map<File, Status> files = (Map<File, Status>)
-				evt.getNewValue();
-			int n = files.size();
-			insertFiles(files);
-			firePropertyChange(IMPORT_FILES_NUMBER_PROPERTY, null,n);
-		} else if (Status.FILE_IMPORT_STARTED_PROPERTY.equals(name)) {
-			resultIndex = ImportStatus.STARTED;
-			Status sl = (Status) evt.getNewValue();
-			if (sl.equals(status) && busyLabel != null) {
-				cancelButton.setEnabled(sl.isCancellable());
-				firePropertyChange(Status.FILE_IMPORT_STARTED_PROPERTY,
-				        null, this);
-			}
-		} else if (Status.UPLOAD_DONE_PROPERTY.equals(name)) {
-			Status sl = (Status) evt.getNewValue();
-			if (sl.equals(status)) { 
-				if (sl.isMarkedAsCancel()) cancel(true);
-				else {
-					formatResult();
-					firePropertyChange(Status.UPLOAD_DONE_PROPERTY, null,
+		SwingUtilities.invokeLater(() -> {
+			if (Status.FILES_SET_PROPERTY.equals(name)) {
+				if (isCancelled()) {
+					busyLabel.setBusy(false);
+					busyLabel.setVisible(false);
+					return;
+				}
+				Map<File, Status> files = (Map<File, Status>)
+						evt.getNewValue();
+				int n = files.size();
+				insertFiles(files);
+				firePropertyChange(IMPORT_FILES_NUMBER_PROPERTY, null,n);
+			} else if (Status.FILE_IMPORT_STARTED_PROPERTY.equals(name)) {
+				resultIndex = ImportStatus.STARTED;
+				Status sl = (Status) evt.getNewValue();
+				if (sl.equals(status) && busyLabel != null) {
+					SwingUtilities.invokeLater(() -> {
+						cancelButton.setEnabled(sl.isCancellable());
+					});
+					firePropertyChange(Status.FILE_IMPORT_STARTED_PROPERTY,
+							null, this);
+				}
+			} else if (Status.UPLOAD_DONE_PROPERTY.equals(name)) {
+				Status sl = (Status) evt.getNewValue();
+				if (sl.equals(status)) {
+					if (sl.isMarkedAsCancel()) cancel(true);
+					else {
+						formatResult();
+						firePropertyChange(Status.UPLOAD_DONE_PROPERTY, null,
+								this);
+					}
+				}
+			} else if (Status.CANCELLABLE_IMPORT_PROPERTY.equals(name)) {
+				Status sl = (Status) evt.getNewValue();
+				if (sl.equals(status))
+					cancelButton.setVisible(sl.isCancellable());
+			} else if (Status.SCANNING_PROPERTY.equals(name)) {
+				Status sl = (Status) evt.getNewValue();
+				if (sl.equals(status)) {
+					if (busyLabel != null && !isCancelled()) {
+						busyLabel.setBusy(true);
+						busyLabel.setVisible(true);
+					}
+				}
+			} else if (Status.FILE_RESET_PROPERTY.equals(name)) {
+				importable.setFile((File) evt.getNewValue());
+				fileNameLabel.setText(getFile().getName());
+			} else if (ThumbnailLabel.BROWSE_PLATE_PROPERTY.equals(name)) {
+				firePropertyChange(BROWSE_PROPERTY, evt.getOldValue(),
+						evt.getNewValue());
+			} else if (Status.CONTAINER_FROM_FOLDER_PROPERTY.equals(name)) {
+				containerFromFolder = (DataObject) evt.getNewValue();
+				if (containerFromFolder instanceof DatasetData) {
+					containerObject = containerFromFolder;
+				} else if (containerFromFolder instanceof ScreenData) {
+					containerObject = containerFromFolder;
+				}
+			} else if (Status.DEBUG_TEXT_PROPERTY.equals(name)) {
+				firePropertyChange(name, evt.getOldValue(), evt.getNewValue());
+			} else if (ThumbnailLabel.VIEW_IMAGE_PROPERTY.equals(name)) {
+				//use the group
+				SecurityContext ctx = new SecurityContext(
+						importable.getGroup().getId());
+				EventBus bus = ImporterAgent.getRegistry().getEventBus();
+				Long id = (Long) evt.getNewValue();
+				bus.post(new ViewImage(ctx, new ViewImageObject(id), null));
+			} else if (Status.IMPORT_DONE_PROPERTY.equals(name) ||
+					Status.PROCESSING_ERROR_PROPERTY.equals(name)) {
+				Status sl = (Status) evt.getNewValue();
+				if (sl.equals(status))
+					firePropertyChange(Status.IMPORT_DONE_PROPERTY, null,
 							this);
-				}
 			}
-		} else if (Status.CANCELLABLE_IMPORT_PROPERTY.equals(name)) {
-			Status sl = (Status) evt.getNewValue();
-			if (sl.equals(status))
-				cancelButton.setVisible(sl.isCancellable());
-		} else if (Status.SCANNING_PROPERTY.equals(name)) {
-			Status sl = (Status) evt.getNewValue();
-			if (sl.equals(status)) {
-				if (busyLabel != null && !isCancelled()) {
-					busyLabel.setBusy(true);
-					busyLabel.setVisible(true);
-				}
-			}
-		} else if (Status.FILE_RESET_PROPERTY.equals(name)) {
-			importable.setFile((File) evt.getNewValue());
-			fileNameLabel.setText(getFile().getName());
-		} else if (ThumbnailLabel.BROWSE_PLATE_PROPERTY.equals(name)) {
-			firePropertyChange(BROWSE_PROPERTY, evt.getOldValue(), 
-					evt.getNewValue());
-		} else if (Status.CONTAINER_FROM_FOLDER_PROPERTY.equals(name)) {
-			containerFromFolder = (DataObject) evt.getNewValue();
-			if (containerFromFolder instanceof DatasetData) {
-				containerObject = containerFromFolder;
-			} else if (containerFromFolder instanceof ScreenData) {
-				containerObject = containerFromFolder;
-			}
-		} else if (Status.DEBUG_TEXT_PROPERTY.equals(name)) {
-			firePropertyChange(name, evt.getOldValue(), evt.getNewValue());
-		} else if (ThumbnailLabel.VIEW_IMAGE_PROPERTY.equals(name)) {
-			//use the group
-			SecurityContext ctx = new SecurityContext(
-					importable.getGroup().getId());
-			EventBus bus = ImporterAgent.getRegistry().getEventBus();
-			Long id = (Long) evt.getNewValue();
-			bus.post(new ViewImage(ctx, new ViewImageObject(id), null));
-		} else if (Status.IMPORT_DONE_PROPERTY.equals(name) ||
-				Status.PROCESSING_ERROR_PROPERTY.equals(name)) {
-			Status sl = (Status) evt.getNewValue();
-			if (sl.equals(status))
-				firePropertyChange(Status.IMPORT_DONE_PROPERTY, null,
-						this);
-		}
+		});
 	}
 	
     /**

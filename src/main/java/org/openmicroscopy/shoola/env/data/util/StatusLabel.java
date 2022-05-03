@@ -33,6 +33,7 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 
 import ome.formats.importer.ImportCandidates;
 import ome.formats.importer.ImportEvent;
@@ -183,74 +184,84 @@ public class StatusLabel extends JPanel implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent pe) {
         if (pe.getPropertyName().equals(Status.IMPORT_EVENT)) {
             ImportEvent event = (ImportEvent) pe.getNewValue();
-            if (event instanceof ImportCandidates.SCANNING) {
-                if (!status.isMarkedAsCancel() && exception == null)
-                    generalLabel.setText(SCANNING_TEXT);
-            } else if (event instanceof ErrorHandler.MISSING_LIBRARY) {
-                exception = new ImportException(
-                        ImportException.MISSING_LIBRARY_TEXT,
-                        ((ErrorHandler.MISSING_LIBRARY) event).exception);
-            } else if (event instanceof ErrorHandler.UNKNOWN_FORMAT) {
-                exception = new ImportException(
-                        ImportException.UNKNOWN_FORMAT_TEXT,
-                        ((ErrorHandler.UNKNOWN_FORMAT) event).exception);
-            } else if (event instanceof ErrorHandler.FILE_EXCEPTION) {
-                ErrorHandler.FILE_EXCEPTION e = (ErrorHandler.FILE_EXCEPTION) event;
-                exception = new ImportException(e.exception);
-            } else if (event instanceof ErrorHandler.INTERNAL_EXCEPTION) {
-                ErrorHandler.INTERNAL_EXCEPTION e = (ErrorHandler.INTERNAL_EXCEPTION) event;
-                exception = new ImportException(e.exception);
-            } else if (event instanceof ImportEvent.FILE_UPLOAD_BYTES) {
-                ImportEvent.FILE_UPLOAD_BYTES e = (ImportEvent.FILE_UPLOAD_BYTES) event;
-                long v = status.getTotalUploadedSize() + e.uploadedBytes;
-                if (status.getSizeUpload() != 0) {
-                    uploadBar.setValue((int) (v * MAX / status.getSizeUpload()));
-                }
-                StringBuffer buffer = new StringBuffer();
-                if (v != status.getSizeUpload())
-                    buffer.append(formatUpload(v));
-                else
-                    buffer.append(status.getFileSize());
-                buffer.append(" ");
-                if (e.timeLeft != 0) {
-                    String s = UIUtilities.calculateHMSFromMilliseconds(
-                            e.timeLeft, true);
-                    buffer.append(s);
-                    if (CommonsLangUtils.isNotBlank(s))
-                        buffer.append(" Left");
+            SwingUtilities.invokeLater(() -> {
+                if (event instanceof ImportCandidates.SCANNING) {
+                    if (!status.isMarkedAsCancel() && exception == null)
+                        generalLabel.setText(SCANNING_TEXT);
+                } else if (event instanceof ErrorHandler.MISSING_LIBRARY) {
+                    exception = new ImportException(
+                            ImportException.MISSING_LIBRARY_TEXT,
+                            ((ErrorHandler.MISSING_LIBRARY) event).exception);
+                } else if (event instanceof ErrorHandler.UNKNOWN_FORMAT) {
+                    exception = new ImportException(
+                            ImportException.UNKNOWN_FORMAT_TEXT,
+                            ((ErrorHandler.UNKNOWN_FORMAT) event).exception);
+                } else if (event instanceof ErrorHandler.FILE_EXCEPTION) {
+                    ErrorHandler.FILE_EXCEPTION e = (ErrorHandler.FILE_EXCEPTION) event;
+                    exception = new ImportException(e.exception);
+                } else if (event instanceof ErrorHandler.INTERNAL_EXCEPTION) {
+                    ErrorHandler.INTERNAL_EXCEPTION e = (ErrorHandler.INTERNAL_EXCEPTION) event;
+                    exception = new ImportException(e.exception);
+                } else if (event instanceof ImportEvent.FILE_UPLOAD_BYTES) {
+                    ImportEvent.FILE_UPLOAD_BYTES e = (ImportEvent.FILE_UPLOAD_BYTES) event;
+                    long v = status.getTotalUploadedSize() + e.uploadedBytes;
+                    if (status.getSizeUpload() != 0) {
+                        uploadBar.setValue((int) (v * MAX / status.getSizeUpload()));
+                    }
+                    StringBuffer buffer = new StringBuffer();
+                    if (v != status.getSizeUpload())
+                        buffer.append(formatUpload(v));
                     else
-                        buffer.append("complete");
+                        buffer.append(status.getFileSize());
+                    buffer.append(" ");
+                    if (e.timeLeft != 0) {
+                        String s = UIUtilities.calculateHMSFromMilliseconds(
+                                e.timeLeft, true);
+                        buffer.append(s);
+                        if (CommonsLangUtils.isNotBlank(s))
+                            buffer.append(" Left");
+                        else
+                            buffer.append("complete");
+                    }
+                    uploadBar.setString(buffer.toString());
+                } else if (event instanceof ImportEvent.FILESET_UPLOAD_START) {
+                    Iterator<JLabel> i = labels.iterator();
+                    while (i.hasNext()) {
+                        i.next().setVisible(true);
+                    }
+                    generalLabel.setText("");
+                    uploadBar.setVisible(true);
+                    processingBar.setVisible(true);
+                } else if (event instanceof ImportEvent.FILESET_UPLOAD_PREPARATION) {
+                    generalLabel.setText("Preparing upload...");
+                } else if (event instanceof ImportEvent.IMPORT_STARTED) {
+                    ImportEvent.IMPORT_STARTED e = (ImportEvent.IMPORT_STARTED) event;
                 }
-                uploadBar.setString(buffer.toString());
-            } else if (event instanceof ImportEvent.FILESET_UPLOAD_START) {
-                Iterator<JLabel> i = labels.iterator();
-                while (i.hasNext()) {
-                    i.next().setVisible(true);
-                }
-                generalLabel.setText("");
-                uploadBar.setVisible(true);
-                processingBar.setVisible(true);
-            } else if (event instanceof ImportEvent.FILESET_UPLOAD_PREPARATION) {
-                generalLabel.setText("Preparing upload...");
-            } else if (event instanceof ImportEvent.IMPORT_STARTED) {
-                ImportEvent.IMPORT_STARTED e = (ImportEvent.IMPORT_STARTED) event;
-            }
-            
-            processingBar.setValue(status.getStep());
-            processingBar.setString(Status.STEPS.get(status.getStep()));
+                processingBar.setValue(status.getStep());
+                processingBar.setString(Status.STEPS.get(status.getStep()));
+            });
+
         } else if (pe.getPropertyName().equals(Status.DUPLICATE_PROPERTY)) {
-            generalLabel.setText(DUPLICATE);
+            SwingUtilities.invokeLater(() -> {
+                generalLabel.setText(DUPLICATE);
+            });
         } else if (pe.getPropertyName().equals(Status.CANCELLED_PROPERTY)) {
-            generalLabel.setText(CANCELLED_TEXT);
+            SwingUtilities.invokeLater(() -> {
+                generalLabel.setText(CANCELLED_TEXT);
+            });
         } else if (pe.getPropertyName().equals(Status.OFF_LINE_PROPERTY)) {
             Boolean b = (Boolean) pe.getNewValue();
-            if (b) {
-                generalLabel.setText(OFFLINE_SUCCESS_TEXT);
-            } else {
-                generalLabel.setText(OFFLINE_FAIL_TEXT);
-            }
+            SwingUtilities.invokeLater(() -> {
+                if (b) {
+                    generalLabel.setText(OFFLINE_SUCCESS_TEXT);
+                } else {
+                    generalLabel.setText(OFFLINE_FAIL_TEXT);
+                }
+            });
         } else if (pe.getPropertyName().equals(Status.FAILED_PROPERTY)) {
-            generalLabel.setText(FAILED_TEXT);
+            SwingUtilities.invokeLater(() -> {
+                generalLabel.setText(FAILED_TEXT);
+            });
             exception = new ImportException((Throwable) pe.getNewValue());
         }
     }
