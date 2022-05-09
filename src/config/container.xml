@@ -318,7 +318,7 @@
   <entry name="LookAndFeel">system</entry>
 
     <!-- Flag to use the CheckThreadViolationRepaintManager for debugging Swing thread issues -->
-    <entry name="DebugRepaintManager" type="boolean">true</entry>
+    <entry name="DebugRepaintManager" type="boolean">false</entry>
 
   <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Information related to the version of the software, name of the software,
