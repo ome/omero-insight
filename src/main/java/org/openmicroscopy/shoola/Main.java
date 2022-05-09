@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.Main
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -29,10 +29,16 @@ package org.openmicroscopy.shoola;
 
 //Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
-//import org.openmicroscopy.shoola.util.CheckThreadViolationRepaintManager;
+import org.openmicroscopy.shoola.util.CheckThreadViolationRepaintManager;
 
+import javax.swing.RepaintManager;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /** 
@@ -74,8 +80,16 @@ public class Main
 		if (posArgs.size() > 0) configFile = posArgs.get(0);
 		if (posArgs.size() > 1) homeDir = posArgs.get(1);
 
-		// For debugging Swing thread exceptions:
-		//RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
+		try {
+			Path p = Path.of(Container.CONFIG_DIR, Container.CONFIG_FILE);
+			String content = Files.readString(p).replaceAll("\n", "");
+			Matcher m = Pattern.compile("DebugRepaintManager.+?>(.+?)<").matcher(content);
+			if (m.find() && Boolean.parseBoolean(m.group(1))) {
+					RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
+			}
+		} catch (IOException e) {
+			// Couldn't access config file, just ignore
+		}
 
 		Container.startup(homeDir, configFile, addArgs);
 	}
