@@ -32,9 +32,10 @@ import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.util.CheckThreadViolationRepaintManager;
 
 import javax.swing.RepaintManager;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -81,9 +82,17 @@ public class Main
 		if (posArgs.size() > 1) homeDir = posArgs.get(1);
 
 		try {
-			Path p = Path.get(Container.CONFIG_DIR, Container.CONFIG_FILE);
-			String content = Files.readString(p).replaceAll("\n", "");
-			Matcher m = Pattern.compile("DebugRepaintManager.+?>(.+?)<").matcher(content);
+			String path = Container.CONFIG_DIR+ File.separator+Container.CONFIG_FILE;
+			StringBuilder configFileContent = new StringBuilder();
+			try (FileReader fr = new FileReader(path);
+				 BufferedReader br = new BufferedReader(fr)) {
+				 String line = br.readLine();
+				 while (line != null) {
+					 line = br.readLine();
+					 configFileContent.append(line);
+				 }
+			}
+			Matcher m = Pattern.compile("DebugRepaintManager.+?>(.+?)<").matcher(configFileContent.toString());
 			if (m.find() && Boolean.parseBoolean(m.group(1))) {
 					RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
 			}
