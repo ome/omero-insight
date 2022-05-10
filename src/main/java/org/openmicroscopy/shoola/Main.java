@@ -81,7 +81,7 @@ public class Main
 		if (posArgs.size() > 1) homeDir = posArgs.get(1);
 
 		try {
-			Path p = Path.of(Container.CONFIG_DIR, Container.CONFIG_FILE);
+			Path p = Path.get(Container.CONFIG_DIR, Container.CONFIG_FILE);
 			String content = Files.readString(p).replaceAll("\n", "");
 			Matcher m = Pattern.compile("DebugRepaintManager.+?>(.+?)<").matcher(content);
 			if (m.find() && Boolean.parseBoolean(m.group(1))) {
