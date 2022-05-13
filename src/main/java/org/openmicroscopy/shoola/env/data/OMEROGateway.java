@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -1612,10 +1612,6 @@ class OMEROGateway
 	Map<SecurityContext, Set<Long>> getRenderingEngines()
 	{
 		return renderingEngines;
-	}
-
-	boolean joinSession() {
-	    return gw.joinSession();
 	}
 
 	void logout() {

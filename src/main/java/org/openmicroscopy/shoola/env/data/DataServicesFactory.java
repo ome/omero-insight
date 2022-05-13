@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2017 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -283,8 +283,19 @@ public class DataServicesFactory
         String message;
         Map<SecurityContext, Set<Long>> l =
                 omeroGateway.getRenderingEngines();
-        boolean b = omeroGateway.joinSession();
-        if (b) {
+
+        int alive = 0;
+        for (SecurityContext ctx : l.keySet()) {
+            try {
+                if (omeroGateway.getGateway().isAlive(ctx))
+                    alive++;
+            } catch (DSOutOfServiceException e) {
+                registry.getLogger().error(this,
+                        "Failed to reconnect " + e);
+            }
+        }
+
+        if (alive == l.size()) {
             //reactivate the rendering engine. Need to review that
             Iterator<Entry<SecurityContext, Set<Long>>> i =
                     l.entrySet().iterator();
