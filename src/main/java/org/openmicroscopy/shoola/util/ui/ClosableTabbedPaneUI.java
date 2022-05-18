@@ -171,7 +171,9 @@ class ClosableTabbedPaneUI
 							break;
 						}
 					}
-
+                    if (tabIndex < 0) {
+                    	return;
+                    }
 					Component c = tabPane.getComponentAt(tabIndex);
 					if (c instanceof ClosableTabbedPaneComponent &&
 							!((ClosableTabbedPaneComponent)c).isClosable())
