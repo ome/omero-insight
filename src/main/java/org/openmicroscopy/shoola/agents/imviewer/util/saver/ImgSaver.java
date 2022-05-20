@@ -484,6 +484,7 @@ public class ImgSaver
         	FileUtils.forceMkdir(new File(name).getParentFile());
         	
             if (imageComponents == null) {
+                if (mainImage == null) return;
             	constrain = unitBar && v != null && s < mainImage.getWidth() 
             				&& imageType == ImgSaverUI.IMAGE;
             	writeSingleImage(mainImage, constrain, name);
