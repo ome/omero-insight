@@ -454,7 +454,7 @@ public class DataServicesFactory
     {
         return (Logger) registry.getLogger();
     }
-    
+
 	/**
 	 * Attempts to connect to <i>OMERO</i> server.
 	 * 
@@ -485,7 +485,9 @@ public class DataServicesFactory
     	String clientVersion = "";
     	if (v != null && v instanceof String)
     		clientVersion = (String) v;
+        boolean useSessionKey = false;
     	if (uc.getUser().getUsername().equals(omeroGateway.getSessionId(exp))) {
+            useSessionKey = true;
     	    container.getRegistry().bind(LookupNames.SESSION_KEY, Boolean.TRUE);
     	}
         //Check if client and server are compatible.
@@ -592,19 +594,25 @@ public class DataServicesFactory
         	Iterator<GroupData> i = groups.iterator();
         	GroupData g;
         	available = new HashSet<GroupData>();
-        	while (i.hasNext()) {
-        		g = i.next();
-        		if (gid == g.getId()) defaultGroup = g;
-        		if (!admin.isSecuritySystemGroup(g.getId())) {
-        			available.add(g);
-        		} else {
-        			if (admin.isSecuritySystemGroup(g.getId(),
-        			        GroupData.SYSTEM)) {
-        				available.add(g);
-        				uc.setAdministrator(true);
-        			}
-        		}
-        	}
+            while (i.hasNext()) {
+                g = i.next();
+                if (gid == g.getId()) {
+                    defaultGroup = g;
+                }
+                if (!admin.isSecuritySystemGroup(g.getId())) {
+                    available.add(g);
+                } else {
+                    if (admin.isSecuritySystemGroup(g.getId(), GroupData.SYSTEM)) {
+                        available.add(g);
+                        uc.setAdministrator(true);
+                    }
+                }
+            }
+            // Do not show the groups if a session key is used to connect
+            if (useSessionKey) {
+                available.clear();
+            }
+        	
         	//to be on the safe side.
         	if (available.size() ==  0) {
         	    //group with loaded users.
