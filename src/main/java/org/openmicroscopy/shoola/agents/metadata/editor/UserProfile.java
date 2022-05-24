@@ -331,7 +331,7 @@ class UserProfile
                 GroupData g = getSelectedGroup();
                 ExperimenterData exp = (ExperimenterData)
                         model.getRefObject();
-                if (exp.getDefaultGroup().getId() != g.getId())
+                if (g != null && exp.getDefaultGroup().getId() != g.getId())
                     model.fireAdminSaving(g, true);
                 view.saveData(true);
             }
@@ -515,6 +515,9 @@ class UserProfile
     private GroupData getSelectedGroup()
     {
         Selectable<?> item = (Selectable<?>) groupsBox.getSelectedItem();
+        if (item == null) {
+            return null;
+        }
         DataNode node = (DataNode) item.getObject();
         return (GroupData) node.getDataObject();
     }
