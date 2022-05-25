@@ -674,12 +674,12 @@ implements ActionListener,  TreeSelectionListener, TreeExpansionListener, ListSe
 	}
 	
 	private void updateObjectTree(FNode node) {
-		if(node==null)
+		if (node == null || node.getContainer() == null)
 			return;
 		ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] update object tree");
-		DefaultMutableTreeNode tree=node.getContainer().getTreeNode();
+		DefaultMutableTreeNode tree = node.getContainer().getTreeNode();
 
-		if(tree!=null) {
+		if (tree != null) {
 			// save input of current tree
 			HashMap<String,List<TagData>> cinput = MDEHelper.getInput(tree);
 
