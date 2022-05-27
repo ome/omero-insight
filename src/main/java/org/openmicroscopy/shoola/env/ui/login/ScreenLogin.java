@@ -324,8 +324,7 @@ public class ScreenLogin
 	private void help()
 	{
 	    JOptionPane.showMessageDialog(this,
-	            "Username or sessionID can be used to connect.\n"
-	            + "Do not enter a password if a sessionID is entered.",
+	            "Username or sessionID can be used to connect.",
 	            "Connection Info",
 	            JOptionPane.PLAIN_MESSAGE);
 
