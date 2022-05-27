@@ -46,8 +46,7 @@ public class ROICountLoader extends BatchCallTree {
             final long imageID) {
         return new BatchCall("Load ROI count from Server") {
             public void doCall() throws Exception {
-                results = context.getGateway().getFacility(ROIFacility.class)
-                        .getROICount(ctx, imageID);
+                results = context.getDataService().getOMEROGateway().getROICount(ctx, imageID);
             }
         };
     }

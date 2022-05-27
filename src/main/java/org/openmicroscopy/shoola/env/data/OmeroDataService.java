@@ -63,7 +63,13 @@ public interface OmeroDataService
 	 * @return See above
 	 */
 	public Gateway getGateway();
-	
+
+	/**
+	 * Get a reference to the {@link OMEROGateway}
+	 * @return See above
+	 */
+	public OMEROGateway getOMEROGateway();
+
 	/**
 	 * Retrieves hierarchy trees rooted by a given node.
 	 * i.e. the requested node as root and all of its descendants.

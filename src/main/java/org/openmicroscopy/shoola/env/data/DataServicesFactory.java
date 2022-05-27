@@ -144,9 +144,6 @@ public class DataServicesFactory
 	/** The Administration service adapter. */
 	private AdminService				admin;
 
-    /** Flag indicating that we try to re-establish the connection.*/
-    private final AtomicBoolean reconnecting = new AtomicBoolean(false);
-
 	/**
 	 * Attempts to create a new instance.
      * 
@@ -262,7 +259,6 @@ public class DataServicesFactory
                 String name = evt.getPropertyName();
                 if (NotificationDialog.CLOSE_NOTIFICATION_PROPERTY.equals(name))
                 {
-                    reconnecting.set(false);
                     connectionDialog = null;
                     exitApplication(true, true);
                 } else if (
@@ -270,7 +266,6 @@ public class DataServicesFactory
                             name))
                 {
                     connectionDialog = null;
-                    reconnecting.set(false);
                     int index = (Integer) evt.getNewValue();
                     if (index == ConnectionExceptionHandler.LOST_CONNECTION)
                         reconnect();
@@ -335,7 +330,6 @@ public class DataServicesFactory
             connectionDialog.setVisible(false);
             connectionDialog.dispose();
             connectionDialog = null;
-            reconnecting.set(false);
         } else {
             //connectionDialog.setVisible(false);
             message = "A failure occurred while attempting to " +
@@ -368,8 +362,8 @@ public class DataServicesFactory
 	 */
 	public void sessionExpiredExit(int index, Throwable exc)
 	{
-	    if (reconnecting.get()) return;
-		reconnecting.set(true);
+        if (connectionDialog != null && connectionDialog.isVisible())
+            return;
 		String message;
 		if (exc != null) {
 			LogMessage msg = new LogMessage();

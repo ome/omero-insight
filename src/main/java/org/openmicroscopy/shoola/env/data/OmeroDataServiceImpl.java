@@ -119,7 +119,12 @@ class OmeroDataServiceImpl
 	public Gateway getGateway() {
 	    return gateway.getGateway();
 	}
-	
+
+	@Override
+	public OMEROGateway getOMEROGateway() {
+		return gateway;
+	}
+
 	/**
 	 * Unlinks the collection of children from the specified parent.
 	 *

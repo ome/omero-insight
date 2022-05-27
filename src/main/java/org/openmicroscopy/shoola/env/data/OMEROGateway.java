@@ -42,6 +42,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
+import omero.gateway.facility.RawDataFacility;
+import omero.gateway.model.PixelsData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
@@ -256,7 +258,7 @@ import omero.gateway.model.WellSampleData;
  * @since OME2.2
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-class OMEROGateway
+public class OMEROGateway
 {
 
 	/** Identifies the fileset as root. */
@@ -7581,4 +7583,34 @@ class OMEROGateway
         return value.booleanValue();
     }
 
+	public Collection<String> getLookupTables(SecurityContext ctx) throws DSOutOfServiceException, DSAccessException {
+		try {
+			return gw.getFacility(BrowseFacility.class).getLookupTables(ctx);
+		} catch (Exception e) {
+			handleException(e, "Cannot retrieve lookup tables.");
+		}
+		return null;
+	}
+
+	public Map<Integer, int[]> getHistogram(SecurityContext ctx,
+											PixelsData pixels,
+											int[] channels, int z, int t)
+			throws DSOutOfServiceException, DSAccessException {
+		try {
+			RawDataFacility f = gw.getFacility(RawDataFacility.class);
+			return f.getHistogram(ctx, pixels, channels, z, t);
+		} catch (Exception e) {
+			handleException(e, "Cannot retrieve lookup tables.");
+		}
+		return null;
+	}
+
+	public int getROICount(SecurityContext ctx, long imageId) throws DSOutOfServiceException, DSAccessException {
+		try {
+			return gw.getFacility(ROIFacility.class).getROICount(ctx, imageId);
+		} catch (Exception e) {
+			handleException(e, "Cannot retrieve ROI count.");
+		}
+		return -1;
+	}
 }

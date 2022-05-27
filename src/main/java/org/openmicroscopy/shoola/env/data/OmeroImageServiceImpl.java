@@ -570,8 +570,7 @@ class OmeroImageServiceImpl
             return OmeroImageServiceImpl.LOOKUP_TABLES;
 
         try {
-            OmeroImageServiceImpl.LOOKUP_TABLES = gateway.getGateway()
-                    .getFacility(BrowseFacility.class).getLookupTables(ctx);
+            OmeroImageServiceImpl.LOOKUP_TABLES = gateway.getLookupTables(ctx);
             return OmeroImageServiceImpl.LOOKUP_TABLES;
         } catch (Exception e) {
             context.getLogger().warn(this, e.getMessage());

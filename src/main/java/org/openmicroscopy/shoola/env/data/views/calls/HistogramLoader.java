@@ -61,11 +61,8 @@ public class HistogramLoader extends BatchCallTree {
             final int z, final int t) {
         loadCall = new BatchCall("Loading Histogram data") {
             public void doCall() throws Exception {
-                try (RawDataFacility f = context.getGateway().getFacility(
-                        RawDataFacility.class)) {
-                    result = f.getHistogram(ctx, img.getDefaultPixels(),
-                            channels, z, t);
-                }
+                result = context.getDataService().getOMEROGateway().getHistogram(ctx, img.getDefaultPixels(),
+                        channels, z, t);
             }
         };
     }
