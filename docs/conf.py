@@ -44,10 +44,10 @@ release = version
 # -- General configuration ---------------------------------------------------
 
 extlinks = {
-    'source': (omero_github_root + 'blob/'+ branch + '/%s', ''),
-    'devs_doc': (docs_root + '/contributing/%s', ''),
-    'downloads': (downloads_root + '/%s', ''),
-    'general_doc': (docs_root + '/omero/latest%s', ''),
+    'source': (omero_github_root + 'blob/'+ branch + '/%s', None),
+    'devs_doc': (docs_root + '/contributing/%s', None),
+    'downloads': (downloads_root + '/%s', None),
+    'general_doc': (docs_root + '/omero/latest%s', None),
     }
 
 # Add any Sphinx extension module names here, as strings. They can be
