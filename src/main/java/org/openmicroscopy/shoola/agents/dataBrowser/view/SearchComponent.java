@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2014 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
 
 
 import info.clearthought.layout.TableLayout;
@@ -496,10 +497,12 @@ public class SearchComponent
 	 */
 	public void setSearchEnabled(String text, boolean b)
 	{
-		searchButton.setEnabled(!b);
-		busyLabel.setEnabled(b);
-		busyLabel.setBusy(b);
-		progressLabel.setText(text);
+		SwingUtilities.invokeLater(() -> {
+			searchButton.setEnabled(!b);
+			busyLabel.setEnabled(b);
+			busyLabel.setBusy(b);
+			progressLabel.setText(text);
+		});
 	}
 	
 	/**

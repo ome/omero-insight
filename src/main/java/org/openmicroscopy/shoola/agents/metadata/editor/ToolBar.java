@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -554,8 +554,10 @@ class ToolBar
      */
     void setStatus(boolean busy)
     {
-    	busyLabel.setBusy(busy);
-    	busyLabel.setVisible(busy);
+		SwingUtilities.invokeLater(() -> {
+			busyLabel.setBusy(busy);
+			busyLabel.setVisible(busy);
+		});
     }
     
     /** Updates the UI when a new object is selected. */

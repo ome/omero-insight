@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import omero.model.OriginalFile;
 
@@ -356,16 +357,18 @@ public abstract class ActivityComponent
 	/** Resets the controls. */
 	private void reset()
 	{
-		toolBar.remove(buttonIndex);
-		toolBar.add(removeButton, buttonIndex);
-		removeButton.setEnabled(true);
-		exceptionButton.setVisible(false);
-		status.setBusy(false);
-		status.setVisible(false);
-		statusPane = iconLabel;
-		remove(statusPane);
-		add(statusPane, "0, 0, CENTER, CENTER");
-		repaint();
+		SwingUtilities.invokeLater(() -> {
+			toolBar.remove(buttonIndex);
+			toolBar.add(removeButton, buttonIndex);
+			removeButton.setEnabled(true);
+			exceptionButton.setVisible(false);
+			status.setBusy(false);
+			status.setVisible(false);
+			statusPane = iconLabel;
+			remove(statusPane);
+			add(statusPane, "0, 0, CENTER, CENTER");
+			repaint();
+		});
 	}
 	
 	/**
@@ -526,7 +529,9 @@ public abstract class ActivityComponent
 	/** Invokes when the activity starts. */ 
 	public void startActivity()
 	{
-		status.setBusy(true);
+		SwingUtilities.invokeLater(() -> {
+			status.setBusy(true);
+		});
 	}
 	
 	/**

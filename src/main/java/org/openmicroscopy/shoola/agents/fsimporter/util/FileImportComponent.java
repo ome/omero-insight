@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -504,12 +504,14 @@ public class FileImportComponent
 		boolean b = status.isCancellable() || getFile().isDirectory();
 		if (!isCancelled() && !hasImportFailed() && b &&
 		        !status.isMarkedAsDuplicate()) {
-			busyLabel.setBusy(false);
-			busyLabel.setVisible(false);
-			status.markedAsCancel();
-			cancelButton.setEnabled(false);
-			cancelButton.setVisible(false);
-			firePropertyChange(CANCEL_IMPORT_PROPERTY, null, this);
+			SwingUtilities.invokeLater(() -> {
+				busyLabel.setBusy(false);
+				busyLabel.setVisible(false);
+				status.markedAsCancel();
+				cancelButton.setEnabled(false);
+				cancelButton.setVisible(false);
+				firePropertyChange(CANCEL_IMPORT_PROPERTY, null, this);
+			});
 		}
 	}
 
@@ -1459,8 +1461,10 @@ public class FileImportComponent
 	@Override
     public void onResultsSaving(String message, boolean busy)
 	{
-	    busyLabel.setVisible(busy);
-	    busyLabel.setBusy(busy);
+		SwingUtilities.invokeLater(() -> {
+			busyLabel.setVisible(busy);
+			busyLabel.setBusy(busy);
+		});
 	}
 
 	/* (non-Javadoc)

@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.FileTableNode
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2010 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
 
 //Third-party libraries
 import org.jdesktop.swingx.JXBusyLabel;
@@ -109,8 +110,10 @@ public class FileTableNode
 	 */
 	public void setStatus(boolean busy)
 	{
-		status.setBusy(busy);
-		if (!busy) status.setText("done");
+		SwingUtilities.invokeLater(() -> {
+			status.setBusy(busy);
+			if (!busy) status.setText("done");
+		});
 	}
 
 	/**
