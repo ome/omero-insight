@@ -27,9 +27,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import omero.api.StatefulServiceInterfacePrx;
 
+import omero.gateway.model.FolderData;
 import org.openmicroscopy.shoola.env.data.model.DeletableObject;
 import org.openmicroscopy.shoola.env.data.util.SearchDataContext;
 
@@ -283,6 +285,11 @@ public class NullOmeroPojoService
 		return 0;
 	}
 
+	@Override
+	public OMEROGateway getOMEROGateway() {
+		return null;
+	}
+
 	/**
      * No-operation implementation
      * @see OmeroDataService#loadContainerHierarchy(Class, List, boolean, long)
@@ -464,7 +471,17 @@ public class NullOmeroPojoService
             return null;
         }
 
-        /**
+	@Override
+	public Collection<FolderData> saveROIFolders(SecurityContext ctx, Collection<FolderData> folders) throws ExecutionException, DSOutOfServiceException, DSAccessException {
+		return null;
+	}
+
+	@Override
+	public int getROICount(SecurityContext ctx, long imageId) throws DSOutOfServiceException, DSAccessException {
+		return 0;
+	}
+
+	/**
          * No-operation implementation
          * @see OmeroDataService#search(SecurityContext, SearchParameters)
          */
@@ -484,9 +501,7 @@ public class NullOmeroPojoService
             return null;
         }
 
-        @Override
         public Gateway getGateway() {
-            // TODO Auto-generated method stub
             return null;
         }
 }

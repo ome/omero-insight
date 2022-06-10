@@ -1309,9 +1309,6 @@ class MeasurementViewerModel
     
     /**
      * Add ROIs to Folders
-     * 
-     * @param selectedObjects
-     *            The ROIs
      * @param folders
      *            The Folders
      * @param async
@@ -1337,16 +1334,7 @@ class MeasurementViewerModel
             try {
                 Registry reg = MetadataViewerAgent.getRegistry();
                 OmeroDataService ods = reg.getDataService();
-                Gateway gw = ods.getGateway();
-                DataManagerFacility dm = gw
-                        .getFacility(DataManagerFacility.class);
-                List<IObject> objs = new ArrayList<IObject>(folders.size());
-                for (FolderData f : folders)
-                    objs.add(f.asIObject());
-                objs = dm.saveAndReturnObject(getSecurityContext(), objs, null,
-                        null);
-                Collection<FolderData> result = PojoMapper
-                        .asCastedDataObjects(objs);
+                Collection<FolderData> result = ods.saveROIFolders(getSecurityContext(), folders);
                 Collection<Long> ids = Pojos.extractIds(this.folders);
                 for (FolderData f : result) {
                     if (!ids.contains(f.getId()))

@@ -23,7 +23,6 @@ package org.openmicroscopy.shoola.env.data.views.calls;
 import java.util.Map;
 
 import omero.gateway.SecurityContext;
-import omero.gateway.facility.RawDataFacility;
 import omero.gateway.model.ImageData;
 
 import org.openmicroscopy.shoola.env.data.views.BatchCall;
@@ -61,7 +60,7 @@ public class HistogramLoader extends BatchCallTree {
             final int z, final int t) {
         loadCall = new BatchCall("Loading Histogram data") {
             public void doCall() throws Exception {
-                result = context.getDataService().getOMEROGateway().getHistogram(ctx, img.getDefaultPixels(),
+                result = context.getImageService().getHistogram(ctx, img.getDefaultPixels(),
                         channels, z, t);
             }
         };
