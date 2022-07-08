@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -214,6 +214,9 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	/** Text for metadata pane */
 	private static final String TEXT_METADATA_DEFAULTS = "Metadata Defaults";
 
+	/** Text for metadata pane */
+	private static final String TEXT_ADVANCED = "Advanced options";
+
 	/** Text for naming panel */
 	private static final String TEXT_DIRECTORIES_BEFORE_FILE =
 			"Directories before File";
@@ -327,6 +330,9 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 
 	/** Text field indicating how many folders to include. */
 	private NumericalTextField numberOfFolders;
+
+	/** Text field indicating Bioformats search depth */
+	private NumericalTextField depth;
 
 	/** Button to bring up the tags wizard. */
 	private JButton tagButton;
@@ -671,6 +677,13 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		tagsMap = new LinkedHashMap<JButton, TagAnnotationData>();
 		mapAnnotation=new LinkedHashMap<String,List<MapAnnotationData>>();
 
+		depth = new NumericalTextField();
+		depth.setMinimum(1);
+		depth.setText(System.getProperty("omero.import.depth", "50"));
+		depth.setColumns(4);
+		depth.setToolTipText("Maximum depth Bioformats uses for looking for importable files");
+		depth.addPropertyChangeListener(this);
+
 		IconManager icons = IconManager.getInstance();
 
 		refreshFilesButton = new JButton(TEXT_REFRESH_FILES);
@@ -970,6 +983,15 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 		return UIUtilities.buildComponentPanel(p);
 	}
 
+	private JPanel buildAdvancedComponent() {
+		JPanel p = new JPanel();
+		JLabel l = new JLabel();
+		l.setText("Depth: ");
+		p.add(l);
+		p.add(depth);
+		return UIUtilities.buildComponentPanel(p);
+	}
+
 	/**
 	 * Builds and lays out the components displaying the naming options.
 	 *
@@ -1068,9 +1090,14 @@ public class ImportDialog extends ClosableTabbedPaneComponent
         c.gridy = 2;
         options.add(buildPane(TEXT_METADATA_DEFAULTS, buildPixelSizeComponent()), c);
 
+		// Constraints for meta data component
+		c.gridx = 0;
+		c.gridy = 3;
+		options.add(buildPane(TEXT_ADVANCED, buildAdvancedComponent()), c);
+
         // Fills in bottom space of GridBagLayout
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 4;
         c.weighty = 1;
         options.add(new JLabel(" "), c);
 
@@ -1219,7 +1246,6 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 			object.setMapAnnotation(mapAnnotation);
 		}
 
-		object.setScanningDepth(ImporterAgent.getScanningDepth());
 		Boolean loadThumbnails = (Boolean) ImporterAgent.getRegistry()
 				.lookup(LOAD_THUMBNAIL);
 		if (loadThumbnails != null)
@@ -1240,6 +1266,8 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 			}
 			object.setTags(l);
 		}
+
+		object.setDepth((Integer) depth.getValueAsNumber());
 
 		if (partialName.isSelected()) {
 			Integer number = (Integer) numberOfFolders.getValueAsNumber();

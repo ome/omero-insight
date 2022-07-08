@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -190,9 +190,6 @@ public class ImportableObject
 	/** The depth when the name is overridden. */
 	private int depthForName;
 
-	/** The depth used when scanning a folder. */
-	private int scanningDepth;
-
 	/**
 	 * Flag indicating to override the name set by B-F when importing the data.
 	 */
@@ -224,6 +221,9 @@ public class ImportableObject
 
 	/** Map of skip options mapping to ImportConfig functions */
 	private Map<String, Object> skipChoices;
+
+	/** The depth Bioformats uses to find the importable files */
+	private int depth = Integer.valueOf(System.getProperty("omero.import.depth", "4"));
 
 	/**
 	 * Returns the object corresponding to the passed file.
@@ -355,24 +355,7 @@ public class ImportableObject
 	{
 		this.mapAnnots=getCloneOfMap(map);
 	}
-	
 
-	/**
-	 * Sets the depth used scanning a folder.
-	 *
-	 * @param scanningDepth The value to set.
-	 */
-	public void setScanningDepth(int scanningDepth)
-	{
-		this.scanningDepth = scanningDepth;
-	}
-
-	/**
-	 * Returns the depth used scanning a folder.
-	 *
-	 * @return See above.
-	 */
-	public int getScanningDepth() { return scanningDepth; }
 
 	/**
 	 * Sets the depth used when the name is overridden.
@@ -764,4 +747,19 @@ public class ImportableObject
         return option != null && !option;
     }
 
+	/**
+	 * Get the depth Bioformats uses to find the importable files
+	 * @return See above
+	 */
+	public int getDepth() {
+		return depth;
+	}
+
+	/**
+	 * Set the depth Bioformats uses to find the importable files
+	 * @param depth The depth
+	 */
+	public void setDepth(int depth) {
+		this.depth = depth;
+	}
 }
