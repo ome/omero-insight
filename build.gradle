@@ -13,6 +13,7 @@ version = "5.7.3-SNAPSHOT"
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url 'https://nexus.senbox.net/nexus/content/groups/public/' }
 }
 
 java {
@@ -47,6 +48,9 @@ dependencies {
         // Conflicts with `net.java.dev.jna`
         exclude group: "com.sun.jna", module: "jna"
     }
+    // Add zarr reader
+    implementation("ome:OMEZarrReader:0.3.0")
+    implementation("com.bc.zarr:jzarr:0.3.4")
 }
 
 test {
