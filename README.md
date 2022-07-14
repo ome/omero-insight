@@ -1,7 +1,9 @@
-  OMERO.insight Project
-  ---------------------
+OMERO.insight Project
+---------------------
 
-  [![Actions Status](https://github.com/ome/omero-insight/workflows/Build/badge.svg)](https://github.com/ome/omero-insight/actions)
+[![Actions Status](https://github.com/ome/omero-insight/workflows/Build/badge.svg)](https://github.com/ome/omero-insight/actions)
+
+[![Documentation Status](https://readthedocs.org/projects/omero-insight/badge/?version=latest)](https://omero-insight.readthedocs.io/en/latest/)
 
   The OMERO.insight Project is a sub-project of the Open Microscopy Environment
   Project, [OME](https://www.openmicroscopy.org/) that focuses on delivering a
