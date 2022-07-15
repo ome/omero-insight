@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.MessengerDialog 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
@@ -329,8 +330,10 @@ public class MessengerDialog
 				MessengerDetails details = new MessengerDetails(email, comment);
 				details.setExtra(serverVersion);
 				details.setObjectToSubmit(files);
-				submitStatus.setVisible(true);
-				submitStatus.setBusy(true);
+				SwingUtilities.invokeLater(() -> {
+							submitStatus.setVisible(true);
+							submitStatus.setBusy(true);
+						});
 				details.setExceptionOnly(!submitFile.isSelected());
 				firePropertyChange(propertyName, null, details);
 			}
@@ -759,9 +762,11 @@ public class MessengerDialog
 	 */
 	public void setSubmitStatus(String text, boolean hide)
 	{
-		progressLabel.setText(text);
-		progress.setVisible(!hide);
-		progress.setBusy(!hide);
+		SwingUtilities.invokeLater(() -> {
+			progressLabel.setText(text);
+			progress.setVisible(!hide);
+			progress.setBusy(!hide);
+		});
 	}
 	
 	/**

@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import omero.gateway.model.DataObject;
 import omero.gateway.model.DatasetData;
@@ -770,10 +771,12 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
      *            The component of reference of the rotation icon.
      */
     Icon startImport(JComponent component) {
-        uploadStarted = true;
-        setClosable(false);
-        busyLabel.setBusy(true);
-        repaint();
+        SwingUtilities.invokeLater(() -> {
+            uploadStarted = true;
+            setClosable(false);
+            busyLabel.setBusy(true);
+            repaint();
+        });
         return new RotationIcon(busyLabel.getIcon(), component, true);
     }
 
@@ -1073,8 +1076,10 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
 
     /** Invokes when the import is finished. */
     void onImportEnded() {
-        busyLabel.setBusy(false);
-        setClosable(true);
+        SwingUtilities.invokeLater(() -> {
+            busyLabel.setBusy(false);
+            setClosable(true);
+        });
     }
 
     /**

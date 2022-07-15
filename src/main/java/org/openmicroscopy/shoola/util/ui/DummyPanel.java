@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2016-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@ import java.awt.LayoutManager;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXBusyLabel;
 
@@ -140,8 +141,10 @@ public class DummyPanel extends JPanel {
      *            Flag to show the component as busy
      */
     public void setText(String text, boolean showBusy) {
-        this.label.setText(text);
-        busyLabel.setVisible(showBusy);
-        busyLabel.setBusy(showBusy);
+        SwingUtilities.invokeLater(() -> {
+            this.label.setText(text);
+            busyLabel.setVisible(showBusy);
+            busyLabel.setBusy(showBusy);
+        });
     }
 }

@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2017 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -1108,12 +1109,14 @@ class ToolBar
      */
     void setScriptsLoadingStatus(boolean loading)
     {
-        bar.remove(index);
-        busyLabel.setBusy(loading);
-        if (loading) bar.add(busyLabel, index);
-        else bar.add(scriptButton, index);
-        validate();
-        repaint();
+        SwingUtilities.invokeLater(() -> {
+            bar.remove(index);
+            busyLabel.setBusy(loading);
+            if (loading) bar.add(busyLabel, index);
+            else bar.add(scriptButton, index);
+            validate();
+            repaint();
+        });
     }
 
     /** Sets the permissions level.*/
@@ -1131,31 +1134,33 @@ class ToolBar
     /** Invokes when import is going on or finished.*/
     void onImport()
     {
-        //Clear first
-        importFailureLabel.setText("");
-        importFailureLabel.setVisible(false);
-        importSuccessLabel.setText("");
-        importSuccessLabel.setVisible(false);
-        importLabel.setBusy(model.isImporting());
-        importLabel.setVisible(model.isImporting());
-        int n = model.getImportFailureCount();
-        StringBuffer buffer;
-        if (n > 0) {
-            buffer = new StringBuffer();
-            buffer.append(n);
-            buffer.append(FAILED_TEXT);
-            importFailureLabel.setText(buffer.toString());
-            importFailureLabel.setVisible(true);
-        }
-        n = model.getImportSuccessCount();
-        if (n > 0) {
-            buffer = new StringBuffer();
-            buffer.append(n);
-            buffer.append(IMPORTED_TEXT);
-            importSuccessLabel.setText(buffer.toString());
-            importSuccessLabel.setVisible(true);
-        }
-        repaint();
+        SwingUtilities.invokeLater(() -> {
+            //Clear first
+            importFailureLabel.setText("");
+            importFailureLabel.setVisible(false);
+            importSuccessLabel.setText("");
+            importSuccessLabel.setVisible(false);
+            importLabel.setBusy(model.isImporting());
+            importLabel.setVisible(model.isImporting());
+            int n = model.getImportFailureCount();
+            StringBuffer buffer;
+            if (n > 0) {
+                buffer = new StringBuffer();
+                buffer.append(n);
+                buffer.append(FAILED_TEXT);
+                importFailureLabel.setText(buffer.toString());
+                importFailureLabel.setVisible(true);
+            }
+            n = model.getImportSuccessCount();
+            if (n > 0) {
+                buffer = new StringBuffer();
+                buffer.append(n);
+                buffer.append(IMPORTED_TEXT);
+                importSuccessLabel.setText(buffer.toString());
+                importSuccessLabel.setVisible(true);
+            }
+            repaint();
+        });
     }
 
     /** Clears the menus. */

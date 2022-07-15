@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -240,8 +241,10 @@ class DataBrowserWellToolBar
 	 */
 	void setStatus(boolean busy)
 	{
-		busyLabel.setVisible(busy);
-		busyLabel.setBusy(busy);
+		SwingUtilities.invokeLater(() -> {
+			busyLabel.setVisible(busy);
+			busyLabel.setBusy(busy);
+		});
 	}
 	
 	/**

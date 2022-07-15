@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXBusyLabel;
 import org.openmicroscopy.shoola.agents.events.iviewer.ScriptDisplay;
@@ -442,8 +443,10 @@ class ToolBar
      */
     void setStatus(boolean busy)
     {
-    	busyLabel.setBusy(busy);
-    	busyLabel.setVisible(busy);
+		SwingUtilities.invokeLater(() -> {
+			busyLabel.setBusy(busy);
+			busyLabel.setVisible(busy);
+		});
     }
     
 	/**
@@ -454,19 +457,21 @@ class ToolBar
 	 * 			<code>false</code> to indicate that the creation is done.
 	 */
 	void setMeasurementLaunchingStatus(boolean b)
-	{ 
-		if (bar != null) {
-			measurementLabel.setBusy(b);
-    		if (!b) {
-    			bar.remove(measurementLabel);
-    			bar.add(measurementButton, MEASUREMENT_INDEX);
-        	} else {
-        		bar.remove(measurementButton);
-        		bar.add(measurementLabel, MEASUREMENT_INDEX);
-        	}
-    		bar.revalidate();
-    		bar.repaint();
-    	} 
+	{
+		SwingUtilities.invokeLater(() -> {
+			if (bar != null) {
+				measurementLabel.setBusy(b);
+				if (!b) {
+					bar.remove(measurementLabel);
+					bar.add(measurementButton, MEASUREMENT_INDEX);
+				} else {
+					bar.remove(measurementButton);
+					bar.add(measurementLabel, MEASUREMENT_INDEX);
+				}
+				bar.revalidate();
+				bar.repaint();
+			}
+		});
 	}
 
 	/** Sets the viewer in a separate window. */

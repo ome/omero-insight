@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.QuickSearch 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2014 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -736,28 +737,30 @@ public class QuickSearch
 	 */
 	public void setFilteringStatus(boolean busy)
 	{
-		status.setBusy(busy);
-		cleanBar.removeAll();
-		if (busy) {
-			cleanBar.add(status);
-			cleanBar.setVisible(true);
-			setFocusOnArea();
-		} else {
-			cleanBar.add(clearButton);
-			boolean visible = false;
-			if (selectedNode != null) {
-				switch (selectedNode.getIndex()) {
-					case TAGS:
-					case COMMENTS:
-					case FULL_TEXT:
-						String text = searchArea.getText();
-						if (text != null && text.trim().length() == 0)
-							visible = true;
+		SwingUtilities.invokeLater(() -> {
+			status.setBusy(busy);
+			cleanBar.removeAll();
+			if (busy) {
+				cleanBar.add(status);
+				cleanBar.setVisible(true);
+				setFocusOnArea();
+			} else {
+				cleanBar.add(clearButton);
+				boolean visible = false;
+				if (selectedNode != null) {
+					switch (selectedNode.getIndex()) {
+						case TAGS:
+						case COMMENTS:
+						case FULL_TEXT:
+							String text = searchArea.getText();
+							if (text != null && text.trim().length() == 0)
+								visible = true;
+					}
 				}
+				cleanBar.setVisible(visible);
+				setFocusOnArea();
 			}
-			cleanBar.setVisible(visible);
-			setFocusOnArea();
-		}
+		});
 	}
 	
 	/** Removes the text from the display. */

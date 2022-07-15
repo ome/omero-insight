@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2010 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -374,20 +374,22 @@ public class AnalysisResultsItem
 	 */
 	public void notifyLoading(boolean load)
 	{
-		removeAll();
-		if (load) {
-			JXBusyLabel label = new JXBusyLabel(SIZE);
-			label.setBusy(true);
-			label.setEnabled(true);
-			add(label);
-			add(cancelButton);
-		} else {
-			//resultsButton.setEnabled(false);
-			add(resultsButton);
-			add(menuButton);
-		}
-		revalidate();
-		repaint();
+		SwingUtilities.invokeLater(() -> {
+			removeAll();
+			if (load) {
+				JXBusyLabel label = new JXBusyLabel(SIZE);
+				label.setBusy(true);
+				label.setEnabled(true);
+				add(label);
+				add(cancelButton);
+			} else {
+				//resultsButton.setEnabled(false);
+				add(resultsButton);
+				add(menuButton);
+			}
+			revalidate();
+			repaint();
+		});
 	}
 	
 	/**

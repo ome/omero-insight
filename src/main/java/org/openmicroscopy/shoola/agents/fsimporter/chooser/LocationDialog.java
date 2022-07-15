@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2021 University of Dundee & Open Microscopy Environment.
+ *  Copyright (C) 2006-2022 University of Dundee & Open Microscopy Environment.
  *  All rights reserved.
  *
  *
@@ -60,6 +60,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -1404,9 +1405,11 @@ class LocationDialog extends JDialog implements ActionListener,
 
 		if (ImportDialog.REFRESH_LOCATION_PROPERTY.equals(name)
 				|| ImportDialog.PROPERTY_GROUP_CHANGED.equals(name)) {
-			busyLabel.setBusy(true);
-			busyLabel.setVisible(true);
-			addButton.setEnabled(false);
+			SwingUtilities.invokeLater(() -> {
+				busyLabel.setBusy(true);
+				busyLabel.setVisible(true);
+				addButton.setEnabled(false);
+			});
 			Object value = evt.getNewValue();
 			if(value != null && value instanceof ImportLocationDetails) {
 				ImportLocationDetails details = (ImportLocationDetails) evt
@@ -1706,9 +1709,11 @@ class LocationDialog extends JDialog implements ActionListener,
 		if (objects != null)
 			this.objects.addAll(objects);
 		this.container = container;
-		this.busyLabel.setBusy(false);
-		this.busyLabel.setVisible(false);
-		this.addButton.setEnabled(true);
+		SwingUtilities.invokeLater(() -> {
+					this.busyLabel.setBusy(false);
+					this.busyLabel.setVisible(false);
+					this.addButton.setEnabled(true);
+				});
 		populateUIWithDisplayData(findWithId(groups, currentGroupId), userID);
 		setInputsEnabled(true);
 	}
