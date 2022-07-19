@@ -31,12 +31,12 @@ downloads_root = 'https://downloads.openmicroscopy.org'
 # -- Project information -----------------------------------------------------
 
 project = u'OMERO.insight'
-copyright = u'2021, Open Microscopy Environment'
+copyright = u'2021-2022, Open Microscopy Environment'
 author = u'Open Microscopy Environment'
 
 # The full version, including alpha/beta/rc tags
 # The short X.Y version.
-version = '5.7.1-SNAPSHOT'
+version = '5.7.2-SNAPSHOT'
 release = version
 
 
