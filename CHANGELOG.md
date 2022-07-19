@@ -1,3 +1,14 @@
+5.7.2 (July 2022)
+------------------
+
+- Update extlinks to comply with Sphinx 5 deprecation warnings [#306](https://github.com/ome/omero-insight/pull/306)
+- Hide groups if session key is used to connect [#302](https://github.com/ome/omero-insight/pull/302)
+- BugFix: No image to save [#299](https://github.com/ome/omero-insight/pull/299)
+- BugFix: Fix NPE if user only in system group [#298](https://github.com/ome/omero-insight/pull/298)
+- BugFix: Importer handle case without tab [#297](https://github.com/ome/omero-insight/pull/297)
+- BugFix: Issue 210: javax.swing.JComponent: ArrayIndexOutOfBoundsException [#295](https://github.com/ome/omero-insight/pull/295)
+- Bump omero-gateway-java to 5.6.10
+
 5.7.1 (April 2022)
 ------------------
 
