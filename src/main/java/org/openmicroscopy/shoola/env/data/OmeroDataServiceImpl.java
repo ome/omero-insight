@@ -118,11 +118,6 @@ class OmeroDataServiceImpl
 	/** Reference to the entry point to access the <i>OMERO</i> services. */
 	private OMEROGateway gateway;
 
-	@Override
-	public OMEROGateway getOMEROGateway() {
-		return gateway;
-	}
-
 	/**
 	 * Unlinks the collection of children from the specified parent.
 	 *
