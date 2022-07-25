@@ -285,11 +285,6 @@ public class NullOmeroPojoService
 		return 0;
 	}
 
-	@Override
-	public OMEROGateway getOMEROGateway() {
-		return null;
-	}
-
 	/**
      * No-operation implementation
      * @see OmeroDataService#loadContainerHierarchy(Class, List, boolean, long)
