@@ -945,7 +945,7 @@ class ToolBar
         if (p == null) {
             p = new Point(0, 0);
         };
-        if (c == null) {
+        if (c == null || !c.isShowing()) {
             c = scriptButton;
             repaint();
         }
