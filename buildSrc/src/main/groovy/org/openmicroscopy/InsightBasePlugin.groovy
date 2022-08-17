@@ -1,6 +1,6 @@
 /*
  * -----------------------------------------------------------------------------
- *  Copyright (C) 2019 University of Dundee & Open Microscopy Environment.
+ *  Copyright (C) 2019-2022 University of Dundee & Open Microscopy Environment.
  *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,7 @@ class InsightBasePlugin implements Plugin<Project> {
 
     public static final String GROUP_BUILD = BasePlugin.BUILD_GROUP
 
-    public static final List DEFAULT_JVM_ARGS = ["-Xms256m", "-Xmx1024m"]
+    public static final List DEFAULT_JVM_ARGS = ["-Xms256m", "-Xmx4096m"]
 
     private Project project
 
