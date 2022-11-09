@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -924,9 +924,6 @@ class MeasurementViewerComponent
 		//Now we are ready to go. We can post an event to add component to
 		//Viewer
 		postEvent(MeasurementToolLoaded.ADD);
-		if (CollectionUtils.isNotEmpty(nodes)) {
-		    model.fireLoadROIAnnotations(nodes);
-		}
 	}
 
 	/** 
