@@ -42,6 +42,9 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
+import omero.gateway.facility.RawDataFacility;
+import omero.gateway.model.FolderData;
+import omero.gateway.model.PixelsData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
@@ -1394,7 +1397,6 @@ class OMEROGateway
 	 * @return The {@link ExperimenterData} of the current user.
 	 * @throws DSOutOfServiceException If the connection is broken, or
 	 * logged in.
-	 * @see IPojosPrx#getUserDetails(Set, Map)
 	 */
 	ExperimenterData getUserDetails(SecurityContext ctx, String name,
 			boolean connectionError)
@@ -1439,7 +1441,7 @@ class OMEROGateway
 	
     /**
      * Get the omero client properties from the server
-     * @param The groupId for the {@link SecurityContext}
+     * @param groupId The groupId for the {@link SecurityContext}
      * @return See above.
      * @throws DSAccessException
      * @throws DSOutOfServiceException
@@ -1458,7 +1460,7 @@ class OMEROGateway
 
 	/**
 	 * Get the server properties from the server
-	 * @param The groupId for the {@link SecurityContext}
+	 * @param groupId The groupId for the {@link SecurityContext}
 	 * @return See above.
 	 * @throws DSAccessException
 	 * @throws DSOutOfServiceException
@@ -1638,7 +1640,6 @@ class OMEROGateway
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#loadContainerHierarchy(Class, List, Map)
 	 */
 	Collection<DataObject> loadContainerHierarchy(SecurityContext ctx, Class rootType,
 			List rootIDs, Parameters options)
@@ -1660,9 +1661,8 @@ class OMEROGateway
 	 * contain the specified Images.
 	 * The annotation for the current user is also linked to the object.
 	 * Annotations are currently possible only for Image and Dataset.
-	 * Wraps the call to the
-	 * {@link IPojos#findContainerHierarchies(Class, List, Map)}
-	 * and maps the result calling {@link PojoMapper#convertToDataObjects(Set)}.
+	 * Wraps the call to the findContainerHierarchies(Class, List, Map)
+	 * and maps the result calling convertToDataObjects(Set).
 	 *
 	 * @param ctx The security context, necessary to determine the service.
 	 * @param rootNodeType  top-most type which will be searched for
@@ -1675,7 +1675,6 @@ class OMEROGateway
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#findContainerHierarchies(Class, List, Map)
 	 */
 	Collection<DataObject> findContainerHierarchy(SecurityContext ctx, Class rootNodeType,
 			List leavesIDs, Parameters options)
@@ -1718,7 +1717,6 @@ class OMEROGateway
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#findAnnotations(Class, List, List, Map)
 	 */
 	Map loadAnnotations(SecurityContext ctx, Class nodeType, List nodeIDs,
 			List<Class> annotationTypes, List annotatorIDs, Parameters options)
@@ -1808,8 +1806,8 @@ class OMEROGateway
 	/**
 	 * Retrieves the images contained in containers specified by the
 	 * node type.
-	 * Wraps the call to the {@link IPojos#getImages(Class, List, Parameters)}
-	 * and maps the result calling {@link PojoMapper#convertToDataObjects(Set)}.
+	 * Wraps the call to the getImages(Class, List, Parameters)
+	 * and maps the result calling convertToDataObjects(Set).
 	 *
 	 * @param ctx The security context.
 	 * @param nodeType  The type of container. Can be either Project, Dataset.
@@ -1819,7 +1817,6 @@ class OMEROGateway
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#getImages(Class, List, Map)
 	 */
 	Collection<ImageData> getContainerImages(SecurityContext ctx, Class nodeType, List nodeIDs,
 			Parameters options)
@@ -1849,7 +1846,6 @@ class OMEROGateway
      * @throws DSAccessException
      *             If an error occurred while trying to retrieve data from OMERO
      *             service.
-     * @see IPojos#getUserImages(Map)
      */
     Collection<ImageData> getUserImages(SecurityContext ctx, long userID, boolean orphan)
             throws DSOutOfServiceException, DSAccessException {
@@ -1876,12 +1872,10 @@ class OMEROGateway
 	 * @param property		One of the properties defined by this class.
 	 * @param ids           The identifiers of the objects.
 	 * @param options		Options to retrieve the data.
-	 * @param rootNodeIDs	Set of root node IDs.
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#getCollectionCount(String, String, List, Map)
 	 */
 	Map getCollectionCount(SecurityContext ctx, Class rootNodeType,
 			String property, List ids, Parameters options)
@@ -1908,12 +1902,10 @@ class OMEROGateway
 	 *
 	 * @param ctx The security context.
 	 * @param object The object to create.
-	 * @param options Options to create the data.
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#createDataObject(IObject, Map)
 	 */
 	IObject createObject(SecurityContext ctx, IObject object)
 		throws DSOutOfServiceException, DSAccessException
@@ -1926,13 +1918,11 @@ class OMEROGateway
 	 *
 	 * @param ctx The security context.
 	 * @param object The object to create.
-	 * @param options Options to create the data.
 	 * @param userName The name of the user to create data for.
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#createDataObject(IObject, Map)
 	 */
 	IObject createObject(SecurityContext ctx, IObject object, String userName)
 		throws DSOutOfServiceException, DSAccessException
@@ -1950,12 +1940,10 @@ class OMEROGateway
 	 *
 	 * @param ctx The security context.
 	 * @param objects The objects to create.
-	 * @param options Options to create the data.
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#createDataObjects(IObject[], Map)
 	 */
 	List<IObject> createObjects(SecurityContext ctx, List<IObject> objects)
 		throws DSOutOfServiceException, DSAccessException
@@ -1968,13 +1956,11 @@ class OMEROGateway
 	 *
 	 * @param ctx The security context.
 	 * @param objects The objects to create.
-	 * @param options Options to create the data.
 	 * @param userName The name of the user.s
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#createDataObjects(IObject[], Map)
 	 */
 	List<IObject> createObjects(SecurityContext ctx, List<IObject> objects,
 			String userName)
@@ -2040,7 +2026,6 @@ class OMEROGateway
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#updateDataObject(IObject, Map)
 	 */
 	IObject saveAndReturnObject(SecurityContext ctx, IObject object,
 			Map options)
@@ -2067,7 +2052,6 @@ class OMEROGateway
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#updateDataObject(IObject, Map)
 	 */
 	IObject saveAndReturnObject(SecurityContext ctx, IObject object,
 			Map options, String userName)
@@ -2094,7 +2078,6 @@ class OMEROGateway
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#updateDataObject(IObject, Map)
 	 */
 	List<IObject> saveAndReturnObject(SecurityContext ctx,
 			List<IObject> objects, Map options, String userName)
@@ -2119,7 +2102,6 @@ class OMEROGateway
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#updateDataObject(IObject, Map)
 	 */
 	IObject updateObject(SecurityContext ctx, IObject object,
 			Parameters options)
@@ -2146,7 +2128,6 @@ class OMEROGateway
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
-	 * @see IPojos#updateDataObjects(IObject[], Map)
 	 */
 	List<IObject> updateObjects(SecurityContext ctx, List<IObject> objects,
 			Parameters options)
@@ -2920,7 +2901,7 @@ class OMEROGateway
 	 * Retrieves an updated version of the specified object.
 	 *
 	 * @param ctx The security context.
-	 * @param dataObjectThe object to retrieve.
+	 * @param dataObject The object to retrieve.
 	 * @param name The name of the object.
 	 * @param
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
@@ -3022,7 +3003,7 @@ class OMEROGateway
 	 * Retrieves the groups visible by the current experimenter.
 	 *
 	 * @param ctx The security context.
-	 * @param loggedInUser The user currently logged in.
+	 * @param user The user currently logged in.
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
@@ -3805,7 +3786,7 @@ class OMEROGateway
 	 * including nested sub-directories.
 	 *
 	 * @param ctx The security context.
-	 * @param Either a group or a user.
+	 * @param type Either a group or a user.
 	 * @param id The identifier of the user or group or <code>-1</code>
 	 * 			 if not specified.
 	 * @return See above.
@@ -3832,7 +3813,7 @@ class OMEROGateway
 	 * including nested sub-directories.
 	 *
 	 * @param ctx The security context.
-	 * @param Either a group or a user.
+	 * @param type Either a group or a user.
 	 * @param id The identifier of the user or group or <code>-1</code>
 	 * 			 if not specified.
 	 * @return See above.
@@ -4131,8 +4112,6 @@ class OMEROGateway
 	 * @param ctx The security context.
 	 * @param pixelsID	The pixels ID.
 	 * @param userID	The id of the user.
-	 * @param convert   Pass <code>true</code> to convert the object,
-	 * 					<code>false</code> otherwise.
 	 * @return Map whose key is the experimenter who set the settings,
 	 * 		  and the value is the rendering settings itself.
 	 * @throws DSOutOfServiceException  If the connection is broken, or logged
@@ -4835,7 +4814,6 @@ class OMEROGateway
 	 * @param stepping  The stepping used to project. Default is <code>1</code>.
 	 * @param algorithm The projection's algorithm.
 	 * @param channels  The channels to project.
-	 * @param datasets  The collection of datasets to add the image to.
 	 * @param name      The name of the projected image.
 	 * @param pixType   The destination Pixels type. If <code>null</code>, the
      * 					source Pixels set pixels type will be used.
@@ -5355,10 +5333,7 @@ class OMEROGateway
 	 * Creates a movie. Returns the id of the annotation hosting the movie.
 	 *
 	 * @param ctx The security context.
-	 * @param imageID 	The id of the image.
-	 * @param pixelsID	The id of the pixels.
-	 * @param userID	The id of the user.
-     * @param channels 	The channels to map.
+	 * @param userID 	The id of the user.
      * @param param 	The parameters to create the movie.
 	 * @return See above.
 	 * @throws DSOutOfServiceException  If the connection is broken, or logged
@@ -5466,7 +5441,6 @@ class OMEROGateway
 	 * Returns all the scripts that the user can run.
 	 *
 	 * @param ctx The security context.
-	 * @param experimenter The experimenter or <code>null</code>.
 	 * @return See above.
 	 * @throws DSOutOfServiceException  If the connection is broken, or logged
 	 *                                  in.
@@ -5900,10 +5874,6 @@ class OMEROGateway
 	 * @param ctx The security context.
 	 * @param object Host information about the file to import.
 	 * @param file The file to import.
-	 * @param archived Pass <code>true</code> to archived the files,
-	 *                 <code>false</code> otherwise.
-	 * @param depth The depth used to set the name. This will be taken into
-	 *              account if the file is a directory.
 	 * @return See above.
 	 * @throws ImportException If an error occurred while importing.
 	 */
@@ -6184,10 +6154,9 @@ class OMEROGateway
 	 * Returns the file
 	 *
 	 * @param index Either OME-XML or OME-TIFF.
-	 * @param file		The file to write the bytes.
 	 * @param imageID	The id of the image.
 	 * @param ctx The security context.
-	 * @param file The file to write the bytes.
+	 * @param f The file to write the bytes.
 	 * @param imageID The id of the image.
 	 * @return See above.
 	 * @throws DSOutOfServiceException  If the connection is broken, or logged
@@ -6526,7 +6495,7 @@ class OMEROGateway
 	 * number of experimenters in the group.
 	 *
 	 * @param ctx The security context.
-	 * @param ids The group identifiers.
+	 * @param groupIds The group identifiers.
 	 * @return See above
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
@@ -6695,7 +6664,7 @@ class OMEROGateway
 	 * experimenters if the value passed is <code>-1</code>.
 	 *
 	 * @param ctx The security context.
-	 * @param id The group identifier or <code>-1</code>.
+	 * @param groupID The group identifier or <code>-1</code>.
 	 * @return See above.
 	 * @throws DSOutOfServiceException  If the connection is broken, or logged
 	 *                                  in.
@@ -7042,8 +7011,7 @@ class OMEROGateway
 	 * Uploads the photo hosting the user photo.
 	 *
 	 * @param ctx The security context.
-	 * @param fileID The id of the file.
-	 * @param size   The size of the file.
+	 * @param file The file.
 	 * @return See above
 	 * @throws DSOutOfServiceException  If the connection is broken, or logged
 	 *                                  in.
@@ -7259,7 +7227,6 @@ class OMEROGateway
 	 * Retrieves the dimensions in microns of the specified pixels set.
 	 *
 	 * @param ctx The security context.
-	 * @param pixelsID  The pixels set ID.
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
 	 * @throws DSAccessException If an error occurred while trying to
@@ -7407,7 +7374,7 @@ class OMEROGateway
 	 * @param rootIDs The collection of object's ids the annotations are linked
 	 * to.
 	 * @param nsInclude The annotation's name space to include if any.
-	 * @param nsExlcude The annotation's name space to exclude if any.
+	 * @param nsExclude The annotation's name space to exclude if any.
 	 * @param options Options to retrieve the data.
 	 * @return See above.
 	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
@@ -7581,4 +7548,52 @@ class OMEROGateway
         return value.booleanValue();
     }
 
+	public Collection<String> getLookupTables(SecurityContext ctx) throws DSOutOfServiceException, DSAccessException {
+		try {
+			return gw.getFacility(BrowseFacility.class).getLookupTables(ctx);
+		} catch (Exception e) {
+			handleException(e, "Cannot retrieve lookup tables.");
+		}
+		return null;
+	}
+
+	public Map<Integer, int[]> getHistogram(SecurityContext ctx,
+											PixelsData pixels,
+											int[] channels, int z, int t)
+			throws DSOutOfServiceException, DSAccessException {
+		try {
+			RawDataFacility f = gw.getFacility(RawDataFacility.class);
+			return f.getHistogram(ctx, pixels, channels, z, t);
+		} catch (Exception e) {
+			handleException(e, "Cannot retrieve lookup tables.");
+		}
+		return null;
+	}
+
+	public int getROICount(SecurityContext ctx, long imageId) throws DSOutOfServiceException, DSAccessException {
+		try {
+			return gw.getFacility(ROIFacility.class).getROICount(ctx, imageId);
+		} catch (Exception e) {
+			handleException(e, "Cannot retrieve ROI count.");
+		}
+		return -1;
+	}
+
+	public Collection<FolderData> saveROIFolders(SecurityContext ctx, Collection<FolderData> folders)
+			throws DSOutOfServiceException, DSAccessException {
+		try {
+			DataManagerFacility dm = this.gw.getFacility(DataManagerFacility.class);
+			List<IObject> objs = new ArrayList<IObject>(folders.size());
+			for (FolderData f : folders)
+				objs.add(f.asIObject());
+			objs = dm.saveAndReturnObject(ctx, objs, null,
+					null);
+			Collection<FolderData> result = PojoMapper
+					.asCastedDataObjects(objs);
+			return result;
+		} catch (Exception e) {
+			handleException(e, "Cannot save ROI folders");
+		}
+		return Collections.EMPTY_LIST;
+	}
 }

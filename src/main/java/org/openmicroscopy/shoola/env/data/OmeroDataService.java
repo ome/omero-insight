@@ -26,9 +26,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import omero.api.StatefulServiceInterfacePrx;
 
+import omero.gateway.model.FolderData;
 import org.openmicroscopy.shoola.env.data.model.DeletableObject;
 
 import omero.gateway.Gateway;
@@ -58,12 +60,6 @@ public interface OmeroDataService
 	 */
 	public static final String IMAGES_PROPERTY = "images";
 
-	/**
-	 * Get a reference to the {@link Gateway}
-	 * @return See above
-	 */
-	public Gateway getGateway();
-	
 	/**
 	 * Retrieves hierarchy trees rooted by a given node.
 	 * i.e. the requested node as root and all of its descendants.
@@ -506,5 +502,11 @@ public interface OmeroDataService
 	 * @throws DSAccessException If an error occurred while trying to
 	 * retrieve data from OMERO service.
 	*/
-	public Map<Long, List<DatasetData>> findDatasetsByImageId(SecurityContext ctx, List<Long> imgIds) throws DSOutOfServiceException, DSAccessException;
+	public Map<Long, List<DatasetData>> findDatasetsByImageId(SecurityContext ctx, List<Long> imgIds)
+			throws DSOutOfServiceException, DSAccessException;
+
+	public Collection<FolderData> saveROIFolders(SecurityContext ctx, Collection<FolderData> folders)
+			throws ExecutionException, DSOutOfServiceException, DSAccessException;
+
+	public int getROICount(SecurityContext ctx, long imageId) throws DSOutOfServiceException, DSAccessException;
 }

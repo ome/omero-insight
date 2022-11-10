@@ -214,10 +214,8 @@ class OmeroImageServiceImpl
 	 * Imports the specified candidates.
 	 *
 	 * @param ctx The security context.
-	 * @param candidates The file to import.
 	 * @param status The original status.
 	 * @param object The object hosting information about the import.
-	 * @param ioList The containers where to import the files.
 	 * @param list   The list of annotations.
 	 * @param userID The identifier of the user.
 	 * @param hcs Value returns by the import containers.
@@ -327,9 +325,9 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Creates a <code>BufferedImage</code> from the passed array of bytes.
+	 * Creates a <code>BufferedImage</code> from the passed path.
 	 *
-	 * @param values    The array of bytes.
+	 * @param path    The path,
 	 * @return See above.
 	 * @throws RenderingServiceException If we cannot create an image.
 	 */
@@ -570,8 +568,7 @@ class OmeroImageServiceImpl
             return OmeroImageServiceImpl.LOOKUP_TABLES;
 
         try {
-            OmeroImageServiceImpl.LOOKUP_TABLES = gateway.getGateway()
-                    .getFacility(BrowseFacility.class).getLookupTables(ctx);
+            OmeroImageServiceImpl.LOOKUP_TABLES = gateway.getLookupTables(ctx);
             return OmeroImageServiceImpl.LOOKUP_TABLES;
         } catch (Exception e) {
             context.getLogger().warn(this, e.getMessage());
@@ -644,7 +641,6 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroImageService}.
-	 * @see OmeroImageService#getThumbnailSet(SecurityContext, List, int)
 	 */
 	public Map<Long, BufferedImage> getThumbnailSet(SecurityContext ctx,
 		Collection<Long> pixelsID, int max)
@@ -839,7 +835,6 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroImageService}.
-	 * @see OmeroImageService#resetRenderingSettings(Class, List)
 	 */
 	public Map resetRenderingSettings(SecurityContext ctx, Class rootNodeType,
 		List nodesID)
@@ -879,7 +874,6 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroImageService}.
-	 * @see OmeroImageService#getRenderingSettings(ctx, long, long)
 	 */
 	public Map<DataObject, Collection<RndProxyDef>> getRenderingSettings(
 	        SecurityContext ctx, long pixelsID, long userID)
@@ -890,7 +884,6 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroImageService}.
-	 * @see OmeroImageService#getRenderingSettingsFor(long, long)
 	 */
 	public List<RndProxyDef> getRenderingSettingsFor(SecurityContext ctx,
 		long pixelsID, long userID)
@@ -1026,8 +1019,6 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroImageService}.
-	 * @see OmeroImageService#importFile(ImportableObject,
-	 * ImportableFile, long, long, boolean)
 	 */
 	public Object importFile(ImportableObject object,
 							 ImportableFile importable, boolean close)
@@ -1595,8 +1586,6 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroImageService}.
-	 * @see OmeroImageService#exportImageAsOMEObject(SecurityContext, int, long,
-	 * File, Target)
 	 */
 	public Object exportImageAsOMEFormat(SecurityContext ctx, int index,
 			long imageID, File file, Target target)
@@ -1797,7 +1786,6 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
-	 * @see OmeroImageService#loadRatings(SecurityContext, Class, long, long)
 	 */
 	public Collection loadROIMeasurements(SecurityContext ctx, Class type,
 		long id, long userID)
@@ -2022,7 +2010,6 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
-	 * @see OmeroImageService#getRenderingDef(SecurityContext, long)
 	 */
 	public RndProxyDef getSettings(SecurityContext ctx, long rndID)
         throws DSOutOfServiceException, DSAccessException
@@ -2045,4 +2032,10 @@ class OmeroImageServiceImpl
         return null;
     }
 
+	public Map<Integer, int[]> getHistogram(SecurityContext ctx,
+											PixelsData pixels,
+											int[] channels, int z, int t) throws DSOutOfServiceException,
+			DSAccessException {
+		return gateway.getHistogram(ctx, pixels, channels, z, t);
+	}
 }

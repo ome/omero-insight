@@ -862,4 +862,9 @@ public interface OmeroImageService
      */
 	RawPixelsStorePrx createPixelsStore(SecurityContext ctx)
             throws DSAccessException, DSOutOfServiceException;
+
+	public Map<Integer, int[]> getHistogram(SecurityContext ctx,
+											PixelsData pixels,
+											int[] channels, int z, int t) throws DSAccessException,
+			DSOutOfServiceException;
 }

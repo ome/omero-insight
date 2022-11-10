@@ -31,9 +31,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import omero.cmd.Request;
 import omero.cmd.graphs.ChildOption;
+import omero.gateway.facility.DataManagerFacility;
+import omero.gateway.model.FolderData;
 import omero.model.Annotation;
 import omero.model.AnnotationAnnotationLink;
 import omero.model.Dataset;
@@ -115,11 +118,6 @@ class OmeroDataServiceImpl
 	/** Reference to the entry point to access the <i>OMERO</i> services. */
 	private OMEROGateway gateway;
 
-	@Override
-	public Gateway getGateway() {
-	    return gateway.getGateway();
-	}
-	
 	/**
 	 * Unlinks the collection of children from the specified parent.
 	 *
@@ -494,7 +492,6 @@ class OmeroDataServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
-	 * @see OmeroDataService#getArchivedFiles(SecurityContext, File, long, boolean)
 	 */
 	public Map<Boolean, Object> getArchivedImage(SecurityContext ctx,
 			File file, long imageID, boolean keepOriginalPath)
@@ -508,7 +505,6 @@ class OmeroDataServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
-	 * @see OmeroDataService#updateExperimenter(SecurityContext, ExperimenterData, GroupData)
 	 */
 	public ExperimenterData updateExperimenter(SecurityContext ctx,
 			ExperimenterData exp, GroupData group)
@@ -589,7 +585,6 @@ class OmeroDataServiceImpl
 
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
-	 * @see OmeroDataService#advancedSearchFor(List, SearchDataContext)
 	 */
 	public SearchResultCollection search(SecurityContext ctx,
 	        SearchParameters context)
@@ -730,7 +725,7 @@ class OmeroDataServiceImpl
     	
         /**
          * Tries to convert all search terms into ids;
-         * @param terms
+         * @param query terms
          * @return The ids or null if one or multiple terms contain non numeric characters
          */
         private long[] convertSearchTermsToIds(String query) {
@@ -1148,7 +1143,6 @@ class OmeroDataServiceImpl
 	
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
-	 * @see OmeroDataService#findDatasetsByImageId(SecurityContext ctx, imgId)
 	 */
 	public Map<Long, List<DatasetData>> findDatasetsByImageId(SecurityContext ctx, List<Long> imgIds) throws DSOutOfServiceException, DSAccessException
 		{
@@ -1173,4 +1167,12 @@ class OmeroDataServiceImpl
 		return result;
 	}
 
+	public Collection<FolderData> saveROIFolders(SecurityContext ctx, Collection<FolderData> folders)
+			throws DSOutOfServiceException, DSAccessException {
+		return gateway.saveROIFolders(ctx, folders);
+	}
+
+	public int getROICount(SecurityContext ctx, long imageId) throws DSOutOfServiceException, DSAccessException {
+		return gateway.getROICount(ctx, imageId);
+	}
 }
