@@ -266,9 +266,7 @@ public class DataServicesFactory
                             name))
                 {
                     connectionDialog = null;
-                    int index = (Integer) evt.getNewValue();
-                    if (index == ConnectionExceptionHandler.LOST_CONNECTION)
-                        reconnect();
+                    reconnect();
                 }
             }
         });
