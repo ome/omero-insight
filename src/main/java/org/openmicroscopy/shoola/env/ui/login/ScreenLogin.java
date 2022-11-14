@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
@@ -244,6 +245,23 @@ public class ScreenLogin
 				Boolean.valueOf(true));
 	}
 
+	/**
+	 * Checks if a String could be an ICE session ID.
+	 *
+	 * @param s
+	 *            The String to check
+	 * @return <code>true</code> if it could be a session ID, <code>false</code>
+	 *         otherwise.
+	 */
+	private boolean isSessionID(String s) {
+		try {
+			UUID.fromString(s);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+
 	/** Attempts to log in. */
 	private void login()
 	{
@@ -262,6 +280,9 @@ public class ScreenLogin
 		if (s != null) s = s.trim();
 		setControlsEnabled(false);
 		try {
+			if (psw.isEmpty() && isSessionID(usr))
+				psw = usr;  // for compatibility reasons; previously for session id login
+				            // it was enough to enter id as username and leave password empty.
 			UserCredentials lc = new UserCredentials(usr, psw, s, speedIndex);
 			lc.setEscapeChars((String) registry.lookup(LookupNames.LOGIN_ESCAPE_CHARACTERS));
 			lc.setEncrypted(encrypted);
