@@ -519,7 +519,7 @@ public class DataServicesFactory
             }
         } catch (ServerError e) {
             msg = new LogMessage("Server error: ", e);
-            registry.getLogger().warn(this, msg);
+            registry.getLogger().debug(this, msg);
         }
 
         //Post an event to indicate that the user is connected.
