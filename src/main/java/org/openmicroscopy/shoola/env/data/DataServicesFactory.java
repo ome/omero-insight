@@ -510,7 +510,7 @@ public class DataServicesFactory
 
         try {
             String val = cs.getConfigValue("omero.qa.feedback");
-            if (val != null) {
+            if (val != null && !val.isEmpty()) {
                 msg = new LogMessage();
                 msg.println("Using URL defined server-side for feedback: " + val);
                 registry.getLogger().debug(this, msg);
