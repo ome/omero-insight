@@ -23,6 +23,8 @@
 
 package org.openmicroscopy.shoola.env.config;
 
+import java.util.List;
+
 import org.openmicroscopy.shoola.env.data.AdminService;
 import org.openmicroscopy.shoola.env.data.OmeroDataService;
 import org.openmicroscopy.shoola.env.data.OmeroImageService;
@@ -95,7 +97,24 @@ public class RegistryFactory
 		Parser p = new Parser(file, (RegistryImpl) reg);
 		p.parse();
 	}
-	
+
+	/**
+     * Resets the keys in the specified {@link Registry} with the entries
+     * in the specified configuration file.
+	 * 
+	 * @param file	Path to a configuration file.
+	 * @param reg	The {@link Registry} to fill.
+	 * @param keys 
+	 * @throws ConfigException	If an error occurs while accessing the file
+	 * 							or the file contents are not valid.
+	 */
+	public static void rebindFromFile(String file, Registry reg, List<String> keys)
+		throws ConfigException
+	{
+		Parser p = new Parser(file, (RegistryImpl) reg);
+		p.rebindFromFile(keys);
+	}
+
 	/**
 	 * Adds the {@link EventBus} instance to the specified {@link Registry}.
 	 * 

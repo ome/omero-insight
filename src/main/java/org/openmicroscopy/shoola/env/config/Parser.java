@@ -170,8 +170,47 @@ class Parser
         } catch (ConfigException ce) {
         	throw ce;
         } catch (Exception e) { 
-        	rethrow(e);
+            rethrow(e);
         }   
+    }
+
+    /** 
+     * Parses the configuration file, extracts its entries (only
+     * <code>entry</code> and <code>structuredEntry</code> tags are taken into
+     * account), obtains an {@link Entry} object to represent each of those
+     * entries and adds these objects to the given {@link RegistryImpl} object.
+     * Resets the values of the speficied keys.
+     * 
+     * @throws ConfigException  If an error occurs and the registry can't be
+     *                          filled up.
+     */
+    void rebindFromFile(List<String> keys)
+      throws ConfigException
+    {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            document = builder.parse(IOUtil.readConfigFile(configFile));
+            if (validating) {
+                factory.setValidating(true);   
+                factory.setNamespaceAware(true);
+            }
+            readConfigEntries();
+            Iterator<Node> i = entriesTags.iterator();
+            Node node;
+            Entry entry;
+            while (i.hasNext()) {
+               node = (Node) i.next();
+               entry = Entry.createEntryFor(node);
+               if (keys.contains(entry.getName())) {
+                   registry.addEntry(entry);
+               }
+            }
+        } catch (ConfigException ce) {
+            throw ce;
+        } catch (Exception e) { 
+            rethrow(e);
+        } 
     }
  
 }

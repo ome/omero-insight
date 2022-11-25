@@ -22,7 +22,9 @@ package org.openmicroscopy.shoola.env.data;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -449,6 +451,23 @@ public class DataServicesFactory
         return (Logger) registry.getLogger();
     }
 
+    /**
+     * Resets the keys from the configuration file.
+     * 
+     * @param keys The list of keys to reset.
+     */
+    private void resetKeys(List<String> keys)
+    {
+
+        try {
+            RegistryFactory.rebindFromFile(container.getConfigFileRelative(), registry, keys);
+        } catch (Exception e) {
+            LogMessage msg = new LogMessage();
+            msg.println("Parsing error: " + e.getClass().getName() + " - " + e.getMessage());
+            registry.getLogger().debug(this, msg);
+        }
+    }
+
 	/**
 	 * Attempts to connect to <i>OMERO</i> server.
 	 * 
@@ -504,9 +523,8 @@ public class DataServicesFactory
             UpgradeCheck check = new UpgradeCheck(cs.getConfigValue("omero.upgrades.url"), clientVersion, checkname);
             check.run();
         } catch (ServerError e2) {
-            msg = new LogMessage();
-            msg.println("Server error: " + e2.serverExceptionClass + " - " + e2.message);
-            registry.getLogger().debug(this, msg);
+            msg = new LogMessage("Could not access ConfigService", e2);
+            registry.getLogger().warn(this, msg);
         }
 
         try {
@@ -517,11 +535,16 @@ public class DataServicesFactory
                 registry.getLogger().debug(this, msg);
                 container.getRegistry().bind(LookupNames.TOKEN_URL, val + "/qa/initial/");
                 container.getRegistry().bind(LookupNames.PROCESSING_URL, val + "/qa/uploadProcessing/");
+            } else {
+                // needed when switching user
+                resetKeys(Arrays.asList(LookupNames.TOKEN_URL, LookupNames.PROCESSING_URL)); 
             }
         } catch (ServerError e) {
             msg = new LogMessage();
             msg.println("Server error: " + e.serverExceptionClass + " - " + e.message);
             registry.getLogger().debug(this, msg);
+            // needed when switching user
+            resetKeys(Arrays.asList(LookupNames.TOKEN_URL, LookupNames.PROCESSING_URL)); 
         }
 
         //Post an event to indicate that the user is connected.
