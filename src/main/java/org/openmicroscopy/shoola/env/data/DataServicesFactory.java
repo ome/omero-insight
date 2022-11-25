@@ -518,7 +518,8 @@ public class DataServicesFactory
                 container.getRegistry().bind(LookupNames.PROCESSING_URL, val + "/qa/uploadProcessing/");
             }
         } catch (ServerError e) {
-            msg = new LogMessage("Server error: ", e);
+            msg = new LogMessage();
+            msg.println("Server error: " + e.serverExceptionClass + " - " + e.message);
             registry.getLogger().debug(this, msg);
         }
 
