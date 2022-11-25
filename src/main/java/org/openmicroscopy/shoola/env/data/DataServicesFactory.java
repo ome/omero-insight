@@ -504,8 +504,9 @@ public class DataServicesFactory
             UpgradeCheck check = new UpgradeCheck(cs.getConfigValue("omero.upgrades.url"), clientVersion, checkname);
             check.run();
         } catch (ServerError e2) {
-            msg = new LogMessage("Could not access ConfigService", e2);
-            registry.getLogger().warn(this, msg);
+            msg = new LogMessage();
+            msg.println("Server error: " + e2.serverExceptionClass + " - " + e2.message);
+            registry.getLogger().debug(this, msg);
         }
 
         try {
