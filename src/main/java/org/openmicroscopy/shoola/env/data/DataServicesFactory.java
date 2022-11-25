@@ -508,6 +508,21 @@ public class DataServicesFactory
             registry.getLogger().warn(this, msg);
         }
 
+        try {
+            String val = cs.getConfigValue("omero.qa.feedback");
+            if (val != null && !val.isEmpty()) {
+                msg = new LogMessage();
+                msg.println("Using URL defined server-side for feedback: " + val);
+                registry.getLogger().debug(this, msg);
+                container.getRegistry().bind(LookupNames.TOKEN_URL, val + "/qa/initial/");
+                container.getRegistry().bind(LookupNames.PROCESSING_URL, val + "/qa/uploadProcessing/");
+            }
+        } catch (ServerError e) {
+            msg = new LogMessage();
+            msg.println("Server error: " + e.serverExceptionClass + " - " + e.message);
+            registry.getLogger().debug(this, msg);
+        }
+
         //Post an event to indicate that the user is connected.
         EventBus bus = container.getRegistry().getEventBus();
         bus.post(new ConnectedEvent());
