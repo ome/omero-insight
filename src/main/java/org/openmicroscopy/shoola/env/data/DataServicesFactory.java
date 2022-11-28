@@ -524,7 +524,7 @@ public class DataServicesFactory
             check.run();
         } catch (ServerError e2) {
             msg = new LogMessage();
-            msg.println("Server error: " + e.serverExceptionClass + " - " + e.message);
+            msg.println("Server error: " + e2.serverExceptionClass + " - " + e2.message);
             registry.getLogger().debug(this, msg);
         }
 
