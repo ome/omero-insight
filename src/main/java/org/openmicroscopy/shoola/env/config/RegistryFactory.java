@@ -78,7 +78,7 @@ public class RegistryFactory
 	{
 		RegistryImpl reg = new RegistryImpl();
 		Parser p = new Parser(file, reg);
-		p.parse();
+		p.parse(null);
 		return reg;
 	}
 	
@@ -88,31 +88,15 @@ public class RegistryFactory
 	 * 
 	 * @param file	Path to a configuration file.
 	 * @param reg	The {@link Registry} to fill.
+	 * @param keys  The list of keys to reset or <code>null</code>
 	 * @throws ConfigException	If an error occurs while accessing the file
 	 * 							or the file contents are not valid.
 	 */
-	public static void fillFromFile(String file, Registry reg)
+	public static void fillFromFile(String file, Registry reg, List<String> keys)
 		throws ConfigException
 	{
 		Parser p = new Parser(file, (RegistryImpl) reg);
-		p.parse();
-	}
-
-	/**
-     * Resets the keys in the specified {@link Registry} with the entries
-     * in the specified configuration file.
-	 * 
-	 * @param file	Path to a configuration file.
-	 * @param reg	The {@link Registry} to fill.
-	 * @param keys 
-	 * @throws ConfigException	If an error occurs while accessing the file
-	 * 							or the file contents are not valid.
-	 */
-	public static void rebindFromFile(String file, Registry reg, List<String> keys)
-		throws ConfigException
-	{
-		Parser p = new Parser(file, (RegistryImpl) reg);
-		p.rebindFromFile(keys);
+		p.parse(keys);
 	}
 
 	/**

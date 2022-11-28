@@ -148,7 +148,7 @@ public final class ContainerConfigInit
 		String file = container.getConfigFileRelative();
 		Registry reg = container.getRegistry();
 		try {
-			RegistryFactory.fillFromFile(file, reg);
+			RegistryFactory.fillFromFile(file, reg, null);
             String name = (String) reg.lookup(LookupNames.OMERO_HOME);
     		String omeroDir = System.getProperty("user.home")
     							+File.separator+name;

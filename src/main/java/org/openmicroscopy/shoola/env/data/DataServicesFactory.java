@@ -458,11 +458,18 @@ public class DataServicesFactory
      */
     private void resetKeys(List<String> keys)
     {
-
+        LogMessage msg = new LogMessage();
         try {
-            RegistryFactory.rebindFromFile(container.getConfigFileRelative(), registry, keys);
+            RegistryFactory.fillFromFile(container.getConfigFileRelative(), registry, keys);
+            StringBuffer buffer = new StringBuffer();
+            Iterator<String> i = keys.iterator();
+            buffer.append("The following keys have been reset:");
+            while(i.hasNext()) {
+                buffer.append(i.next()+", ");
+            }
+            msg.println(buffer.toString());
+            registry.getLogger().debug(this, msg);
         } catch (Exception e) {
-            LogMessage msg = new LogMessage();
             msg.println("Parsing error: " + e.getClass().getName() + " - " + e.getMessage());
             registry.getLogger().debug(this, msg);
         }
