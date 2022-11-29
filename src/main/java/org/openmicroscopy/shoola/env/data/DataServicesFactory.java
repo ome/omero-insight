@@ -22,7 +22,9 @@ package org.openmicroscopy.shoola.env.data;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -449,6 +451,30 @@ public class DataServicesFactory
         return (Logger) registry.getLogger();
     }
 
+    /**
+     * Resets the keys from the configuration file.
+     * 
+     * @param keys The list of keys to reset.
+     */
+    private void resetKeys(List<String> keys)
+    {
+        LogMessage msg = new LogMessage();
+        try {
+            RegistryFactory.fillFromFile(container.getConfigFileRelative(), registry, keys);
+            StringBuffer buffer = new StringBuffer();
+            Iterator<String> i = keys.iterator();
+            buffer.append("The following keys have been reset:");
+            while(i.hasNext()) {
+                buffer.append(i.next()+", ");
+            }
+            msg.println(buffer.toString());
+            registry.getLogger().debug(this, msg);
+        } catch (Exception e) {
+            msg.println("Parsing error: " + e.getClass().getName() + " - " + e.getMessage());
+            registry.getLogger().debug(this, msg);
+        }
+    }
+
 	/**
 	 * Attempts to connect to <i>OMERO</i> server.
 	 * 
@@ -517,11 +543,16 @@ public class DataServicesFactory
                 registry.getLogger().debug(this, msg);
                 container.getRegistry().bind(LookupNames.TOKEN_URL, val + "/qa/initial/");
                 container.getRegistry().bind(LookupNames.PROCESSING_URL, val + "/qa/uploadProcessing/");
+            } else {
+                // needed when switching user
+                resetKeys(Arrays.asList(LookupNames.TOKEN_URL, LookupNames.PROCESSING_URL)); 
             }
         } catch (ServerError e) {
             msg = new LogMessage();
             msg.println("Server error: " + e.serverExceptionClass + " - " + e.message);
             registry.getLogger().debug(this, msg);
+            // needed when switching user
+            resetKeys(Arrays.asList(LookupNames.TOKEN_URL, LookupNames.PROCESSING_URL)); 
         }
 
         //Post an event to indicate that the user is connected.

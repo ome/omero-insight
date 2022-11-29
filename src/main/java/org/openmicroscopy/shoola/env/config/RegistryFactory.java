@@ -23,6 +23,8 @@
 
 package org.openmicroscopy.shoola.env.config;
 
+import java.util.List;
+
 import org.openmicroscopy.shoola.env.data.AdminService;
 import org.openmicroscopy.shoola.env.data.OmeroDataService;
 import org.openmicroscopy.shoola.env.data.OmeroImageService;
@@ -76,7 +78,7 @@ public class RegistryFactory
 	{
 		RegistryImpl reg = new RegistryImpl();
 		Parser p = new Parser(file, reg);
-		p.parse();
+		p.parse(null);
 		return reg;
 	}
 	
@@ -86,16 +88,17 @@ public class RegistryFactory
 	 * 
 	 * @param file	Path to a configuration file.
 	 * @param reg	The {@link Registry} to fill.
+	 * @param keys  The list of keys to reset or <code>null</code>
 	 * @throws ConfigException	If an error occurs while accessing the file
 	 * 							or the file contents are not valid.
 	 */
-	public static void fillFromFile(String file, Registry reg)
+	public static void fillFromFile(String file, Registry reg, List<String> keys)
 		throws ConfigException
 	{
 		Parser p = new Parser(file, (RegistryImpl) reg);
-		p.parse();
+		p.parse(keys);
 	}
-	
+
 	/**
 	 * Adds the {@link EventBus} instance to the specified {@link Registry}.
 	 * 
