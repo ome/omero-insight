@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -388,8 +388,6 @@ class AdminServiceImpl
 		if (group == null)
 			throw new IllegalArgumentException("No group to update.");
 		gateway.updateGroup(ctx, group);
-		gateway.joinSession();
-
 		return reloadGroup(ctx, group);
 	}
 	
