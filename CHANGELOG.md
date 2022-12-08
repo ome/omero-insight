@@ -10,7 +10,7 @@
 - BugFix: Don't load annotations for ROIs [#318](https://github.com/ome/omero-insight/pull/318)
 - BugFix: IllegalComponentStateException: component must be showing on the screen [#313](https://github.com/ome/omero-insight/pull/313)
 - BugFix: Check if the path is value [#328](https://github.com/ome/omero-insight/pull/328)
-- Bump omero-gateway-java to 5.7.0
+- Bump omero-gateway-java to 5.7.0 [#331](https://github.com/ome/omero-insight/pull/331)
 
 5.7.2 (July 2022)
 ------------------
