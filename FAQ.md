@@ -58,7 +58,7 @@ Increasing Memory Allocation
 
 By default, the Desktop client allocates a certain amount of memory
 during the start-up process which should be sufficient for most uses.
-The default values are ``-Xms256m, -Xmx1024m``.
+The default values are ``-Xms256m, -Xmx4096m``.
 
 However, you may encounter out of memory exceptions while trying to import
 or display very large images. In these situations, it is beneficial to increase
@@ -79,7 +79,7 @@ You must edit the config file `app\OMERO.insight.cfg` stored in application fold
 ```
 [JVMOptions]
 -Xms256m
--Xmx1024m
+-Xmx4096m
 ```
 
 **Linux**:
