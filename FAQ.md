@@ -18,7 +18,7 @@ unreliable network. If the file upload to OME QA fails, please contact the team 
 [support page](https://www.openmicroscopy.org/support/) to arrange an alternative mechanism to submit the files.
 
 Adding third parties' JARs
--------------------------
+--------------------------
 
 OMERO.insight comes bundled with a number of standard Java Archives (JARs).
 However, functionality can be extended by adding JARs to OMERO.insight.
