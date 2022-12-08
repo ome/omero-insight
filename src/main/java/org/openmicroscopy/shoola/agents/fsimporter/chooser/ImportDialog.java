@@ -40,6 +40,7 @@ import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -98,6 +99,7 @@ import org.openmicroscopy.shoola.env.data.model.ImportableFile;
 import org.openmicroscopy.shoola.env.data.model.ImportableObject;
 import org.openmicroscopy.shoola.env.rnd.RenderingControl;
 import org.openmicroscopy.shoola.util.ui.ClosableTabbedPaneComponent;
+import org.openmicroscopy.shoola.util.ui.NotificationDialog;
 import org.openmicroscopy.shoola.util.ui.NumericalTextField;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import org.openmicroscopy.shoola.util.ui.filechooser.GenericFileChooser;
@@ -418,16 +420,35 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 			return;
 
 		List<FileObject> fileList = new ArrayList<FileObject>();
-
+        List<File> errors = new ArrayList<File>();
 		for (int i = 0; i < files.length; i++) {
-			checkFile(files[i], fileList);
+			checkFile(files[i], fileList, errors);
 		}
-
+        if (errors.size() > 0) {
+            //Pop up dialog show the file(s) that cannot be imported 
+            NotificationDialog dialog = new NotificationDialog(owner, "Import",
+				getMessage(errors), true);
+            dialog.pack();
+		    UIUtilities.centerAndShow(dialog);
+        }
 		chooser.setSelectedFile(new File("."));
 
 		table.addFiles(fileList, importSettings);
 		enablesButtons(table.hasFilesToImport());
 	}
+
+    private String getMessage(List<File> errors) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<html><body>");
+        Iterator<File> i = errors.iterator();
+        buffer.append("<p>The following files cannot be imported due to invalid characters in the path.<br>");
+        while(i.hasNext()) {
+        	buffer.append(i.next().getAbsolutePath());
+
+        }
+        buffer.append("</body><html>");
+        return buffer.toString();
+    }
 
 	/** Displays the location of the import.*/
 	private void showLocationDialog()
@@ -1287,24 +1308,36 @@ public class ImportDialog extends ClosableTabbedPaneComponent
 	 * <code>true</code> if the file is a directory, <code>false</code>
 	 * otherwise.
 	 *
-	 * @param f
-	 *            The file to handle.
+	 * @param f The file to handle.
+	 * @param l The results file.
+	 * @param errors The list of files that cannot be imported.
 	 */
-	private boolean checkFile(File f, List<FileObject> l)
+	private void checkFile(File f, List<FileObject> l, List<File> errors)
 	{
 		if (f == null)
-			return false;
+			return;
 		if (f.isFile()) {
-			if (isFileImportable(f))
-				l.add(new FileObject(f));
+			if (isFileImportable(f)) {
+                try {
+                    f.length();
+                    l.add(new FileObject(f));
+                } catch (InvalidPathException e) {
+                    errors.add(f);
+                }
+            }
 		} else if (f.isDirectory()) {
 			File[] list = f.listFiles();
 			if (list != null && list.length > 0) {
-				l.add(new FileObject(f));
-				return true;
+                if (isFileImportable(f)) {
+                    try {
+                        f.length();
+                        l.add(new FileObject(f));
+                    } catch (InvalidPathException e) {
+                        errors.add(f);
+                    }
+                }
 			}
 		}
-		return false;
 	}
 
 	/**
