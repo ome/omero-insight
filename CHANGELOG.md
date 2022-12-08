@@ -1,3 +1,17 @@
+5.8.0 (December 2022)
+---------------------
+
+- Add ability to reset key in the registry [#330](https://github.com/ome/omero-insight/pull/330)
+- Add logic to retrieve omero.qa.feedback property server-side [#327](https://github.com/ome/omero-insight/pull/327)
+- DataServicesFactory: only log server exception class and message [#329](https://github.com/ome/omero-insight/pull/329)
+- Remove joinSession method [#296](https://github.com/ome/omero-insight/pull/296)
+- BugFix: Move gateway calls to OMEROGateway [#305](https://github.com/ome/omero-insight/pull/305)
+- BugFix: Increase max heap for insight to 4gb [#317](https://github.com/ome/omero-insight/pull/317)
+- BugFix: Don't load annotations for ROIs [#318](https://github.com/ome/omero-insight/pull/318)
+- BugFix: IllegalComponentStateException: component must be showing on the screen [#313](https://github.com/ome/omero-insight/pull/313)
+- BugFix: Check if the path is value [#328](https://github.com/ome/omero-insight/pull/328)
+- Bump omero-gateway-java to 5.7.0
+
 5.7.2 (July 2022)
 ------------------
 
