@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.agents.fsimporter.view.ImporterUI
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -71,6 +71,9 @@ import javax.swing.text.StyledDocument;
 //Third-party libraries
 import info.clearthought.layout.TableLayout;
 
+import ome.formats.importer.ImportCandidates;
+import ome.formats.importer.ImportConfig;
+import ome.formats.importer.OMEROWrapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jdesktop.swingx.JXLabel;
 import org.jdesktop.swingx.JXPanel;
@@ -468,8 +471,6 @@ class ImporterUI extends TopWindow
 
 	/**
 		 * Adds the chooser to the tab.
-		 *
-		 * @param chooser The component to add.
 		 */
 		void addMDComponent(MetaDataDialog mde)
 		{
@@ -539,13 +540,13 @@ class ImporterUI extends TopWindow
 		if (object == null)
 		    return null;
 
-		int maxFiles = (Integer) ImporterAgent.getRegistry().lookup(
+		int maxImages = (Integer) ImporterAgent.getRegistry().lookup(
                 "/options/DetailedImportFileLimit");
 
 		int n = tabs.getComponentCount();
 		String title = "Import #"+total;
 		ImporterUIElement element = null;
-        if (fileCount(object) > maxFiles) {
+        if (imageCount(object) > maxImages) {
             element = new ImporterUIElementLight(controller, model, this,
                     uiElementID, n, title, object);
         } else {
@@ -563,26 +564,21 @@ class ImporterUI extends TopWindow
 		return element;
 	}
 
-    private int fileCount(ImportableObject obj) {
+	/**
+	 * Determines how many individual images an ImportableObject has.
+	 * @param obj The ImportableObject
+	 * @return The number of images
+	 */
+    private int imageCount(ImportableObject obj) {
         int count = 0;
         for (ImportableFile f : obj.getFiles()) {
-            count += fileCount(f.getOriginalFile().getTrueFile());
+			OMEROWrapper reader = new OMEROWrapper(new ImportConfig());
+			File file = f.getFile().getFileToImport();
+			String[] paths = new String[1];
+			paths[0] = file.getAbsolutePath();
+			count += (new ImportCandidates(obj.getDepth(), reader, paths, null)).size();
         }
         return count;
-    }
-
-    private int fileCount(File file) {
-        if (file == null)
-            return 0;
-
-        if (file.isDirectory()) {
-            int count = 0;
-            for (File f : file.listFiles()) {
-                count += fileCount(f);
-            }
-            return count;
-        }
-        return 1;
     }
 
 	/** Resets the import.*/

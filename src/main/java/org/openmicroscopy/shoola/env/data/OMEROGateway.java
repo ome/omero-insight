@@ -5870,6 +5870,7 @@ class OMEROGateway
 	 * @param ctx The security context.
 	 * @param object Host information about the file to import.
 	 * @param file The file to import.
+	 * @param status The status tracking object.
 	 * @return See above.
 	 * @throws ImportException If an error occurred while importing.
 	 */
@@ -5891,7 +5892,7 @@ class OMEROGateway
 			reader = new OMEROWrapper(config);
 			String[] paths = new String[1];
 			paths[0] = file.getAbsolutePath();
-			ImportCandidates icans = new ImportCandidates(reader, paths, status);
+			ImportCandidates icans = new ImportCandidates(object.getDepth(), reader, paths, status);
 			
 			for(ImportContainer ic : icans.getContainers()) {
 			    if(object.isOverrideName()) {

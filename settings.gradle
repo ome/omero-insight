@@ -3,6 +3,7 @@ pluginManagement {
         mavenLocal()
         mavenCentral()
         maven { url 'https://artifacts.openmicroscopy.org/artifactory/maven/' }
+        maven { url 'https://nexus.senbox.net/nexus/content/groups/public/' }
     }
 }
 

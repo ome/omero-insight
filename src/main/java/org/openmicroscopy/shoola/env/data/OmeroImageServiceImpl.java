@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2018 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -212,14 +212,6 @@ class OmeroImageServiceImpl
 
 	/**
 	 * Imports the specified candidates.
-	 *
-	 * @param ctx The security context.
-	 * @param status The original status.
-	 * @param object The object hosting information about the import.
-	 * @param list   The list of annotations.
-	 * @param userID The identifier of the user.
-	 * @param hcs Value returns by the import containers.
-	 * @param userName The login name of the user to import for.
 	 */
 	private Object importCandidates(SecurityContext ctx,
 		Map<File, Status> files, Status status,

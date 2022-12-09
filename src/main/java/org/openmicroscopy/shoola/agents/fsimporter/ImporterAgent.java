@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2017 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -158,18 +158,6 @@ public class ImporterAgent
     { 
         return (ExperimenterData) registry.lookup(
                 LookupNames.CURRENT_USER_DETAILS);
-    }
-
-    /**
-     * Returns how deep to scan when a folder is selected.
-     * 
-     * @return See above.
-     */
-    public static int getScanningDepth()
-    {
-        Integer value = (Integer) registry.lookup("/options/ScanningDepth");
-        if (value == null || value.intValue() < 0) return 1;
-        return value.intValue();
     }
 
     /**
