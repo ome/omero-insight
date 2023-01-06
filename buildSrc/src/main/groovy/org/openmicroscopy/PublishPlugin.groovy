@@ -43,7 +43,7 @@ class PublishPlugin implements Plugin<Project> {
         project.pluginManager.apply(MavenPublishPlugin)
         project.pluginManager.apply(InsightBasePlugin)
 
-        addPublishImageJJar()
+        //addPublishImageJJar()
     }
 
     private void addPublishImageJJar() {
