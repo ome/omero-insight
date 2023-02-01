@@ -946,8 +946,7 @@ class ToolBar
             p = new Point(0, 0);
         };
         if (c == null || !c.isShowing()) {
-            c = scriptButton;
-            repaint();
+            c = bar;
         }
         IconManager icons = IconManager.getInstance();
         Collection<ScriptObject> scripts = model.getAvailableScripts();
