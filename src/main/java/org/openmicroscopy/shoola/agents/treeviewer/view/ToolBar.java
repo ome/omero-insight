@@ -946,7 +946,14 @@ class ToolBar
             p = new Point(0, 0);
         };
         if (c == null || !c.isShowing()) {
-            c = bar;
+            if (scriptButton.isShowing()) {
+                c = scriptButton;
+            } else if (busyLabel.isShowing()) {
+                c = busyLabel;
+            } else {
+                c = bar;
+            }
+            
         }
         IconManager icons = IconManager.getInstance();
         Collection<ScriptObject> scripts = model.getAvailableScripts();
