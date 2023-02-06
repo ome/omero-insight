@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2023 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -216,6 +216,8 @@ public class ThumbnailLoader extends BatchCallTree {
             for (DataObject image : images) {
                 // Cast our image to pixels object
                 final PixelsData pxd = dataObjectToPixelsData(image);
+                if (image == null || pxd == null || pxd.getImage() == null)
+                    continue;
 
                 // Flag to check if we've iterated to the last image
                 final boolean last = lastIndex == k++;
