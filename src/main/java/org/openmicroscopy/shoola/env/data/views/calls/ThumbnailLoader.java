@@ -215,8 +215,10 @@ public class ThumbnailLoader extends BatchCallTree {
             int k = 0;
             for (DataObject image : images) {
                 // Cast our image to pixels object
+                if (image == null)
+                    continue;
                 final PixelsData pxd = dataObjectToPixelsData(image);
-                if (image == null || pxd == null || pxd.getImage() == null)
+                if (pxd == null)
                     continue;
 
                 // Flag to check if we've iterated to the last image
