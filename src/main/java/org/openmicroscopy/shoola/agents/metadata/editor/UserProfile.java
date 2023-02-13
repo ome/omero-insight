@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2023 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -950,6 +950,9 @@ class UserProfile
         if (CommonsLangUtils.isBlank(text)) return false;
         text = text.trim();
         ExperimenterData original = (ExperimenterData) model.getRefObject();
+        if (details == null || original == null || getSelectedGroup() == null) {
+            return false;
+        }
         if (!text.equals(original.getUserName())) {
             saveButton.setEnabled(true);
             return true;
@@ -958,8 +961,6 @@ class UserProfile
 			saveButton.setEnabled(true);
 			return true;
 		}
-        //if (selectedIndex != originalIndex) return true;
-        if (details == null) return false;
         Entry<String, String> entry;
         Iterator<Entry<String, String>> i = details.entrySet().iterator();
         String key;
