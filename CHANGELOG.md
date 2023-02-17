@@ -1,3 +1,10 @@
+5.8.1 (February 2023)
+---------------------
+
+- Fix issue with scripts menu (https://github.com/ome/omero-insight/pull/341)
+- Fix a null pointer exception when loading thumbnails (https://github.com/ome/omero-insight/pull/344)
+- Fix a null pointer exception in the user profile (https://github.com/ome/omero-insight/pull/345)
+
 5.8.0 (December 2022)
 ---------------------
 
