@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2017 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2023 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -826,10 +826,8 @@ class EditorModel
 	 * @return See above.
 	 */
 	Object getRefObject()
-	{ 
-		StructuredDataResults data = parent.getStructuredData();
-		if (data == null) return refObject;
-		return refObject; 
+	{
+		return refObject;
 	}
 	
 	/**
