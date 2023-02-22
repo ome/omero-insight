@@ -16,7 +16,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
-      gradle_version: 6.8.3 # set to empty to build with most recent version of gradle
+      gradle_version: 6.8.3 # use ``current`` to install the current stable release
       gradle_commands: build # default is build
     steps:
       - uses: actions/checkout@v3
@@ -26,14 +26,11 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'zulu'
           cache: "gradle"
-      - name: Wrap with specified version
-        run: gradle wrapper --gradle-version=${{ env.gradle_version }}
-        if: ${{ env.gradle_version != '' }}
-      - name: Wrap without version
-        run: gradle wrapper
-        if: ${{ env.gradle_version == '' }}
+      - uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: ${{ env.gradle_version }}
       - name: Run commands
-        run: ./gradlew ${{ env.gradle_commands }}
+        run: gradle ${{ env.gradle_commands }}
       - name: Prepare PATH
         if: startsWith(matrix.os, 'windows')
         shell: bash
