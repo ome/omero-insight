@@ -1,9 +1,10 @@
 5.8.1 (March 2023)
 ------------------
 
-- Fix issue with scripts menu (https://github.com/ome/omero-insight/pull/341)
-- Fix a null pointer exception when loading thumbnails (https://github.com/ome/omero-insight/pull/344)
-- Fix a null pointer exception in the user profile (https://github.com/ome/omero-insight/pull/345)
+- BugFix: Fix issue with scripts menu (https://github.com/ome/omero-insight/pull/341)
+- BugFix: Fix a null pointer exception when loading thumbnails (https://github.com/ome/omero-insight/pull/344)
+- BugFix: Fix a null pointer exception in the user profile (https://github.com/ome/omero-insight/pull/345)
+- Use gradle-build-action (https://github.com/ome/omero-insight/pull/349)
 - Bump omero-gateway-java to 5.8.0
 
 5.8.0 (December 2022)
