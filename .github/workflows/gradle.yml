@@ -12,7 +12,7 @@ jobs:
   build:
     strategy:
       matrix:
-        java: [8.0.275, 11]
+        java: [8, 11]
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
@@ -25,7 +25,8 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: 'zulu'
-          cache: "gradle"
+          cache: 'gradle'
+          java-package: 'jdk+fx'
       - uses: gradle/gradle-build-action@v2
         with:
           gradle-version: ${{ env.gradle_version }}
