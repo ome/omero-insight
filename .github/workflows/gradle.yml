@@ -40,10 +40,10 @@ jobs:
         run: |
           choco uninstall innosetup
           choco install innosetup --version=5.6.1
-          ./gradlew packageApplicationExe
-          ./gradlew packageImporterApplicationExe
-          ./gradlew packageApplicationMsi
-          ./gradlew packageImporterApplicationMsi
+          gradle packageApplicationExe
+          gradle packageImporterApplicationExe
+          gradle packageApplicationMsi
+          gradle packageImporterApplicationMsi
       - name: Check MSI
         if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
         run: |
