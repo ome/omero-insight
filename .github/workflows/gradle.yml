@@ -38,6 +38,7 @@ jobs:
         run: echo "$WIX\\bin" >> $GITHUB_PATH
       - name: Build Executable
         if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        shell: cmd
         run: |
           choco uninstall innosetup
           choco install innosetup --version=5.6.1
