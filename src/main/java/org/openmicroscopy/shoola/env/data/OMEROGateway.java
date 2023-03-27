@@ -5852,6 +5852,10 @@ class OMEROGateway
 			try {
 				if (reader != null) reader.close();
 			} catch (Exception ex) {}
+			if (cb != null) {
+				// Allow callback to close handle
+				cb.close(true);
+			}
 
 			handleConnectionException(e);
 			status.markedAsFailed(e);
@@ -5863,9 +5867,6 @@ class OMEROGateway
 			} catch (Exception ex) {}
 			if (omsc != null && close)
 				closeImport(ctx, userName);
-			if (cb != null) {
-				cb.close(true); // Allow callback to close handle
-			}
 		}
 	}
 
