@@ -143,7 +143,6 @@ public class TagDataParser {
                 eElement = (Element) n;
             }
 
-            String ontology_RESTAPI_url=eElement.getAttribute(ATTR_RESTURL);
             String api_key = "";
             if(eElement.hasAttribute(ATTR_API_KEY)){
                 api_key=eElement.getAttribute(ATTR_API_KEY);
@@ -151,8 +150,7 @@ public class TagDataParser {
             String ontologyAcronym = eElement.getAttribute(ATTR_ONTO_ACRO);
             String ontologyRef = eElement.getAttribute(ATTR_ONTO_REF);
 
-            if(ontology_RESTAPI_url==null || ontology_RESTAPI_url.isEmpty() ||
-                ontologyAcronym==null || ontologyAcronym.isEmpty() ||
+            if(ontologyAcronym==null || ontologyAcronym.isEmpty() ||
                 ontologyRef==null || ontologyRef.isEmpty()){
                 return null;
             }
