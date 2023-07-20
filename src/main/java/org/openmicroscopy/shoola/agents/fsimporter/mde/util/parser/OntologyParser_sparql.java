@@ -7,6 +7,12 @@ import org.openmicroscopy.shoola.agents.fsimporter.mde.util.OntologyElement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 7/20/2023
+ *
+ * @author Susanne Kunis<sinukesus at gmail dot com>
+ *
+ **/
 
 /*
 Universal ontology parser by sparql queries
