@@ -50,7 +50,10 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.3.5")
     implementation("ch.qos.logback:logback-core:1.3.5")
 
-    implementation 'org.aksw.jena-sparql-api:jena-sparql-api-core:3.17.0-1'
+    //implementation("org.aksw.jena-sparql-api:jena-sparql-api-core:3.17.0-1")
+    implementation("org.apache.jena:jena-core:4.1.0")
+    implementation("org.apache.jena:jena-arq:4.1.0")
+
 }
 
 test {
