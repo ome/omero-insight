@@ -33,14 +33,6 @@ public class OntologyParser_sparql {
     }
 
 
-    private List<OntologyElement> sparqlQuery(String acronym, String url_term) {
-
-        String qString =generateSparqlQuery(url_term);
-        List rs= runSparqlQuery(qString,default_sparqlEndpoint);
-
-        return rs;
-    }
-
     // generates query, runs query and parses results
     private List<OntologyElement> runSparqlQuery(String url_term, String sparqlEndpoint){
 
