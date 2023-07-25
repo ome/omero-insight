@@ -86,10 +86,10 @@ public class OntologyParser_sparql {
 
         String queryString =
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"+
-                        "SELECT DISTINCT ?subclass ?Label\n"+
+                        "SELECT DISTINCT ?subclass (STR(?subclassLabel) AS ?Label)\n"+
                         "WHERE {\n"+
                         " ?subclass rdfs:subClassOf <"+ontologyPURL+">.\n"+
-                        " ?subclass rdfs:label ?Label.\n"+
+                        " ?subclass rdfs:label ?subclassLabel.\n"+
                         //" FILTER (LANG(?Label)= 'en')\n"+
                         "}";
         return queryString;
