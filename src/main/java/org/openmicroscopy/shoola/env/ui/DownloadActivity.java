@@ -110,7 +110,7 @@ public class DownloadActivity extends ActivityComponent {
 		directory = folder.getParentFile();
 		if (directory == null) { //root directory
 			// reset
-			directory = folder
+			directory = folder;
 		}
 
 		File[] files = directory.listFiles();
