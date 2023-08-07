@@ -329,7 +329,7 @@ public class RefreshExperimenterDataLoader
                                     smartFolders = new 
                                     HashMap<SecurityContext, TreeImageSet>();
                                 smartFolders.put(ctx, (TreeImageSet) ob);
-                            } else nl.add(ob);
+                            } else nl.add(((TreeImageSet) ob).getUserObject());
                         }
                         m.put(ctx, nl);
                     }
