@@ -108,6 +108,10 @@ public class DownloadActivity extends ActivityComponent {
 		File directory = folder;
 
 		directory = folder.getParentFile();
+		if (directory == null) { //root directory
+			// reset
+			directory = folder
+		}
 
 		File[] files = directory.listFiles();
 		String dirPath = directory.getAbsolutePath() + File.separator;
