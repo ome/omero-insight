@@ -1669,8 +1669,27 @@ class TreeViewerComponent
 				throw new IllegalStateException("This method cannot be " +
 				"invoked in the DISCARDED state");
 		}
-		if (data == null) 
-			throw new IllegalArgumentException("No data object. ");
+		if (data == null) {
+            setStatus(false, "", true);
+            view.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            // Notify that the object could not create or
+            String message = "The object could not be ";
+            switch (operation) {
+                case CREATE_OBJECT:
+                    message = message + "created";
+                    break;
+                case UPDATE_OBJECT:
+                	message = message + "updated";
+                    break;
+                case REMOVE_OBJECT:
+                	message = message + "removed";
+                    break;
+
+		   }
+		   TreeViewerAgent.getRegistry().getUserNotifier().notifyWarning("Data handling", message);
+		   return;
+		   //Notify the user
+		}
 		switch (operation) {
 			case CREATE_OBJECT:
 			case UPDATE_OBJECT: 
