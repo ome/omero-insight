@@ -11,8 +11,9 @@
 - BugFix: Replace : by _ in name on Windows [#384](https://github.com/ome/omero-insight/pull/384)
 - BugFix: Handle case when project is not found [#383](https://github.com/ome/omero-insight/pull/383)
 - BugFix: Adjust title in ImageJ/Fiji window [#382](https://github.com/ome/omero-insight/pull/382)
-- Open image in imageJ when using as IJ plugin [#365](https://github.com/ome/omero-insight/pull/365)
-- Enable pointing to external container xml [#386](https://github.com/ome/omero-insight/pull/386)
+- Open image in imageJ when using as IJ plugin [#386](https://github.com/ome/omero-insight/pull/386)
+- Add top-level Git mailmap to normalize commit author variants [#366](https://github.com/ome/omero-insight/pull/366)
+- Enable pointing to external container xml [#365](https://github.com/ome/omero-insight/pull/365)
 - Bump omero-gateway-java to 5.8.1 [#378](https://github.com/ome/omero-insight/pull/378)
 
 5.8.1 (March 2023)
