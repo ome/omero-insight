@@ -1,8 +1,11 @@
 5.8.2 (August 2023)
 -------------------
 
+- BugFix: LDAP check [#393](https://github.com/ome/omero-insight/pull/393)
+- BugFix: display failure dialog if any [#392](https://github.com/ome/omero-insight/pull/392)
 - BugFix: handle Null object when attempting to create an object [#391](https://github.com/ome/omero-insight/pull/391)
 - BugFix: handle case when no object is selected [#390](https://github.com/ome/omero-insight/pull/390)
+- BugFix: Pass the node and not the Data object [#389](https://github.com/ome/omero-insight/pull/389)
 - BugFix: Handle root directory [#387](https://github.com/ome/omero-insight/pull/387)
 - BugFix: Handle case where ROI is not longer in table [#385](https://github.com/ome/omero-insight/pull/385)
 - BugFix: Replace : by _ in name on Windows [#384](https://github.com/ome/omero-insight/pull/384)
