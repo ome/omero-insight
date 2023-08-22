@@ -405,11 +405,6 @@ public class FileImportComponent
 	/** Indicates that the import was successful or if it failed.*/
 	private void formatResult()
 	{
-		if (callback != null) {
-			try {
-				((CmdCallbackI) callback).close(true);
-			} catch (Exception e) {}
-		}
 		SwingUtilities.invokeLater(() -> {
 			if (namePane.getPreferredSize().width > LENGTH)
 				fileNameLabel.setText(EditorUtil.getPartialName(
@@ -981,6 +976,11 @@ public class FileImportComponent
 						FileImportComponent.this.image = null;
 					}
 				}
+				if (callback != null) {
+			        try {
+				        ((CmdCallbackI) callback).close(true);
+			        } catch (Exception e) {}
+		        }
 				FileImportComponent.this.invalidate();
 			}
 		});
