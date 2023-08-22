@@ -418,25 +418,15 @@ public class FileImportComponent
 			refButton = actionMenuButton;
 			addControlsToDisplay();
 			IconManager icons = IconManager.getInstance();
-			Object result = status.getImportResult();
-			if (image instanceof ImportException) result = image;
-			if (result instanceof ImportException) {
-				ImportException e = (ImportException) result;
+			if (image instanceof ImportException) {
+				ImportException e = (ImportException) image;
 				resultLabel.setIcon(icons.getIcon(IconManager.DELETE));
 				resultLabel.setToolTipText(
 						UIUtilities.formatExceptionForToolTip(e));
 				actionMenuButton.setVisible(true);
 				actionMenuButton.setForeground(UIUtilities.REQUIRED_FIELDS_COLOR);
 				actionMenuButton.setText("Failed");
-				int status = e.getStatus();
-				if (status == ImportException.CHECKSUM_MISMATCH)
-					resultIndex = ImportStatus.UPLOAD_FAILURE;
-				else if (status == ImportException.MISSING_LIBRARY)
-					resultIndex = ImportStatus.FAILURE_LIBRARY;
-				else resultIndex = ImportStatus.FAILURE;
-			} else if (result instanceof CmdCallback) {
-				callback = (CmdCallback) result;
-			} else {
+			} else if (resultIndex == ImportStatus.SUCCESS) {
 				formatResultTooltip();
 				resultLabel.setIcon(icons.getIcon(IconManager.APPLY));
 				actionMenuButton.setVisible(true);
@@ -1542,7 +1532,7 @@ public class FileImportComponent
 				if (sl.equals(status)) {
 					if (sl.isMarkedAsCancel()) cancel(true);
 					else {
-						formatResult();
+						setImportResult();
 						firePropertyChange(Status.UPLOAD_DONE_PROPERTY, null,
 								this);
 					}
@@ -1591,6 +1581,25 @@ public class FileImportComponent
 		});
 	}
 	
+	private void setImportResult() {
+		Object result = status.getImportResult();
+		if (image instanceof ImportException) result = image;
+		if (result instanceof ImportException) {
+		    ImportException e = (ImportException) result;
+		    image = result;
+		    int status = e.getStatus();
+		    if (status == ImportException.CHECKSUM_MISMATCH)
+				resultIndex = ImportStatus.UPLOAD_FAILURE;
+			else if (status == ImportException.MISSING_LIBRARY)
+				resultIndex = ImportStatus.FAILURE_LIBRARY;
+			else resultIndex = ImportStatus.FAILURE;
+		} else if (result instanceof CmdCallback) {
+			callback = (CmdCallback) result;
+		} else {
+			resultIndex = ImportStatus.SUCCESS;
+		}
+	}
+
     /**
      * Returns the name of the file and group's id and user's id. 
      * (This String is used as reference to find a specific FileImportComponent
