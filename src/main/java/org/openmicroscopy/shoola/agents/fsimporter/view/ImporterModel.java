@@ -514,11 +514,13 @@ class ImporterModel
 	        }
         }
 
+        /*
         if (requestThumbnails(component)) {
             ImportResultLoader loader = new ImportResultLoader(this.component,
                     ctx, pixels, type, component);
             loader.load();
         }
+        */
 	}
 	
     /**
