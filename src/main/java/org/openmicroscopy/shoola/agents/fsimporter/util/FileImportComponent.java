@@ -405,6 +405,11 @@ public class FileImportComponent
 	/** Indicates that the import was successful or if it failed.*/
 	private void formatResult()
 	{
+		if (callback != null) {
+			try {
+				((CmdCallbackI) callback).close(true);
+			} catch (Exception e) {}
+		}
 		SwingUtilities.invokeLater(() -> {
 			if (namePane.getPreferredSize().width > LENGTH)
 				fileNameLabel.setText(EditorUtil.getPartialName(
@@ -897,7 +902,7 @@ public class FileImportComponent
 					formatResultTooltip();
 				}
 				else if (image instanceof Collection){
-					Collection<?> c = (Collection)image;
+					Collection<?> c = (Collection) image;
 					if(!c.isEmpty()) {
 						Object obj = c.iterator().next();
 						if(obj instanceof ThumbnailData) {
@@ -966,11 +971,6 @@ public class FileImportComponent
 						FileImportComponent.this.image = null;
 					}
 				}
-				if (callback != null) {
-			        try {
-				        ((CmdCallbackI) callback).close(true);
-			        } catch (Exception e) {}
-		        }
 				FileImportComponent.this.invalidate();
 			}
 		});
@@ -1581,8 +1581,14 @@ public class FileImportComponent
 		});
 	}
 	
+	/**
+	 * Sets the status depending on outcome
+	 */
 	private void setImportResult() {
 		Object result = status.getImportResult();
+		if (result == null) {
+			resultIndex = ImportStatus.FAILURE;
+		}
 		if (image instanceof ImportException) result = image;
 		if (result instanceof ImportException) {
 		    ImportException e = (ImportException) result;
@@ -1593,9 +1599,7 @@ public class FileImportComponent
 			else if (status == ImportException.MISSING_LIBRARY)
 				resultIndex = ImportStatus.FAILURE_LIBRARY;
 			else resultIndex = ImportStatus.FAILURE;
-		} else if (result instanceof CmdCallback) {
-			callback = (CmdCallback) result;
-		} else {
+		} else if (result instanceof Collection) {
 			resultIndex = ImportStatus.SUCCESS;
 		}
 	}
