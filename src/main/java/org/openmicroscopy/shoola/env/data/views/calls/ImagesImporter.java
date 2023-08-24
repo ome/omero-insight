@@ -124,7 +124,7 @@ public class ImagesImporter
             final boolean b = index == n;
             index++;
             add(new BatchCall("Importing file") {
-                public void doCall() { importFile(f, b); }
+                public void doCall() { importFile(f, false); }
             }); 
         }
     }
