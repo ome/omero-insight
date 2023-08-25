@@ -72,6 +72,7 @@ import omero.gateway.model.ImageData;
 import omero.gateway.model.ProjectData;
 import omero.gateway.model.ROIData;
 import omero.gateway.model.ScreenData;
+import omero.log.LogMessage;
 
 /** 
  * The Model component in the <code>Importer</code> MVC triad.
@@ -356,6 +357,19 @@ class ImporterModel
 	void importCompleted(int loaderID)
 	{
 		state = Importer.READY;
+		ImagesImporter loader = loaders.get(loaderID);
+		if (loader != null) {
+			ImportableObject io = loader.getImportableObject();
+			try {
+				ImporterAgent.getRegistry().getImageService().closeImport(io);
+			} catch (Exception e) {
+				LogMessage msg = new LogMessage();
+                msg.print("Import closure");
+                msg.print(e);
+				ImporterAgent.getRegistry().getLogger().info(this, msg);
+			}
+		}
+		
 	}
 	
 	/**
