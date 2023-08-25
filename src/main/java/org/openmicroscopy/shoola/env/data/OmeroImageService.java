@@ -867,4 +867,17 @@ public interface OmeroImageService
 											PixelsData pixels,
 											int[] channels, int z, int t) throws DSAccessException,
 			DSOutOfServiceException;
+
+    /**
+     * Closes the import.
+     * @param ImportableObject The object associated to the import.
+     * @return See above.
+     * @throws DSOutOfServiceException If the connection is broken, or logged
+     *                                  in.
+     * @throws DSAccessException If an error occurred while trying to
+     *                                  retrieve data from OMEDS service.
+     */
+	public void closeImport(ImportableObject object) throws DSAccessException,
+			DSOutOfServiceException;
+
 }
