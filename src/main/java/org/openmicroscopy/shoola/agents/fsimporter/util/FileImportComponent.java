@@ -423,15 +423,25 @@ public class FileImportComponent
 			refButton = actionMenuButton;
 			addControlsToDisplay();
 			IconManager icons = IconManager.getInstance();
-			if (image instanceof ImportException) {
-				ImportException e = (ImportException) image;
+			Object result = status.getImportResult();
+			if (image instanceof ImportException) result = image;
+			if (result instanceof ImportException) {
+				ImportException e = (ImportException) result;
 				resultLabel.setIcon(icons.getIcon(IconManager.DELETE));
 				resultLabel.setToolTipText(
 						UIUtilities.formatExceptionForToolTip(e));
 				actionMenuButton.setVisible(true);
 				actionMenuButton.setForeground(UIUtilities.REQUIRED_FIELDS_COLOR);
 				actionMenuButton.setText("Failed");
-			} else if (resultIndex == ImportStatus.SUCCESS) {
+				int status = e.getStatus();
+				if (status == ImportException.CHECKSUM_MISMATCH)
+					resultIndex = ImportStatus.UPLOAD_FAILURE;
+				else if (status == ImportException.MISSING_LIBRARY)
+					resultIndex = ImportStatus.FAILURE_LIBRARY;
+				else resultIndex = ImportStatus.FAILURE;
+			} else if (result instanceof CmdCallback) {
+				callback = (CmdCallback) result;
+			} else {
 				formatResultTooltip();
 				resultLabel.setIcon(icons.getIcon(IconManager.APPLY));
 				actionMenuButton.setVisible(true);
@@ -1532,7 +1542,7 @@ public class FileImportComponent
 				if (sl.equals(status)) {
 					if (sl.isMarkedAsCancel()) cancel(true);
 					else {
-						setImportResult();
+						formatResult();
 						firePropertyChange(Status.UPLOAD_DONE_PROPERTY, null,
 								this);
 					}
@@ -1579,29 +1589,6 @@ public class FileImportComponent
 							this);
 			}
 		});
-	}
-	
-	/**
-	 * Sets the status depending on outcome
-	 */
-	private void setImportResult() {
-		Object result = status.getImportResult();
-		if (result == null) {
-			resultIndex = ImportStatus.FAILURE;
-		}
-		if (image instanceof ImportException) result = image;
-		if (result instanceof ImportException) {
-		    ImportException e = (ImportException) result;
-		    image = result;
-		    int status = e.getStatus();
-		    if (status == ImportException.CHECKSUM_MISMATCH)
-				resultIndex = ImportStatus.UPLOAD_FAILURE;
-			else if (status == ImportException.MISSING_LIBRARY)
-				resultIndex = ImportStatus.FAILURE_LIBRARY;
-			else resultIndex = ImportStatus.FAILURE;
-		} else if (result instanceof Collection) {
-			resultIndex = ImportStatus.SUCCESS;
-		}
 	}
 
     /**
