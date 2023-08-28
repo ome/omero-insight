@@ -366,7 +366,7 @@ class ImporterModel
 				LogMessage msg = new LogMessage();
                 msg.print("Import closure");
                 msg.print(e);
-				ImporterAgent.getRegistry().getLogger().info(this, msg);
+				ImporterAgent.getRegistry().getLogger().warn(this, msg);
 			}
 		}
 		
