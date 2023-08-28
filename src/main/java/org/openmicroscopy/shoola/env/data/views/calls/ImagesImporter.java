@@ -121,7 +121,6 @@ public class ImagesImporter
         while (i.hasNext()) {
             io = i.next();
             final ImportableFile f = io;
-            final boolean b = index == n;
             index++;
             add(new BatchCall("Importing file") {
                 public void doCall() { importFile(f, false); }
