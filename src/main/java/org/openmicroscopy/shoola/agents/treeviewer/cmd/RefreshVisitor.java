@@ -106,7 +106,7 @@ public class RefreshVisitor
         	&& node.isExpanded()) {
         	parent = node.getParentDisplay();
     		if (parent.isExpanded()) 
-    			foundNodes.add(userObject);
+    			foundNodes.add(node);
     		if (!(parent.getUserObject() instanceof ProjectData)) {
     			long id = ((DataObject) userObject).getId();
                 List<Long> l = expandedTopNodes.get(DatasetData.class);
@@ -123,7 +123,7 @@ public class RefreshVisitor
         	String ns = tag.getNameSpace();
     		if (parent.isExpanded() &&
     			!TagAnnotationData.INSIGHT_TAGSET_NS.equals(ns)) 
-    			foundNodes.add(userObject);
+    			foundNodes.add(node);
     		if (!(parent.getUserObject() instanceof TagAnnotationData)) {
     			long id = ((DataObject) userObject).getId();
                 List<Long> l = expandedTopNodes.get(TagAnnotationData.class);

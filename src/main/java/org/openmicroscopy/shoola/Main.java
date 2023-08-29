@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.Main
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2023 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -80,26 +80,6 @@ public class Main
 		List<String> posArgs = Arrays.stream(args).filter(a -> !a.startsWith("--")).collect(Collectors.toList());
 		if (posArgs.size() > 0) configFile = posArgs.get(0);
 		if (posArgs.size() > 1) homeDir = posArgs.get(1);
-
-		try {
-			String path = Container.CONFIG_DIR+ File.separator+Container.CONFIG_FILE;
-			StringBuilder configFileContent = new StringBuilder();
-			try (FileReader fr = new FileReader(path);
-				 BufferedReader br = new BufferedReader(fr)) {
-				 String line = br.readLine();
-				 while (line != null) {
-					 line = br.readLine();
-					 configFileContent.append(line);
-				 }
-			}
-			Matcher m = Pattern.compile("DebugRepaintManager.+?>(.+?)<").matcher(configFileContent.toString());
-			if (m.find() && Boolean.parseBoolean(m.group(1))) {
-					RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
-			}
-		} catch (IOException e) {
-			// Couldn't access config file, just ignore
-		}
-
 		Container.startup(homeDir, configFile, addArgs);
 	}
 	

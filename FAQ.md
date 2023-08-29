@@ -87,3 +87,15 @@ You must edit the config file `app\OMERO.insight.cfg` stored in application fold
  - Unzip the app.
  - Open the file ``bin/omero-insight`` in a text editor.
  - Change the value of ``DEFAULT_JVM_OPTS``.
+
+Specify location of container config
+------------------------------------
+You can start Insight with a positional argument pointing to the container xml 
+(e.g. container.xml for the "normal" Insight, containerImport.xml for the Importer).
+In the OSX build this argument is set by OMERO.insight.cfg:
+```
+[ArgOptions]
+container.xml
+```
+This can be either a file name (then Insight will look for it within its `config` directory)
+or a full path.

@@ -1126,9 +1126,13 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
                             // data is a project
                             r = dataset;
                             p = (ProjectData) data;
-                            r = (DatasetData) getObject(dataset,
+                            if (p != null) {
+                                r = (DatasetData) getObject(dataset,
                                     p.getDatasets());
-                            f.setLocation(data, r);
+                                f.setLocation(data, r);
+                            } else {
+                                f.setLocation(null, r);
+                            }
                         }
                     }
                 }

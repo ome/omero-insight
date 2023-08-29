@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2014-2021 University of Dundee. All rights reserved.
+ *  Copyright (C) 2014-2023 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,10 @@ import org.openmicroscopy.shoola.agents.dataBrowser.DataBrowserAgent;
 import org.openmicroscopy.shoola.agents.events.iviewer.ViewImage;
 import org.openmicroscopy.shoola.agents.events.iviewer.ViewImageObject;
 import org.openmicroscopy.shoola.agents.imviewer.ImViewerAgent;
+import org.openmicroscopy.shoola.env.LookupNames;
+import org.openmicroscopy.shoola.env.data.events.ViewInPluginEvent;
 import omero.gateway.SecurityContext;
+import org.openmicroscopy.shoola.env.event.EventBus;
 import org.openmicroscopy.shoola.env.event.RequestEvent;
 import org.openmicroscopy.shoola.env.ui.UserNotifier;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
@@ -222,9 +225,18 @@ public class SearchResultTable extends JXTable {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     ImageData img = (ImageData) obj;
-                    RequestEvent ev = new ViewImage(new SecurityContext(obj
-                            .getGroupId()), new ViewImageObject(img), null);
-                    ImViewerAgent.getRegistry().getEventBus().post(ev);
+                    SecurityContext ctx = new SecurityContext(img.getGroupId());
+                    EventBus bus = DataBrowserAgent.getRegistry().getEventBus();
+                    if (DataBrowserAgent.runAsPlugin() == LookupNames.IMAGE_J) {
+                        ViewInPluginEvent evt = new ViewInPluginEvent(ctx,
+                            img, LookupNames.IMAGE_J);
+                        bus.post(evt);
+                    } else {
+                        RequestEvent evt = new ViewImage(ctx,
+                            new ViewImageObject(img), null);
+                        bus.post(evt);
+
+                    }
                 }
             });
         } else {

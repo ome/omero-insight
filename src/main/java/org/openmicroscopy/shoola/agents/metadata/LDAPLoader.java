@@ -22,7 +22,7 @@ package org.openmicroscopy.shoola.agents.metadata;
 
 
 
-//Java imports
+import omero.log.LogMessage;
 import org.openmicroscopy.shoola.agents.metadata.editor.Editor;
 import omero.gateway.SecurityContext;
 import org.openmicroscopy.shoola.env.data.views.CallHandle;
@@ -64,6 +64,21 @@ public class LDAPLoader
     public void load()
     {
         handle = adminView.lookupLdapAuthExperimenter(ctx, userID, this);
+    }
+
+    /**
+     * Overrides so we can display no LDAP info found. 
+     * Do not show error in that case.
+     */
+    public void handleException(Throwable exc) 
+    {
+        viewer.setStatus(false);
+        String s = "Data Retrieval Failure: ";
+        LogMessage msg = new LogMessage();
+        msg.print(s);
+        msg.print(exc);
+        registry.getLogger().error(this, msg);
+        viewer.setLDAPDetails(userID, "No LDAP information found");
     }
 
     /** 

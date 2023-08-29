@@ -272,9 +272,12 @@ class ImporterUIElementLight extends ImporterUIElement {
 
     @Override
     void showFailures() {
-        JFrame f = ImporterAgent.getRegistry().getTaskBar().getFrame();
-        FailedImportDialog d = new FailedImportDialog(f, getMarkedFiles());
-        UIUtilities.centerAndShow(d);
+        Collection<FileImportComponentI> components = getMarkedFiles();
+        if (components != null && components.size() > 0) {
+            JFrame f = ImporterAgent.getRegistry().getTaskBar().getFrame();
+            FailedImportDialog d = new FailedImportDialog(f, components);
+            UIUtilities.centerAndShow(d);
+        }
     }
 
     @Override

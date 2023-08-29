@@ -1,3 +1,21 @@
+5.8.2 (August 2023)
+-------------------
+
+- BugFix: LDAP check [#393](https://github.com/ome/omero-insight/pull/393)
+- BugFix: display failure dialog if any [#392](https://github.com/ome/omero-insight/pull/392)
+- BugFix: handle Null object when attempting to create an object [#391](https://github.com/ome/omero-insight/pull/391)
+- BugFix: handle case when no object is selected [#390](https://github.com/ome/omero-insight/pull/390)
+- BugFix: Pass the node and not the Data object [#389](https://github.com/ome/omero-insight/pull/389)
+- BugFix: Handle root directory [#387](https://github.com/ome/omero-insight/pull/387)
+- BugFix: Handle case where ROI is not longer in table [#385](https://github.com/ome/omero-insight/pull/385)
+- BugFix: Replace : by _ in name on Windows [#384](https://github.com/ome/omero-insight/pull/384)
+- BugFix: Handle case when project is not found [#383](https://github.com/ome/omero-insight/pull/383)
+- BugFix: Adjust title in ImageJ/Fiji window [#382](https://github.com/ome/omero-insight/pull/382)
+- Open image in imageJ when using as IJ plugin [#386](https://github.com/ome/omero-insight/pull/386)
+- Add top-level Git mailmap to normalize commit author variants [#366](https://github.com/ome/omero-insight/pull/366)
+- Enable pointing to external container xml [#365](https://github.com/ome/omero-insight/pull/365)
+- Bump omero-gateway-java to 5.8.1 [#378](https://github.com/ome/omero-insight/pull/378)
+
 5.8.1 (March 2023)
 ------------------
 

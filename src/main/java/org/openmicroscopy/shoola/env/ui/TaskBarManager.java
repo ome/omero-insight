@@ -371,7 +371,7 @@ public class TaskBarManager
 			}
 			IJ.runPlugIn("loci.plugins.LociImporter", buffer.toString());
 			ImagePlus img = IJ.getImage();
-			img.setTitle(img.getTitle() + "--" + "OMERO ID:" + id);
+			img.setTitle(img.getTitle() + "--" + "OMERO_ID_" + id);
 			img.setProperty(FileObject.OMERO_ID, id);
 			img.setProperty(FileObject.OMERO_GROUP, ctx.getGroupID());
 		} catch (Exception e) {

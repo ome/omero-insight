@@ -396,7 +396,12 @@ public class ImgSaver
      */
     String getPartialImageName()
     { 
-    	return UIUtilities.removeFileExtension(model.getImageName());
+        String name = model.getImageName();
+        if (UIUtilities.isWindowsOS()) {
+            // Special handling for NTFS ADS: Don't accept colon in the fileName.
+            name = name.replaceAll(":", "_");
+        }
+        return UIUtilities.removeFileExtension(name);
     }
     
     /**

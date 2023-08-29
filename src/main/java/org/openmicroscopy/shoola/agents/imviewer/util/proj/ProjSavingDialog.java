@@ -201,10 +201,15 @@ public class ProjSavingDialog
 	private void populateDatasetsBox(DataNode newDataset)
 	{
 		DataNode n = (DataNode) parentsBox.getSelectedItem();
-		List<DataNode> list = n.getUIDatasetNodes();
+		List<DataNode> list = null;
+		if (n != null) {
+			list = n.getUIDatasetNodes();
+		}
 		List<DataNode> l = new ArrayList<DataNode>();
 		if (newDataset != null) l.add(newDataset);
-		l.addAll(sorter.sort(list));
+		if (list != null) {
+			l.addAll(sorter.sort(list));
+		}
 		datasetsBox.setVisible(l.size() > 0);
 		datasetsBox.removeItemListener(datasetsBoxListener);
 		datasetsBox.removeAllItems();
