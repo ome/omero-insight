@@ -5800,6 +5800,7 @@ class OMEROGateway
         ic.setUserPixels(object.getPixelsSize());
         OMEROMetadataStoreClient omsc = null;
         OMEROWrapper reader = null;
+        CmdCallbackI cb = null;
 		try {
 			omsc = getImportStore(ctx, userName);
 			reader = new OMEROWrapper(config);
@@ -5845,11 +5846,16 @@ class OMEROGateway
 	        final ImportRequest req = (ImportRequest) handle.getRequest();
 	        final Fileset fs = req.activity.getParent();
 	        status.setFilesetData(new FilesetData(fs));
-	        return library.createCallback(proc, handle, ic);
+	        cb = library.createCallback(proc, handle, ic);
+	        return cb;
 		} catch (Throwable e) {
 			try {
 				if (reader != null) reader.close();
 			} catch (Exception ex) {}
+			if (cb != null) {
+				// Allow callback to close handle
+				cb.close(true);
+			}
 
 			handleConnectionException(e);
 			status.markedAsFailed(e);

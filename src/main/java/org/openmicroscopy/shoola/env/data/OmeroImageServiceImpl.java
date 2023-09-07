@@ -1728,7 +1728,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#loadAvailableScriptsWithUI(SecurityContext)
 	 */
 	public List<ScriptObject> loadAvailableScriptsWithUI(SecurityContext ctx)
@@ -1738,7 +1738,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#loadAvailableScripts(SecurityContext, long)
 	 */
 	public List<ScriptObject> loadAvailableScripts(SecurityContext ctx,
@@ -1749,7 +1749,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#loadScript(SecurityContext, long)
 	 */
 	public ScriptObject loadScript(SecurityContext ctx, long scriptID)
@@ -1759,7 +1759,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getScriptsAsString(SecurityContext)
 	 */
 	public Map<Long, String> getScriptsAsString(SecurityContext ctx)
@@ -1769,7 +1769,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#uploadScript(SecurityContext, ScriptObject)
 	 */
 	public Object uploadScript(SecurityContext ctx, ScriptObject script)
@@ -1785,7 +1785,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 */
 	public Collection loadROIMeasurements(SecurityContext ctx, Class type,
 		long id, long userID)
@@ -1823,7 +1823,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getFSThumbnailSet(SecurityContext, List, int, long)
 	 */
 	public Map<DataObject, BufferedImage> getFSThumbnailSet(SecurityContext ctx,
@@ -1859,7 +1859,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getExperimenterThumbnailSet(SecurityContext, List, int)
 	 */
 	public Map<DataObject, BufferedImage> getExperimenterThumbnailSet(
@@ -1945,7 +1945,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#saveAs(SecurityContext, SaveAsParam)
 	 */
 	public ScriptCallback saveAs(SecurityContext ctx, SaveAsParam param)
@@ -1963,7 +1963,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#isLargeImage(SecurityContext, long)
 	 */
 	public Boolean isLargeImage(SecurityContext ctx, long pixelsId)
@@ -1973,7 +1973,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getFileSet(SecurityContext, long)
 	 */
 	public Collection<DataObject> getFileSet(SecurityContext ctx, long imageId)
@@ -1983,7 +1983,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#createThumbnailStore(SecurityContext)
 	 */
 	public ThumbnailStorePrx createThumbnailStore(SecurityContext ctx)
@@ -1996,7 +1996,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 * @see OmeroImageService#getRenderingDef(SecurityContext, long, long)
 	 */
 	public Long getRenderingDef(SecurityContext ctx, long pixelsID,
@@ -2009,7 +2009,7 @@ class OmeroImageServiceImpl
 	}
 
 	/**
-	 * Implemented as specified by {@link OmeroDataService}.
+	 * Implemented as specified by {@link OmeroImageService}.
 	 */
 	public RndProxyDef getSettings(SecurityContext ctx, long rndID)
         throws DSOutOfServiceException, DSAccessException
@@ -2021,7 +2021,7 @@ class OmeroImageServiceImpl
     }
 
     /**
-     * Implemented as specified by {@link OmeroDataService}.
+     * Implemented as specified by {@link OmeroImageService}.
      *
      * @see OmeroImageService#createPixelsStore(SecurityContext)
      */
@@ -2032,10 +2032,45 @@ class OmeroImageServiceImpl
         return null;
     }
 
+    /**
+     * Implemented as specified by {@link OmeroImageService}.
+     *
+     * @see OmeroImageService#getHistogram(SecurityContext, PixelsData, int[], int, int)
+     */
 	public Map<Integer, int[]> getHistogram(SecurityContext ctx,
 											PixelsData pixels,
 											int[] channels, int z, int t) throws DSOutOfServiceException,
 			DSAccessException {
 		return gateway.getHistogram(ctx, pixels, channels, z, t);
 	}
+
+    /**
+     * Implemented as specified by {@link OmeroImageService}.
+     *
+     * @see OmeroImageService#closeImport(SecurityContext, String)
+     */
+	public void closeImport(ImportableObject importable) throws DSAccessException,
+			DSOutOfServiceException {
+        if (importable == null) {
+        	return;
+        }
+        List<ImportableFile> files = importable.getFiles();
+        if (files == null || files.size() == 0) {
+        	return;
+        }
+        ImportableFile f = files.get(files.size()-1);
+        SecurityContext ctx = new SecurityContext(f.getGroup().getId());
+		//If import as.
+		ExperimenterData loggedIn = context.getAdminService().getUserDetails();
+		long userID = loggedIn.getId();
+		String userName = null;
+		if (f.getUser() != null) {
+			ExperimenterData exp = f.getUser();
+			userID = exp.getId();
+			if (exp.getId() != loggedIn.getId())
+				userName = exp.getUserName();
+		}
+		gateway.closeImport(ctx, userName);
+	}
+
 }
