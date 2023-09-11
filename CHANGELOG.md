@@ -1,3 +1,11 @@
+5.8.3 (September 2023)
+----------------------
+
+- BugFix: Close all HandleTie servants created during import [#394](https://github.com/ome/omero-insight/pull/394)
+- Update readthedocs config file [#395](https://github.com/ome/omero-insight/pull/395)
+- Bump omero-gateway-java to 5.8.2 [#396](https://github.com/ome/omero-insight/pull/396)
+
+
 5.8.2 (August 2023)
 -------------------
 
