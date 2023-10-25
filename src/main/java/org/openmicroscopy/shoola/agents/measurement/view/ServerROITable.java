@@ -313,13 +313,20 @@ class ServerROITable
 				l.add(array[j]);
 		}
 		if (roiIDs.size() <= l.size()) table.clearSelection();
+		// Check the number of rows
+		int count = table.getModel().getRowCount();
 		while (i.hasNext()) {
 			id = i.next();
 			if (rowIDs.containsKey(id)) {
 				index = rowIDs.get(id);
-				if (!l.contains(index)) {
-					table.addRowSelectionInterval(index, index);
-					scrollToRow(index);
+				if (index >= count) {
+					table.clearSelection();
+					break;
+				} else {
+                    if (!l.contains(index)) {
+                        table.addRowSelectionInterval(index, index);
+                        scrollToRow(index);
+                    }
 				}
 			}
 		}
