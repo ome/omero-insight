@@ -66,9 +66,6 @@ public class ArchivedLoader
     /** Flag for zipping the downloaded images */
     private boolean zip = false;
     
-    /** Flag for preserving the original folder structure */
-    private boolean keepOriginalPaths = true;
-    
     /**
      * Notifies that an error occurred.
      * @see UserNotifierLoader#onException(String, Throwable)
@@ -91,12 +88,11 @@ public class ArchivedLoader
      * @param override Flag indicating to override the existing file if it
      *                 exists, <code>false</code> otherwise.
      * @param zip Pass <code>true</code> to create a zip file
-     * @param keepOriginalPaths Pass <code>true</code> to preserve the original folder structure
      * @param activity The activity associated to this loader.
      */
 	public ArchivedLoader(UserNotifier viewer, Registry registry,
 			SecurityContext ctx, List<DataObject> objects, File file,
-			boolean override, boolean zip, boolean keepOriginalPaths, ActivityComponent activity)
+			boolean override, boolean zip, ActivityComponent activity)
 	{
 		super(viewer, registry, ctx, activity);
 		if (objects == null)
@@ -105,7 +101,6 @@ public class ArchivedLoader
 		this.file = file;
 		this.override = override;
 		this.zip = zip;
-		this.keepOriginalPaths = keepOriginalPaths;
 	}
     
     /**
@@ -117,8 +112,7 @@ public class ArchivedLoader
         if (CollectionUtils.isEmpty(objects))
             return;
 
-        handle = mhView.loadArchivedImage(ctx, objects, file, override, zip,
-                keepOriginalPaths, this);
+        handle = mhView.loadArchivedImage(ctx, objects, file, override, zip, this);
     }
 
 	/**

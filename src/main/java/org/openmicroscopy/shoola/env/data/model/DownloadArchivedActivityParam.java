@@ -54,9 +54,6 @@ public class DownloadArchivedActivityParam
     /** Flag for zipping the downloaded images */
     private boolean zip = false;
     
-    /** Flag for preserving the original folder structure */
-    private boolean keepOriginalPaths = true;
-    
     /**
      * Creates a new instance.
      * 
@@ -128,26 +125,6 @@ public class DownloadArchivedActivityParam
      */
     public void setZip(boolean zip) {
         this.zip = zip;
-    }
-
-    /**
-     * Returns if the original folder structure should be preserved
-     * 
-     * @return See above
-     */
-    public boolean isKeepOriginalPaths() {
-        return keepOriginalPaths;
-    }
-
-    /**
-     * Sets the keepOriginalPaths flag
-     * 
-     * @param keepOriginalPaths
-     *            Pass <code>true</code> to preserve the original folder
-     *            structure
-     */
-    public void setKeepOriginalPaths(boolean keepOriginalPaths) {
-        this.keepOriginalPaths = keepOriginalPaths;
     }
 
 }

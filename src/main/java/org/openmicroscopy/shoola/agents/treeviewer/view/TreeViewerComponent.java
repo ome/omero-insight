@@ -3709,7 +3709,6 @@ class TreeViewerComponent
                     folder, archived, icon);
             p.setOverride(override);
             p.setZip(false);
-            p.setKeepOriginalPaths(true);
             un.notifyActivity(ctx, p);
 	    }
 	}

@@ -251,10 +251,10 @@ class MetadataHandlerViewImpl
      */
     public CallHandle loadArchivedImage(SecurityContext ctx,
             List<DataObject> objects, File location,
-            boolean override, boolean zip, boolean keepOriginalPaths,
+            boolean override, boolean zip,
             AgentEventListener observer) {
         BatchCallTree cmd = new ArchivedImageLoader(ctx, objects, location,
-                override, zip, keepOriginalPaths);
+                override, zip);
         return cmd.exec(observer);
     }
     
