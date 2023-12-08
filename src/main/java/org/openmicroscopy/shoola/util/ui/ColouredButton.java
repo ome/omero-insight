@@ -173,7 +173,7 @@ public class ColouredButton
 	 */
 	public void setFontIndex(int index)
 	{
-		getFont().deriveFont(index);
+		setFont(getFont().deriveFont(index));
 	}
 
 	/**
