@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.roi.model.util.Coord3D 
  *
   *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2007 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2023 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -22,13 +22,9 @@
  */
 package org.openmicroscopy.shoola.util.roi.model.util;
 
-//Java imports
 import java.io.Serializable;
 import java.util.Comparator;
 
-//Third-party libraries
-
-//Application-internal dependencies
 import org.openmicroscopy.shoola.util.roi.model.util.Coord3D;
 
 /** 
@@ -39,9 +35,6 @@ import org.openmicroscopy.shoola.util.roi.model.util.Coord3D;
  * @author	Donald MacDonald &nbsp;&nbsp;&nbsp;&nbsp;
  * 	<a href="mailto:donald@lifesci.dundee.ac.uk">donald@lifesci.dundee.ac.uk</a>
  * @version 3.0
- * <small>
- * (<b>Internal version:</b> $Revision: $Date: $)
- * </small>
  * @since OME3.0
  */
 public class Coord3D 
@@ -144,7 +137,7 @@ public class Coord3D
 	 */
 	public int hashCode()
 	{
-		int value = z<<ZTBITSPLIT+t;
+		int value = (z<<ZTBITSPLIT)+t;
 		return value;
 	}
 	
@@ -158,5 +151,3 @@ public class Coord3D
 	}
 	
 }
-
-
