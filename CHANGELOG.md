@@ -1,3 +1,16 @@
+5.8.4 (December 2023)
+---------------------
+
+- BugFix: Add break[#413](https://github.com/ome/omero-insight/pull/413)
+- BugFix: Adjust shift logic [#404](https://github.com/ome/omero-insight/pull/404)
+- BugFix: Set the font [#407](https://github.com/ome/omero-insight/pull/407)
+- BugFix: Add missing return [#408](https://github.com/ome/omero-insight/pull/408)
+- BugFix: Use super to remove the key from the HashMap [#402](https://github.com/ome/omero-insight/pull/402)
+- Update: Use Gateway method for downloading image [#409](https://github.com/ome/omero-insight/pull/409)
+- Bump omero-gateway-java to 5.9.0 [#396](https://github.com/ome/omero-insight/pull/396)
+- Bump logback-classic to 1.3.14 [#396](https://github.com/ome/omero-insight/pull/396)
+- Bump logback-core to 1.3.14 [#396](https://github.com/ome/omero-insight/pull/396)
+
 5.8.3 (September 2023)
 ----------------------
 
