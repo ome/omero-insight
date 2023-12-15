@@ -7,9 +7,9 @@
 - BugFix: Add missing return [#408](https://github.com/ome/omero-insight/pull/408)
 - BugFix: Use super to remove the key from the HashMap [#402](https://github.com/ome/omero-insight/pull/402)
 - Update: Use Gateway method for downloading image [#409](https://github.com/ome/omero-insight/pull/409)
-- Bump omero-gateway-java to 5.9.0 [#396](https://github.com/ome/omero-insight/pull/396)
-- Bump logback-classic to 1.3.14 [#396](https://github.com/ome/omero-insight/pull/396)
-- Bump logback-core to 1.3.14 [#396](https://github.com/ome/omero-insight/pull/396)
+- Bump omero-gateway-java to 5.9.0 [#416](https://github.com/ome/omero-insight/pull/416)
+- Bump logback-classic to 1.3.14 [#416](https://github.com/ome/omero-insight/pull/416)
+- Bump logback-core to 1.3.14 [#416](https://github.com/ome/omero-insight/pull/416)
 
 5.8.3 (September 2023)
 ----------------------
