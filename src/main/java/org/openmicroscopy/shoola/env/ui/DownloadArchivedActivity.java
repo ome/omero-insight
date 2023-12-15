@@ -105,8 +105,7 @@ public class DownloadArchivedActivity
 	{
 	    File f = parameters.getLocation();
 		loader = new ArchivedLoader(viewer, registry, ctx,
-		        parameters.getImages(), f, parameters.isOverride(), parameters.isZip(), 
-		        parameters.isKeepOriginalPaths(), this);
+		        parameters.getImages(), f, parameters.isOverride(), parameters.isZip(), this);
 		return loader;
 	}
 

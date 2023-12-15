@@ -302,12 +302,11 @@ public interface MetadataHandlerView
 	 * @param override Flag indicating to override the existing file if it
 	 *                 exists, <code>false</code> otherwise.
 	 * @param zip Pass <code>true</code> to create a zip file
-	 * @param keepOriginalPaths Pass <code>true</code> to preserve the original folder structure
 	 * @param observer Call-back handler.
 	 * @return A handle that can be used to cancel the call.
 	 */
 	public CallHandle loadArchivedImage(SecurityContext ctx, List<DataObject> objects,
-		File location, boolean override, boolean zip, boolean keepOriginalPaths,
+		File location, boolean override, boolean zip,
 		AgentEventListener observer);
     
 	/**

@@ -72,9 +72,6 @@ public class ArchivedImageLoader
     /** Flag for zipping the downloaded images */
     private boolean zip = true;
     
-    /** Flag for preserving the original folder structure */
-    private boolean keepOriginalPaths = false;
-    
     /**
      * Copies the specified file to the folder.
      * 
@@ -122,8 +119,7 @@ public class ArchivedImageLoader
      * Creates a {@link BatchCall} to load the image.
      * 
      * @param ctx The security context.
-     * @param objects The objects to download the original image files for.
-     * @param name The name of the image.
+     * @param objects The objects to download the original image files for..
      * @param folder The path to the folder where to save the image.
      * @return The {@link BatchCall}.
      */
@@ -170,9 +166,9 @@ public class ArchivedImageLoader
                     List<File> files = new ArrayList<File>();
                     
                     for (Long imageID : imageIDs) {
-                        Map<Boolean, Object> r = os.getArchivedImage(ctx,
-                                tmpFolder, imageID, keepOriginalPaths);
-                        files.addAll((List<File>) r.get(Boolean.TRUE));
+                        List<File> r = os.getArchivedImage(ctx,
+                                tmpFolder, imageID);
+                        files.addAll(r);
                     }
                     
                     result = new HashMap<Boolean, List<File>>();
@@ -250,16 +246,14 @@ public class ArchivedImageLoader
      * @param override Flag indicating to override the existing file if it
      *                 exists, <code>false</code> otherwise.
      * @param zip Pass <code>true</code> to create a zip file
-     * @param keepOriginalPaths Pass <code>true</code> to preserve the original folder structure
      */
     public ArchivedImageLoader(SecurityContext ctx, List<DataObject> objects,
-            File folderPath, boolean override, boolean zip, boolean keepOriginalPaths)
+            File folderPath, boolean override, boolean zip)
     {
         if (CollectionUtils.isEmpty(objects))
              throw new IllegalArgumentException("No objects provided.");
         this.override = override;
         this.zip = zip;
-        this.keepOriginalPaths = keepOriginalPaths;
         loadCall = makeBatchCall(ctx, objects, folderPath);
     }
 }

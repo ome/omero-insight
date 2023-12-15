@@ -25,7 +25,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import omero.api.StatefulServiceInterfacePrx;
@@ -33,7 +32,6 @@ import omero.api.StatefulServiceInterfacePrx;
 import omero.gateway.model.FolderData;
 import org.openmicroscopy.shoola.env.data.model.DeletableObject;
 
-import omero.gateway.Gateway;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
@@ -282,20 +280,18 @@ public interface OmeroDataService
 		throws DSOutOfServiceException, DSAccessException;
 
 	/**
-	 * Retrieves and saves locally the archived files.
-	 *
-	 * @param ctx The security context.
-	 * @param location The location where to save the files.
-	 * @param imageID The ID of the image.
-	 * @param keepOriginalPath Pass <code>true</code> to preserve the original 
-	 *         path structure
-	 * @return See above.
-	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
-	 * @throws DSAccessException If an error occurred while trying to
-	 * retrieve data from OMERO service.
-	 */
-	public Map<Boolean, Object> getArchivedImage(SecurityContext ctx,
-			File location, long imageID, boolean keepOriginalPath)
+     * Retrieves and saves locally the archived files.
+     *
+     * @param ctx              The security context.
+     * @param location         The location where to save the files.
+     * @param imageID          The ID of the image.
+     * @return See above.
+     * @throws DSOutOfServiceException If the connection is broken, or not logged in
+     * @throws DSAccessException       If an error occurred while trying to
+     *                                 retrieve data from OMERO service.
+     */
+	public List<File> getArchivedImage(SecurityContext ctx,
+                                       File location, long imageID)
 		throws DSOutOfServiceException, DSAccessException;
 
 	/**
