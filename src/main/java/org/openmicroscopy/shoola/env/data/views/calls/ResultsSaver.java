@@ -24,6 +24,7 @@ import ij.IJ;
 import ij.ImagePlus;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -41,7 +42,7 @@ import org.openmicroscopy.shoola.env.data.views.BatchCallTree;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 import org.openmicroscopy.shoola.util.roi.io.ROIReader;
 
-import com.google.common.io.Files;
+
 
 import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.FileAnnotationData;
@@ -83,7 +84,7 @@ public class ResultsSaver
      */
     private File createFile(ImagePlus img, String fileName)
     {
-        File dir = Files.createTempDir();
+        File dir = Files.createTempDirectory("ome_").toFile();
         String name;
         if (CommonsLangUtils.isBlank(fileName)) {
             name = "ImageJ-"+FilenameUtils.getBaseName(

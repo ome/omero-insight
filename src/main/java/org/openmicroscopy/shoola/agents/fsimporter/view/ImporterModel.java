@@ -24,6 +24,7 @@ import ij.ImagePlus;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,8 +62,6 @@ import omero.gateway.SecurityContext;
 
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 import org.openmicroscopy.shoola.util.roi.io.ROIReader;
-
-import com.google.common.io.Files;
 
 import omero.gateway.model.DataObject;
 import omero.gateway.model.ExperimenterData;
@@ -731,7 +730,8 @@ class ImporterModel
      */
     private File createFile(String imageName)
     {
-        File dir = Files.createTempDir();
+    	final String prefix = "ome_";
+        File dir = Files.createTempDirectory(prefix).toFile();
         String name;
         String fileName = null;
         if (object != null) {

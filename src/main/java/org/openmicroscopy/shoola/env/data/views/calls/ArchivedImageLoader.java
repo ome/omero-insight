@@ -30,7 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.io.Files;
+import java.nio.file.Files;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -158,8 +159,8 @@ public class ArchivedImageLoader
                 
                 File tmpFolder = null;
                 try {
-                    if(zip)
-                        tmpFolder = Files.createTempDir();
+                    if (zip)
+                        tmpFolder = Files.createTempDirectory("ome_").toFile();
                     else
                         tmpFolder = folder;
                     
