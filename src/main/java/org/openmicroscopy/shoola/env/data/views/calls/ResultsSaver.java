@@ -84,17 +84,17 @@ public class ResultsSaver
      */
     private File createFile(ImagePlus img, String fileName)
     {
-        File dir = Files.createTempDirectory("ome_").toFile();
-        String name;
-        if (CommonsLangUtils.isBlank(fileName)) {
-            name = "ImageJ-"+FilenameUtils.getBaseName(
-                    FilenameUtils.removeExtension(img.getTitle()))+"-Results-";
-            name += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        } else {
-            name = FilenameUtils.removeExtension(fileName);
-        }
-        name += ".csv";
         try {
+            File dir = Files.createTempDirectory("ome_").toFile();
+            String name;
+            if (CommonsLangUtils.isBlank(fileName)) {
+                name = "ImageJ-"+FilenameUtils.getBaseName(
+                    FilenameUtils.removeExtension(img.getTitle()))+"-Results-";
+                name += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            } else {
+                name = FilenameUtils.removeExtension(fileName);
+            }
+            name += ".csv";
             File f = new File(dir, name);
             //read data
             ROIReader reader = new ROIReader();
