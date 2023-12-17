@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import java.nio.file.Files;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -174,7 +175,7 @@ public class ArchivedImageLoader
                     
                     result = new HashMap<Boolean, List<File>>();
                     
-                    if(CollectionUtils.isEmpty(files))
+                    if (CollectionUtils.isEmpty(files))
                         return;
                     
                     if (zip) {
@@ -186,7 +187,7 @@ public class ArchivedImageLoader
                         File to = new File(f.getParentFile(), baseName
                                 + "."
                                 + FilenameUtils.getExtension(f.getName()));
-                        Files.move(f, to);
+                        Files.move(f, to, REPLACE_EXISTING);
                         f = copyFile(to, folder.getParentFile());
                         ((Map<Boolean, List<File>>)result).put(Boolean.TRUE, Arrays.asList(f));
                     }
