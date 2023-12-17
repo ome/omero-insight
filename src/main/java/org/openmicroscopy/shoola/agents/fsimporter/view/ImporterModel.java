@@ -730,23 +730,23 @@ class ImporterModel
      */
     private File createFile(String imageName)
     {
-    	final String prefix = "ome_";
-        File dir = Files.createTempDirectory(prefix).toFile();
-        String name;
-        String fileName = null;
-        if (object != null) {
-            fileName = object.getTableName();
-        }
-        if (CommonsLangUtils.isBlank(fileName)) {
-            name = "ImageJ-"+FilenameUtils.getBaseName(
-                    FilenameUtils.removeExtension(imageName))+"-Results-";
-            name += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        } else {
-            name = FilenameUtils.removeExtension(fileName);
-        }
-        
-        name += ".csv";
         try {
+            final String prefix = "ome_";
+            File dir = Files.createTempDirectory(prefix).toFile();
+            String name;
+            String fileName = null;
+            if (object != null) {
+                fileName = object.getTableName();
+            }
+            if (CommonsLangUtils.isBlank(fileName)) {
+                name = "ImageJ-"+FilenameUtils.getBaseName(
+                    FilenameUtils.removeExtension(imageName))+"-Results-";
+                name += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            } else {
+                name = FilenameUtils.removeExtension(fileName);
+            }
+        
+            name += ".csv";
             File f = new File(dir, name);
             //read data
             ROIReader reader = new ROIReader();
