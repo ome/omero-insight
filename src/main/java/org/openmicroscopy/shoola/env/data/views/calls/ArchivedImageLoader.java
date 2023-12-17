@@ -187,7 +187,7 @@ public class ArchivedImageLoader
                         File to = new File(f.getParentFile(), baseName
                                 + "."
                                 + FilenameUtils.getExtension(f.getName()));
-                        Files.move(f, to, REPLACE_EXISTING);
+                        Files.move(f.toPath(), to.toPath(), REPLACE_EXISTING);
                         f = copyFile(to, folder.getParentFile());
                         ((Map<Boolean, List<File>>)result).put(Boolean.TRUE, Arrays.asList(f));
                     }
