@@ -30,7 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.io.Files;
+import java.nio.file.Files;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -158,8 +160,8 @@ public class ArchivedImageLoader
                 
                 File tmpFolder = null;
                 try {
-                    if(zip)
-                        tmpFolder = Files.createTempDir();
+                    if (zip)
+                        tmpFolder = Files.createTempDirectory("ome_").toFile();
                     else
                         tmpFolder = folder;
                     
@@ -173,7 +175,7 @@ public class ArchivedImageLoader
                     
                     result = new HashMap<Boolean, List<File>>();
                     
-                    if(CollectionUtils.isEmpty(files))
+                    if (CollectionUtils.isEmpty(files))
                         return;
                     
                     if (zip) {
@@ -185,7 +187,7 @@ public class ArchivedImageLoader
                         File to = new File(f.getParentFile(), baseName
                                 + "."
                                 + FilenameUtils.getExtension(f.getName()));
-                        Files.move(f, to);
+                        Files.move(f.toPath(), to.toPath(), REPLACE_EXISTING);
                         f = copyFile(to, folder.getParentFile());
                         ((Map<Boolean, List<File>>)result).put(Boolean.TRUE, Arrays.asList(f));
                     }
