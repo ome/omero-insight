@@ -180,7 +180,7 @@ class EditorComponent
 						link = j.next();
 						child = (AnnotationData) link.getChild();
 						if (!model.isNameSpaceExcluded(child.getNameSpace()) &&
-							!link.canDelete() && link.getChild().equals(type))
+							!link.canDelete() && link.getChild().getClass().equals(type))
 							list.add(link.getChild());
 					}
 				}
