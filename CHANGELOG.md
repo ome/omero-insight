@@ -1,6 +1,9 @@
 5.8.4 (January 2024)
 --------------------
 
+- BugFix: Logical AND needed [#419](https://github.com/ome/omero-insight/pull/419)
+- BugFix: Add missing break statement [#419](https://github.com/ome/omero-insight/pull/419)
+- BugFix: Fix comparaison of objects via equals [#419](https://github.com/ome/omero-insight/pull/419)
 - BugFix: Fix posix issue [#418](https://github.com/ome/omero-insight/pull/418)
 - BugFix: Add break [#413](https://github.com/ome/omero-insight/pull/413)
 - BugFix: Adjust shift logic [#404](https://github.com/ome/omero-insight/pull/404)
