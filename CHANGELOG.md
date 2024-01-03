@@ -1,5 +1,5 @@
-5.8.4 (December 2023)
----------------------
+5.8.4 (January 2024)
+--------------------
 
 - BugFix: Fix posix issue [#418](https://github.com/ome/omero-insight/pull/418)
 - BugFix: Add break [#413](https://github.com/ome/omero-insight/pull/413)
