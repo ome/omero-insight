@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2024 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -246,6 +246,7 @@ import omero.gateway.model.TextualAnnotationData;
 import omero.gateway.model.TimeAnnotationData;
 import omero.gateway.model.WellData;
 import omero.gateway.model.WellSampleData;
+
 
 
 /**
@@ -767,8 +768,11 @@ class OMEROGateway
 		} else if (cause instanceof AuthenticationException) {
 			String s = "Cannot initialize the session. \n";
 			throw new DSOutOfServiceException(s+message, cause);
-		} else if (cause instanceof ResourceError) {
+		}
+		else if (cause instanceof ResourceError) {
 			String s = "Fatal error. Please contact the administrator. \n";
+			if (t.toString().contains("No space"))
+				s = "Server ran out of disk space. Please contact the administrator. \n";
 			throw new DSOutOfServiceException(s+message, t);
 		}
 		throw new DSAccessException("Cannot access data. \n"+message, t);
@@ -5671,9 +5675,13 @@ class OMEROGateway
 	                null, 0, srcFiles.length, null, null, null));
 
 	        for (int i = 0; i < srcFiles.length; i++) {
-	            checksums.add(library. uploadFile(proc, srcFiles, i,
-	                    checksumProviderFactory, estimator,
-	                    buf));
+				try {
+					checksums.add(library.uploadFile(proc, srcFiles, i,
+							checksumProviderFactory, estimator,
+							buf));
+				} catch (Throwable e ){
+					handleConnectionException(e);
+				}
 	        }
 
 	        try {

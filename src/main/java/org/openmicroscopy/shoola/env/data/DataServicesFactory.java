@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2024 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -409,7 +409,14 @@ public class DataServicesFactory
 				connectionDialog = new NotificationDialog(f,
 				        "Connection Refused", message, null);
 				addListenerAndShow();
-		}
+            case ConnectionExceptionHandler.OUT_OF_SPACE:
+                message = "The server ran out of disk space.\n" +
+                        "Please contact your system administrator.\n" +
+                        "The application will now exit.";
+                connectionDialog = new NotificationDialog(f,
+                        "Out of disk space.", message, null);
+                addListenerAndShow();;
+        }
 	}
 
     /**

@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.env.data.ConnectionExceptionHandler 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2013 University of Dundee & Open Microscopy Environment.
+ *  Copyright (C) 2006-2024 University of Dundee & Open Microscopy Environment.
  *  All rights reserved.
  *
  *
@@ -66,6 +66,9 @@ public class ConnectionExceptionHandler
 
     /** Indicates that the network is down. */
     public static final int NETWORK = 3;
+
+    /** Indicates that the server ran out of disk space **/
+    public static final int OUT_OF_SPACE = 4;
 
     /** String identifying the connection refused exception.*/
     private static final String REFUSED = "Ice::ConnectionRefusedException";
@@ -139,6 +142,9 @@ public class ConnectionExceptionHandler
             index = handleIceUnknownException(cause);
         else if (e instanceof UnknownException)
             index = handleIceUnknownException(e);
+        else if (e.toString().contains("No space")) {
+            index = OUT_OF_SPACE;
+        }
         return index;
     }
 
