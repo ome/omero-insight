@@ -20,18 +20,19 @@
  */
 package org.openmicroscopy.shoola.env.data.views.calls;
 
+import com.google.common.io.MoreFiles;
 import ij.IJ;
 import ij.ImagePlus;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.env.data.OmeroImageService;
 import org.openmicroscopy.shoola.env.data.OmeroMetadataService;
 import org.openmicroscopy.shoola.env.data.model.FileObject;
@@ -88,11 +89,11 @@ public class ResultsSaver
             File dir = Files.createTempDirectory("ome_").toFile();
             String name;
             if (CommonsLangUtils.isBlank(fileName)) {
-                name = "ImageJ-"+FilenameUtils.getBaseName(
-                    FilenameUtils.removeExtension(img.getTitle()))+"-Results-";
+                name = "ImageJ-"+ MoreFiles.getNameWithoutExtension(Paths.get(img.getTitle()))
+                        +"-Results-";
                 name += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
             } else {
-                name = FilenameUtils.removeExtension(fileName);
+                name = MoreFiles.getNameWithoutExtension(Paths.get(fileName));
             }
             name += ".csv";
             File f = new File(dir, name);

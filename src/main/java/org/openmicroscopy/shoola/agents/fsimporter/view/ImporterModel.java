@@ -20,9 +20,12 @@
  */
 package org.openmicroscopy.shoola.agents.fsimporter.view;
 
+import com.google.common.io.MoreFiles;
 import ij.ImagePlus;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.nio.file.Files;
 import java.util.Collection;
@@ -39,7 +42,6 @@ import javax.swing.filechooser.FileFilter;
 import omero.model.ImageI;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.agents.fsimporter.AnnotationDataLoader;
 import org.openmicroscopy.shoola.agents.fsimporter.DataLoader;
 import org.openmicroscopy.shoola.agents.fsimporter.DataObjectCreator;
@@ -203,7 +205,7 @@ class ImporterModel
 	/** 
 	 * Creates a new instance.
 	 *
-	 * @param groupID The id to the group selected for the current user.
+	 * @param groupId The id to the group selected for the current user.
 	 * @param displayMode Group/Experimenter view.
 	 */
 	ImporterModel(long groupId, int displayMode)
@@ -214,7 +216,7 @@ class ImporterModel
 	/** 
 	 * Creates a new instance.
 	 *
-	 * @param groupID The id to the group selected for the current user.
+	 * @param groupId The id to the group selected for the current user.
 	 * @param master Pass <code>true</code> if the importer is used a stand-alone
 	 * application, <code>false</code> otherwise.
 	 * @param displayMode Group/Experimenter view.
@@ -381,7 +383,7 @@ class ImporterModel
 	/**
 	 * Sets the collection of the existing tags.
 	 * 
-	 * @param The value to set.
+	 * @param tags The value to set.
 	 */
 	void setTags(Collection tags)
 	{ 
@@ -739,11 +741,11 @@ class ImporterModel
                 fileName = object.getTableName();
             }
             if (CommonsLangUtils.isBlank(fileName)) {
-                name = "ImageJ-"+FilenameUtils.getBaseName(
-                    FilenameUtils.removeExtension(imageName))+"-Results-";
+				Path baseName = Paths.get(imageName).getFileName();
+                name = "ImageJ-"+MoreFiles.getNameWithoutExtension(baseName)+"-Results-";
                 name += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
             } else {
-                name = FilenameUtils.removeExtension(fileName);
+                name = MoreFiles.getNameWithoutExtension(Paths.get(fileName));
             }
         
             name += ".csv";

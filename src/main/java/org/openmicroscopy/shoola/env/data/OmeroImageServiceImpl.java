@@ -26,6 +26,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,7 +80,6 @@ import omero.romio.PlaneDef;
 import omero.sys.Parameters;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.config.Registry;
@@ -1580,7 +1582,7 @@ class OmeroImageServiceImpl
         }
         File f = File.createTempFile(
                 RandomStringUtils.random(60, false, true), "."+XMLFilter.OME_XML);
-        FileUtils.copyFile(inputXML, f);
+        Files.copy(inputXML.toPath(), f.toPath());
         return f;
     }
 
@@ -1632,7 +1634,7 @@ class OmeroImageServiceImpl
 				tmp = File.createTempFile(RandomStringUtils.random(60, false, true),
 	                    "."+XMLFilter.OME_XML);
 				String c = new TiffParser(file.getAbsolutePath()).getComment();
-				FileUtils.writeStringToFile(tmp, c, encoding);
+				Files.write(tmp.toPath(), c.getBytes(Charset.forName(encoding)));
 				transformed = applyTransforms(tmp, transforms, encoding);
 			} else {
 			    transformed = applyTransforms(file, transforms, encoding);
@@ -1641,13 +1643,13 @@ class OmeroImageServiceImpl
 			if (index == EXPORT_AS_OME_XML) {
 			    file.delete();
 			    r = new File(path);
-			    FileUtils.copyFile(transformed, r);
+				Files.copy(transformed.toPath(), r.toPath());
 			    return r;
 			} else {
 				TiffSaver saver = new TiffSaver(file.getAbsolutePath());
 				ra = new RandomAccessInputStream(file.getAbsolutePath());
 				saver.overwriteComment(ra,
-				        FileUtils.readFileToString(transformed, encoding));
+						Files.readString(transformed.toPath(), Charset.forName(encoding)));
 				return file;
 			}
 		} catch (Exception e) {
@@ -2046,8 +2048,6 @@ class OmeroImageServiceImpl
 
     /**
      * Implemented as specified by {@link OmeroImageService}.
-     *
-     * @see OmeroImageService#closeImport(SecurityContext, String)
      */
 	public void closeImport(ImportableObject importable) throws DSAccessException,
 			DSOutOfServiceException {

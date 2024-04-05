@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.io.MoreFiles;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.openmicroscopy.shoola.env.config.Registry;
 import omero.gateway.SecurityContext;
 import org.openmicroscopy.shoola.env.data.views.CallHandle;
@@ -157,7 +157,7 @@ public class ArchivedLoader
                         f = i.next();
                         if (f.isDirectory()) {
                             try {
-                                FileUtils.deleteDirectory(f);
+                                MoreFiles.deleteRecursively(f.toPath());
                             } catch (Exception e) {
                                 registry.getLogger().error(this,
                                         "Cannot delete the directory");

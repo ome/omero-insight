@@ -24,11 +24,12 @@ package org.openmicroscopy.shoola.env.data.model.appdata;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.nio.file.Paths;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.apache.commons.io.FilenameUtils;
+import com.google.common.io.MoreFiles;
 import org.openmicroscopy.shoola.env.data.model.ApplicationData;
 
 /**
@@ -71,7 +72,7 @@ public class LinuxApplicationDataExtractor implements ApplicationDataExtractor
 	public ApplicationData extractAppData(File file) throws Exception {
 		String applicationPath = file.getAbsolutePath();
 
-		String applicationName = FilenameUtils.getBaseName(applicationPath);
+		String applicationName = MoreFiles.getNameWithoutExtension(Paths.get(applicationPath));
 
 		// TODO: read the location of this from .desktop file
 		Icon applicationIcon = new ImageIcon();

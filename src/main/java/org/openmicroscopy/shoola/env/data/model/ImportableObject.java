@@ -22,6 +22,7 @@ package org.openmicroscopy.shoola.env.data.model;
 
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,13 +33,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.io.MoreFiles;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
 import loci.formats.in.OMEXMLReader;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import omero.gateway.SecurityContext;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
@@ -171,7 +172,7 @@ public class ImportableObject
 		if (f == null) return false;
 		String name = f.getName();
 		if (!name.contains(".")) return false;
-		String ext = FilenameUtils.getExtension(name);
+		String ext = MoreFiles.getFileExtension(Paths.get(name));
 		return ARBITRARY_FILES_EXTENSION.contains(ext);
 	}
 

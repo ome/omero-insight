@@ -25,6 +25,7 @@ package org.openmicroscopy.shoola.util.ui.filechooser;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.swing.Icon;
@@ -35,8 +36,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 
+import com.google.common.io.MoreFiles;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
 import org.openmicroscopy.shoola.util.filter.file.CustomizedFileFilter;
@@ -344,7 +345,7 @@ public class FileChooser
             UIUtilities.setDefaultFolder(
                     uiDelegate.getCurrentDirectory().toString());
         File f = getSelectedFile();
-        String extension = FilenameUtils.getExtension(f.getName());
+        String extension = MoreFiles.getFileExtension(f.toPath());
         if (CommonsLangUtils.isBlank(extension)) {
             FileFilter filter = getSelectedFilter();
             if (filter instanceof CustomizedFileFilter) {
@@ -423,7 +424,7 @@ public class FileChooser
     {
         if (CommonsLangUtils.isBlank(name))
             throw new IllegalArgumentException("File name not valid.");
-        String s = FilenameUtils.getBaseName(name);
+        String s = MoreFiles.getNameWithoutExtension(Paths.get(name));
         if (CommonsLangUtils.isBlank(s)) s = name;
         uiDelegate.setSelectedFile(new File(s));
     }

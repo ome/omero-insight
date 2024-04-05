@@ -59,7 +59,6 @@ import omero.gateway.model.ScreenData;
 import omero.gateway.model.TagAnnotationData;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.jdesktop.swingx.JXBusyLabel;
 import org.openmicroscopy.shoola.agents.fsimporter.IconManager;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
@@ -75,6 +74,7 @@ import org.openmicroscopy.shoola.env.data.model.ImportableFile;
 import org.openmicroscopy.shoola.env.data.model.ImportableObject;
 import org.openmicroscopy.shoola.env.ui.UserNotifier;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
+import org.openmicroscopy.shoola.util.file.IOUtil;
 import org.openmicroscopy.shoola.util.file.ImportErrorObject;
 import org.openmicroscopy.shoola.util.ui.ClosableTabbedPaneComponent;
 import org.openmicroscopy.shoola.util.ui.RotationIcon;
@@ -517,7 +517,7 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
     JPanel buildHeader()
     {
         sizeLabel = UIUtilities.createComponent(null);
-        sizeLabel.setText(FileUtils.byteCountToDisplaySize(sizeImport));
+        sizeLabel.setText(IOUtil.byteCountToDisplaySize(sizeImport));
         reportLabel = UIUtilities.setTextFont("Report:", Font.BOLD);
         importSizeLabel = UIUtilities.setTextFont("Import Size:", Font.BOLD);
         
@@ -638,7 +638,7 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
         if (file.isFile()) {
             countUploaded++;
             sizeImport += c.getImportSize();
-            sizeLabel.setText(FileUtils.byteCountToDisplaySize(sizeImport));
+            sizeLabel.setText(IOUtil.byteCountToDisplaySize(sizeImport));
             // handle error that occurred during the scanning or upload.
             // Check that the result has not been set.
             // if (!c.hasResult()) {
@@ -718,7 +718,7 @@ abstract class ImporterUIElement extends ClosableTabbedPaneComponent implements 
             if (fc.hasUploadFailed()) {
                 countUploadFailure++;
                 sizeImport -= fc.getImportSize();
-                sizeLabel.setText(FileUtils.byteCountToDisplaySize(sizeImport));
+                sizeLabel.setText(IOUtil.byteCountToDisplaySize(sizeImport));
             }
             if (fc.hasImportFailed())
                 countFailure++;

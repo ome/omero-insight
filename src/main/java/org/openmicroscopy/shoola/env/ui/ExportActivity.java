@@ -25,7 +25,6 @@ package org.openmicroscopy.shoola.env.ui;
 
 import java.io.File;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
 import org.openmicroscopy.shoola.env.config.Registry;

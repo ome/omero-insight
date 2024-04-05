@@ -21,11 +21,10 @@
 package org.openmicroscopy.shoola.env.ui;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Map;
 
-
-import org.apache.commons.io.FilenameUtils;
-
+import com.google.common.io.MoreFiles;
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.model.SaveAsParam;
 import omero.gateway.SecurityContext;
@@ -70,7 +69,7 @@ public class SaveAsActivity
         File directory = parameters.getFolder();
         File[] files = directory.listFiles();
         String dirPath = directory.getAbsolutePath() + File.separator;
-        String extension = "."+FilenameUtils.getExtension(name);
+        String extension = "."+ MoreFiles.getFileExtension(Paths.get(name));
         return getFileName(files, name, name, dirPath, 1, extension);
     }
 
