@@ -15,6 +15,10 @@ repositories {
     mavenCentral()
 }
 
+configurations.all {
+    exclude group: 'commons-io'
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
