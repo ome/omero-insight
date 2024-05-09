@@ -1,6 +1,7 @@
 5.8.4 (January 2024)
 --------------------
 
+- BugFix: use correct type in equals [#422](https://github.com/ome/omero-insight/pull/422)
 - BugFix: Logical AND needed [#419](https://github.com/ome/omero-insight/pull/419)
 - BugFix: Add missing break statement [#419](https://github.com/ome/omero-insight/pull/419)
 - BugFix: Fix comparaison of objects via equals [#419](https://github.com/ome/omero-insight/pull/419)
@@ -11,7 +12,7 @@
 - BugFix: Add missing return [#408](https://github.com/ome/omero-insight/pull/408)
 - BugFix: Use super to remove the key from the HashMap [#402](https://github.com/ome/omero-insight/pull/402)
 - Update: Use Gateway method for downloading image [#409](https://github.com/ome/omero-insight/pull/409)
-- Bump omero-gateway-java to 5.9.0 [#416](https://github.com/ome/omero-insight/pull/416)
+- Bump omero-gateway-java to 5.9.1 [#416](https://github.com/ome/omero-insight/pull/416)
 - Bump logback-classic to 1.3.14 [#416](https://github.com/ome/omero-insight/pull/416)
 - Bump logback-core to 1.3.14 [#416](https://github.com/ome/omero-insight/pull/416)
 
