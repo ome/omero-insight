@@ -43,7 +43,7 @@ dependencies {
     implementation("org.jfree:jfreechart:1.0.19")
     implementation("org.swinglabs:swingx:1.6.1")
 
-    implementation("org.openmicroscopy:omero-gateway:5.9.0") {
+    implementation("org.openmicroscopy:omero-gateway:5.9.1") {
         // Conflicts with `net.java.dev.jna`
         exclude group: "com.sun.jna", module: "jna"
     }
