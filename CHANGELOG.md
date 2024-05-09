@@ -1,7 +1,8 @@
 5.8.4 (January 2024)
 --------------------
 
-- BugFix: use correct type in equals [#422](https://github.com/ome/omero-insight/pull/422)
+- BugFix: Handle out of space [#427](https://github.com/ome/omero-insight/pull/427)
+- BugFix: Use correct type in equals [#422](https://github.com/ome/omero-insight/pull/422)
 - BugFix: Logical AND needed [#419](https://github.com/ome/omero-insight/pull/419)
 - BugFix: Add missing break statement [#419](https://github.com/ome/omero-insight/pull/419)
 - BugFix: Fix comparaison of objects via equals [#419](https://github.com/ome/omero-insight/pull/419)
