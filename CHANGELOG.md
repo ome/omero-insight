@@ -1,3 +1,22 @@
+5.8.4 (MAy 2024)
+----------------
+
+- BugFix: Handle out of space [#427](https://github.com/ome/omero-insight/pull/427)
+- BugFix: Use correct type in equals [#422](https://github.com/ome/omero-insight/pull/422)
+- BugFix: Logical AND needed [#419](https://github.com/ome/omero-insight/pull/419)
+- BugFix: Add missing break statement [#419](https://github.com/ome/omero-insight/pull/419)
+- BugFix: Fix comparaison of objects via equals [#419](https://github.com/ome/omero-insight/pull/419)
+- BugFix: Fix posix issue [#418](https://github.com/ome/omero-insight/pull/418)
+- BugFix: Add break [#413](https://github.com/ome/omero-insight/pull/413)
+- BugFix: Adjust shift logic [#404](https://github.com/ome/omero-insight/pull/404)
+- BugFix: Set the font [#407](https://github.com/ome/omero-insight/pull/407)
+- BugFix: Add missing return [#408](https://github.com/ome/omero-insight/pull/408)
+- BugFix: Use super to remove the key from the HashMap [#402](https://github.com/ome/omero-insight/pull/402)
+- Update: Use Gateway method for downloading image [#409](https://github.com/ome/omero-insight/pull/409)
+- Bump omero-gateway-java to 5.9.1 [#416](https://github.com/ome/omero-insight/pull/416)
+- Bump logback-classic to 1.3.14 [#416](https://github.com/ome/omero-insight/pull/416)
+- Bump logback-core to 1.3.14 [#416](https://github.com/ome/omero-insight/pull/416)
+
 5.8.3 (September 2023)
 ----------------------
 
