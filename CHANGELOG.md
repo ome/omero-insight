@@ -1,5 +1,5 @@
-5.8.4 (January 2024)
---------------------
+5.8.4 (MAy 2024)
+----------------
 
 - BugFix: Handle out of space [#427](https://github.com/ome/omero-insight/pull/427)
 - BugFix: Use correct type in equals [#422](https://github.com/ome/omero-insight/pull/422)
