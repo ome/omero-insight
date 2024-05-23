@@ -36,7 +36,8 @@ dependencies {
         exclude group: "com.sun.jna", module: "jna"
     }
     implementation("org.apache.poi:poi:4.0.1")
-    implementation("org.apache.commons:commons-collections4:4.3")
+    implementation("org.apache.commons:commons-collections4:4.4")
+    implementation("commons-io:commons-io:2.15.1")
     implementation("org.apache.httpcomponents:httpmime:4.5.7")
     implementation("org.apache.httpcomponents:httpclient:4.5.7")
     implementation("org.apache.httpcomponents:httpcomponents-client:4.5.7")
