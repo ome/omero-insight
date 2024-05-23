@@ -32,9 +32,8 @@ import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
+import com.google.common.io.MoreFiles;
 import junit.framework.TestCase;
 
 
@@ -125,8 +124,8 @@ public class TestIOUtil
     private void clean(File f)
     {
         try {
-            if (f.isFile()) FileUtils.deleteQuietly(f);
-            if (f.isDirectory()) FileUtils.deleteDirectory(f);
+            if (f.isFile()) MoreFiles.deleteRecursively(f.toPath());
+            if (f.isDirectory()) MoreFiles.deleteRecursively(f.toPath());
         } catch (Exception e) {}
     }
 
@@ -139,7 +138,7 @@ public class TestIOUtil
             File dir = Files.createTempDirectory(prefix).toFile();
             File f = File.createTempFile("testZipDirectory", ".tmp", dir);
             File zip = IOUtil.zipDirectory(dir);
-            assertEquals(FilenameUtils.getExtension(zip.getName()), "zip");
+            assertEquals(MoreFiles.getFileExtension(zip.toPath()), "zip");
             File destDir = Files.createTempDirectory(prefix).toFile();
             boolean b = unzip(zip, destDir);
             assertEquals(true, b);
@@ -165,7 +164,7 @@ public class TestIOUtil
             File subfolder = Files.createTempDirectory(prefix).toFile();
             File f1 = File.createTempFile("sub_testZipDirectoryWithSubfolder", ".tmp", subfolder);
 
-            FileUtils.moveDirectoryToDirectory(subfolder, dir, false);
+            Files.copy(subfolder.toPath(), dir.toPath());
 
             File zip = IOUtil.zipDirectory(dir);
             File destDir = Files.createTempDirectory(prefix).toFile();

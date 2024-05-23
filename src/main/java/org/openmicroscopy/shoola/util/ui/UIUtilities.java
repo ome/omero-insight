@@ -42,6 +42,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -85,12 +86,12 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+import com.google.common.io.MoreFiles;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXLabel;
 import org.jdesktop.swingx.JXTaskPane;
+import org.openmicroscopy.shoola.util.file.IOUtil;
 import org.openmicroscopy.shoola.util.ui.border.TitledLineBorder;
 
 import omero.model.Length;
@@ -1859,7 +1860,7 @@ public class UIUtilities
 	 */
 	public static String formatFileSize(long v)
 	{
-		return FileUtils.byteCountToDisplaySize(v);
+		return IOUtil.byteCountToDisplaySize(v);
 	}
 	
 	/**
@@ -2093,7 +2094,7 @@ public class UIUtilities
      */
     public static String removeFileExtension(String originalName)
     {
-    	return FilenameUtils.removeExtension(originalName);
+    	return MoreFiles.getNameWithoutExtension(Paths.get(originalName));
     }
     
 	/**

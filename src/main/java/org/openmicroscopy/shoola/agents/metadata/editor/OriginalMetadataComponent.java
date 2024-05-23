@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -49,8 +50,8 @@ import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableModel;
 
+import com.google.common.io.MoreFiles;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 import org.jdesktop.swingx.JXBusyLabel;
 import org.jdesktop.swingx.JXTable;
@@ -121,7 +122,7 @@ class OriginalMetadataComponent
         if (data != null) name = data.getFileName();
         else {
             ImageData img = model.getImage();
-            name = FilenameUtils.removeExtension(img.getName());
+            name = MoreFiles.getNameWithoutExtension(Paths.get(img.getName()));
         }
         chooser.setSelectedFileFull(name);
         chooser.setApproveButtonText("Download");

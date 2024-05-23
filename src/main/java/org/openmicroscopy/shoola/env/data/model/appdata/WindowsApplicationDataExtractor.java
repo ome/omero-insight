@@ -26,11 +26,12 @@ package org.openmicroscopy.shoola.env.data.model.appdata;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.nio.file.Paths;
 
 import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
 
-import org.apache.commons.io.FilenameUtils;
+import com.google.common.io.MoreFiles;
 import org.openmicroscopy.shoola.env.data.model.ApplicationData;
 
 import com.sun.jna.Memory;
@@ -236,7 +237,7 @@ public class WindowsApplicationDataExtractor implements
 		int fileVersionInfoSize = Version.INSTANCE
 				.GetFileVersionInfoSize(absPath, dwDummy);
 
-		String applicationName = FilenameUtils.getBaseName(absPath);
+		String applicationName = MoreFiles.getNameWithoutExtension(Paths.get(absPath));
 
 		if (fileVersionInfoSize > 0) {
 			String translation = getTranslation(absPath, fileVersionInfoSize);

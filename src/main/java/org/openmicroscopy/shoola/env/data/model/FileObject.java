@@ -21,17 +21,21 @@
 package org.openmicroscopy.shoola.env.data.model;
 
 
+import com.google.common.io.MoreFiles;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +45,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import loci.formats.codec.CompressionType;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
+import org.openmicroscopy.shoola.util.file.IOUtil;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -414,15 +417,14 @@ public class FileObject
                 if (info != null) {
                     if (CommonsLangUtils.isNotEmpty(info.url)) {
                         //create a tmp file and copy the URL
-                        String fname = img.getTitle();
-                        String extension = FilenameUtils.getExtension(fname);
-                        String baseName = FilenameUtils.getBaseName(
-                                FilenameUtils.removeExtension(fname));
+                        Path fname = Paths.get(img.getTitle());
+                        String extension = MoreFiles.getFileExtension(fname);
+                        String baseName = MoreFiles.getNameWithoutExtension(fname);
                         try {
                             trueFile = File.createTempFile(baseName,
                                     "."+extension);
                             trueFile.deleteOnExit();
-                            FileUtils.copyURLToFile(new URL(info.url), trueFile);
+                            Files.copy(new URL(info.url).openStream(), trueFile.toPath());
                         } catch (Exception e) {
                             //ignore.
                         }
@@ -461,7 +463,7 @@ public class FileObject
         if (file instanceof File) {
             f = (File) file;
             if (f.isFile()) return f.length();
-            return FileUtils.sizeOfDirectory(f);
+            return IOUtil.sizeOfDirectory(f.getAbsolutePath());
         } else if (file instanceof ImagePlus) {
             f = getTrueFile();
             if (f != null) return f.length();

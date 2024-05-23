@@ -26,8 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-
+import com.google.common.io.MoreFiles;
 import org.openmicroscopy.shoola.env.config.Registry;
 import org.openmicroscopy.shoola.env.data.model.DownloadAndZipParam;
 import omero.gateway.SecurityContext;
@@ -116,7 +115,7 @@ public class DownloadAndZipActivity
 	{
 	    try {
 	        messageLabel.setText(zipFolder.getAbsolutePath());
-	        FileUtils.deleteDirectory(zipFolder);
+			MoreFiles.deleteRecursively(zipFolder.toPath());
 	    } catch (Exception e) {
 	        registry.getLogger().error(this,
 	                "Error deleting folder:"+e.getMessage());

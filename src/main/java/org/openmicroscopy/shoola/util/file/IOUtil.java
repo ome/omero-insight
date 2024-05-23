@@ -34,6 +34,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +45,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FilenameUtils;
+import com.google.common.io.MoreFiles;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 
 import org.openmicroscopy.shoola.util.filter.file.ExcelFilter;
@@ -275,7 +279,7 @@ public class IOUtil
 	            in = new FileInputStream(f); // Stream to read file
 	            String zipName = f.getName();
 	            if (!CommonsLangUtils.isEmpty(parentDirectoryName)) {
-	                zipName = FilenameUtils.concat(parentDirectoryName, zipName);
+	                zipName = Paths.get(parentDirectoryName, zipName).toString();
 	            }
 	            out.putNextEntry(new ZipEntry(zipName)); // Store entry
 	            while ((bytesRead = in.read(buffer)) != -1)
@@ -305,7 +309,7 @@ public class IOUtil
         if (!zip.isDirectory() || !zip.exists())
             throw new IllegalArgumentException("Not a valid directory.");
         //Check if the name already has the extension
-        String extension = FilenameUtils.getExtension(zip.getName());
+        String extension = MoreFiles.getFileExtension(Paths.get(zip.getName()));
         String name = zip.getName();
         if (CommonsLangUtils.isEmpty(extension) ||
                 !ZIP_EXTENSION.equals("."+extension)) {
@@ -390,4 +394,38 @@ public class IOUtil
 		zfile.close();
 	}
 
+	/**
+	 * Counts the size of a directory
+	 * @param dir Directory to inspect, must not be null
+	 * @return size of directory in bytes, 0 if there was an error
+	 */
+	public static long sizeOfDirectory(String dir) {
+		Path folder = Paths.get(dir);
+		if (folder.toFile().isFile()) {
+			return folder.toFile().length();
+		}
+		try {
+			long size = Files.walk(folder)
+					.filter(p -> p.toFile().isFile())
+					.mapToLong(p -> p.toFile().length())
+					.sum();
+			return size;
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns a human-readable version of the byte count,
+	 * @param size The byte count
+	 * @return See above.
+	 */
+	public static String byteCountToDisplaySize(long size) {
+		String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB" };
+		int unitIndex = (int) (Math.log10(size) / 3);
+		double unitValue = 1 << (unitIndex * 10);
+		return new DecimalFormat("0.##")
+				.format(size / unitValue) + " "
+				+ units[unitIndex];
+	}
 }

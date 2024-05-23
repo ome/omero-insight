@@ -23,12 +23,13 @@
 package org.openmicroscopy.shoola.env;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
+import com.google.common.io.MoreFiles;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 import org.openmicroscopy.shoola.env.config.AgentInfo;
 import org.openmicroscopy.shoola.env.config.Registry;
@@ -247,12 +248,13 @@ public final class Container
 	private Container(String home, String configFile, String pluginDir, List<String> cmdLineArgs)
 		throws StartupException
 	{
-	    if (CommonsLangUtils.isBlank(configFile) || !FilenameUtils.isExtension(configFile, "xml")) {
+	    if (CommonsLangUtils.isBlank(configFile) ||
+				!MoreFiles.getFileExtension(Paths.get(configFile)).toLowerCase().equals("xml")) {
 			configFile = CONFIG_FILE;
 		}
 		this.configFile = configFile;
 
-        if (CommonsLangUtils.isBlank(FilenameUtils.getPath(home))) {
+        if (CommonsLangUtils.isBlank(home)) {
         	home = System.getProperty("user.dir");
 		}
         File f = new File(home);
@@ -465,7 +467,7 @@ public final class Container
 	 * plug-in. Those plug-in will have an UI entry.
 	 * @param pluginDir  Path to the plugin directory. Used in plugin mode only.
 	 * @return A reference to the newly created singleton Container.
-	 * @throws Throws a startup exception if the application cannot be used as
+	 * @throws StartupException Throws a startup exception if the application cannot be used as
 	 * a plugin due to missing dependencies.
 	 */
 	public static Container startupInPluginMode(String home, String configFile,
@@ -493,7 +495,7 @@ public final class Container
      * @param plugin Pass positive value. See {@link LookupNames} for supported
      * plug-in. Those plug-in will have an UI entry.
      * @return A reference to the newly created singleton Container.
-     * @throws Throws a startup exception if the application cannot be used as 
+     * @throws StartupException Throws a startup exception if the application cannot be used as
      * a plugin due to missing dependencies.
      */
     public static Container startupInPluginMode(String home, String configFile,
@@ -522,7 +524,7 @@ public final class Container
 	 * plug-in. Those plug-in will have an UI entry.
 	 * @param listener Listens to <code>ConnectedEvent</code>.
 	 * @return A reference to the newly created singleton Container.
-	 * @throws Throws a startup exception if the application cannot be used as
+	 * @throws StartupException Throws a startup exception if the application cannot be used as
 	 * a plugin due to missing dependencies.
 	 */
 	public static Container startupInPluginMode(String home, String configFile,
@@ -552,7 +554,7 @@ public final class Container
      * plug-in. Those plug-in will have an UI entry.
      * @param listener Listens to <code>ConnectedEvent</code>.
      * @return A reference to the newly created singleton Container.
-     * @throws Throws a startup exception if the application cannot be used as 
+     * @throws StartupException Throws a startup exception if the application cannot be used as
      * a plugin due to missing dependencies.
      */
     public static Container startupInPluginMode(String home, String configFile,
@@ -637,7 +639,7 @@ public final class Container
      * @param plugin Pass positive value. See {@link LookupNames} for supported
      * plug-in. Those plug-in will have an UI entry.
      * @return A reference to the newly created singleton Container.
-     * @throws Throws a startup exception if the application cannot be used as 
+     * @throws StartupException Throws a startup exception if the application cannot be used as
      * a plugin due to missing dependencies.
      */
     public static Container startupInHeadlessMode(String home,
@@ -695,7 +697,7 @@ public final class Container
      *              empty, then the user directory is assumed.
      * @param configFile The configuration file.
      * @return A reference to the newly created singleton Container.
-     * @throws Throws a startup exception if the application cannot be used as 
+     * @throws StartupException Throws a startup exception if the application cannot be used as
      * a plugin due to missing dependencies.
      */
     public static Container startupInHeadlessMode(String home, String configFile

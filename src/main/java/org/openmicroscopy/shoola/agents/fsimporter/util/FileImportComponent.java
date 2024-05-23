@@ -61,7 +61,6 @@ import omero.cmd.CmdCallback;
 import omero.cmd.CmdCallbackI;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.jdesktop.swingx.JXBusyLabel;
 import org.jdesktop.swingx.JXTaskPane;
 import org.openmicroscopy.shoola.agents.events.importer.BrowseContainer;
@@ -80,6 +79,7 @@ import org.openmicroscopy.shoola.env.data.model.ThumbnailData;
 import org.openmicroscopy.shoola.env.data.util.Status;
 import org.openmicroscopy.shoola.env.data.util.StatusLabel;
 import org.openmicroscopy.shoola.env.event.EventBus;
+import org.openmicroscopy.shoola.util.file.IOUtil;
 import org.openmicroscopy.shoola.util.file.ImportErrorObject;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 
@@ -363,7 +363,7 @@ public class FileImportComponent
 			}
 		}
 		buf.append("<b>Size: </b>");
-		buf.append(FileUtils.byteCountToDisplaySize(status.getSizeUpload()));
+		buf.append(IOUtil.byteCountToDisplaySize(status.getSizeUpload()));
 		buf.append("<br>");
 		buf.append("<b>Group: </b>");
 		buf.append(importable.getGroup().getName());

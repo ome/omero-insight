@@ -23,6 +23,7 @@
 package org.openmicroscopy.shoola.env.data.views.calls;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,9 +34,8 @@ import java.util.Map;
 import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import com.google.common.io.MoreFiles;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.env.data.OmeroDataService;
 import omero.gateway.SecurityContext;
 import omero.gateway.model.DataObject;
@@ -89,9 +89,8 @@ public class ArchivedImageLoader
         File[] files = folder.listFiles();
         int count = 0;
         String fname = f.getName();
-        String extension = FilenameUtils.getExtension(fname);
-        String baseName = FilenameUtils.getBaseName(
-                FilenameUtils.removeExtension(fname));
+        String extension = MoreFiles.getFileExtension(Paths.get(fname));
+        String baseName = MoreFiles.getNameWithoutExtension(Paths.get(fname));
         if (files != null) {
             for (int i = 0; i < files.length; i++) {
                 String v = files[i].getName();
@@ -109,11 +108,11 @@ public class ArchivedImageLoader
             } else {
                 to = new File(f.getParentFile(),
                         baseName+"_("+count+")."+extension);
-                FileUtils.copyFile(f, to);
+                Files.copy(f.toPath(), to.toPath());
                 f = to;
             }
         }
-        FileUtils.moveFileToDirectory(f, folder, false);
+        Files.move(f.toPath(), folder.toPath());
         return new File(folder, f.getName());
     }
 
@@ -181,12 +180,10 @@ public class ArchivedImageLoader
                     if (zip) {
                         File f = IOUtil.zipDirectory(tmpFolder, false);
                         // rename the zip
-                        String baseName = FilenameUtils
-                                .getBaseName(FilenameUtils
-                                        .removeExtension(folder.getName()));
+                        String baseName = MoreFiles.getNameWithoutExtension(Paths.get(folder.getName()));
                         File to = new File(f.getParentFile(), baseName
                                 + "."
-                                + FilenameUtils.getExtension(f.getName()));
+                                + MoreFiles.getFileExtension(Paths.get(f.getName())));
                         Files.move(f.toPath(), to.toPath(), REPLACE_EXISTING);
                         f = copyFile(to, folder.getParentFile());
                         ((Map<Boolean, List<File>>)result).put(Boolean.TRUE, Arrays.asList(f));
@@ -199,7 +196,7 @@ public class ArchivedImageLoader
                     throw new Exception(e);
                 } finally {
                     if (zip && tmpFolder != null)
-                        FileUtils.deleteDirectory(tmpFolder);
+                        MoreFiles.deleteRecursively(tmpFolder.toPath());
                 }
             }
         };

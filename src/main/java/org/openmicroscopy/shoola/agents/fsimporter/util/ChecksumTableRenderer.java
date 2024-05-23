@@ -27,6 +27,7 @@ package org.openmicroscopy.shoola.agents.fsimporter.util;
 //Java imports
 import java.awt.Color;
 import java.awt.Component;
+import java.nio.file.Paths;
 import javax.swing.Icon;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -35,7 +36,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 //Third-party libraries
 
 //Application-internal dependencies
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 
 /**
@@ -107,7 +107,7 @@ class ChecksumTableRenderer
 					setText(v.substring(0, MAX_CHARACTERS));
 				else setText(v);
 			} else {
-				setText(FilenameUtils.getName(v));
+				setText(Paths.get(v).getFileName().toString());
 			}
 		}
 		return this;

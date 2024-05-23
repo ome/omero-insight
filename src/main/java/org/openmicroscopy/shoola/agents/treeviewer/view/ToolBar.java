@@ -39,6 +39,7 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeListenerProxy;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -69,7 +70,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.jdesktop.swingx.JXBusyLabel;
 import org.openmicroscopy.shoola.agents.treeviewer.IconManager;
 import org.openmicroscopy.shoola.agents.treeviewer.TreeViewerAgent;
@@ -1015,7 +1015,7 @@ class ToolBar
                 value = "";
                 path = so.getPath();
                 if (path != null && path.length() > 1) {
-                    sep = FilenameUtils.getPrefix(path);
+                    sep = Paths.get(path).getRoot().toString();
                     if (path.startsWith(sep))
                         path = path.substring(1, path.length());
                     values = UIUtilities.splitString(path);
@@ -1036,7 +1036,7 @@ class ToolBar
                 so = i.next();
                 path = so.getPath();
                 if (path != null) {
-                    sep = FilenameUtils.getPrefix(path);
+                    sep = Paths.get(path).getRoot().toString();
                     if (path.startsWith(sep))
                         path = path.substring(1, path.length());
                     values = UIUtilities.splitString(path);

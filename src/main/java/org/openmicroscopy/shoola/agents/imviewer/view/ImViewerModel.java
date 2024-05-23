@@ -28,6 +28,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,13 +39,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.io.MoreFiles;
 import omero.model.Length;
 import omero.model.LengthI;
 import omero.model.PlaneInfo;
 import omero.model.enums.UnitsLength;
 import omero.romio.PlaneDef;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.agents.events.iviewer.CopyRndSettings;
 import org.openmicroscopy.shoola.agents.imviewer.AcquisitionDataLoader;
 import org.openmicroscopy.shoola.agents.imviewer.BirdEyeLoader;
@@ -2199,7 +2200,7 @@ class ImViewerModel
 	 * @return See above.
 	 */
 	private String combineFilenameWith(String projectName, String imageName) {
-		String extension = FilenameUtils.getExtension(imageName);
+		String extension = MoreFiles.getFileExtension(Paths.get(imageName));
 		
 		StringBuilder nameBuilder = new StringBuilder();
 		nameBuilder.append(projectName);

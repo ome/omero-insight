@@ -39,9 +39,9 @@ import ome.formats.importer.ImportCandidates;
 import ome.formats.importer.ImportEvent;
 import ome.formats.importer.util.ErrorHandler;
 
-import org.apache.commons.io.FileUtils;
 import org.openmicroscopy.shoola.env.data.ImportException;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
+import org.openmicroscopy.shoola.util.file.IOUtil;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 
 
@@ -115,7 +115,7 @@ public class StatusLabel extends JPanel implements PropertyChangeListener {
      */
     private String formatUpload(long value) {
         StringBuffer buffer = new StringBuffer();
-        String v = FileUtils.byteCountToDisplaySize(value);
+        String v = IOUtil.byteCountToDisplaySize(value);
         String[] values = v.split(" ");
         if (values.length > 1) {
             String u = values[1];

@@ -21,17 +21,13 @@
 package org.openmicroscopy.shoola.env.data.views.calls;
 
 import java.io.File;
+import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import java.util.List;
 
-import omero.model.IObject;
-import omero.model.OriginalFile;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-
 import java.nio.file.Files;
 
+import com.google.common.io.MoreFiles;
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.data.OmeroMetadataService;
 import omero.gateway.SecurityContext;
@@ -130,14 +126,14 @@ public class FileUploader
 					//Add the file to the directory.
 					if (f != null) {
 						directory = new File(directory.getParentFile(),
-								FilenameUtils.removeExtension(f.getName()));
-						FileUtils.copyFileToDirectory(f, directory, true);
+								MoreFiles.getNameWithoutExtension(f.toPath()));
+						Files.copy(f.toPath(), directory.toPath(), StandardCopyOption.REPLACE_EXISTING);
 					}
 					if (f != null) usedFiles = object.getUsedFiles();
 					if (usedFiles != null) {
 						for (int i = 0; i < usedFiles.length; i++) {
-							FileUtils.copyFileToDirectory(new File(usedFiles[i]),
-									directory, true);
+							Files.copy(new File(usedFiles[i]).toPath(),
+									directory.toPath(), StandardCopyOption.REPLACE_EXISTING);
 						}
 					}
 					if (id > 0) {
@@ -170,7 +166,7 @@ public class FileUploader
 				c.submitFile(token.toString(), f, object.getReaderType(),
 						new StringBuilder());
 				if (directory != null) {
-					FileUtils.deleteDirectory(directory);
+					MoreFiles.deleteRecursively(directory.toPath());
 					f.delete();
 				}
 			}

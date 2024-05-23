@@ -24,16 +24,16 @@
 package org.openmicroscopy.shoola.env.init;
 
 //Java imports
+import com.google.common.io.MoreFiles;
 import ij.IJ;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 
 //Third-party libraries
 
-
-import org.apache.commons.io.FilenameUtils;
 //Application-internal dependencies
 import org.openmicroscopy.shoola.env.Container;
 import org.openmicroscopy.shoola.env.LookupNames;
@@ -96,7 +96,7 @@ public final class ContainerConfigInit
 				value = values[j];
 				if (value != null) value = value.trim();
 				if (l == null) continue;
-				value = FilenameUtils.removeExtension(value);
+				value = MoreFiles.getNameWithoutExtension(Paths.get(value));
 
 				for (int i = 0; i < l.length; i++) {
 					if (l[i].getName().startsWith(value)) {

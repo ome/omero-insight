@@ -34,13 +34,14 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import org.apache.commons.io.FileUtils;
 import org.openmicroscopy.shoola.agents.imviewer.ImViewerAgent;
 import org.openmicroscopy.shoola.agents.imviewer.util.ImagePaintingFactory;
 import org.openmicroscopy.shoola.agents.imviewer.view.ImViewer;
@@ -486,7 +487,7 @@ public class ImgSaver
         	String name = uiDelegate.getSelectedFilePath();
         	
         	// make sure the parent directory paths all exist
-        	FileUtils.forceMkdir(new File(name).getParentFile());
+            Files.createDirectories(Paths.get(new File(name).getParentFile().toURI()));
         	
             if (imageComponents == null) {
                 if (mainImage == null) return;

@@ -27,6 +27,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +43,6 @@ import javax.swing.JMenu;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openmicroscopy.shoola.agents.events.SaveData;
 import org.openmicroscopy.shoola.agents.treeviewer.TreeViewerAgent;
 import org.openmicroscopy.shoola.env.Agent;
@@ -442,7 +442,7 @@ public class TreeViewerFactory
 		
 		Environment env = (Environment) 
 		TreeViewerAgent.getRegistry().lookup(LookupNames.ENV);
-		String name = FilenameUtils.concat(env.getOmeroHome(),FILE_NAME);
+		String name = Paths.get(env.getOmeroHome(), FILE_NAME).toString();
 		
 		File f = new File(name);
 		if (!f.exists()) return;

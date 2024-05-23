@@ -41,10 +41,10 @@ import omero.gateway.model.FilesetData;
 import omero.gateway.model.PixelsData;
 import omero.gateway.util.PojoMapper;
 
-import org.apache.commons.io.FileUtils;
 import org.openmicroscopy.shoola.env.data.ImportException;
 import org.openmicroscopy.shoola.env.data.model.FileObject;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
+import org.openmicroscopy.shoola.util.file.IOUtil;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;
 
 /**
@@ -229,7 +229,7 @@ public class Status implements IObserver {
      */
     private String formatUpload(long value) {
         StringBuffer buffer = new StringBuffer();
-        String v = FileUtils.byteCountToDisplaySize(value);
+        String v = IOUtil.byteCountToDisplaySize(value);
         String[] values = v.split(" ");
         if (values.length > 1) {
             String u = values[1];
@@ -327,7 +327,7 @@ public class Status implements IObserver {
         for (int i = 0; i < usedFiles.length; i++) {
             sizeUpload += (new File(usedFiles[i])).length();
         }
-        fileSize = FileUtils.byteCountToDisplaySize(sizeUpload);
+        fileSize = IOUtil.byteCountToDisplaySize(sizeUpload);
         String[] values = fileSize.split(" ");
         if (values.length > 1)
             units = values[1];
