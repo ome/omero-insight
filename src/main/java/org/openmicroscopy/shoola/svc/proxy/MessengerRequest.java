@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.svc.proxy.MessengerRequest 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2015 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2024 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -169,8 +169,6 @@ class MessengerRequest
         p.add(new BasicNameValuePair(ERROR, error));
         p.add(new BasicNameValuePair(EXTRA, extra));
         p.add(new BasicNameValuePair(INVOKER, invoker));
-        p.add(new BasicNameValuePair(ProxyUtil.APP_NAME,
-                applicationNumber));
         p.add(new BasicNameValuePair(ProxyUtil.APP_NAME, applicationNumber));
         p.add(new BasicNameValuePair(ProxyUtil.APP_VERSION, applicationVersion));
         
