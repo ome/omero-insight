@@ -56,7 +56,7 @@ public class LookupTableIconUtil {
             "pup_nr.lut", "rainbow_rgb.lut", "red-green.lut", "red_hot.lut",
             "rocket.lut", "royal.lut", "sepia.lut", "smart.lut",
             "spectrum.lut", "thal.lut", "thallium.lut", "thermal.lut",
-            "unionjack.lut", "viridis.lut", "yellow_hot.lut" };
+            "turbo.lut", "unionjack.lut", "viridis.lut", "yellow_hot.lut" };
 
     /**
      * Get the LUT icon for the given LUT filename, scaled to the specified
