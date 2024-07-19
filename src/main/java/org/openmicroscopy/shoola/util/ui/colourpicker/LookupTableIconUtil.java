@@ -51,12 +51,12 @@ public class LookupTableIconUtil {
             "gem.lut", "glasbey.lut", "glasbey_inverted.lut", "glow.lut",
             "grays.lut", "green_fire_blue.lut", "hilo.lut", "ica.lut",
             "ica2.lut", "ica3.lut", "ice.lut", "inferno.lut",
-            "magenta_hot.lut", "magma.lut", "orange_hot.lut", "phase.lut",
-            "physics.lut", "plasma.lut", "pup_br.lut", "pup_nr.lut",
-            "rainbow_rgb.lut", "red-green.lut", "red_hot.lut", "royal.lut",
-            "sepia.lut", "smart.lut", "spectrum.lut", "thal.lut",
-            "thallium.lut", "thermal.lut", "unionjack.lut", "viridis.lut",
-            "yellow_hot.lut" };
+            "magenta_hot.lut", "magma.lut", "mako.lut", "orange_hot.lut",
+            "phase.lut", "physics.lut", "plasma.lut", "pup_br.lut",
+            "pup_nr.lut", "rainbow_rgb.lut", "red-green.lut", "red_hot.lut",
+            "rocket.lut", "royal.lut", "sepia.lut", "smart.lut",
+            "spectrum.lut", "thal.lut", "thallium.lut", "thermal.lut",
+            "unionjack.lut", "viridis.lut", "yellow_hot.lut" };
 
     /**
      * Get the LUT icon for the given LUT filename, scaled to the specified
