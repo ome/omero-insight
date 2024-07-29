@@ -125,7 +125,7 @@ public class OpenObjectLoader
     		    objects.add(image);
     		    f = new File(folderPath);
     		    handle = mhView.loadArchivedImage(ctx, objects, f, false, false,
-    	                false, this);
+    	                 this);
     		} else {
     		    String name = image.getName();
                 name += image.getName();

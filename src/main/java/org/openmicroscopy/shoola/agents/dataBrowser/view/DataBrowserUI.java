@@ -563,16 +563,17 @@ class DataBrowserUI
     { 
     	if (popupMenu == null) popupMenu = new PopupMenu(controller, model);
     	Component comp = null;
-    	switch (selectedView) {
-			case THUMB_VIEW:
-				if (model.getBrowser() != null)
-					comp = model.getBrowser().getUI();
-				break;
-			case COLUMNS_VIEW:
-				comp = model.getTableView();
-			case SEARCH_VIEW:
-                            comp = model.getSearchView();
-		}
+        switch (selectedView) {
+            case THUMB_VIEW:
+               if (model.getBrowser() != null)
+	               comp = model.getBrowser().getUI();
+                break;
+            case COLUMNS_VIEW:
+                comp = model.getTableView();
+                break;
+            case SEARCH_VIEW:
+                comp = model.getSearchView();
+        }
     	if (comp != null) {
     		popupMenu.populateOpenWith();
     		popupMenu.show(comp, p.x, p.y);

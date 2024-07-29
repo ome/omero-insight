@@ -133,12 +133,6 @@ public class LightFileImportComponent implements PropertyChangeListener,
 
     /** Indicates that the import was successful or if it failed. */
     private void formatResult() {
-        if (callback != null) {
-            try {
-                ((CmdCallbackI) callback).close(true);
-            } catch (Exception e) {
-            }
-        }
         Object result = status.getImportResult();
         if (image instanceof ImportException)
             result = image;
@@ -433,6 +427,7 @@ public class LightFileImportComponent implements PropertyChangeListener,
     @Override
     public void setStatus(Object image) {
         this.image = image;
+
         if (image instanceof Collection) {
             Collection<?> c = (Collection) image;
             if (!c.isEmpty()) {
@@ -453,6 +448,11 @@ public class LightFileImportComponent implements PropertyChangeListener,
                 resultIndex = ImportStatus.IGNORED;
                 this.image = null;
             }
+        }
+        if (callback != null) {
+            try {
+                ((CmdCallbackI) callback).close(true);
+            } catch (Exception e) {}
         }
     }
 

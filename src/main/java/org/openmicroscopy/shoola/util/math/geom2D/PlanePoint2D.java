@@ -1,8 +1,6 @@
 /*
- * org.openmicroscopy.shoola.util.math.geom2D.PlanePoint2D 
- *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2007 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2024 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -231,8 +229,8 @@ public class PlanePoint2D
      */
     public boolean equals(Object o)
     {
-    	if (o == null || (!(o instanceof PlanePoint))) return false;
-    	 PlanePoint other = (PlanePoint) o;
+    	if (o == null || (!(o instanceof PlanePoint2D))) return false;
+    	 PlanePoint2D other = (PlanePoint2D) o;
          return (x1 == other.x1 && x2 == other.x2);  
     }
     

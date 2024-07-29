@@ -1,7 +1,7 @@
 /*
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2021 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2023 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -304,8 +304,13 @@ public final class Container
 	 * @return	See above.
 	 */
 	public String getConfigFileRelative(String file)
-	{ 
-		return getFileRelative(CONFIG_DIR, file);
+	{
+		if (file == null)
+			return null;
+		if (file.contains(File.separator))
+			return file;
+		else
+			return getFileRelative(CONFIG_DIR, file);
 	}
 	
 	/**

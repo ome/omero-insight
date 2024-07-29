@@ -912,7 +912,7 @@ public class FileImportComponent
 					formatResultTooltip();
 				}
 				else if (image instanceof Collection){
-					Collection<?> c = (Collection)image;
+					Collection<?> c = (Collection) image;
 					if(!c.isEmpty()) {
 						Object obj = c.iterator().next();
 						if(obj instanceof ThumbnailData) {
@@ -1590,7 +1590,7 @@ public class FileImportComponent
 			}
 		});
 	}
-	
+
     /**
      * Returns the name of the file and group's id and user's id. 
      * (This String is used as reference to find a specific FileImportComponent
