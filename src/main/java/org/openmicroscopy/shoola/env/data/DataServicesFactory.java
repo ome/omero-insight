@@ -558,7 +558,7 @@ public class DataServicesFactory
                 msg.println("Using URL defined server-side for feedback: " + val);
                 registry.getLogger().debug(this, msg);
                 container.getRegistry().bind(LookupNames.TOKEN_URL, val + "/qa/initial/");
-                container.getRegistry().bind(LookupNames.PROCESSING_URL, val + "/qa/uploadProcessing/");
+                container.getRegistry().bind(LookupNames.PROCESSING_URL, val + "/qa/upload_processing/");
             } else {
                 // needed when switching user
                 resetKeys(Arrays.asList(LookupNames.TOKEN_URL, LookupNames.PROCESSING_URL)); 
