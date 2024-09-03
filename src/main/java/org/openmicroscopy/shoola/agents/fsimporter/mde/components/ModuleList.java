@@ -64,7 +64,7 @@ public class ModuleList extends HashMap<String, List<ModuleContent>> {
 	}
 	
 	public void remove(String type) {
-		this.remove(type);
+		super.remove(type);
 	}
 	
 	public void print(String header) {

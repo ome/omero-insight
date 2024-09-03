@@ -1,6 +1,6 @@
 /*
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2022 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2024 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import omero.gateway.facility.RawDataFacility;
+import omero.gateway.facility.TransferFacility;
 import omero.gateway.model.FolderData;
 import omero.gateway.model.PixelsData;
 import org.apache.commons.collections4.CollectionUtils;
@@ -172,7 +173,6 @@ import omero.model.ExperimenterGroup;
 import omero.model.ExperimenterGroupI;
 import omero.model.FileAnnotation;
 import omero.model.Fileset;
-import omero.model.FilesetEntry;
 import omero.model.GroupExperimenterMap;
 import omero.model.IObject;
 import omero.model.Image;
@@ -246,6 +246,7 @@ import omero.gateway.model.TextualAnnotationData;
 import omero.gateway.model.TimeAnnotationData;
 import omero.gateway.model.WellData;
 import omero.gateway.model.WellSampleData;
+
 
 
 /**
@@ -767,8 +768,11 @@ class OMEROGateway
 		} else if (cause instanceof AuthenticationException) {
 			String s = "Cannot initialize the session. \n";
 			throw new DSOutOfServiceException(s+message, cause);
-		} else if (cause instanceof ResourceError) {
+		}
+		else if (cause instanceof ResourceError) {
 			String s = "Fatal error. Please contact the administrator. \n";
+			if (t.toString().contains("No space"))
+				s = "Server ran out of disk space. Please contact the administrator. \n";
 			throw new DSOutOfServiceException(s+message, t);
 		}
 		throw new DSAccessException("Cannot access data. \n"+message, t);
@@ -3042,176 +3046,24 @@ class OMEROGateway
 	/**
 	 * Retrieves the archived files if any for the specified set of pixels.
 	 *
-	 * @param ctx The security context.
-	 * @param file The location where to save the files.
-	 * @param image The image to retrieve.
-	 * @param keepOriginalPaths Pass <code>true</code> to preserve the original folder structure
-	 * @return See above.
-	 * @throws DSOutOfServiceException If the connection is broken, or not logged in
-	 * @throws DSAccessException If an error occurred while trying to
-	 * retrieve data from OMERO service.
-	 */
-	Map<Boolean, Object> getArchivedFiles(
-			SecurityContext ctx, File file, ImageData image, boolean keepOriginalPaths)
-		throws DSAccessException, DSOutOfServiceException
-	{
-		return retrieveArchivedFiles(ctx, file, image);
-	}
-
-	/**
-	 * Retrieves the archived files if any for the specified set of pixels.
-	 *
-	 * @param ctx The security context.
-	 * @param dir The location where to save the files.
+	 * @param ctx   The security context.
+	 * @param dir   The location where to save the files.
 	 * @param image The image to retrieve.
 	 * @return See above.
 	 * @throws DSAccessException If an error occurred while trying to
-	 * retrieve data from OMERO service.
+	 *                           retrieve data from OMERO service.
 	 */
-	private Map<Boolean, Object> retrieveArchivedFiles(
+	public List<File> getArchivedFiles(
 			SecurityContext ctx, File dir, ImageData image)
-			throws DSAccessException
-	{
-		List<?> files = null;
-		String query;
+			throws DSAccessException, DSOutOfServiceException {
+		TransferFacility fc = null;
 		try {
-			IQueryPrx service = gw.getQueryService(ctx);
-			ParametersI param = new ParametersI();
-			long id;
-			if (image.isFSImage()) {
-				id = image.getId();
-				List<RType> l = new ArrayList<RType>();
-				l.add(omero.rtypes.rlong(id));
-				param.add("imageIds", omero.rtypes.rlist(l));
-				query = createFileSetQuery();
-			} else { //Prior to FS
-				if (image.isArchived()) {
-					StringBuffer buffer = new StringBuffer();
-					id = image.getDefaultPixels().getId();
-					buffer.append("select ofile from OriginalFile as ofile ");
-					buffer.append("join fetch ofile.hasher ");
-					buffer.append("left join ofile.pixelsFileMaps as pfm ");
-					buffer.append("left join pfm.child as child ");
-					buffer.append("where child.id = :id");
-					param.map.put("id", omero.rtypes.rlong(id));
-					query = buffer.toString();
-				} else return null;
-			}
-			files = service.findAllByQuery(query, param);
-		} catch (Exception e) {
-			handleConnectionException(e);
-			throw new DSAccessException("Cannot retrieve original file", e);
+			fc = gw.getFacility(TransferFacility.class);
+		} catch (ExecutionException e) {
+			throw new DSOutOfServiceException(e.getMessage());
 		}
-
-		Map<Boolean, Object> result = new HashMap<Boolean, Object>();
-		if (CollectionUtils.isEmpty(files)) return result;
-		List<File> downloaded = new ArrayList<File>();
-		List<String> notDownloaded = new ArrayList<String>();
-		result.put(Boolean.valueOf(true), downloaded);
-		result.put(Boolean.valueOf(false), notDownloaded);
-
-		if (image.isFSImage()) {
-			for (Object tmp : files) {
-				Fileset fs = (Fileset) tmp;
-				File filesetDir = new File(dir.getAbsolutePath()+File.separator+"Fileset_"+fs.getId().getValue());
-				filesetDir.mkdir();
-				String repoPath = fs.getTemplatePrefix().getValue();
-				for (FilesetEntry fse: fs.copyUsedFiles()) {
-					OriginalFile of = fse.getOriginalFile();
-					String ofDir = of.getPath().getValue().replace(repoPath, "");
-					File outDir = new File(filesetDir.getAbsolutePath()+File.separator+ofDir);
-					outDir.mkdirs();
-					File saved = saveOriginalFile(ctx, of, outDir);
-					if (saved != null)
-						downloaded.add(saved);
-					else
-						notDownloaded.add(of.getName().getValue());
-				}
-			}
-		}
-		else { //Prior to FS
-			for (Object tmp : files) {
-				OriginalFile of = (OriginalFile) tmp;
-				File outDir = new File(dir.getAbsolutePath());
-				File saved = saveOriginalFile(ctx, of, outDir);
-				if (saved != null)
-					downloaded.add(saved);
-				else
-					notDownloaded.add(of.getName().getValue());
-			}
-		}
-
-		return result;
+		return fc.downloadImage(ctx, dir.getAbsolutePath(), image.getId());
 	}
-
-	/**
-	 * Save an OriginalFile of into directory dir
-	 * @param ctx The SecurityContext
-	 * @param of The OriginalFile
-	 * @param dir The output directory
-	 * @return The File if the operation was successfull, null if it wasn't.
-	 */
-	private File saveOriginalFile(SecurityContext ctx, OriginalFile of, File dir) {
-		File out = new File(dir, of.getName().getValue());
-		if (out.exists()) {
-			log(out.getAbsolutePath()+" already exists.");
-			return null;
-		}
-
-		try {
-			RawFileStorePrx store = gw.getRawFileService(ctx);
-			store.setFileId(of.getId().getValue());
-
-			long size = of.getSize().getValue();
-			long offset = 0;
-			try (FileOutputStream stream = new FileOutputStream(out))
-			{
-				for (offset = 0; (offset+INC) < size;) {
-					stream.write(store.read(offset, INC));
-					offset += INC;
-				}
-				stream.write(store.read(offset, (int) (size-offset)));
-			}
-		} catch (Exception e) {
-			handleConnectionException(e);
-			return null;
-		}
-		return out;
-	}
-
-    /**
-     * Checks if the given path already exists and if so, generates a new path
-     * name path(N), where N is a consecutive number
-     * 
-     * @param path
-     *            The path name to check
-     * @param isFile
-     *            Pass <code>true</code> if the path name represents a file
-     * @return A unique path name based on the given path or the path itself if
-     *         it doesn't exist yet
-     */
-    private String generateUniquePathname(String path, boolean isFile) {
-        File tmp = new File(path);
-        if (tmp.exists()) {
-            String fileExt = null;
-            if (isFile && path.matches(".+\\..+")) {
-                fileExt = path.substring(path.lastIndexOf('.'), path.length());
-                path = path.substring(0, path.lastIndexOf('.'));
-            }
-            if (path.matches(".+\\(\\d+\\)")) {
-                int n = Integer.parseInt(path.substring(
-                        path.lastIndexOf('(') + 1, path.lastIndexOf(')')));
-                n++;
-                path = path.substring(0, path.lastIndexOf('(')) + "(" + n + ")";
-            } else {
-                path += "(1)";
-            }
-            if (fileExt != null)
-                path += fileExt;
-            return generateUniquePathname(path, isFile);
-        }
-        return path;
-    }
 
 	/**
 	 * Downloads a file previously uploaded to the server.
@@ -5800,6 +5652,7 @@ class OMEROGateway
         ic.setUserPixels(object.getPixelsSize());
         OMEROMetadataStoreClient omsc = null;
         OMEROWrapper reader = null;
+        CmdCallbackI cb = null;
 		try {
 			omsc = getImportStore(ctx, userName);
 			reader = new OMEROWrapper(config);
@@ -5822,9 +5675,13 @@ class OMEROGateway
 	                null, 0, srcFiles.length, null, null, null));
 
 	        for (int i = 0; i < srcFiles.length; i++) {
-	            checksums.add(library. uploadFile(proc, srcFiles, i,
-	                    checksumProviderFactory, estimator,
-	                    buf));
+				try {
+					checksums.add(library.uploadFile(proc, srcFiles, i,
+							checksumProviderFactory, estimator,
+							buf));
+				} catch (Throwable e ){
+					handleConnectionException(e);
+				}
 	        }
 
 	        try {
@@ -5845,11 +5702,16 @@ class OMEROGateway
 	        final ImportRequest req = (ImportRequest) handle.getRequest();
 	        final Fileset fs = req.activity.getParent();
 	        status.setFilesetData(new FilesetData(fs));
-	        return library.createCallback(proc, handle, ic);
+	        cb = library.createCallback(proc, handle, ic);
+	        return cb;
 		} catch (Throwable e) {
 			try {
 				if (reader != null) reader.close();
 			} catch (Exception ex) {}
+			if (cb != null) {
+				// Allow callback to close handle
+				cb.close(true);
+			}
 
 			handleConnectionException(e);
 			status.markedAsFailed(e);

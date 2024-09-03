@@ -31,11 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import omero.cmd.Request;
 import omero.cmd.graphs.ChildOption;
-import omero.gateway.facility.DataManagerFacility;
 import omero.gateway.model.FolderData;
 import omero.model.Annotation;
 import omero.model.AnnotationAnnotationLink;
@@ -72,9 +70,6 @@ import org.openmicroscopy.shoola.env.data.util.ModelMapper;
 
 import omero.gateway.util.PojoMapper;
 
-import org.openmicroscopy.shoola.env.data.util.SearchDataContext;
-
-import omero.gateway.Gateway;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
@@ -495,14 +490,14 @@ class OmeroDataServiceImpl
 	/**
 	 * Implemented as specified by {@link OmeroDataService}.
 	 */
-	public Map<Boolean, Object> getArchivedImage(SecurityContext ctx,
-			File file, long imageID, boolean keepOriginalPath)
+	public List<File> getArchivedImage(SecurityContext ctx,
+									   File file, long imageID)
 		throws DSOutOfServiceException, DSAccessException
 	{
 		context.getLogger().debug(this, file.getAbsolutePath());
 		//Check the image is archived.
 		ImageData image = gateway.getImage(ctx, imageID, null);
-		return gateway.getArchivedFiles(ctx, file, image, keepOriginalPath);
+		return gateway.getArchivedFiles(ctx, file, image);
 	}
 
 	/**

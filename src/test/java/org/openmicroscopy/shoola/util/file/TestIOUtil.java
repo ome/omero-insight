@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
@@ -33,8 +34,6 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-
-import com.google.common.io.Files;
 
 import junit.framework.TestCase;
 
@@ -136,11 +135,12 @@ public class TestIOUtil
     public void testZipDirectory()
     {
         try {
-            File dir = Files.createTempDir();
+            final String prefix = "test_ome";
+            File dir = Files.createTempDirectory(prefix).toFile();
             File f = File.createTempFile("testZipDirectory", ".tmp", dir);
             File zip = IOUtil.zipDirectory(dir);
             assertEquals(FilenameUtils.getExtension(zip.getName()), "zip");
-            File destDir = Files.createTempDir();
+            File destDir = Files.createTempDirectory(prefix).toFile();
             boolean b = unzip(zip, destDir);
             assertEquals(true, b);
             File[] files = destDir.listFiles();
@@ -159,15 +159,16 @@ public class TestIOUtil
     public void testZipDirectoryWithSubfolder()
     {
         try {
-            File dir = Files.createTempDir();
+            final String prefix = "test_ome";
+            File dir = Files.createTempDirectory(prefix).toFile();
             File f = File.createTempFile("testZipDirectoryWithSubfolder", ".tmp", dir);
-            File subfolder = Files.createTempDir();
+            File subfolder = Files.createTempDirectory(prefix).toFile();
             File f1 = File.createTempFile("sub_testZipDirectoryWithSubfolder", ".tmp", subfolder);
 
             FileUtils.moveDirectoryToDirectory(subfolder, dir, false);
 
             File zip = IOUtil.zipDirectory(dir);
-            File destDir = Files.createTempDir();
+            File destDir = Files.createTempDirectory(prefix).toFile();
             boolean b = unzip(zip, destDir);
             assertEquals(true, b);
             File[] files = destDir.listFiles();

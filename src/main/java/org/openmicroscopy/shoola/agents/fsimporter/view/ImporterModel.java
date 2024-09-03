@@ -24,6 +24,7 @@ import ij.ImagePlus;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,8 +63,6 @@ import omero.gateway.SecurityContext;
 import org.openmicroscopy.shoola.util.CommonsLangUtils;
 import org.openmicroscopy.shoola.util.roi.io.ROIReader;
 
-import com.google.common.io.Files;
-
 import omero.gateway.model.DataObject;
 import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.FileAnnotationData;
@@ -72,6 +71,7 @@ import omero.gateway.model.ImageData;
 import omero.gateway.model.ProjectData;
 import omero.gateway.model.ROIData;
 import omero.gateway.model.ScreenData;
+import omero.log.LogMessage;
 
 /** 
  * The Model component in the <code>Importer</code> MVC triad.
@@ -356,6 +356,19 @@ class ImporterModel
 	void importCompleted(int loaderID)
 	{
 		state = Importer.READY;
+		ImagesImporter loader = loaders.get(loaderID);
+		if (loader != null) {
+			ImportableObject io = loader.getImportableObject();
+			try {
+				ImporterAgent.getRegistry().getImageService().closeImport(io);
+			} catch (Exception e) {
+				LogMessage msg = new LogMessage();
+                msg.print("Import closure");
+                msg.print(e);
+				ImporterAgent.getRegistry().getLogger().warn(this, msg);
+			}
+		}
+		
 	}
 	
 	/**
@@ -514,11 +527,13 @@ class ImporterModel
 	        }
         }
 
+        /*
         if (requestThumbnails(component)) {
             ImportResultLoader loader = new ImportResultLoader(this.component,
                     ctx, pixels, type, component);
             loader.load();
         }
+        */
 	}
 	
     /**
@@ -715,22 +730,23 @@ class ImporterModel
      */
     private File createFile(String imageName)
     {
-        File dir = Files.createTempDir();
-        String name;
-        String fileName = null;
-        if (object != null) {
-            fileName = object.getTableName();
-        }
-        if (CommonsLangUtils.isBlank(fileName)) {
-            name = "ImageJ-"+FilenameUtils.getBaseName(
-                    FilenameUtils.removeExtension(imageName))+"-Results-";
-            name += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        } else {
-            name = FilenameUtils.removeExtension(fileName);
-        }
-        
-        name += ".csv";
         try {
+            final String prefix = "ome_";
+            File dir = Files.createTempDirectory(prefix).toFile();
+            String name;
+            String fileName = null;
+            if (object != null) {
+                fileName = object.getTableName();
+            }
+            if (CommonsLangUtils.isBlank(fileName)) {
+                name = "ImageJ-"+FilenameUtils.getBaseName(
+                    FilenameUtils.removeExtension(imageName))+"-Results-";
+                name += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            } else {
+                name = FilenameUtils.removeExtension(fileName);
+            }
+        
+            name += ".csv";
             File f = new File(dir, name);
             //read data
             ROIReader reader = new ROIReader();

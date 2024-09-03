@@ -30,7 +30,7 @@ import omero.model.OriginalFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import com.google.common.io.Files;
+import java.nio.file.Files;
 
 import org.openmicroscopy.shoola.env.LookupNames;
 import org.openmicroscopy.shoola.env.data.OmeroMetadataService;
@@ -126,7 +126,7 @@ public class FileUploader
 					}
 				}
 				if (b || id > 0) {
-					directory = Files.createTempDir();
+					directory = Files.createTempDirectory("ome_").toFile();
 					//Add the file to the directory.
 					if (f != null) {
 						directory = new File(directory.getParentFile(),

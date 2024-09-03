@@ -326,7 +326,7 @@ class BrowserControl
                 case TreeViewer.EXPERIMENTER_DISPLAY:
                 default:
                     List<?> l = display.getChildrenDisplay();
-                    if (l != null & l.size() > 0) {
+                    if (l != null && l.size() > 0) {
                         view.expandNode((TreeImageDisplay) l.get(0), true);
                     }
                 }

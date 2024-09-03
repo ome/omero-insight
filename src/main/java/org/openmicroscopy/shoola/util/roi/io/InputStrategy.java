@@ -505,7 +505,7 @@ public class InputStrategy
 				return new Ellipse2D.Double();
 			}
 			if (IOConstants.ATTRIBUTE_DATATYPE_RECTANGLE2D.equals(dataType))
-				new Rectangle2D.Double(
+				return new Rectangle2D.Double(
 				new Double(xValue), new Double(yValue), new Double(widthValue),
 				new Double(heightValue));
 			if (IOConstants.ATTRIBUTE_DATATYPE_ELLIPSE2D.equals(dataType)) 

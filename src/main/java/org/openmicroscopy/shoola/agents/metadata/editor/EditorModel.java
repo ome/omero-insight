@@ -3166,7 +3166,6 @@ class EditorModel
             p = new DownloadArchivedActivityParam(new File(path), images, icon);
             p.setOverride(override);
             p.setZip(false);
-            p.setKeepOriginalPaths(true);
             un.notifyActivity(ctx, p);
         }
     }

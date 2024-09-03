@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.env.ui.TaskBarImpl
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2013 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2024 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -608,7 +608,7 @@ class TaskBarView
 	            for (int j = 0; j < comps.length; j++) {
 	                c = comps[j];
 	                if (c instanceof JMenu) {
-	                    if (((JMenu) c).getText() == entry.getText()) {
+	                    if (((JMenu) c).getText().equals(entry.getText())) {
 	                        menu.remove(c);
 	                    }
 	                }

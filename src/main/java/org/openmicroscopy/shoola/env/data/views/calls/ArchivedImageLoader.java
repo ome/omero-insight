@@ -30,7 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.io.Files;
+import java.nio.file.Files;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -71,9 +73,6 @@ public class ArchivedImageLoader
 
     /** Flag for zipping the downloaded images */
     private boolean zip = true;
-    
-    /** Flag for preserving the original folder structure */
-    private boolean keepOriginalPaths = false;
     
     /**
      * Copies the specified file to the folder.
@@ -122,8 +121,7 @@ public class ArchivedImageLoader
      * Creates a {@link BatchCall} to load the image.
      * 
      * @param ctx The security context.
-     * @param objects The objects to download the original image files for.
-     * @param name The name of the image.
+     * @param objects The objects to download the original image files for..
      * @param folder The path to the folder where to save the image.
      * @return The {@link BatchCall}.
      */
@@ -162,22 +160,22 @@ public class ArchivedImageLoader
                 
                 File tmpFolder = null;
                 try {
-                    if(zip)
-                        tmpFolder = Files.createTempDir();
+                    if (zip)
+                        tmpFolder = Files.createTempDirectory("ome_").toFile();
                     else
                         tmpFolder = folder;
                     
                     List<File> files = new ArrayList<File>();
                     
                     for (Long imageID : imageIDs) {
-                        Map<Boolean, Object> r = os.getArchivedImage(ctx,
-                                tmpFolder, imageID, keepOriginalPaths);
-                        files.addAll((List<File>) r.get(Boolean.TRUE));
+                        List<File> r = os.getArchivedImage(ctx,
+                                tmpFolder, imageID);
+                        files.addAll(r);
                     }
                     
                     result = new HashMap<Boolean, List<File>>();
                     
-                    if(CollectionUtils.isEmpty(files))
+                    if (CollectionUtils.isEmpty(files))
                         return;
                     
                     if (zip) {
@@ -189,7 +187,7 @@ public class ArchivedImageLoader
                         File to = new File(f.getParentFile(), baseName
                                 + "."
                                 + FilenameUtils.getExtension(f.getName()));
-                        Files.move(f, to);
+                        Files.move(f.toPath(), to.toPath(), REPLACE_EXISTING);
                         f = copyFile(to, folder.getParentFile());
                         ((Map<Boolean, List<File>>)result).put(Boolean.TRUE, Arrays.asList(f));
                     }
@@ -250,16 +248,14 @@ public class ArchivedImageLoader
      * @param override Flag indicating to override the existing file if it
      *                 exists, <code>false</code> otherwise.
      * @param zip Pass <code>true</code> to create a zip file
-     * @param keepOriginalPaths Pass <code>true</code> to preserve the original folder structure
      */
     public ArchivedImageLoader(SecurityContext ctx, List<DataObject> objects,
-            File folderPath, boolean override, boolean zip, boolean keepOriginalPaths)
+            File folderPath, boolean override, boolean zip)
     {
         if (CollectionUtils.isEmpty(objects))
              throw new IllegalArgumentException("No objects provided.");
         this.override = override;
         this.zip = zip;
-        this.keepOriginalPaths = keepOriginalPaths;
         loadCall = makeBatchCall(ctx, objects, folderPath);
     }
 }

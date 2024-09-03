@@ -903,6 +903,7 @@ class ImViewerControl
 				break;
 			case ImViewer.CANCELLED:
 				window.setVisible(false);
+				break;
 			case ImViewer.LOADING_IMAGE:
 				if (historyState == ImViewer.LOADING_METADATA)
 					window.setVisible(false);

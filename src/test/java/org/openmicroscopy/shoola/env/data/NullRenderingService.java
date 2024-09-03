@@ -534,4 +534,8 @@ public class NullRenderingService
 	public Map<Integer, int[]> getHistogram(SecurityContext ctx, PixelsData pixels, int[] channels, int z, int t) throws DSAccessException, DSOutOfServiceException {
 		return null;
 	}
+
+	@Override
+	public void closeImport(ImportableObject importable) throws DSAccessException,
+			DSOutOfServiceException {}
 }
