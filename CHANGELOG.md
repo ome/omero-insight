@@ -1,4 +1,12 @@
-5.8.4 (MAy 2024)
+5.8.5 (September 2024)
+----------------------
+
+- BugFix: Handle case where ROI is not longer in table [#385](https://github.com/ome/omero-insight/pull/385)
+- BugFix: QA: Remove duplicate app_name parameter [#442](https://github.com/ome/omero-insight/pull/442)
+- BugFix: Fix QA endpoint[#444](https://github.com/ome/omero-insight/pull/444)
+- Bump omero-gateway-java to 5.9.3 [#445](https://github.com/ome/omero-insight/pull/445)
+
+5.8.4 (May 2024)
 ----------------
 
 - BugFix: Handle out of space [#427](https://github.com/ome/omero-insight/pull/427)
