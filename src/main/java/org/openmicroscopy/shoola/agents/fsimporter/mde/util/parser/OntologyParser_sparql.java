@@ -28,7 +28,6 @@ public class OntologyParser_sparql {
     }
 
     public List<OntologyElement>getSubLabels(String ontologyAcronym, String ontologyRef){
-        System.out.println("####Run query for Acronym: "+ontologyAcronym+", Ref: "+ontologyRef);
         return runSparqlQuery(ontologyRef,default_sparqlEndpoint);
     }
 
@@ -51,7 +50,6 @@ public class OntologyParser_sparql {
 
                 String uri = solution.getResource("subclass").getURI().toString();
                 String id = getTermIDFromURI(uri);
-                //System.out.println(subclassLabel + ", " + uri + ", " + id);
                 labelList.add(new OntologyElement(subclassLabel, id, uri));
             }
             if(labelList.isEmpty()){
