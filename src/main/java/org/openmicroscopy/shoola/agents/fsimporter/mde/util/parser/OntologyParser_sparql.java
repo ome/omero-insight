@@ -23,12 +23,18 @@ implementation 'org.aksw.jena-sparql-api:jena-sparql-api-core:3.17.0-1'
 (see https://github.com/SmartDataAnalytics/jena-sparql-api)
  */
 public class OntologyParser_sparql {
-    private String default_sparqlEndpoint="http://sparql.hegroup.org/sparql/";
+    // default value for sparql endpoint if nothing is specified in config.xml: omero.client.import.mde.sparqlEndpoint
+    private String default_sparqlEndpoint="http://sparql.hegroup.org/sparql/"; 
     public OntologyParser_sparql() {
     }
 
     public List<OntologyElement>getSubLabels(String ontologyAcronym, String ontologyRef){
-        return runSparqlQuery(ontologyRef,default_sparqlEndpoint);
+
+        String endpoint=ImporterAgent.getMDESparqlEndpoint();
+        if(endpoint.isEmpty()){
+            endpoint=default_sparqlEndpoint;
+        }
+        return runSparqlQuery(ontologyRef,endpoint);
     }
 
 

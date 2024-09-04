@@ -122,6 +122,10 @@ public class ImporterAgent
     	  Environment env = (Environment) registry.lookup(LookupNames.ENV);
     	  return env.getMDEConfigPath();
     }
+    public static String getMDESparqlEndpoint(){
+        Environment env = (Environment) registry.lookup(LookupNames.ENV);
+        return env.getMDESparqlEndpoint();
+    }
     
     /**
      * Returns <code>true</code> if the currently logged in user

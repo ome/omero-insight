@@ -191,6 +191,8 @@
     <entry name="omero.client.import.mde.path">omero</entry>
     <!-- escape ice special characters, see https://doc.zeroc.com/ice/3.6/properties-and-configuration/configuration-file-syntax -->
     <entry name="omero.client.login_escape_characters">#=\s\\</entry>
+    <!-- sparql endpoint for sparql queries to parse the ontology terms used by mde-->
+    <entry name="omero.client.import.mde.sparqlEndpoint">http://sparql.hegroup.org/sparql/</entry>
   </services>
 
   <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

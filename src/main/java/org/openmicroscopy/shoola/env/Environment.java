@@ -166,6 +166,16 @@ public class Environment
 		return (String)
 			container.getRegistry().lookup(LookupNames.USER_MDE_PATH);
 	}
+
+	/**
+	 * Returns the url of the sparql endpoint to be used.
+	 * @return See above
+	 */
+	public String getMDESparqlEndpoint()
+	{
+		return (String)
+				container.getRegistry().lookup(LookupNames.MDE_SPARQL_ENDPOINT);
+	}
 	
 	/**
 	 * Returns the location of the <code>omero</code> directory 
