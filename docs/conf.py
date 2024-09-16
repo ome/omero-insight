@@ -36,7 +36,7 @@ author = u'Open Microscopy Environment'
 
 # The full version, including alpha/beta/rc tags
 # The short X.Y version.
-version = '5.8.6-SNAPSHOT'
+version = '5.8.6'
 release = version
 
 
