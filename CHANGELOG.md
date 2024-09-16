@@ -1,3 +1,8 @@
+5.8.6 (September 2024)
+----------------------
+
+- Use version 3 of upload/download Github action
+
 5.8.5 (September 2024)
 ----------------------
 
