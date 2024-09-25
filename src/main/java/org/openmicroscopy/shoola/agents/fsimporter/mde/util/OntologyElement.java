@@ -35,7 +35,7 @@ public class OntologyElement {
         this.val = val;
         parseId(id);
         this.uri=uri;
-        ImporterAgent.getRegistry().getLogger().debug(null,"[MDE] -- SET OntologyElement:"+toString());
+        //ImporterAgent.getRegistry().getLogger().debug(this,"[MDE] -- create OntologyElement:"+toString());
     }
 
     /**
