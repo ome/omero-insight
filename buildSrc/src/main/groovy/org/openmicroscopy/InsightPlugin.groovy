@@ -82,7 +82,7 @@ class InsightPlugin implements Plugin<Project> {
         JavaApplication javaApplication =
                 project.extensions.getByName("application") as JavaApplication
 
-        javaApplication.mainClassName = MAIN_INSIGHT
+        javaApplication.mainClass.set(MAIN_INSIGHT)
         javaApplication.applicationDefaultJvmArgs = InsightBasePlugin.DEFAULT_JVM_ARGS
 
         project.tasks.named(ApplicationPlugin.TASK_RUN_NAME, JavaExec).configure {

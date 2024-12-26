@@ -70,7 +70,7 @@ class PackagerPlugin implements Plugin<Project> {
             void execute(InstallOptions importer) {
                 importer.icon = "${project.projectDir}/icons/omeroImporter.ico"
                 importer.arguments = ["containerImporter.xml"]
-                importer.mainClassName = exec.main
+                importer.mainClassName = InsightPlugin.MAIN_INSIGHT
                 importer.javaOptions = exec.jvmArgs
                 importer.mainJar = jar.archiveFileName
                 importer.applicationVersion = jar.archiveVersion
