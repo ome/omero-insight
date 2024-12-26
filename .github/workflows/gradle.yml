@@ -44,17 +44,14 @@ jobs:
           choco install innosetup --version=5.6.1
       - name: Build insight dmg
         if: startsWith(matrix.os, 'macos')
-        shell: cmd
         run: |
           jpackage --version
       - name: Build insight exe
         if: startsWith(matrix.os, 'windows')
-        shell: cmd
         run: |
           jpackage --version
       - name: Build insight exe
         if: startsWith(matrix.os, 'ubuntu')
-        shell: cmd
         run: |
           jpackage --version
       - name: Build importer exe
