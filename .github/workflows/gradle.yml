@@ -12,11 +12,11 @@ jobs:
   build:
     strategy:
       matrix:
-        java: [8, 11]
+        java: [17]
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
-      gradle_version: 6.8.3 # use ``current`` to install the current stable release
+      gradle_version: 8.11.1 # use ``current`` to install the current stable release
       gradle_commands: build # default is build
     steps:
       - uses: actions/checkout@v3
