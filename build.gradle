@@ -4,7 +4,7 @@ plugins {
     id "org.openmicroscopy.publish"
     id "org.openmicroscopy.distribute"
     id "org.openmicroscopy.packager"
-    id "org.openmicroscopy.additional-repositories" version "5.5.1"
+    id "org.openmicroscopy.additional-repositories" version "5.7.2"
 }
 
 group = "org.openmicroscopy"
