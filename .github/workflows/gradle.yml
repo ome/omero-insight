@@ -27,7 +27,7 @@ jobs:
           distribution: 'zulu'
           cache: 'gradle'
           java-package: 'jdk+fx'
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: ${{ env.gradle_version }}
       - name: Run commands
