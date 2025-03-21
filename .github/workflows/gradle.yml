@@ -37,33 +37,33 @@ jobs:
         shell: bash
         run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $GITHUB_PATH
       - name: Re-install innosetup
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         shell: cmd
         run: |
           choco uninstall innosetup
           choco install innosetup --version=5.6.1
       - name: Build insight exe
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         shell: cmd
         run: |
           gradle packageApplicationExe
       - name: Build importer exe
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         shell: cmd
         run: |
           gradle packageImporterApplicationExe
       - name: Build insight msi
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         shell: cmd
         run: |
           gradle packageApplicationMsi
       - name: Build importer msi
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         shell: cmd
         run: |
           gradle packageImporterApplicationMsi
       - name: Check MSI
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         run: |
           msi=(`find build/packaged/installImporterDist/bundles -maxdepth 1 -name "*.msi"`)
           if [ ${#msi[@]} == 0 ]; then
@@ -75,28 +75,28 @@ jobs:
           fi
         shell: bash
       - name: Upload zip and jar
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         uses: actions/upload-artifact@v4
         with:
             name: artifacts-${{ matrix.os }}-OMERO
             path: build/distributions/OMERO*
             if-no-files-found: error
       - name: Upload jar
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ matrix.os }}-omero_
           path: build/libs/omero_*
           if-no-files-found: error
       - name: Upload insight artifacts
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ matrix.os }}-insight
           path: build/packaged/main/bundles/*
           if-no-files-found: error
       - name: Upload importer artifacts
-        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
+        if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '11')
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ matrix.os }}-importer
