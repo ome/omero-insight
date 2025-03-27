@@ -2,16 +2,16 @@ settingsEvaluated {
     it.pluginManagement {
         repositories {
             maven {
-                url System.getenv("ARTIFACTORY_URL") ?: 'https://artifacts.openmicroscopy.org/artifactory/maven/'
+                url System.getenv("ARTIFACTORY_URL") ?: 'https://artifacts.glencoesoftware.com/artifactory/maven/'
             }
             maven {
-                url System.getenv("GITLAB_URL") ?: 'https://artifacts.openmicroscopy.org/artifactory/maven/'
+                url System.getenv("GITLAB_URL") ?: 'https://artifacts.glencoesoftware.com/artifactory/maven/'
             }
             maven {
-                url System.getenv("MAVEN_RELEASES_REPO_URL") ?: 'https://artifacts.openmicroscopy.org/artifactory/maven/'
+                url System.getenv("MAVEN_RELEASES_REPO_URL") ?: 'https://artifacts.glencoesoftware.com/artifactory/maven/'
             }
             maven {
-                url System.getenv("MAVEN_SNAPSHOTS_REPO_URL") ?: 'https://artifacts.openmicroscopy.org/artifactory/maven/'
+                url System.getenv("MAVEN_SNAPSHOTS_REPO_URL") ?: 'https://artifacts.glencoesoftware.com/artifactory/maven/'
             }
             gradlePluginPortal()
         }

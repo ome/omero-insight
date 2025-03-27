@@ -6,7 +6,7 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url 'https://artifacts.openmicroscopy.org/artifactory/maven/' }
+    maven { url 'https://artifacts.glencoesoftware.com/artifactory/maven/' }
 }
 
 dependencies {
