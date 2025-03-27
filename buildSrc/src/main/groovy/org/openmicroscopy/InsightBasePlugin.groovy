@@ -20,8 +20,8 @@
  */
 package org.openmicroscopy
 
-import com.github.jengelman.gradle.plugins.shadow.ShadowBasePlugin
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.gradleup.shadow.ShadowBasePlugin
+import com.gradleup.shadow.tasks.ShadowJar
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.Plugin
