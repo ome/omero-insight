@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.colourpicker.PaintPotUI
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2025 University of Dundee. All rights reserved.
  *
  *
  * 	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JComponent;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.openmicroscopy.shoola.util.ui.PaintPot;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;

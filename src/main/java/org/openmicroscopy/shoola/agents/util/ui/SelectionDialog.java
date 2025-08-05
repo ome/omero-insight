@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.agents.measurement.view.ROITable 
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2016-2025 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ import javax.swing.JScrollPane;
 import omero.gateway.model.DataObject;
 import omero.gateway.model.FolderData;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Simple dialog for selecting a {@link DataObject}

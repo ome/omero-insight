@@ -1,5 +1,5 @@
 /*
- * Copyright (C) <2016> University of Dundee & Open Microscopy Environment.
+ * Copyright (C) <2016-2025> University of Dundee & Open Microscopy Environment.
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 import ome.xml.model.Experimenter;
 import ome.xml.model.Objective;
