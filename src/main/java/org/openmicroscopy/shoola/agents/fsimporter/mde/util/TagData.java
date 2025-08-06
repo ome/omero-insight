@@ -1,5 +1,5 @@
 /*
- * Copyright (C) <2016-2019> University of Dundee & Open Microscopy Environment.
+ * Copyright (C) <2016-2025> University of Dundee & Open Microscopy Environment.
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import ome.model.enums.UnitsLength;
 import ome.model.units.Unit;
 import ome.xml.model.Experimenter;
 import omero.log.LogMessage;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.openmicroscopy.shoola.agents.fsimporter.ImporterAgent;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.ModuleController;
 import org.openmicroscopy.shoola.agents.fsimporter.mde.components.submodules.converter.OMEValueConverter;

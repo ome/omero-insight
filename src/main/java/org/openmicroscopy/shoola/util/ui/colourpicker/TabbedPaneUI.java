@@ -2,7 +2,7 @@
  * org.openmicroscopy.shoola.util.ui.colourpicker.TabbedPaneUI
  *
  *------------------------------------------------------------------------------
- *  Copyright (C) 2006-2016 University of Dundee. All rights reserved.
+ *  Copyright (C) 2006-2025 University of Dundee. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ import javax.swing.event.DocumentListener;
 
 import info.clearthought.layout.TableLayout;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.openmicroscopy.shoola.util.ui.IconManager;
 import org.openmicroscopy.shoola.util.ui.UIUtilities;

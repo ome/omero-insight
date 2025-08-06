@@ -4,7 +4,7 @@ plugins {
     id "org.openmicroscopy.publish"
     id "org.openmicroscopy.distribute"
     id "org.openmicroscopy.packager"
-    id "org.openmicroscopy.additional-repositories" version "5.5.1"
+    id "org.openmicroscopy.additional-repositories" version "5.7.2"
 }
 
 group = "org.openmicroscopy"
@@ -37,6 +37,7 @@ dependencies {
     }
     implementation("org.apache.poi:poi:4.0.1")
     implementation("org.apache.commons:commons-collections4:4.3")
+    implementation("org.apache.commons:commons-lang3:3.18.0")
     implementation("org.apache.httpcomponents:httpmime:4.5.7")
     implementation("org.apache.httpcomponents:httpclient:4.5.7")
     implementation("org.apache.httpcomponents:httpcomponents-client:4.5.7")
