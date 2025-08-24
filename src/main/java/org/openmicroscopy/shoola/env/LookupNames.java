@@ -445,6 +445,9 @@ public class LookupNames
     /** Lookup name for the user mde path **/
     public static final String USER_MDE_PATH = "/user/home/mde";
 
+    /** Lookup name for the sparql endpoint used to parse ontology terms by sparql queries **/
+    public static final String MDE_SPARQL_ENDPOINT ="omero.client.import.mde.sparqlEndpoint";
+
     /** Lookup name for characters which need to escaped for the login username / password */
     public static final String LOGIN_ESCAPE_CHARACTERS="omero.client.login_escape_characters";
 
