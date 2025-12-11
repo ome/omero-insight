@@ -83,21 +83,21 @@ jobs:
             if-no-files-found: error
       - name: Upload jar
         if: startsWith(matrix.os, 'ubuntu') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ matrix.os }}-omero_
           path: build/libs/omero_*
           if-no-files-found: error
       - name: Upload insight artifacts
         if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ matrix.os }}-insight
           path: build/packaged/main/bundles/*
           if-no-files-found: error
       - name: Upload importer artifacts
         if: startsWith(matrix.os, 'windows') && startsWith(github.ref, 'refs/tags') && startsWith(matrix.java, '8')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ matrix.os }}-importer
           path: build/packaged/installImporterDist/bundles/*
