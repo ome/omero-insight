@@ -738,28 +738,26 @@ public class DataServicesFactory
 		String url = (String) registry.lookup(LookupNames.HELP_ON_LINE_SEARCH);
 		while (kk.hasNext()) {
 			agentInfo = (AgentInfo) kk.next();
-			if (agentInfo.isActive()) {
-				reg = agentInfo.getRegistry();
-				reg.bind(LookupNames.CAN_CREATE, canCreate);
-				reg.bind(LookupNames.CURRENT_USER_DETAILS, exp);
-				reg.bind(LookupNames.USER_GROUP_DETAILS, available);
-				reg.bind(LookupNames.USERS_DETAILS, exps);
-				reg.bind(LookupNames.USER_ADMINISTRATOR, uc.isAdministrator());
-				reg.bind(LookupNames.IMAGE_QUALITY_LEVEL, 
+			reg = agentInfo.getRegistry();
+			reg.bind(LookupNames.CAN_CREATE, canCreate);
+			reg.bind(LookupNames.CURRENT_USER_DETAILS, exp);
+			reg.bind(LookupNames.USER_GROUP_DETAILS, available);
+			reg.bind(LookupNames.USERS_DETAILS, exps);
+			reg.bind(LookupNames.USER_ADMINISTRATOR, uc.isAdministrator());
+			reg.bind(LookupNames.IMAGE_QUALITY_LEVEL, 
 				        determineImageQuality(uc.getSpeedLevel()));
-				reg.bind(LookupNames.BINARY_AVAILABLE, b);
-				reg.bind(LookupNames.HELP_ON_LINE_SEARCH, url);
+			reg.bind(LookupNames.BINARY_AVAILABLE, b);
+			reg.bind(LookupNames.HELP_ON_LINE_SEARCH, url);
 				
-				reg.bind(LookupNames.PRIV_FULL, registry.lookup(LookupNames.PRIV_FULL));
-				reg.bind(LookupNames.PRIV_EDIT_USER, registry.lookup(LookupNames.PRIV_EDIT_USER));
-				reg.bind(LookupNames.PRIV_EDIT_GROUP, registry.lookup(LookupNames.PRIV_EDIT_GROUP));
-				reg.bind(LookupNames.PRIV_MOVE_GROUP, registry.lookup(LookupNames.PRIV_MOVE_GROUP));
-				reg.bind(LookupNames.PRIV_GROUP_ADD, registry.lookup(LookupNames.PRIV_GROUP_ADD));
-				reg.bind(LookupNames.PRIV_SUDO, registry.lookup(LookupNames.PRIV_SUDO));
-				reg.bind(LookupNames.PRIV_UPLOAD_SCRIPT, registry.lookup(LookupNames.PRIV_UPLOAD_SCRIPT));
-				reg.bind(LookupNames.OFFLINE_IMPORT_ENABLED, registry.lookup(LookupNames.OFFLINE_IMPORT_ENABLED));
-                reg.bind(LookupNames.MDE_IMPORT_ENABLED, registry.lookup(LookupNames.MDE_IMPORT_ENABLED));
-			}
+			reg.bind(LookupNames.PRIV_FULL, registry.lookup(LookupNames.PRIV_FULL));
+			reg.bind(LookupNames.PRIV_EDIT_USER, registry.lookup(LookupNames.PRIV_EDIT_USER));
+			reg.bind(LookupNames.PRIV_EDIT_GROUP, registry.lookup(LookupNames.PRIV_EDIT_GROUP));
+			reg.bind(LookupNames.PRIV_MOVE_GROUP, registry.lookup(LookupNames.PRIV_MOVE_GROUP));
+			reg.bind(LookupNames.PRIV_GROUP_ADD, registry.lookup(LookupNames.PRIV_GROUP_ADD));
+			reg.bind(LookupNames.PRIV_SUDO, registry.lookup(LookupNames.PRIV_SUDO));
+			reg.bind(LookupNames.PRIV_UPLOAD_SCRIPT, registry.lookup(LookupNames.PRIV_UPLOAD_SCRIPT));
+			reg.bind(LookupNames.OFFLINE_IMPORT_ENABLED, registry.lookup(LookupNames.OFFLINE_IMPORT_ENABLED));
+            reg.bind(LookupNames.MDE_IMPORT_ENABLED, registry.lookup(LookupNames.MDE_IMPORT_ENABLED));
 		}
 	}
 	
