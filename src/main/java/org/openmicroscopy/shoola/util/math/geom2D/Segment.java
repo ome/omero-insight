@@ -123,8 +123,8 @@ public class Segment
      */
     public boolean equals(Object o)
     {
-        if (o == null || !(o instanceof Line)) return false;
-        Line other = (Line) o;
+        if (o == null || !(o instanceof Segment)) return false;
+        Segment other = (Segment) o;
         return (origin == other.origin && direction == other.direction);
     }
     
