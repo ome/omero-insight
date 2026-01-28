@@ -284,11 +284,7 @@ class PublishingDialog
                 movieFigureItem.setEnabled(true);
 			} catch (Exception e) {}
     	} else {
-    		if (refObject instanceof DatasetData)
-    			thumbnailsFigureItem.setEnabled(true);
-    		else if (refObject instanceof PlateData) 
-    			thumbnailsFigureItem.setEnabled(false);
-    		else thumbnailsFigureItem.setEnabled(false);
+    		thumbnailsFigureItem.setEnabled(refObject instanceof DatasetData);
     	}
 	}
 
