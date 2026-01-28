@@ -115,7 +115,7 @@ public class DMRefreshLoader
         		result = os.loadContainerHierarchy(ctx, rootNodeType, null, 
                 		false, ctx.getExperimenter());
         		if (mapResult.containsKey(ctx)) {
-        			s = (Collection) mapResult.get(userID);
+        			s = (Collection) mapResult.get(ctx);
         			s.addAll((Collection) result);
         		} else {
         			mapResult.put(ctx, result);
