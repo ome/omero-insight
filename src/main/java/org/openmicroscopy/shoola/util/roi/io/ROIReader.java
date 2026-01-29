@@ -381,7 +381,7 @@ public class ROIReader {
                         if (shape != null) {
                             roiData.addShapeData(shape);
                         }
-                    } else if (shapeij instanceof PolygonRoi || r instanceof EllipseRoi) {
+                    } else if (shapeij instanceof PolygonRoi || shapeij instanceof EllipseRoi) {
                         if (type.matches("Point")) {
                             convertPoint((PointRoi) shapeij, roiData);
                         } else if (type.matches("Polyline") ||
