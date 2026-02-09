@@ -48,12 +48,11 @@ dependencies {
     implementation("org.jfree:jfreechart:1.0.19")
     implementation("org.swinglabs:swingx:1.6.1")
 
-    implementation("org.openmicroscopy:omero-gateway:5.9.3") {
+    implementation("org.openmicroscopy:omero-gateway:5.10.5") {
         // Conflicts with `net.java.dev.jna`
         exclude group: "com.sun.jna", module: "jna"
     }
-    implementation("ch.qos.logback:logback-classic:1.3.14")
-    implementation("ch.qos.logback:logback-core:1.3.14")
+    implementation("ch.qos.logback:logback-classic:1.3.16")
 }
 
 test {
