@@ -18,12 +18,12 @@ pipeline {
             steps {
                 // Currently running on a build node with multiple jobs so incorrect jar may be cached
                 // (Moving to Docker should fix this)
-                sh 'gradle --init-script init-ci.gradle publishToMavenLocal build --refresh-dependencies'
+                sh './gradlew --init-script init-ci.gradle publishToMavenLocal build --refresh-dependencies'
             }
         }
         stage('Deploy') {
             steps {
-                sh 'gradle --init-script init-ci.gradle publish'
+                sh './gradlew --init-script init-ci.gradle publish'
                 archiveArtifacts artifacts: 'build/distributions/*.zip'
             }
         }
