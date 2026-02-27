@@ -1,5 +1,6 @@
 plugins {
     id 'application'
+    id 'org.beryx.runtime' version '2.0.1'
 }
 
 group = "org.openmicroscopy"
@@ -24,10 +25,11 @@ repositories {
 
 application {
   mainClass = 'org.openmicroscopy.shoola.Main'
+  applicationName = 'OMERO.insight'
 }
 
 compileJava {
-    options.release = 8
+    options.release = 11
 }
 
 dependencies {
@@ -74,4 +76,20 @@ test {
         excludeTestsMatching "TestExecCommandStateTrans.testRunWhenCancelled"
         excludeTestsMatching "TestExecCommandStateTrans.testExecutingCancelled"
     }
+}
+
+runtime {
+  options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+  jpackage {
+      imageName = application.applicationName
+      installerName = application.applicationName
+      version = version.replace("-SNAPSHOT", "")
+
+      def currentOs = org.gradle.internal.os.OperatingSystem.current()
+      def imgType = currentOs.windows ? 'ico' : currentOs.macOsX ? 'icns' : 'png'
+      imageOptions += ['--icon', "src/main/resources/icons/omeroInsight.$imgType"]
+      installerOptions += ['--app-version', version]
+      imageOptions += ['--app-content', 'src/dist/config']
+
+  }
 }
