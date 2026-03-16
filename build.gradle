@@ -89,7 +89,8 @@ runtime {
       def currentOs = org.gradle.internal.os.OperatingSystem.current()
       def imgType = currentOs.windows ? 'ico' : currentOs.macOsX ? 'icns' : 'png'
 
-      appVersion = version.replace("-SNAPSHOT", "")
+      version = version.replace("-SNAPSHOT", "")
+      appVersion = version
       args = ['container.xml', '$APPDIR/..']
       jvmArgs = ['-Xms256m', '-Xmx4096m']
       installerName = application.applicationName
