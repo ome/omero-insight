@@ -61,6 +61,21 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.3.16")
 }
 
+jar {
+    manifest {
+        attributes(
+            "Created-By": "Gradle ${gradle.gradleVersion}",
+            "Build-Jdk": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+            "Built-By": System.properties['user.name'],
+            "Built-On": new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+            "Implementation-Build": "git rev-parse --verify HEAD".execute().getText().trim(),
+            "Implementation-Title": "OMERO.insight",
+            "Implementation-Version": archiveVersion,
+            "Implementation-Vendor": "Open Microscopy Environment",
+        )
+    }
+}
+
 test {
     testLogging.showStandardStreams = true
     systemProperties = System.getProperties()
@@ -89,8 +104,7 @@ runtime {
       def currentOs = org.gradle.internal.os.OperatingSystem.current()
       def imgType = currentOs.windows ? 'ico' : currentOs.macOsX ? 'icns' : 'png'
 
-      version = version.replace("-SNAPSHOT", "")
-      appVersion = version
+      appVersion = version.replace("-SNAPSHOT", "")
       args = ['container.xml', '$APPDIR/..']
       jvmArgs = ['-Xms256m', '-Xmx4096m']
       installerName = application.applicationName
