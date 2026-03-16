@@ -33,9 +33,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: artifacts-${{ matrix.os }}
-          path: |
-            build/distributions/
-            build/libs/
+          path: build/distributions/*.zip
           if-no-files-found: error
       - name: Upload Windows package
         if: startsWith(matrix.os, 'windows')
@@ -57,15 +55,12 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v6
       - name: Download artifacts from build
         uses: actions/download-artifact@v6
       - name: List artifacts
-        run: ls -R
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: artifacts*/*
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
+        run: ls -R artifacts*
+      - name: Create a GitHub release
+        run: gh release create --generate-notes "${GITHUB_REF#refs/tags/}" artifacts*/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
