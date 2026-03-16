@@ -79,17 +79,25 @@ test {
 }
 
 runtime {
-  options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+  options = [
+      '--strip-debug',
+      '--compress', 'zip-6',
+      '--no-header-files',
+      '--no-man-pages'
+  ]
   jpackage {
-      imageName = application.applicationName
-      installerName = application.applicationName
-      version = version.replace("-SNAPSHOT", "")
-
       def currentOs = org.gradle.internal.os.OperatingSystem.current()
       def imgType = currentOs.windows ? 'ico' : currentOs.macOsX ? 'icns' : 'png'
-      imageOptions += ['--icon', "src/main/resources/icons/omeroInsight.$imgType"]
-      installerOptions += ['--app-version', version]
-      imageOptions += ['--app-content', 'src/dist/config']
 
+      appVersion = version.replace("-SNAPSHOT", "")
+      args = ['container.xml', '$APPDIR/..']
+      jvmArgs = ['-Xms256m', '-Xmx4096m']
+      installerName = application.applicationName
+      installerOptions += ['--app-version', version]
+      imageName = application.applicationName
+      imageOptions = [
+        '--icon', "src/main/resources/icons/omeroInsight.$imgType",
+        '--app-content', 'src/dist/config'
+      ]
   }
 }
