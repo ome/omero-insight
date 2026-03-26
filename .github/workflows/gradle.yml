@@ -24,7 +24,7 @@ jobs:
           cache: 'gradle'
           java-package: 'jdk+fx'
       - name: Run commands
-        run: ./gradlew build
+        run: ./gradlew build ijJar
       - if: ${{ matrix.os != 'ubuntu-latest' }}
         name: Run jpackage
         run: ./gradlew jpackage
@@ -33,7 +33,9 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: artifacts-${{ matrix.os }}
-          path: build/distributions/*.zip
+          path: |
+            build/distributions/*.zip
+            build/libs/*.jar
           if-no-files-found: error
       - name: Upload Windows package
         if: startsWith(matrix.os, 'windows')

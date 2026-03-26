@@ -76,6 +76,15 @@ jar {
     }
 }
 
+tasks.register('ijJar', Jar) {
+    manifest.from jar.manifest
+    archiveBaseName = 'omero_ij'
+    archiveClassifier.set('all')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 test {
     testLogging.showStandardStreams = true
     systemProperties = System.getProperties()
