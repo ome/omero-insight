@@ -12,6 +12,7 @@ settingsEvaluated {
             }
             maven {
                 url System.getenv("MAVEN_SNAPSHOTS_REPO_URL") ?: 'https://artifacts.openmicroscopy.org/artifactory/maven/'
+                allowInsecureProtocol = true
             }
             gradlePluginPortal()
         }
