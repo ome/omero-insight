@@ -9,8 +9,8 @@ pipeline {
         MAVEN_USER = 'admin'
         MAVEN_PASSWORD = 'admin123'
 
-        // Disable Gradle daemon
-        GRADLE_OPTS = '-Dorg.gradle.daemon=false'
+        // Disable Gradle daemon and set Java version
+        GRADLE_OPTS = '-Dorg.gradle.daemon=false -Dorg.gradle.java.home=//etc/alternatives/java_sdk_17'
     }
 
     stages {
