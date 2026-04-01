@@ -45,11 +45,11 @@ To run the OMERO.importer, enter:
 
 To run OMERO.insight, from the command line, enter:
 
-    ./gradlew run
+    ./gradlew run --args "container.xml src/dist"
 
 To run OMERO.importer, from the command line, enter:
 
-    ./gradlew runImporter
+    ./gradlew run --args "containerImporter.xml src/dist"
 
 ## Packaging OMERO.insight
 
