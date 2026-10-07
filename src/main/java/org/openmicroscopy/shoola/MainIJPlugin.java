@@ -269,8 +269,6 @@ implements PlugIn
                 jarFile = new File(src.getLocation().toURI().getPath());
                 JarFile jarfile = new JarFile(jarFile);
                 pluginDir = jarFile.getParentFile().getPath();
-                //read the config file from the jarFile
-                configFile = Container.CONFIG_FILE;
                 Enumeration<JarEntry> enu = jarfile.entries();
                 Path dir = Files.createTempDirectory("jar-file");
                 home = dir.toString();
@@ -278,13 +276,10 @@ implements PlugIn
                 configDir.mkdir();
                 while (enu.hasMoreElements()) {
                     JarEntry je = enu.nextElement();
-                    if (!je.isDirectory() && je.getName().endsWith(".xml")) {
-                        //Extract config files from the jar
-                        File f = new File(configDir.getAbsolutePath() + File.separator + je.getName());
+                    // Extract top-level configuration XML files from the jar
+                    if (!je.isDirectory() && !je.getName().contains("/") && je.getName().endsWith(".xml")) {
+                        File f = new File(configDir.toString() + File.separator + je.getName());
                         try (InputStream is = jarfile.getInputStream(je)) {
-                            if (je.getName().equals(configFile)) {
-                                configFile = f.getName();
-                            }
                             Files.copy(is, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
                         }
                     }
@@ -293,7 +288,7 @@ implements PlugIn
             } catch (Exception e) {}
         }
         try {
-            container = Container.startupInPluginMode(home, configFile, index, pluginDir, null);
+            container = Container.startupInPluginMode(home, Container.CONFIG_FILE, index, pluginDir, null);
             if (save >=0) {
                 container.getRegistry().getEventBus().post(
                         new SaveEvent(LookupNames.IMAGE_J, save));
