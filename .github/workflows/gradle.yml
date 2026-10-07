@@ -15,53 +15,72 @@ jobs:
         java: [21]
         os: [ubuntu-latest, windows-latest, macos-latest, macos-15-intel]
     runs-on: ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v6
+
       - uses: actions/setup-java@v5
         with:
           java-version: ${{ matrix.java }}
           distribution: 'zulu'
           cache: 'gradle'
           java-package: 'jdk+fx'
+
       - name: Run commands
         run: ./gradlew build ijJar
+
       - if: ${{ matrix.os != 'ubuntu-latest' }}
         name: Run jpackage
         run: ./gradlew jpackage
-      - name: Upload JAR and distribution
+
+      - name: Prepare Linux artifacts
         if: startsWith(matrix.os, 'ubuntu')
-        uses: actions/upload-artifact@v6
-        with:
-          name: artifacts-${{ matrix.os }}
-          path: |
-            build/distributions/*.zip
-            build/libs/*.jar
-          if-no-files-found: error
-      - name: Upload Windows package
+        run: |
+          mkdir release-artifacts
+          zip=$(echo build/distributions/*.zip)
+          cp "$zip" "release-artifacts/$(basename "${zip%.zip}")-linux.zip"
+          cp build/libs/*.jar release-artifacts/
+
+      - name: Prepare Windows artifact
         if: startsWith(matrix.os, 'windows')
-        uses: actions/upload-artifact@v6
-        with:
-          name: artifacts-${{ matrix.os }}
-          path: build/jpackage/*.msi
-          if-no-files-found: error
-      - name: Upload OS X package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release-artifacts
+          $msi = Get-ChildItem build/jpackage/*.msi
+          Copy-Item $msi.FullName "release-artifacts\$($msi.BaseName)-windows.msi"
+
+      - name: Prepare macOS artifact
         if: startsWith(matrix.os, 'macos')
+        run: |
+          mkdir release-artifacts
+          dmg=$(echo build/jpackage/*.dmg)
+
+          if [ "${{ matrix.os }}" = "macos-15-intel" ]; then
+            arch=x86_64
+          else
+            arch=arm64
+          fi
+
+          cp "$dmg" "release-artifacts/$(basename "${dmg%.dmg}")-macos-${arch}.dmg"
+
+      - name: Upload release artifacts
         uses: actions/upload-artifact@v6
         with:
           name: artifacts-${{ matrix.os }}
-          path: build/jpackage/*.dmg
+          path: release-artifacts/*
           if-no-files-found: error
 
   release:
     if: startsWith(github.ref, 'refs/tags')
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v6
+
       - name: Download artifacts from build
         uses: actions/download-artifact@v6
-      - name: List artifacts
-        run: ls -R artifacts*
+
       - name: Create a GitHub release
         run: gh release create --generate-notes "${GITHUB_REF#refs/tags/}" artifacts*/*
         env:
