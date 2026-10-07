@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: '0 0 * * 0'
 
+
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
@@ -56,13 +60,38 @@ jobs:
     if: startsWith(github.ref, 'refs/tags')
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v6
+
       - name: Download artifacts from build
         uses: actions/download-artifact@v6
-      - name: List artifacts
-        run: ls -R artifacts*
+
+      - name: Prepare release assets
+        run: |
+          mkdir release-assets
+
+          cp artifacts-ubuntu-latest/distributions/*.zip release-assets/
+          cp artifacts-ubuntu-latest/libs/*.jar release-assets/
+          cp artifacts-windows-latest/*.msi release-assets/
+
+          for file in artifacts-macos-latest/*.dmg; do
+            cp "$file" "release-assets/$(basename "${file%.dmg}")-macos-arm64.dmg"
+          done
+
+          for file in artifacts-macos-15-intel/*.dmg; do
+            cp "$file" "release-assets/$(basename "${file%.dmg}")-macos-x86_64.dmg"
+          done
+
+      - name: List release assets
+        run: ls -l release-assets
+
       - name: Create a GitHub release
-        run: gh release create --generate-notes "${GITHUB_REF#refs/tags/}" artifacts*/*
+        run: |
+          gh release create \
+            --generate-notes \
+            "${GITHUB_REF#refs/tags/}" \
+            release-assets/*
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
