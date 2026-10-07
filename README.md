@@ -20,7 +20,6 @@ OMERO.insight. Its contents are as follows:
          files required by the application to run and the test code.
   + README.md: This file.
   + LICENSE.txt: The license covering this software.
-  + CHANGELOG.md: The release history
   + FAQ.md: Commons questions
 
 ##  Building OMERO.insight
