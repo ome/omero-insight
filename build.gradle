@@ -150,6 +150,15 @@ runtime {
       jvmArgs = ['-Xms256m', '-Xmx4096m']
       installerName = application.applicationName
       installerOptions += ['--app-version', appVersion]
+      installerOptions += ['--description', 'Desktop client for the OMERO platform']
+      installerOptions += ['--vendor', 'OME']
+      if(currentOs.windows) {
+          installerOptions += ['--win-dir-chooser', '--win-shortcut', '--win-menu']
+      }
+      else if (currentOs.linux) {
+          installerOptions += ['--linux-shortcut']
+      }
+
       imageName = application.applicationName
       imageOptions = [
         '--icon', "src/main/resources/icons/omeroInsight.$imgType",
