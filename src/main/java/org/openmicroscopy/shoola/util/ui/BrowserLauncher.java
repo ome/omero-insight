@@ -25,8 +25,10 @@ package org.openmicroscopy.shoola.util.ui;
 
 
 //Java imports
+import java.awt.Desktop;
 import java.awt.Image;
 import java.lang.reflect.Method;
+import java.net.URI;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
@@ -94,27 +96,11 @@ public class BrowserLauncher
 	 */
 	public void openURL(String url)
 	{
-		String osName = System.getProperty("os.name");
 		try {
-			if (osName.contains("Mac")) {
-				Class fileMgr = Class.forName("com.apple.eio.FileManager");
-				Method openURL = fileMgr.getDeclaredMethod("openURL",
-											new Class[] {String.class});
-				openURL.invoke(null, new Object[] {url});
-			} else if (osName.contains("Windows"))
-				Runtime.getRuntime().exec(
-						"rundll32 url.dll,FileProtocolHandler "+url);
-			else { //assume Unix or Linux
-				String browser = null;
-				for (int count = 0; count < BROWSERS_UNIX.length && 
-					browser == null; count++)
-					if (Runtime.getRuntime().exec(
-							new String[] {"which", 
-										BROWSERS_UNIX[count]}).waitFor() == 0)
-						browser = BROWSERS_UNIX[count];
-				if (browser == null)
-					throw new Exception("Could not find web browser");
-				Runtime.getRuntime().exec(new String[] {browser, url});
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+				Desktop.getDesktop().browse(new URI(url));
+			} else {
+				throw new Exception("Could not find web browser");
 			}
 		} catch (Exception e) {
 			JFrame f = new JFrame();
