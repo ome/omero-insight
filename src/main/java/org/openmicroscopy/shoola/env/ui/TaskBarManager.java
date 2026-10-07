@@ -20,6 +20,7 @@
  */
 package org.openmicroscopy.shoola.env.ui;
 
+import java.awt.Desktop;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -744,21 +745,16 @@ public class TaskBarManager
     /** Opens the directory where the log file is. */
     private void logFile()
     {
-    	//To be reviewed
-    	String logDirName = (String) container.getRegistry().lookup(
-    			LookupNames.LOG_DIR);	
-		String name = (String) container.getRegistry().lookup(
-				LookupNames.USER_HOME_OMERO);
-    	String path = name+File.separator+logDirName;
-    	String url = path;
-    	try
-        {
-            url = new File(path).toURI().toURL().toString();
-            url = url.replaceAll("^file:/", "file:///");
-            openURL(url);
+        String logDirName = (String) container.getRegistry().lookup(
+            LookupNames.LOG_DIR);
+        String name = (String) container.getRegistry().lookup(
+            LookupNames.USER_HOME_OMERO);
+        String path = name+File.separator+logDirName;
+        try {
+            Desktop.getDesktop().open(new File(path));
         } catch (Exception e) {
-        	container.getRegistry().getLogger().error(this,
-        			"Unable to open log directory.");
+            container.getRegistry().getLogger().error(this,
+                "Unable to open log directory.");
         }
     }
 
