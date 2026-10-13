@@ -153,7 +153,10 @@ runtime {
       installerOptions += ['--description', 'Desktop client for the OMERO platform']
       installerOptions += ['--vendor', 'OME']
       if(currentOs.windows) {
-          installerOptions += ['--win-dir-chooser', '--win-shortcut', '--win-menu']
+          installerOptions += [
+              '--win-per-user-install',
+              '--win-shortcut',
+              '--win-menu']
       }
       else if (currentOs.linux) {
           installerOptions += ['--linux-shortcut']
