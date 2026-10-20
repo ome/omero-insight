@@ -154,6 +154,7 @@ runtime {
       installerOptions += ['--vendor', 'OME']
       if(currentOs.windows) {
           installerOptions += [
+              '--install-dir', 'OMERO.insight-jre21',
               '--win-per-user-install',
               '--win-shortcut',
               '--win-menu']
