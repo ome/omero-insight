@@ -28,28 +28,31 @@ jobs:
       - if: ${{ matrix.os != 'ubuntu-latest' }}
         name: Run jpackage
         run: ./gradlew jpackage
-      - name: Upload JAR and distribution
+      - name: Prepare Linux artifacts
         if: startsWith(matrix.os, 'ubuntu')
-        uses: actions/upload-artifact@v6
-        with:
-          name: artifacts-${{ matrix.os }}
-          path: |
-            build/distributions/*.zip
-            build/libs/*.jar
-          if-no-files-found: error
-      - name: Upload Windows package
+        run: |
+          mkdir release-artifacts
+          zip=$(echo build/distributions/*.zip)
+          cp "$zip" "release-artifacts/$(basename "$zip")"
+          cp build/libs/*.jar release-artifacts/
+      - name: Prepare Windows artifact
         if: startsWith(matrix.os, 'windows')
-        uses: actions/upload-artifact@v6
-        with:
-          name: artifacts-${{ matrix.os }}
-          path: build/jpackage/*.msi
-          if-no-files-found: error
-      - name: Upload OS X package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release-artifacts
+          $msi = Get-ChildItem build/jpackage/*.msi
+          Copy-Item $msi.FullName "release-artifacts\$($msi.BaseName).msi"
+      - name: Prepare macOS artifact
         if: startsWith(matrix.os, 'macos')
+        run: |
+          mkdir release-artifacts
+          dmg=$(echo build/jpackage/*.dmg)
+          cp "$dmg" "release-artifacts/$(basename "${dmg%.dmg}")-${RUNNER_ARCH}.dmg"
+      - name: Upload release artifacts
         uses: actions/upload-artifact@v6
         with:
           name: artifacts-${{ matrix.os }}
-          path: build/jpackage/*.dmg
+          path: release-artifacts/*
           if-no-files-found: error
 
   release:
@@ -61,7 +64,7 @@ jobs:
       - name: Download artifacts from build
         uses: actions/download-artifact@v6
       - name: List artifacts
-        run: ls -R artifacts*
+        run: ls -R
       - name: Create a GitHub release
         run: gh release create --generate-notes "${GITHUB_REF#refs/tags/}" artifacts*/*
         env:
