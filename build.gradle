@@ -43,9 +43,7 @@ dependencies {
     implementation("info.clearthought:table-layout:4.3.0")
     implementation("insight:JHotDraw:7.0.9")
     implementation("net.imagej:ij:1.48s")
-    implementation("net.java.dev.jna:jna-platform:4.5.2") {
-        exclude group: "com.sun.jna", module: "jna"
-    }
+    implementation("net.java.dev.jna:jna-platform:4.5.2")
     implementation("org.apache.poi:poi:4.0.1")
     implementation("org.apache.commons:commons-collections4:4.3")
     implementation("org.apache.commons:commons-lang3:3.18.0")
@@ -55,11 +53,8 @@ dependencies {
     implementation("org.jfree:jfreechart:1.0.19")
     implementation("org.swinglabs:swingx:1.6.1")
 
-    implementation("org.openmicroscopy:omero-gateway:5.10.5") {
-        // Conflicts with `net.java.dev.jna`
-        exclude group: "com.sun.jna", module: "jna"
-    }
-    implementation("ch.qos.logback:logback-classic:1.3.16")
+    implementation("org.openmicroscopy:omero-gateway:5.11.0")
+    implementation("ch.qos.logback:logback-classic:1.5.37")
 }
 
 jar {
